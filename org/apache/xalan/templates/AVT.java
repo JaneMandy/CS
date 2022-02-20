@@ -9,15 +9,12 @@ import org.apache.xalan.processor.StylesheetHandler;
 import org.apache.xalan.res.XSLMessages;
 import org.apache.xml.utils.FastStringBuffer;
 import org.apache.xml.utils.PrefixResolver;
+import org.apache.xml.utils.StringBufferPool;
 import org.apache.xpath.XPath;
 import org.apache.xpath.XPathContext;
 import org.xml.sax.SAXException;
 
 public class AVT implements Serializable, XSLTVisitable {
-   static final long serialVersionUID = 5167607155517042691L;
-   private static final boolean USE_OBJECT_POOL = false;
-   private static final int INIT_BUFFER_CHUNK_BITS = 8;
-   private transient FastStringBuffer m_cachedBuf;
    private String m_simpleString = null;
    private Vector m_parts = null;
    private String m_rawName;
@@ -57,10 +54,8 @@ public class AVT implements Serializable, XSLTVisitable {
       if (nTokens < 2) {
          this.m_simpleString = stringedValue;
       } else {
-         FastStringBuffer buffer = null;
-         FastStringBuffer exprBuffer = null;
-         buffer = new FastStringBuffer(6);
-         exprBuffer = new FastStringBuffer(6);
+         FastStringBuffer buffer = StringBufferPool.get();
+         FastStringBuffer exprBuffer = StringBufferPool.get();
 
          try {
             this.m_parts = new Vector(nTokens + 1);
@@ -181,8 +176,8 @@ public class AVT implements Serializable, XSLTVisitable {
                buffer.setLength(0);
             }
          } finally {
-            buffer = null;
-            exprBuffer = null;
+            StringBufferPool.free(buffer);
+            StringBufferPool.free(exprBuffer);
          }
       }
 
@@ -196,20 +191,21 @@ public class AVT implements Serializable, XSLTVisitable {
       if (null != this.m_simpleString) {
          return this.m_simpleString;
       } else if (null != this.m_parts) {
-         FastStringBuffer buf = this.getBuffer();
-         String out = null;
-         int n = this.m_parts.size();
+         FastStringBuffer buf = StringBufferPool.get();
 
          try {
+            buf.setLength(0);
+            int n = this.m_parts.size();
+
             for(int i = 0; i < n; ++i) {
                AVTPart part = (AVTPart)this.m_parts.elementAt(i);
                buf.append(part.getSimpleString());
             }
 
-            out = buf.toString();
-            return out;
+            String s = buf.toString();
+            return s;
          } finally {
-            buf.setLength(0);
+            StringBufferPool.free(buf);
          }
       } else {
          return "";
@@ -217,27 +213,34 @@ public class AVT implements Serializable, XSLTVisitable {
    }
 
    public String evaluate(XPathContext xctxt, int context, PrefixResolver nsNode) throws TransformerException {
-      if (null != this.m_simpleString) {
-         return this.m_simpleString;
-      } else if (null != this.m_parts) {
-         FastStringBuffer buf = this.getBuffer();
-         String out = null;
-         int n = this.m_parts.size();
+      FastStringBuffer buf = StringBufferPool.get();
 
-         try {
-            for(int i = 0; i < n; ++i) {
-               AVTPart part = (AVTPart)this.m_parts.elementAt(i);
-               part.evaluate(xctxt, buf, context, nsNode);
+      String var5;
+      try {
+         if (null == this.m_simpleString) {
+            if (null != this.m_parts) {
+               buf.setLength(0);
+               int n = this.m_parts.size();
+
+               for(int i = 0; i < n; ++i) {
+                  AVTPart part = (AVTPart)this.m_parts.elementAt(i);
+                  part.evaluate(xctxt, buf, context, nsNode);
+               }
+
+               String var13 = buf.toString();
+               return var13;
             }
 
-            out = buf.toString();
-            return out;
-         } finally {
-            buf.setLength(0);
+            var5 = "";
+            return var5;
          }
-      } else {
-         return "";
+
+         var5 = this.m_simpleString;
+      } finally {
+         StringBufferPool.free(buf);
       }
+
+      return var5;
    }
 
    public boolean isContextInsensitive() {
@@ -285,14 +288,5 @@ public class AVT implements Serializable, XSLTVisitable {
 
    public boolean isSimple() {
       return this.m_simpleString != null;
-   }
-
-   private final FastStringBuffer getBuffer() {
-      if (this.m_cachedBuf == null) {
-         this.m_cachedBuf = new FastStringBuffer(8);
-         return this.m_cachedBuf;
-      } else {
-         return this.m_cachedBuf.length() != 0 ? new FastStringBuffer(8) : this.m_cachedBuf;
-      }
    }
 }

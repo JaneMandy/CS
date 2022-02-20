@@ -65,18 +65,17 @@ public class KeyTable {
       return this.getKeyIterator().getName();
    }
 
-   private Vector getKeyDeclarations() {
+   private KeyDeclaration getKeyDeclaration() {
       int nDeclarations = this.m_keyDeclarations.size();
-      Vector keyDecls = new Vector(nDeclarations);
 
       for(int i = 0; i < nDeclarations; ++i) {
          KeyDeclaration kd = (KeyDeclaration)this.m_keyDeclarations.elementAt(i);
          if (kd.getName().equals(this.getKeyTableName())) {
-            keyDecls.add(kd);
+            return kd;
          }
       }
 
-      return keyDecls;
+      return null;
    }
 
    private Hashtable getRefsTable() {
@@ -84,32 +83,28 @@ public class KeyTable {
          this.m_refsTable = new Hashtable(89);
          KeyIterator ki = (KeyIterator)this.m_keyNodes.getContainedIter();
          XPathContext xctxt = ki.getXPathContext();
-         Vector keyDecls = this.getKeyDeclarations();
-         int nKeyDecls = keyDecls.size();
+         KeyDeclaration keyDeclaration = this.getKeyDeclaration();
          this.m_keyNodes.reset();
 
          int currentNode;
          while(-1 != (currentNode = this.m_keyNodes.nextNode())) {
             try {
-               for(int keyDeclIdx = 0; keyDeclIdx < nKeyDecls; ++keyDeclIdx) {
-                  KeyDeclaration keyDeclaration = (KeyDeclaration)keyDecls.elementAt(keyDeclIdx);
-                  XObject xuse = keyDeclaration.getUse().execute(xctxt, currentNode, ki.getPrefixResolver());
-                  if (xuse.getType() != 4) {
-                     XMLString exprResult = xuse.xstr();
-                     this.addValueInRefsTable(xctxt, exprResult, currentNode);
-                  } else {
-                     DTMIterator i = ((XNodeSet)xuse).iterRaw();
+               XObject xuse = keyDeclaration.getUse().execute(xctxt, currentNode, ki.getPrefixResolver());
+               if (xuse.getType() != 4) {
+                  XMLString exprResult = xuse.xstr();
+                  this.addValueInRefsTable(xctxt, exprResult, currentNode);
+               } else {
+                  DTMIterator i = ((XNodeSet)xuse).iterRaw();
 
-                     int currentNodeInUseClause;
-                     while(-1 != (currentNodeInUseClause = i.nextNode())) {
-                        DTM dtm = xctxt.getDTM(currentNodeInUseClause);
-                        XMLString exprResult = dtm.getStringValue(currentNodeInUseClause);
-                        this.addValueInRefsTable(xctxt, exprResult, currentNode);
-                     }
+                  int currentNodeInUseClause;
+                  while(-1 != (currentNodeInUseClause = i.nextNode())) {
+                     DTM dtm = xctxt.getDTM(currentNodeInUseClause);
+                     XMLString exprResult = dtm.getStringValue(currentNodeInUseClause);
+                     this.addValueInRefsTable(xctxt, exprResult, currentNode);
                   }
                }
-            } catch (TransformerException var13) {
-               throw new WrappedRuntimeException(var13);
+            } catch (TransformerException var10) {
+               throw new WrappedRuntimeException(var10);
             }
          }
       }

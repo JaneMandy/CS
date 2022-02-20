@@ -47,6 +47,7 @@ public class RichCursorDecoder extends Decoder {
 
          renderer.createCursor(cursorPixels, rect);
       }
+
    }
 
    private boolean isBitSet(byte aByte, int index) {

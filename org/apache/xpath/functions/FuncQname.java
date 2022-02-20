@@ -7,8 +7,6 @@ import org.apache.xpath.objects.XObject;
 import org.apache.xpath.objects.XString;
 
 public class FuncQname extends FunctionDef1Arg {
-   static final long serialVersionUID = -1532307875532617380L;
-
    public XObject execute(XPathContext xctxt) throws TransformerException {
       int context = this.getArg0AsNode(xctxt);
       XString val;

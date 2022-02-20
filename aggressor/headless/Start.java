@@ -74,7 +74,7 @@ public class Start implements Callback, ArmitageTrustListener {
 
    public void result(String var1, Object var2) {
       if ("aggressor.authenticate".equals(var1)) {
-         String var3 = var2 + "";
+         String var3 = ((Class)var2).makeConcatWithConstants<invokedynamic>(var2);
          if (var3.equals("SUCCESS")) {
             this.tqueue.call("aggressor.metadata", CommonUtils.args(System.currentTimeMillis()), this);
          } else {

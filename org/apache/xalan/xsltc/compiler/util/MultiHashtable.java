@@ -4,8 +4,6 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 public final class MultiHashtable extends Hashtable {
-   static final long serialVersionUID = -6151608290510033572L;
-
    public Object put(Object key, Object value) {
       Vector vector = (Vector)this.get(key);
       if (vector == null) {

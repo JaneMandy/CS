@@ -13,6 +13,7 @@ public enum OperatingSystem {
    WINDOWS_VISTA(Manufacturer.MICROSOFT, WINDOWS, 20, "Windows Vista", new String[]{"Windows NT 6"}, (String[])null, DeviceType.COMPUTER, (String)null),
    WINDOWS_2000(Manufacturer.MICROSOFT, WINDOWS, 15, "Windows 2000", new String[]{"Windows NT 5.0"}, (String[])null, DeviceType.COMPUTER, (String)null),
    WINDOWS_XP(Manufacturer.MICROSOFT, WINDOWS, 10, "Windows XP", new String[]{"Windows NT 5"}, new String[]{"ggpht.com"}, DeviceType.COMPUTER, (String)null),
+   WINDOWS_PHONE8_1(Manufacturer.MICROSOFT, WINDOWS, 53, "Windows Phone 8.1", new String[]{"Windows Phone 8.1"}, (String[])null, DeviceType.MOBILE, (String)null),
    WINDOWS_PHONE8(Manufacturer.MICROSOFT, WINDOWS, 52, "Windows Phone 8", new String[]{"Windows Phone 8"}, (String[])null, DeviceType.MOBILE, (String)null),
    WINDOWS_MOBILE7(Manufacturer.MICROSOFT, WINDOWS, 51, "Windows Phone 7", new String[]{"Windows Phone OS 7"}, (String[])null, DeviceType.MOBILE, (String)null),
    WINDOWS_MOBILE(Manufacturer.MICROSOFT, WINDOWS, 50, "Windows Mobile", new String[]{"Windows CE"}, (String[])null, DeviceType.MOBILE, (String)null),
@@ -133,12 +134,12 @@ public enum OperatingSystem {
    }
 
    public boolean isInUserAgentString(String agentString) {
-      String[] arr$ = this.aliases;
-      int len$ = arr$.length;
+      String[] var5;
+      int var4 = (var5 = this.aliases).length;
 
-      for(int i$ = 0; i$ < len$; ++i$) {
-         String alias = arr$[i$];
-         if (agentString.toLowerCase().indexOf(alias.toLowerCase()) != -1) {
+      for(int var3 = 0; var3 < var4; ++var3) {
+         String alias = var5[var3];
+         if (agentString != null && agentString.toLowerCase().indexOf(alias.toLowerCase()) != -1) {
             return true;
          }
       }
@@ -148,12 +149,12 @@ public enum OperatingSystem {
 
    private boolean containsExcludeToken(String agentString) {
       if (this.excludeList != null) {
-         String[] arr$ = this.excludeList;
-         int len$ = arr$.length;
+         String[] var5;
+         int var4 = (var5 = this.excludeList).length;
 
-         for(int i$ = 0; i$ < len$; ++i$) {
-            String exclude = arr$[i$];
-            if (agentString.toLowerCase().indexOf(exclude.toLowerCase()) != -1) {
+         for(int var3 = 0; var3 < var4; ++var3) {
+            String exclude = var5[var3];
+            if (agentString != null && agentString.toLowerCase().indexOf(exclude.toLowerCase()) != -1) {
                return true;
             }
          }
@@ -165,10 +166,10 @@ public enum OperatingSystem {
    private OperatingSystem checkUserAgent(String agentString) {
       if (this.isInUserAgentString(agentString)) {
          if (this.children.size() > 0) {
-            Iterator i$ = this.children.iterator();
+            Iterator var3 = this.children.iterator();
 
-            while(i$.hasNext()) {
-               OperatingSystem childOperatingSystem = (OperatingSystem)i$.next();
+            while(var3.hasNext()) {
+               OperatingSystem childOperatingSystem = (OperatingSystem)var3.next();
                OperatingSystem match = childOperatingSystem.checkUserAgent(agentString);
                if (match != null) {
                   return match;
@@ -189,27 +190,25 @@ public enum OperatingSystem {
    }
 
    public static OperatingSystem parseUserAgentString(String agentString, List operatingSystems) {
-      Iterator i$ = operatingSystems.iterator();
+      Iterator var3 = operatingSystems.iterator();
 
-      OperatingSystem match;
-      do {
-         if (!i$.hasNext()) {
-            return UNKNOWN;
+      while(var3.hasNext()) {
+         OperatingSystem operatingSystem = (OperatingSystem)var3.next();
+         OperatingSystem match = operatingSystem.checkUserAgent(agentString);
+         if (match != null) {
+            return match;
          }
+      }
 
-         OperatingSystem operatingSystem = (OperatingSystem)i$.next();
-         match = operatingSystem.checkUserAgent(agentString);
-      } while(match == null);
-
-      return match;
+      return UNKNOWN;
    }
 
    public static OperatingSystem valueOf(short id) {
-      OperatingSystem[] arr$ = values();
-      int len$ = arr$.length;
+      OperatingSystem[] var4;
+      int var3 = (var4 = values()).length;
 
-      for(int i$ = 0; i$ < len$; ++i$) {
-         OperatingSystem operatingSystem = arr$[i$];
+      for(int var2 = 0; var2 < var3; ++var2) {
+         OperatingSystem operatingSystem = var4[var2];
          if (operatingSystem.getId() == id) {
             return operatingSystem;
          }

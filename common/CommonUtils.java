@@ -91,7 +91,8 @@ public class CommonUtils {
    }
 
    public static final void describe(String var0) {
-      print_info("[" + Thread.currentThread() + "] " + scrub(var0));
+      Thread var10000 = Thread.currentThread();
+      print_info("[" + var10000 + "] " + scrub(var0));
    }
 
    public static final void print_trial(String var0) {
@@ -216,7 +217,7 @@ public class CommonUtils {
       Iterator var3 = var0.iterator();
 
       while(var3.hasNext()) {
-         var2.append(var3.next() + "");
+         var2.append(((Class)var3.next()).makeConcatWithConstants<invokedynamic>(var3.next()));
          if (var3.hasNext()) {
             var2.append(var1);
          }
@@ -405,8 +406,8 @@ public class CommonUtils {
 
             var1.write(var2);
          }
-      } catch (Exception var3) {
-         MudgeSanity.logException("readAll", var3, false);
+      } catch (Exception var4) {
+         MudgeSanity.logException("readAll", var4, false);
          return new byte[0];
       }
    }
@@ -420,7 +421,7 @@ public class CommonUtils {
       Iterator var2 = var0.iterator();
 
       for(int var3 = 0; var2.hasNext(); ++var3) {
-         var1[var3] = var2.next() + "";
+         var1[var3] = ((Class)var2.next()).makeConcatWithConstants<invokedynamic>(var2.next());
       }
 
       return var1;
@@ -430,7 +431,7 @@ public class CommonUtils {
       String[] var1 = new String[var0.length];
 
       for(int var2 = 0; var2 < var0.length; ++var2) {
-         var1[var2] = var0[var2] + "";
+         var1[var2] = ((Class)var0[var2]).makeConcatWithConstants<invokedynamic>(var0[var2]);
       }
 
       return var1;
@@ -480,7 +481,7 @@ public class CommonUtils {
       String[] var2 = new String[var0.size()];
 
       for(Iterator var3 = var0.scalarIterator(); var3.hasNext(); ++var1) {
-         var2[var1] = var3.next() + "";
+         var2[var1] = ((Class)var3.next()).makeConcatWithConstants<invokedynamic>(var3.next());
       }
 
       return var2;
@@ -575,7 +576,9 @@ public class CommonUtils {
 
    public static byte[] patch(byte[] var0, byte[] var1, byte[] var2) {
       int var3 = indexOf(var0, var1, 0, var0.length);
-      if (!AssertUtils.Test(var3 >= 0, "patch: findme " + toHex(var1) + " is not in data (" + var0.length + " bytes)")) {
+      boolean var10000 = var3 >= 0;
+      String var10001 = toHex(var1);
+      if (!AssertUtils.Test(var10000, "patch: findme " + var10001 + " is not in data (" + var0.length + " bytes)")) {
          return var0;
       } else {
          System.arraycopy(var2, 0, var0, var3, var2.length);
@@ -584,8 +587,12 @@ public class CommonUtils {
    }
 
    public static byte[] patch(byte[] var0, byte[] var1, byte[] var2, int var3) {
-      AssertUtils.Test(var3 >= var2.length, "patch " + toHex(var1) + " with " + toHex(var2) + " has [final value] that exceeds " + var3);
-      AssertUtils.Test(var3 >= var1.length, "patch " + toHex(var1) + " with " + toHex(var2) + " has [patch stub] that exceeds " + var3);
+      boolean var10000 = var3 >= var2.length;
+      String var10001 = toHex(var1);
+      AssertUtils.Test(var10000, "patch " + var10001 + " with " + toHex(var2) + " has [final value] that exceeds " + var3);
+      var10000 = var3 >= var1.length;
+      var10001 = toHex(var1);
+      AssertUtils.Test(var10000, "patch " + var10001 + " with " + toHex(var2) + " has [patch stub] that exceeds " + var3);
       return patch(var0, var1, pad(var2, var3));
    }
 
@@ -767,7 +774,8 @@ public class CommonUtils {
       String[] var1 = new String[var0.length()];
 
       for(int var2 = 0; var2 < var1.length; ++var2) {
-         var1[var2] = var0.charAt(var2) + "";
+         char var10002 = var0.charAt(var2);
+         var1[var2] = var10002.makeConcatWithConstants<invokedynamic>(var10002);
       }
 
       return var1;
@@ -987,7 +995,7 @@ public class CommonUtils {
 
    public static byte[] pickOption(String var0) {
       List var1 = readOptions(var0);
-      byte[] var2 = (byte[])((byte[])var1.get(rand(var1.size())));
+      byte[] var2 = (byte[])var1.get(rand(var1.size()));
       return var2;
    }
 
@@ -1127,7 +1135,7 @@ public class CommonUtils {
    }
 
    public static boolean is64bit() {
-      return isin("64", System.getProperty("os.arch") + "");
+      return isin("64", System.getProperty("os.arch").makeConcatWithConstants<invokedynamic>(System.getProperty("os.arch")));
    }
 
    public static String dropFile(String var0, String var1, String var2) {
@@ -1394,7 +1402,8 @@ public class CommonUtils {
 
       String var1;
       do {
-         var1 = "/" + pick(var0) + pick(var0) + pick(var0) + pick(var0);
+         String var10000 = pick(var0);
+         var1 = "/" + var10000 + pick(var0) + pick(var0) + pick(var0);
       } while(checksum8(var1) != 93L);
 
       return var1;
@@ -1612,24 +1621,21 @@ public class CommonUtils {
 
    public static String getCaseInsensitive(Map var0, String var1, String var2) {
       String var3 = (String)var0.get(var1);
-      if (var3 == null) {
+      if (var3 != null) {
+         return var3;
+      } else {
          var1 = var1.toLowerCase();
          Iterator var4 = var0.entrySet().iterator();
 
-         Entry var5;
-         String var6;
-         do {
-            if (!var4.hasNext()) {
-               return var2;
+         while(var4.hasNext()) {
+            Entry var5 = (Entry)var4.next();
+            String var6 = var5.getKey().toString().toLowerCase();
+            if (var1.equals(var6)) {
+               return (String)var5.getValue();
             }
+         }
 
-            var5 = (Entry)var4.next();
-            var6 = var5.getKey().toString().toLowerCase();
-         } while(!var1.equals(var6));
-
-         return (String)var5.getValue();
-      } else {
-         return var3;
+         return var2;
       }
    }
 

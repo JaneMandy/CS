@@ -6,7 +6,6 @@ import org.apache.xml.dtm.DTMIterator;
 import org.apache.xml.utils.WrappedRuntimeException;
 
 public class IteratorPool implements Serializable {
-   static final long serialVersionUID = -460927331149566998L;
    private final DTMIterator m_orig;
    private final Vector m_freeStack;
 

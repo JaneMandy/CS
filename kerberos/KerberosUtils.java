@@ -14,14 +14,15 @@ public class KerberosUtils {
 
    public static byte[] ConvertCCacheToKrbCred(String var0) {
       Class var1 = KerberosUtils.class;
+      Class var2 = KerberosUtils.class;
       synchronized(KerberosUtils.class) {
          if (A == null) {
             try {
                ScriptLoader var2 = new ScriptLoader();
                A = var2.loadScript("ccache_krbcred.sl", CommonUtils.resource("resources/ccache_krbcred.sl"), new Hashtable());
                A.runScript();
-            } catch (Exception var5) {
-               MudgeSanity.logException("compile converter", var5, false);
+            } catch (Exception var6) {
+               MudgeSanity.logException("compile converter", var6, false);
                return new byte[0];
             }
          }

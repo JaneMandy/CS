@@ -66,7 +66,7 @@ public abstract class GenericHTTPStager extends GenericStager {
          byte[] var2 = CommonUtils.readAll(var1);
          String var3 = CommonUtils.bString(var2);
          var1.close();
-         var3 = var3 + this.getListener().getStagerHost() + '\u0000';
+         var3 = var3 + this.getListener().getStagerHost() + "\u0000";
          Packer var4 = new Packer();
          var4.little();
          var4.addShort(this.getListener().getPort());
@@ -89,12 +89,12 @@ public abstract class GenericHTTPStager extends GenericStager {
          var3 = CommonUtils.replaceAt(var3, CommonUtils.bString(var4.getBytes()), this.getFlagsOffset());
          String var5;
          if (CommonUtils.isin(CommonUtils.repeat("X", 303), var3)) {
-            var5 = this.getConfig().pad(this.getHeaders() + '\u0000', 303);
+            var5 = this.getConfig().pad(this.getHeaders() + "\u0000", 303);
             var3 = CommonUtils.replaceAt(var3, var5, var3.indexOf(CommonUtils.repeat("X", 127)));
          }
 
          int var6 = var3.indexOf(CommonUtils.repeat("Y", 79), 0);
-         var5 = this.getConfig().pad(this.getURI() + '\u0000', 79);
+         var5 = this.getConfig().pad(this.getURI() + "\u0000", 79);
          var3 = CommonUtils.replaceAt(var3, var5, var6);
          return CommonUtils.toBytes(var3 + this.getConfig().getWatermark());
       } catch (IOException var7) {

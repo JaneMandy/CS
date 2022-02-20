@@ -42,8 +42,8 @@ public class CovertVPNSetup extends AObject implements Callback, DialogListener 
 
    public void dialogAction(ActionEvent var1, Map var2) {
       String var3 = DialogUtils.string(var2, "VPNInterface");
-      String var4 = this.model.getSelectedValueFromColumn(this.table, "IPv4 Address") + "";
-      String var5 = this.model.getSelectedValueFromColumn(this.table, "Hardware MAC") + "";
+      String var4 = ((Class)this.model.getSelectedValueFromColumn(this.table, "IPv4 Address")).makeConcatWithConstants<invokedynamic>(this.model.getSelectedValueFromColumn(this.table, "IPv4 Address"));
+      String var5 = ((Class)this.model.getSelectedValueFromColumn(this.table, "Hardware MAC")).makeConcatWithConstants<invokedynamic>(this.model.getSelectedValueFromColumn(this.table, "Hardware MAC"));
       if (!DialogUtils.bool(var2, "CloneMAC")) {
          var5 = null;
       }
@@ -91,7 +91,7 @@ public class CovertVPNSetup extends AObject implements Callback, DialogListener 
    }
 
    public void result(String var1, Object var2) {
-      LinkedList var3 = CommonUtils.parseTabData(var2 + "", CommonUtils.toArray("IPv4 Address, IPv4 Netmask, MTU, Hardware MAC"));
+      LinkedList var3 = CommonUtils.parseTabData(((Class)var2).makeConcatWithConstants<invokedynamic>(var2), CommonUtils.toArray("IPv4 Address, IPv4 Netmask, MTU, Hardware MAC"));
       DialogUtils.setTable(this.table, this.model, var3);
    }
 }

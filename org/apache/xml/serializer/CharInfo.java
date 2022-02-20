@@ -5,23 +5,22 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.ResourceBundle;
 import javax.xml.transform.TransformerException;
-import org.apache.xml.serializer.utils.SystemIDResolver;
-import org.apache.xml.serializer.utils.Utils;
-import org.apache.xml.serializer.utils.WrappedRuntimeException;
+import org.apache.xml.res.XMLMessages;
+import org.apache.xml.utils.CharKey;
+import org.apache.xml.utils.SystemIDResolver;
+import org.apache.xml.utils.WrappedRuntimeException;
 
-final class CharInfo {
-   private Hashtable m_charToString;
-   public static final String HTML_ENTITIES_RESOURCE = "org.apache.xml.serializer.HTMLEntities";
-   public static final String XML_ENTITIES_RESOURCE = "org.apache.xml.serializer.XMLEntities";
+class CharInfo {
+   private Hashtable m_charToEntityRef;
+   public static String HTML_ENTITIES_RESOURCE = "org.apache.xml.serializer.HTMLEntities";
+   public static String XML_ENTITIES_RESOURCE = "org.apache.xml.serializer.XMLEntities";
    public static final char S_HORIZONAL_TAB = '\t';
    public static final char S_LINEFEED = '\n';
-   public static final char S_CARRIAGERETURN = '\r';
+   public static char S_CARRIAGERETURN = '\r';
    final boolean onlyQuotAmpLtGt;
    private static final int ASCII_MAX = 128;
    private boolean[] isSpecialAttrASCII;
@@ -31,7 +30,7 @@ final class CharInfo {
    private static final int SHIFT_PER_WORD = 5;
    private static final int LOW_ORDER_BITMASK = 31;
    private int firstWordNotUsed;
-   private CharInfo.CharKey m_charKey;
+   private CharKey m_charKey;
    private static Hashtable m_getCharInfoCache = new Hashtable();
    // $FF: synthetic field
    static Class class$org$apache$xml$serializer$CharInfo;
@@ -41,12 +40,12 @@ final class CharInfo {
    }
 
    private CharInfo(String entitiesResource, String method, boolean internal) {
-      this.m_charToString = new Hashtable();
+      this.m_charToEntityRef = new Hashtable();
       this.isSpecialAttrASCII = new boolean[128];
       this.isSpecialTextASCII = new boolean[128];
       this.isCleanTextASCII = new boolean[128];
       this.array_of_bits = this.createEmptySetOfIntegers(65535);
-      this.m_charKey = new CharInfo.CharKey();
+      this.m_charKey = new CharKey();
       ResourceBundle entities = null;
       boolean noExtraEntities = true;
       if (internal) {
@@ -72,7 +71,7 @@ final class CharInfo {
          }
 
          this.set(10);
-         this.set(13);
+         this.set(S_CARRIAGERETURN);
       } else {
          InputStream is = null;
 
@@ -97,7 +96,7 @@ final class CharInfo {
             }
 
             if (is == null) {
-               throw new RuntimeException(Utils.messages.createMessage("ER_RESOURCE_COULD_NOT_FIND", new Object[]{entitiesResource, entitiesResource}));
+               throw new RuntimeException(XMLMessages.createXMLMessage("ER_RESOURCE_COULD_NOT_FIND", new Object[]{entitiesResource, entitiesResource}));
             }
 
             BufferedReader reader;
@@ -139,11 +138,11 @@ final class CharInfo {
 
                is.close();
                this.set(10);
-               this.set(13);
+               this.set(S_CARRIAGERETURN);
                break;
             }
          } catch (Exception var27) {
-            throw new RuntimeException(Utils.messages.createMessage("ER_RESOURCE_COULD_NOT_LOAD", new Object[]{entitiesResource, var27.toString(), entitiesResource, var27.toString()}));
+            throw new RuntimeException(XMLMessages.createXMLMessage("ER_RESOURCE_COULD_NOT_LOAD", new Object[]{entitiesResource, var27.toString(), entitiesResource, var27.toString()}));
          } finally {
             if (is != null) {
                try {
@@ -165,76 +164,66 @@ final class CharInfo {
          }
       }
 
+      if ("xml".equals(method)) {
+         this.set(9);
+      }
+
       this.onlyQuotAmpLtGt = noExtraEntities;
 
       for(int i = 0; i < 128; ++i) {
          this.isSpecialAttrASCII[i] = this.get(i);
       }
 
-      if ("xml".equals(method)) {
-         this.isSpecialAttrASCII[9] = true;
-      }
-
    }
 
    private void defineEntity(String name, char value) {
-      StringBuffer sb = new StringBuffer("&");
-      sb.append(name);
-      sb.append(';');
-      String entityString = sb.toString();
-      this.defineChar2StringMapping(entityString, value);
+      CharKey character = new CharKey(value);
+      this.m_charToEntityRef.put(character, name);
+      this.set(value);
    }
 
-   synchronized String getOutputStringForChar(char value) {
+   public synchronized String getEntityNameForChar(char value) {
       this.m_charKey.setChar(value);
-      return (String)this.m_charToString.get(this.m_charKey);
+      return (String)this.m_charToEntityRef.get(this.m_charKey);
    }
 
-   final boolean isSpecialAttrChar(int value) {
+   public final boolean isSpecialAttrChar(int value) {
       return value < 128 ? this.isSpecialAttrASCII[value] : this.get(value);
    }
 
-   final boolean isSpecialTextChar(int value) {
+   public final boolean isSpecialTextChar(int value) {
       return value < 128 ? this.isSpecialTextASCII[value] : this.get(value);
    }
 
-   final boolean isTextASCIIClean(int value) {
+   public final boolean isTextASCIIClean(int value) {
       return this.isCleanTextASCII[value];
    }
 
-   private static CharInfo getCharInfoBasedOnPrivilege(final String entitiesFileName, final String method, final boolean internal) {
-      return (CharInfo)AccessController.doPrivileged(new PrivilegedAction() {
-         public Object run() {
-            return new CharInfo(entitiesFileName, method, internal);
-         }
-      });
-   }
-
-   static CharInfo getCharInfo(String entitiesFileName, String method) {
+   public static CharInfo getCharInfo(String entitiesFileName, String method) {
       CharInfo charInfo = (CharInfo)m_getCharInfoCache.get(entitiesFileName);
       if (charInfo != null) {
          return charInfo;
       } else {
          try {
-            charInfo = getCharInfoBasedOnPrivilege(entitiesFileName, method, true);
+            charInfo = new CharInfo(entitiesFileName, method, true);
             m_getCharInfoCache.put(entitiesFileName, charInfo);
             return charInfo;
          } catch (Exception var7) {
             try {
-               return getCharInfoBasedOnPrivilege(entitiesFileName, method, false);
+               return new CharInfo(entitiesFileName, method);
             } catch (Exception var6) {
-               String var3;
+               String absoluteEntitiesFileName;
                if (entitiesFileName.indexOf(58) < 0) {
-                  var3 = SystemIDResolver.getAbsoluteURIFromRelative(entitiesFileName);
+                  absoluteEntitiesFileName = SystemIDResolver.getAbsoluteURIFromRelative(entitiesFileName);
                } else {
                   try {
-                     var3 = SystemIDResolver.getAbsoluteURI(entitiesFileName, (String)null);
+                     absoluteEntitiesFileName = SystemIDResolver.getAbsoluteURI(entitiesFileName, (String)null);
                   } catch (TransformerException var5) {
                      throw new WrappedRuntimeException(var5);
                   }
                }
 
-               return getCharInfoBasedOnPrivilege(entitiesFileName, method, false);
+               return new CharInfo(absoluteEntitiesFileName, method, false);
             }
          }
       }
@@ -256,7 +245,6 @@ final class CharInfo {
    }
 
    private final void set(int i) {
-      this.setASCIIdirty(i);
       int j = i >> 5;
       int k = j + 1;
       if (this.firstWordNotUsed < k) {
@@ -294,62 +282,12 @@ final class CharInfo {
       return extra;
    }
 
-   private void setASCIIdirty(int j) {
-      if (0 <= j && j < 128) {
-         this.isCleanTextASCII[j] = false;
-         this.isSpecialTextASCII[j] = true;
-      }
-
-   }
-
-   private void setASCIIclean(int j) {
-      if (0 <= j && j < 128) {
-         this.isCleanTextASCII[j] = true;
-         this.isSpecialTextASCII[j] = false;
-      }
-
-   }
-
-   private void defineChar2StringMapping(String outputString, char inputChar) {
-      CharInfo.CharKey character = new CharInfo.CharKey(inputChar);
-      this.m_charToString.put(character, outputString);
-      this.set(inputChar);
-   }
-
    // $FF: synthetic method
    static Class class$(String x0) {
       try {
          return Class.forName(x0);
       } catch (ClassNotFoundException var2) {
          throw new NoClassDefFoundError(var2.getMessage());
-      }
-   }
-
-   // $FF: synthetic method
-   CharInfo(String x0, String x1, boolean x2, Object x3) {
-      this(x0, x1, x2);
-   }
-
-   private static class CharKey {
-      private char m_char;
-
-      public CharKey(char key) {
-         this.m_char = key;
-      }
-
-      public CharKey() {
-      }
-
-      public final void setChar(char c) {
-         this.m_char = c;
-      }
-
-      public final int hashCode() {
-         return this.m_char;
-      }
-
-      public final boolean equals(Object obj) {
-         return ((CharInfo.CharKey)obj).m_char == this.m_char;
       }
    }
 }

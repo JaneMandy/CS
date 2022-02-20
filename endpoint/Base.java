@@ -64,7 +64,6 @@ public abstract class Base {
 
       }
 
-      // $FF: synthetic method
       FrameReader(Object var2) {
          this();
       }

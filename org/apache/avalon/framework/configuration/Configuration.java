@@ -25,6 +25,8 @@ public interface Configuration {
 
    float getAttributeAsFloat(String var1) throws ConfigurationException;
 
+   double getAttributeAsDouble(String var1) throws ConfigurationException;
+
    boolean getAttributeAsBoolean(String var1) throws ConfigurationException;
 
    String getValue() throws ConfigurationException;
@@ -32,6 +34,8 @@ public interface Configuration {
    int getValueAsInteger() throws ConfigurationException;
 
    float getValueAsFloat() throws ConfigurationException;
+
+   double getValueAsDouble() throws ConfigurationException;
 
    boolean getValueAsBoolean() throws ConfigurationException;
 
@@ -45,6 +49,8 @@ public interface Configuration {
 
    float getValueAsFloat(float var1);
 
+   double getValueAsDouble(double var1);
+
    boolean getValueAsBoolean(boolean var1);
 
    String getAttribute(String var1, String var2);
@@ -54,6 +60,8 @@ public interface Configuration {
    long getAttributeAsLong(String var1, long var2);
 
    float getAttributeAsFloat(String var1, float var2);
+
+   double getAttributeAsDouble(String var1, double var2);
 
    boolean getAttributeAsBoolean(String var1, boolean var2);
 }

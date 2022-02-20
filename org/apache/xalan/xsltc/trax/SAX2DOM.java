@@ -10,7 +10,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.ProcessingInstruction;
-import org.w3c.dom.Text;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
@@ -18,32 +17,18 @@ import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 
 public class SAX2DOM implements ContentHandler, LexicalHandler, Constants {
-   private Node _root;
-   private Document _document;
-   private Node _nextSibling;
-   private Stack _nodeStk;
-   private Vector _namespaceDecls;
-   private Node _lastSibling;
+   private Node _root = null;
+   private Document _document = null;
+   private Stack _nodeStk = new Stack();
+   private Vector _namespaceDecls = null;
 
    public SAX2DOM() throws ParserConfigurationException {
-      this._root = null;
-      this._document = null;
-      this._nextSibling = null;
-      this._nodeStk = new Stack();
-      this._namespaceDecls = null;
-      this._lastSibling = null;
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
       this._document = factory.newDocumentBuilder().newDocument();
       this._root = this._document;
    }
 
-   public SAX2DOM(Node root, Node nextSibling) throws ParserConfigurationException {
-      this._root = null;
-      this._document = null;
-      this._nextSibling = null;
-      this._nodeStk = new Stack();
-      this._namespaceDecls = null;
-      this._lastSibling = null;
+   public SAX2DOM(Node root) throws ParserConfigurationException {
       this._root = root;
       if (root instanceof Document) {
          this._document = (Document)root;
@@ -55,11 +40,6 @@ public class SAX2DOM implements ContentHandler, LexicalHandler, Constants {
          this._root = this._document;
       }
 
-      this._nextSibling = nextSibling;
-   }
-
-   public SAX2DOM(Node root) throws ParserConfigurationException {
-      this(root, (Node)null);
    }
 
    public Node getDOM() {
@@ -70,13 +50,7 @@ public class SAX2DOM implements ContentHandler, LexicalHandler, Constants {
       Node last = (Node)this._nodeStk.peek();
       if (last != this._document) {
          String text = new String(ch, start, length);
-         if (this._lastSibling != null && this._lastSibling.getNodeType() == 3) {
-            ((Text)this._lastSibling).appendData(text);
-         } else if (last == this._root && this._nextSibling != null) {
-            this._lastSibling = last.insertBefore(this._document.createTextNode(text), this._nextSibling);
-         } else {
-            this._lastSibling = last.appendChild(this._document.createTextNode(text));
-         }
+         last.appendChild(this._document.createTextNode(text));
       }
 
    }
@@ -119,19 +93,12 @@ public class SAX2DOM implements ContentHandler, LexicalHandler, Constants {
       }
 
       Node last = (Node)this._nodeStk.peek();
-      if (last == this._root && this._nextSibling != null) {
-         last.insertBefore(tmp, this._nextSibling);
-      } else {
-         last.appendChild(tmp);
-      }
-
+      last.appendChild(tmp);
       this._nodeStk.push(tmp);
-      this._lastSibling = null;
    }
 
    public void endElement(String namespace, String localName, String qName) {
       this._nodeStk.pop();
-      this._lastSibling = null;
    }
 
    public void startPrefixMapping(String prefix, String uri) {
@@ -153,13 +120,7 @@ public class SAX2DOM implements ContentHandler, LexicalHandler, Constants {
       Node last = (Node)this._nodeStk.peek();
       ProcessingInstruction pi = this._document.createProcessingInstruction(target, data);
       if (pi != null) {
-         if (last == this._root && this._nextSibling != null) {
-            last.insertBefore(pi, this._nextSibling);
-         } else {
-            last.appendChild(pi);
-         }
-
-         this._lastSibling = pi;
+         last.appendChild(pi);
       }
 
    }
@@ -174,13 +135,7 @@ public class SAX2DOM implements ContentHandler, LexicalHandler, Constants {
       Node last = (Node)this._nodeStk.peek();
       Comment comment = this._document.createComment(new String(ch, start, length));
       if (comment != null) {
-         if (last == this._root && this._nextSibling != null) {
-            last.insertBefore(comment, this._nextSibling);
-         } else {
-            last.appendChild(comment);
-         }
-
-         this._lastSibling = comment;
+         last.appendChild(comment);
       }
 
    }

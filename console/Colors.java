@@ -21,11 +21,11 @@ public class Colors {
    private StyledDocument A = new DefaultStyledDocument();
 
    public static String color(String var0, String var1) {
-      return '\u0003' + var1 + var0;
+      return "\u0003" + var1 + var0;
    }
 
    public static String underline(String var0) {
-      return '\u001f' + var0 + '\u000f';
+      return "\u001f" + var0 + "\u000f";
    }
 
    public Colors(Properties var1) {
@@ -125,6 +125,7 @@ public class Colors {
          var1.setDocument(var4);
          var1.setSize(new Dimension(1000, var1.getSize().height));
       }
+
    }
 
    public void setNoHack(JTextPane var1, String var2) {
@@ -139,6 +140,7 @@ public class Colors {
 
          var1.setDocument(var4);
       }
+
    }
 
    private Colors._A A(String var1) {
@@ -158,7 +160,7 @@ public class Colors {
             case '\u0003':
                var2.A();
                if (var7 + 1 < var4.length && (var4[var7 + 1] >= '0' && var4[var7 + 1] <= '9' || var4[var7 + 1] >= 'A' && var4[var7 + 1] <= 'F')) {
-                  int var8 = Integer.parseInt(var4[var7 + 1] + "", 16);
+                  int var8 = Integer.parseInt(var4[var7 + 1].makeConcatWithConstants<invokedynamic>(var4[var7 + 1]), 16);
                   StyleConstants.setForeground(var2.B.A, this.colorTable[var8]);
                   ++var7;
                }
@@ -206,7 +208,6 @@ public class Colors {
          this.B.A = (SimpleAttributeSet)this.A.clone();
       }
 
-      // $FF: synthetic method
       _A(Object var1) {
          this();
       }

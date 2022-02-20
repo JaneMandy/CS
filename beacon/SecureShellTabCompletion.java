@@ -28,7 +28,7 @@ public class SecureShellTabCompletion extends GenericTabCompletion {
       Iterator var2 = var0.iterator();
 
       while(var2.hasNext()) {
-         String var3 = var2.next() + "";
+         String var3 = ((Class)var2.next()).makeConcatWithConstants<invokedynamic>(var2.next());
          if (!var3.startsWith(var1)) {
             var2.remove();
          }
@@ -47,7 +47,8 @@ public class SecureShellTabCompletion extends GenericTabCompletion {
       Iterator var5 = var2.iterator();
 
       while(var5.hasNext()) {
-         var3.add(var4.toString() + " " + var5.next());
+         String var10001 = var4.toString();
+         var3.add(var10001 + " " + var5.next());
       }
 
       Collections.sort(var3);
@@ -60,6 +61,7 @@ public class SecureShellTabCompletion extends GenericTabCompletion {
       ((List)var2).addAll(this.client.getSSHAliases().commands());
       Collections.sort((List)var2);
       Cortana.filterList((List)var2, var1);
+      String var10001;
       if (var2 != null && ((List)var2).size() == 0 && var1.startsWith("upload ")) {
          String var10 = var1.substring(var1.indexOf(" ") + 1);
          File var11 = new File(var10);
@@ -76,7 +78,9 @@ public class SecureShellTabCompletion extends GenericTabCompletion {
          File[] var12 = var11.listFiles();
 
          for(int var6 = 0; var12 != null && var6 < var12.length; ++var6) {
-            ((List)var2).add(var1.substring(0, var1.indexOf(" ")) + " " + var12[var6].getAbsolutePath());
+            List var10000 = (List)var2;
+            var10001 = var1.substring(0, var1.indexOf(" "));
+            var10000.add(var10001 + " " + var12[var6].getAbsolutePath());
          }
 
          Collections.sort((LinkedList)var2);
@@ -116,7 +120,8 @@ public class SecureShellTabCompletion extends GenericTabCompletion {
             while(var4.hasNext()) {
                BeaconEntry var5 = (BeaconEntry)var4.next();
                if (!var5.getPivotHint().isReverse()) {
-                  var3.add(var5.getInternal() + " " + var5.getPid());
+                  var10001 = var5.getInternal();
+                  var3.add(var10001 + " " + var5.getPid());
                }
             }
 

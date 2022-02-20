@@ -4,14 +4,17 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import org.apache.xml.serializer.utils.Utils;
-import org.apache.xml.serializer.utils.WrappedRuntimeException;
+import org.apache.xml.res.XMLMessages;
+import org.apache.xml.utils.BoolStack;
+import org.apache.xml.utils.DOM2Helper;
+import org.apache.xml.utils.FastStringBuffer;
+import org.apache.xml.utils.TreeWalker;
+import org.apache.xml.utils.WrappedRuntimeException;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -20,14 +23,17 @@ import org.xml.sax.SAXException;
 public abstract class ToStream extends SerializerBase {
    private static final String COMMENT_BEGIN = "<!--";
    private static final String COMMENT_END = "-->";
-   protected ToStream.BoolStack m_disableOutputEscapingStates = new ToStream.BoolStack();
-   EncodingInfo m_encodingInfo = new EncodingInfo((String)null, (String)null);
-   protected ToStream.BoolStack m_preserves = new ToStream.BoolStack();
+   protected BoolStack m_disableOutputEscapingStates = new BoolStack();
+   boolean m_triedToGetConverter = false;
+   java.lang.reflect.Method m_canConvertMeth;
+   Object m_charToByteConverter = null;
+   protected BoolStack m_preserves = new BoolStack();
    protected boolean m_ispreserve = false;
    protected boolean m_isprevtext = false;
-   protected char[] m_lineSep = System.getProperty("line.separator").toCharArray();
+   protected int m_maxCharacter = Encodings.getLastPrintable();
+   protected final char[] m_lineSep = System.getProperty("line.separator").toCharArray();
    protected boolean m_lineSepUse = true;
-   protected int m_lineSepLen;
+   protected final int m_lineSepLen;
    protected CharInfo m_charInfo;
    boolean m_shouldFlush;
    protected boolean m_spaceBeforeClose;
@@ -36,7 +42,6 @@ public abstract class ToStream extends SerializerBase {
    boolean m_isUTF8;
    protected Properties m_format;
    protected boolean m_cdataStartCalled;
-   private boolean m_expandDTDEntities;
    private boolean m_escaping;
 
    public ToStream() {
@@ -46,7 +51,6 @@ public abstract class ToStream extends SerializerBase {
       this.m_inDoctype = false;
       this.m_isUTF8 = false;
       this.m_cdataStartCalled = false;
-      this.m_expandDTDEntities = true;
       this.m_escaping = true;
    }
 
@@ -61,11 +65,15 @@ public abstract class ToStream extends SerializerBase {
 
    public void serialize(Node node) throws IOException {
       try {
-         TreeWalker walker = new TreeWalker(this);
+         TreeWalker walker = new TreeWalker(this, new DOM2Helper());
          walker.traverse(node);
       } catch (SAXException var3) {
          throw new WrappedRuntimeException(var3);
       }
+   }
+
+   static final boolean isUTF16Surrogate(char c) {
+      return (c & 'ﰀ') == 55296;
    }
 
    protected final void flushWriter() throws SAXException {
@@ -106,7 +114,17 @@ public abstract class ToStream extends SerializerBase {
       if (!super.m_inExternalDTD) {
          try {
             Writer writer = super.m_writer;
-            this.DTDprolog();
+            if (super.m_needToOutputDocTypeDecl) {
+               this.outputDocTypeDecl(super.m_elemContext.m_elementName, false);
+               super.m_needToOutputDocTypeDecl = false;
+            }
+
+            if (this.m_inDoctype) {
+               writer.write(" [");
+               writer.write(this.m_lineSep, 0, this.m_lineSepLen);
+               this.m_inDoctype = false;
+            }
+
             writer.write("<!ELEMENT ");
             writer.write(name);
             writer.write(32);
@@ -122,7 +140,18 @@ public abstract class ToStream extends SerializerBase {
    public void internalEntityDecl(String name, String value) throws SAXException {
       if (!super.m_inExternalDTD) {
          try {
-            this.DTDprolog();
+            if (super.m_needToOutputDocTypeDecl) {
+               this.outputDocTypeDecl(super.m_elemContext.m_elementName, false);
+               super.m_needToOutputDocTypeDecl = false;
+            }
+
+            if (this.m_inDoctype) {
+               Writer writer = super.m_writer;
+               writer.write(" [");
+               writer.write(this.m_lineSep, 0, this.m_lineSepLen);
+               this.m_inDoctype = false;
+            }
+
             this.outputEntityDecl(name, value);
          } catch (IOException var4) {
             throw new SAXException(var4);
@@ -162,24 +191,18 @@ public abstract class ToStream extends SerializerBase {
       this.setCdataSectionElements("cdata-section-elements", format);
       this.setIndentAmount(OutputPropertyUtils.getIntProperty("{http://xml.apache.org/xalan}indent-amount", format));
       this.setIndent(OutputPropertyUtils.getBooleanProperty("indent", format));
-      String sep = format.getProperty("{http://xml.apache.org/xalan}line-separator");
-      if (sep != null) {
-         this.m_lineSep = sep.toCharArray();
-         this.m_lineSepLen = sep.length();
-      }
-
       boolean shouldNotWriteXMLHeader = OutputPropertyUtils.getBooleanProperty("omit-xml-declaration", format);
       this.setOmitXMLDeclaration(shouldNotWriteXMLHeader);
       this.setDoctypeSystem(format.getProperty("doctype-system"));
       String doctypePublic = format.getProperty("doctype-public");
       this.setDoctypePublic(doctypePublic);
-      String version;
+      String encoding;
       if (format.get("standalone") != null) {
-         version = format.getProperty("standalone");
+         encoding = format.getProperty("standalone");
          if (defaultProperties) {
-            this.setStandaloneInternal(version);
+            this.setStandaloneInternal(encoding);
          } else {
-            this.setStandalone(version);
+            this.setStandalone(encoding);
          }
       }
 
@@ -188,19 +211,14 @@ public abstract class ToStream extends SerializerBase {
          this.m_spaceBeforeClose = true;
       }
 
-      version = this.getVersion();
-      if (null == version) {
-         version = format.getProperty("version");
-         this.setVersion(version);
-      }
-
-      String encoding = this.getEncoding();
+      encoding = this.getEncoding();
       if (null == encoding) {
          encoding = Encodings.getMimeEncoding(format.getProperty("encoding"));
          this.setEncoding(encoding);
       }
 
       this.m_isUTF8 = encoding.equals("UTF-8");
+      this.m_maxCharacter = Encodings.getLastPrintable(encoding);
       String entitiesFileName = (String)format.get("{http://xml.apache.org/xalan}entities");
       if (null != entitiesFileName) {
          String method = (String)format.get("method");
@@ -234,6 +252,7 @@ public abstract class ToStream extends SerializerBase {
             osw = Encodings.getWriter(output, encoding);
          }
 
+         this.m_maxCharacter = Encodings.getLastPrintable(encoding);
          this.init(osw, format, defaultProperties, true);
       } else {
          this.init(new WriterToASCI(output), format, defaultProperties, true);
@@ -309,7 +328,17 @@ public abstract class ToStream extends SerializerBase {
       if (!super.m_inExternalDTD) {
          try {
             Writer writer = super.m_writer;
-            this.DTDprolog();
+            if (super.m_needToOutputDocTypeDecl) {
+               this.outputDocTypeDecl(super.m_elemContext.m_elementName, false);
+               super.m_needToOutputDocTypeDecl = false;
+            }
+
+            if (this.m_inDoctype) {
+               writer.write(" [");
+               writer.write(this.m_lineSep, 0, this.m_lineSepLen);
+               this.m_inDoctype = false;
+            }
+
             writer.write("<!ATTLIST ");
             writer.write(eName);
             writer.write(32);
@@ -334,67 +363,63 @@ public abstract class ToStream extends SerializerBase {
    }
 
    public void externalEntityDecl(String name, String publicId, String systemId) throws SAXException {
-      try {
-         this.DTDprolog();
-         super.m_writer.write("<!ENTITY ");
-         super.m_writer.write(name);
-         if (publicId != null) {
-            super.m_writer.write(" PUBLIC \"");
-            super.m_writer.write(publicId);
-         } else {
-            super.m_writer.write(" SYSTEM \"");
-            super.m_writer.write(systemId);
-         }
-
-         super.m_writer.write("\" >");
-         super.m_writer.write(this.m_lineSep, 0, this.m_lineSepLen);
-      } catch (IOException var5) {
-         var5.printStackTrace();
-      }
-
    }
 
    protected boolean escapingNotNeeded(char ch) {
-      boolean ret;
       if (ch < 127) {
-         if (ch < ' ' && '\n' != ch && '\r' != ch && '\t' != ch) {
-            ret = false;
-         } else {
-            ret = true;
-         }
+         return ch >= ' ' || '\n' == ch || '\r' == ch || '\t' == ch;
       } else {
-         ret = this.m_encodingInfo.isInEncoding(ch);
-      }
+         if (null == this.m_charToByteConverter && !this.m_triedToGetConverter) {
+            this.m_triedToGetConverter = true;
 
-      return ret;
+            try {
+               this.m_charToByteConverter = Encodings.getCharToByteConverter(this.getEncoding());
+               if (null != this.m_charToByteConverter) {
+                  Class[] argsTypes = new Class[]{Character.TYPE};
+                  Class convClass = this.m_charToByteConverter.getClass();
+                  this.m_canConvertMeth = convClass.getMethod("canConvert", argsTypes);
+               }
+            } catch (Exception var6) {
+               System.err.println("Warning: " + var6.getMessage());
+            }
+         }
+
+         if (null != this.m_charToByteConverter) {
+            try {
+               Object[] args = new Object[]{new Character(ch)};
+               Boolean bool = (Boolean)this.m_canConvertMeth.invoke(this.m_charToByteConverter, args);
+               return bool ? !Character.isISOControl(ch) : false;
+            } catch (InvocationTargetException var4) {
+               System.err.println("Warning: InvocationTargetException in canConvert!");
+            } catch (IllegalAccessException var5) {
+               System.err.println("Warning: IllegalAccessException in canConvert!");
+            }
+         }
+
+         return ch <= this.m_maxCharacter;
+      }
    }
 
-   protected int writeUTF16Surrogate(char c, char[] ch, int i, int end) throws IOException {
-      int codePoint = 0;
-      if (i + 1 >= end) {
-         throw new IOException(Utils.messages.createMessage("ER_INVALID_UTF16_SURROGATE", new Object[]{Integer.toHexString(c)}));
-      } else {
-         char low = ch[i + 1];
-         if (!Encodings.isLowUTF16Surrogate(low)) {
-            throw new IOException(Utils.messages.createMessage("ER_INVALID_UTF16_SURROGATE", new Object[]{Integer.toHexString(c) + " " + Integer.toHexString(low)}));
-         } else {
-            Writer writer = super.m_writer;
-            if (this.m_encodingInfo.isInEncoding(c, low)) {
-               writer.write(ch, i, 2);
-            } else {
-               String encoding = this.getEncoding();
-               if (encoding != null) {
-                  codePoint = Encodings.toCodePoint(c, low);
-                  writer.write(38);
-                  writer.write(35);
-                  writer.write(Integer.toString(codePoint));
-                  writer.write(59);
-               } else {
-                  writer.write(ch, i, 2);
-               }
-            }
+   protected void writeUTF16Surrogate(char c, char[] ch, int i, int end) throws IOException {
+      int surrogateValue = this.getURF16SurrogateValue(c, ch, i, end);
+      Writer writer = super.m_writer;
+      writer.write(38);
+      writer.write(35);
+      writer.write(Integer.toString(surrogateValue));
+      writer.write(59);
+   }
 
-            return codePoint;
+   int getURF16SurrogateValue(char c, char[] ch, int i, int end) throws IOException {
+      if (i + 1 >= end) {
+         throw new IOException(XMLMessages.createXMLMessage("ER_INVALID_UTF16_SURROGATE", new Object[]{Integer.toHexString(c)}));
+      } else {
+         ++i;
+         int next = ch[i];
+         if ('\udc00' <= next && next < '\ue000') {
+            int next = (c - '\ud800' << 10) + next - '\udc00' + 65536;
+            return next;
+         } else {
+            throw new IOException(XMLMessages.createXMLMessage("ER_INVALID_UTF16_SURROGATE", new Object[]{Integer.toHexString(c) + " " + Integer.toHexString(next)}));
          }
       }
    }
@@ -407,12 +432,14 @@ public abstract class ToStream extends SerializerBase {
             return i;
          }
 
-         String outputStringForChar = this.m_charInfo.getOutputStringForChar(ch);
-         if (null == outputStringForChar) {
+         String entityRef = this.m_charInfo.getEntityNameForChar(ch);
+         if (null == entityRef) {
             return i;
          }
 
-         writer.write(outputStringForChar);
+         writer.write(38);
+         writer.write(entityRef);
+         writer.write(59);
       }
 
       return i + 1;
@@ -433,7 +460,7 @@ public abstract class ToStream extends SerializerBase {
                   this.closeCDATA();
                }
 
-               if (Encodings.isHighUTF16Surrogate(c)) {
+               if (isUTF16Surrogate(c)) {
                   this.writeUTF16Surrogate(c, ch, i, end);
                   ++i;
                } else {
@@ -452,7 +479,7 @@ public abstract class ToStream extends SerializerBase {
                }
 
                writer.write(c);
-            } else if (Encodings.isHighUTF16Surrogate(c)) {
+            } else if (isUTF16Surrogate(c)) {
                if (super.m_cdataTagOpen) {
                   this.closeCDATA();
                }
@@ -515,7 +542,7 @@ public abstract class ToStream extends SerializerBase {
          }
 
       } catch (IOException var6) {
-         throw new SAXException(Utils.messages.createMessage("ER_OIERROR", (Object[])null), var6);
+         throw new SAXException(XMLMessages.createXMLMessage("ER_OIERROR", (Object[])null), var6);
       }
    }
 
@@ -540,97 +567,83 @@ public abstract class ToStream extends SerializerBase {
    }
 
    public void characters(char[] chars, int start, int length) throws SAXException {
-      if (length != 0 && (!super.m_inEntityRef || this.m_expandDTDEntities)) {
-         if (super.m_elemContext.m_startTagOpen) {
-            this.closeStartTag();
-            super.m_elemContext.m_startTagOpen = false;
-         } else if (super.m_needToCallStartDocument) {
-            this.startDocumentInternal();
+      if (super.m_elemContext.m_startTagOpen) {
+         this.closeStartTag();
+         super.m_elemContext.m_startTagOpen = false;
+      } else if (super.m_needToCallStartDocument) {
+         this.startDocumentInternal();
+      }
+
+      if (!this.m_cdataStartCalled && !super.m_elemContext.m_isCdataSection) {
+         if (super.m_cdataTagOpen) {
+            this.closeCDATA();
          }
 
-         if (!this.m_cdataStartCalled && !super.m_elemContext.m_isCdataSection) {
-            if (super.m_cdataTagOpen) {
-               this.closeCDATA();
+         if (!this.m_disableOutputEscapingStates.peekOrFalse() && this.m_escaping) {
+            if (super.m_elemContext.m_startTagOpen) {
+               this.closeStartTag();
+               super.m_elemContext.m_startTagOpen = false;
             }
 
-            if (!this.m_disableOutputEscapingStates.peekOrFalse() && this.m_escaping) {
-               if (super.m_elemContext.m_startTagOpen) {
-                  this.closeStartTag();
-                  super.m_elemContext.m_startTagOpen = false;
+            try {
+               int end = start + length;
+               int lastDirty = start - 1;
+
+               int i;
+               char ch1;
+               for(i = start; i < end && ((ch1 = chars[i]) == ' ' || ch1 == '\n' && this.m_lineSepUse || ch1 == '\r' || ch1 == '\t'); ++i) {
+                  if (!this.m_charInfo.isTextASCIIClean(ch1)) {
+                     lastDirty = this.processDirty(chars, end, i, ch1, lastDirty, true);
+                     i = lastDirty;
+                  }
                }
 
-               try {
-                  int end = start + length;
-                  int lastDirty = start - 1;
-
-                  int i;
-                  char ch1;
-                  for(i = start; i < end && ((ch1 = chars[i]) == ' ' || ch1 == '\n' && this.m_lineSepUse || ch1 == '\r' || ch1 == '\t'); ++i) {
-                     if (!this.m_charInfo.isTextASCIIClean(ch1)) {
-                        lastDirty = this.processDirty(chars, end, i, ch1, lastDirty, true);
-                        i = lastDirty;
-                     }
-                  }
-
-                  if (i < end) {
-                     this.m_ispreserve = true;
-                  }
-
-                  for(boolean isXML10 = "1.0".equals(this.getVersion()); i < end; ++i) {
-                     char ch;
-                     while(i < end && (ch = chars[i]) < 127 && this.m_charInfo.isTextASCIIClean(ch)) {
-                        ++i;
-                     }
-
-                     if (i == end) {
-                        break;
-                     }
-
-                     ch = chars[i];
-                     if ((isCharacterInC0orC1Range(ch) || !isXML10 && isNELorLSEPCharacter(ch) || !this.escapingNotNeeded(ch) || this.m_charInfo.isSpecialTextChar(ch)) && '"' != ch) {
-                        lastDirty = this.processDirty(chars, end, i, ch, lastDirty, true);
-                        i = lastDirty;
-                     }
-                  }
-
-                  int startClean = lastDirty + 1;
-                  if (i > startClean) {
-                     int lengthClean = i - startClean;
-                     super.m_writer.write(chars, startClean, lengthClean);
-                  }
-
-                  this.m_isprevtext = true;
-               } catch (IOException var11) {
-                  throw new SAXException(var11);
+               if (i < end) {
+                  this.m_ispreserve = true;
                }
 
-               if (super.m_tracer != null) {
-                  super.fireCharEvent(chars, start, length);
+               for(; i < end; ++i) {
+                  char ch;
+                  while(i < end && (ch = chars[i]) < 127 && this.m_charInfo.isTextASCIIClean(ch)) {
+                     ++i;
+                  }
+
+                  if (i == end) {
+                     break;
+                  }
+
+                  ch = chars[i];
+                  if ((!this.escapingNotNeeded(ch) || this.m_charInfo.isSpecialTextChar(ch)) && '"' != ch) {
+                     lastDirty = this.processDirty(chars, end, i, ch, lastDirty, true);
+                     i = lastDirty;
+                  }
                }
 
-            } else {
-               this.charactersRaw(chars, start, length);
-               if (super.m_tracer != null) {
-                  super.fireCharEvent(chars, start, length);
+               int startClean = lastDirty + 1;
+               if (i > startClean) {
+                  int lengthClean = i - startClean;
+                  super.m_writer.write(chars, startClean, lengthClean);
                }
 
+               this.m_isprevtext = true;
+            } catch (IOException var10) {
+               throw new SAXException(var10);
             }
+
+            if (super.m_tracer != null) {
+               super.fireCharEvent(chars, start, length);
+            }
+
          } else {
-            this.cdata(chars, start, length);
+            this.charactersRaw(chars, start, length);
+            if (super.m_tracer != null) {
+               super.fireCharEvent(chars, start, length);
+            }
+
          }
-      }
-   }
-
-   private static boolean isCharacterInC0orC1Range(char ch) {
-      if (ch != '\t' && ch != '\n' && ch != '\r') {
-         return ch >= 127 && ch <= 159 || ch >= 1 && ch <= 31;
       } else {
-         return false;
+         this.cdata(chars, start, length);
       }
-   }
-
-   private static boolean isNELorLSEPCharacter(char ch) {
-      return ch == 133 || ch == 8232;
    }
 
    private int processDirty(char[] chars, int end, int i, char ch, int lastDirty, boolean fromTextNode) throws IOException {
@@ -651,43 +664,36 @@ public abstract class ToStream extends SerializerBase {
    }
 
    public void characters(String s) throws SAXException {
-      if (!super.m_inEntityRef || this.m_expandDTDEntities) {
-         int length = s.length();
-         if (length > super.m_charsBuff.length) {
-            super.m_charsBuff = new char[length * 2 + 1];
-         }
-
-         s.getChars(0, length, super.m_charsBuff, 0);
-         this.characters(super.m_charsBuff, 0, length);
+      int length = s.length();
+      if (length > super.m_charsBuff.length) {
+         super.m_charsBuff = new char[length * 2 + 1];
       }
+
+      s.getChars(0, length, super.m_charsBuff, 0);
+      this.characters(super.m_charsBuff, 0, length);
    }
 
    protected int accumDefaultEscape(Writer writer, char ch, int i, char[] chars, int len, boolean fromTextNode, boolean escLF) throws IOException {
       int pos = this.accumDefaultEntity(writer, ch, i, chars, len, fromTextNode, escLF);
       if (i == pos) {
-         if (Encodings.isHighUTF16Surrogate(ch)) {
-            int codePoint = false;
+         if ('\ud800' <= ch && ch < '\udc00') {
             if (i + 1 >= len) {
-               throw new IOException(Utils.messages.createMessage("ER_INVALID_UTF16_SURROGATE", new Object[]{Integer.toHexString(ch)}));
+               throw new IOException(XMLMessages.createXMLMessage("ER_INVALID_UTF16_SURROGATE", new Object[]{Integer.toHexString(ch)}));
             }
 
             ++i;
-            char next = chars[i];
-            if (!Encodings.isLowUTF16Surrogate(next)) {
-               throw new IOException(Utils.messages.createMessage("ER_INVALID_UTF16_SURROGATE", new Object[]{Integer.toHexString(ch) + " " + Integer.toHexString(next)}));
+            int next = chars[i];
+            if ('\udc00' > next || next >= '\ue000') {
+               throw new IOException(XMLMessages.createXMLMessage("ER_INVALID_UTF16_SURROGATE", new Object[]{Integer.toHexString(ch) + " " + Integer.toHexString(next)}));
             }
 
-            int codePoint = Encodings.toCodePoint(ch, next);
+            int next = (ch - '\ud800' << 10) + next - '\udc00' + 65536;
             writer.write("&#");
-            writer.write(Integer.toString(codePoint));
+            writer.write(Integer.toString(next));
             writer.write(59);
             pos += 2;
          } else {
-            if (isCharacterInC0orC1Range(ch) || "1.1".equals(this.getVersion()) && isNELorLSEPCharacter(ch)) {
-               writer.write("&#");
-               writer.write(Integer.toString(ch));
-               writer.write(59);
-            } else if ((!this.escapingNotNeeded(ch) || fromTextNode && this.m_charInfo.isSpecialTextChar(ch) || !fromTextNode && this.m_charInfo.isSpecialAttrChar(ch)) && super.m_elemContext.m_currentElemDepth > 0) {
+            if (!this.escapingNotNeeded(ch) || fromTextNode && this.m_charInfo.isSpecialTextChar(ch) || !fromTextNode && this.m_charInfo.isSpecialAttrChar(ch)) {
                writer.write("&#");
                writer.write(Integer.toString(ch));
                writer.write(59);
@@ -915,10 +921,10 @@ public abstract class ToStream extends SerializerBase {
          String name;
          if ("".equals(prefix)) {
             name = "xmlns";
-            this.addAttributeAlways("http://www.w3.org/2000/xmlns/", name, name, "CDATA", uri, false);
+            this.addAttributeAlways("http://www.w3.org/2000/xmlns/", prefix, name, "CDATA", uri);
          } else if (!"".equals(uri)) {
             name = "xmlns:" + prefix;
-            this.addAttributeAlways("http://www.w3.org/2000/xmlns/", prefix, name, "CDATA", uri, false);
+            this.addAttributeAlways("http://www.w3.org/2000/xmlns/", prefix, name, "CDATA", uri);
          }
       }
 
@@ -1032,12 +1038,6 @@ public abstract class ToStream extends SerializerBase {
          super.m_inExternalDTD = true;
       }
 
-      if (!this.m_expandDTDEntities && !super.m_inExternalDTD) {
-         this.startNonEscaping();
-         this.characters("&" + name + ';');
-         this.endNonEscaping();
-      }
-
       super.m_inEntityRef = true;
    }
 
@@ -1096,7 +1096,7 @@ public abstract class ToStream extends SerializerBase {
          Vector v = new Vector();
          int l = s.length();
          boolean inCurly = false;
-         StringBuffer buf = new StringBuffer();
+         FastStringBuffer buf = new FastStringBuffer();
 
          for(int i = 0; i < l; ++i) {
             char c = s.charAt(i);
@@ -1104,7 +1104,7 @@ public abstract class ToStream extends SerializerBase {
                if (!inCurly) {
                   if (buf.length() > 0) {
                      this.addCdataSectionElement(buf.toString(), v);
-                     buf.setLength(0);
+                     buf.reset();
                   }
                   continue;
                }
@@ -1119,7 +1119,7 @@ public abstract class ToStream extends SerializerBase {
 
          if (buf.length() > 0) {
             this.addCdataSectionElement(buf.toString(), v);
-            buf.setLength(0);
+            buf.reset();
          }
 
          this.setCdataSectionElements(v);
@@ -1157,7 +1157,7 @@ public abstract class ToStream extends SerializerBase {
                return null;
             } else {
                this.startPrefixMapping(prefixFromRawName, ns, false);
-               this.addAttribute("http://www.w3.org/2000/xmlns/", prefixFromRawName, "xmlns:" + prefixFromRawName, "CDATA", ns, false);
+               this.addAttribute("http://www.w3.org/2000/xmlns/", prefixFromRawName, "xmlns:" + prefixFromRawName, "CDATA", ns);
                return prefixFromRawName;
             }
          } else {
@@ -1165,7 +1165,7 @@ public abstract class ToStream extends SerializerBase {
             if (prefix == null) {
                prefix = super.m_prefixMap.generateNextPrefix();
                this.startPrefixMapping(prefix, ns, false);
-               this.addAttribute("http://www.w3.org/2000/xmlns/", prefix, "xmlns:" + prefix, "CDATA", ns, false);
+               this.addAttribute("http://www.w3.org/2000/xmlns/", prefix, "xmlns:" + prefix, "CDATA", ns);
             }
 
             return prefix;
@@ -1178,13 +1178,12 @@ public abstract class ToStream extends SerializerBase {
    void ensurePrefixIsDeclared(String ns, String rawName) throws SAXException {
       if (ns != null && ns.length() > 0) {
          int index;
-         boolean no_prefix = (index = rawName.indexOf(":")) < 0;
-         String prefix = no_prefix ? "" : rawName.substring(0, index);
+         String prefix = (index = rawName.indexOf(":")) < 0 ? "" : rawName.substring(0, index);
          if (null != prefix) {
             String foundURI = super.m_prefixMap.lookupNamespace(prefix);
             if (null == foundURI || !foundURI.equals(ns)) {
                this.startPrefixMapping(prefix, ns);
-               this.addAttributeAlways("http://www.w3.org/2000/xmlns/", no_prefix ? "xmlns" : prefix, no_prefix ? "xmlns" : "xmlns:" + prefix, "CDATA", ns, false);
+               this.addAttributeAlways("http://www.w3.org/2000/xmlns/", prefix, "xmlns" + (prefix.length() == 0 ? "" : ":") + prefix, "CDATA", ns);
             }
          }
       }
@@ -1212,15 +1211,8 @@ public abstract class ToStream extends SerializerBase {
    public void setContentHandler(ContentHandler ch) {
    }
 
-   public boolean addAttributeAlways(String uri, String localName, String rawName, String type, String value, boolean xslAttribute) {
-      int index;
-      if (uri != null && localName != null && uri.length() != 0) {
-         index = super.m_attributes.getIndex(uri, localName);
-      } else {
-         index = super.m_attributes.getIndex(rawName);
-      }
-
-      boolean was_added;
+   public void addAttributeAlways(String uri, String localName, String rawName, String type, String value) {
+      int index = super.m_attributes.getIndex(rawName);
       if (index >= 0) {
          String old_value = null;
          if (super.m_tracer != null) {
@@ -1231,41 +1223,16 @@ public abstract class ToStream extends SerializerBase {
          }
 
          super.m_attributes.setValue(index, value);
-         was_added = false;
          if (old_value != null) {
             this.firePseudoAttributes();
          }
       } else {
-         if (xslAttribute) {
-            int colonIndex = rawName.indexOf(58);
-            if (colonIndex > 0) {
-               String prefix = rawName.substring(0, colonIndex);
-               NamespaceMappings.MappingRecord existing_mapping = super.m_prefixMap.getMappingFromPrefix(prefix);
-               if (existing_mapping != null && existing_mapping.m_declarationDepth == super.m_elemContext.m_currentElemDepth && !existing_mapping.m_uri.equals(uri)) {
-                  prefix = super.m_prefixMap.lookupPrefix(uri);
-                  if (prefix == null) {
-                     prefix = super.m_prefixMap.generateNextPrefix();
-                  }
-
-                  rawName = prefix + ':' + localName;
-               }
-            }
-
-            try {
-               this.ensureAttributesNamespaceIsDeclared(uri, localName, rawName);
-            } catch (SAXException var12) {
-               var12.printStackTrace();
-            }
-         }
-
          super.m_attributes.addAttribute(uri, localName, rawName, type, value);
-         was_added = true;
          if (super.m_tracer != null) {
             this.firePseudoAttributes();
          }
       }
 
-      return was_added;
    }
 
    protected void firePseudoAttributes() {
@@ -1308,7 +1275,9 @@ public abstract class ToStream extends SerializerBase {
    }
 
    private void resetToStream() {
+      this.m_canConvertMeth = null;
       this.m_cdataStartCalled = false;
+      this.m_charToByteConverter = null;
       this.m_disableOutputEscapingStates.clear();
       this.m_escaping = true;
       this.m_inDoctype = false;
@@ -1316,170 +1285,13 @@ public abstract class ToStream extends SerializerBase {
       this.m_ispreserve = false;
       this.m_isprevtext = false;
       this.m_isUTF8 = false;
+      this.m_maxCharacter = Encodings.getLastPrintable();
       this.m_preserves.clear();
       this.m_shouldFlush = true;
       this.m_spaceBeforeClose = false;
       this.m_startNewLine = false;
+      this.m_triedToGetConverter = false;
       this.m_lineSepUse = true;
-      this.m_expandDTDEntities = true;
-   }
-
-   public void setEncoding(String encoding) {
-      String old = this.getEncoding();
-      super.setEncoding(encoding);
-      if (old == null || !old.equals(encoding)) {
-         this.m_encodingInfo = Encodings.getEncodingInfo(encoding);
-         if (encoding != null && this.m_encodingInfo.name == null) {
-            String msg = Utils.messages.createMessage("ER_ENCODING_NOT_SUPPORTED", new Object[]{encoding});
-
-            try {
-               Transformer tran = super.getTransformer();
-               if (tran != null) {
-                  ErrorListener errHandler = tran.getErrorListener();
-                  if (null != errHandler && super.m_sourceLocator != null) {
-                     errHandler.warning(new TransformerException(msg, super.m_sourceLocator));
-                  } else {
-                     System.out.println(msg);
-                  }
-               } else {
-                  System.out.println(msg);
-               }
-            } catch (Exception var6) {
-            }
-         }
-      }
-
-   }
-
-   public void notationDecl(String name, String pubID, String sysID) throws SAXException {
-      try {
-         this.DTDprolog();
-         super.m_writer.write("<!NOTATION ");
-         super.m_writer.write(name);
-         if (pubID != null) {
-            super.m_writer.write(" PUBLIC \"");
-            super.m_writer.write(pubID);
-         } else {
-            super.m_writer.write(" SYSTEM \"");
-            super.m_writer.write(sysID);
-         }
-
-         super.m_writer.write("\" >");
-         super.m_writer.write(this.m_lineSep, 0, this.m_lineSepLen);
-      } catch (IOException var5) {
-         var5.printStackTrace();
-      }
-
-   }
-
-   public void unparsedEntityDecl(String name, String pubID, String sysID, String notationName) throws SAXException {
-      try {
-         this.DTDprolog();
-         super.m_writer.write("<!ENTITY ");
-         super.m_writer.write(name);
-         if (pubID != null) {
-            super.m_writer.write(" PUBLIC \"");
-            super.m_writer.write(pubID);
-         } else {
-            super.m_writer.write(" SYSTEM \"");
-            super.m_writer.write(sysID);
-         }
-
-         super.m_writer.write("\" NDATA ");
-         super.m_writer.write(notationName);
-         super.m_writer.write(" >");
-         super.m_writer.write(this.m_lineSep, 0, this.m_lineSepLen);
-      } catch (IOException var6) {
-         var6.printStackTrace();
-      }
-
-   }
-
-   private void DTDprolog() throws SAXException, IOException {
-      Writer writer = super.m_writer;
-      if (super.m_needToOutputDocTypeDecl) {
-         this.outputDocTypeDecl(super.m_elemContext.m_elementName, false);
-         super.m_needToOutputDocTypeDecl = false;
-      }
-
-      if (this.m_inDoctype) {
-         writer.write(" [");
-         writer.write(this.m_lineSep, 0, this.m_lineSepLen);
-         this.m_inDoctype = false;
-      }
-
-   }
-
-   public void setDTDEntityExpansion(boolean expand) {
-      this.m_expandDTDEntities = expand;
-   }
-
-   static final class BoolStack {
-      private boolean[] m_values;
-      private int m_allocatedSize;
-      private int m_index;
-
-      public BoolStack() {
-         this(32);
-      }
-
-      public BoolStack(int size) {
-         this.m_allocatedSize = size;
-         this.m_values = new boolean[size];
-         this.m_index = -1;
-      }
-
-      public final int size() {
-         return this.m_index + 1;
-      }
-
-      public final void clear() {
-         this.m_index = -1;
-      }
-
-      public final boolean push(boolean val) {
-         if (this.m_index == this.m_allocatedSize - 1) {
-            this.grow();
-         }
-
-         return this.m_values[++this.m_index] = val;
-      }
-
-      public final boolean pop() {
-         return this.m_values[this.m_index--];
-      }
-
-      public final boolean popAndTop() {
-         --this.m_index;
-         return this.m_index >= 0 ? this.m_values[this.m_index] : false;
-      }
-
-      public final void setTop(boolean b) {
-         this.m_values[this.m_index] = b;
-      }
-
-      public final boolean peek() {
-         return this.m_values[this.m_index];
-      }
-
-      public final boolean peekOrFalse() {
-         return this.m_index > -1 ? this.m_values[this.m_index] : false;
-      }
-
-      public final boolean peekOrTrue() {
-         return this.m_index > -1 ? this.m_values[this.m_index] : true;
-      }
-
-      public boolean isEmpty() {
-         return this.m_index == -1;
-      }
-
-      private void grow() {
-         this.m_allocatedSize *= 2;
-         boolean[] newVector = new boolean[this.m_allocatedSize];
-         System.arraycopy(this.m_values, 0, newVector, 0, this.m_index + 1);
-         this.m_values = newVector;
-      }
    }
 
    private class WritertoStringBuffer extends Writer {

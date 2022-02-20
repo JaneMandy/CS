@@ -31,6 +31,7 @@ public final class Transform {
    private boolean _uri;
    private boolean _debug;
    private int _iterations;
+   private static boolean _allowExit = true;
 
    public Transform(String className, String fileName, boolean uri, boolean debug, int iterations) {
       this._fileName = fileName;
@@ -115,12 +116,18 @@ public final class Transform {
          }
 
          System.err.println(new ErrorMsg("RUNTIME_ERROR_KEY") + var16.getMessage());
+         if (_allowExit) {
+            System.exit(-1);
+         }
       } catch (RuntimeException var17) {
          if (this._debug) {
             var17.printStackTrace();
          }
 
          System.err.println(new ErrorMsg("RUNTIME_ERROR_KEY") + var17.getMessage());
+         if (_allowExit) {
+            System.exit(-1);
+         }
       } catch (FileNotFoundException var18) {
          if (this._debug) {
             var18.printStackTrace();
@@ -128,6 +135,9 @@ public final class Transform {
 
          ErrorMsg err = new ErrorMsg("FILE_NOT_FOUND_ERR", this._fileName);
          System.err.println(new ErrorMsg("RUNTIME_ERROR_KEY") + err.toString());
+         if (_allowExit) {
+            System.exit(-1);
+         }
       } catch (MalformedURLException var19) {
          if (this._debug) {
             var19.printStackTrace();
@@ -135,6 +145,9 @@ public final class Transform {
 
          ErrorMsg err = new ErrorMsg("INVALID_URI_ERR", this._fileName);
          System.err.println(new ErrorMsg("RUNTIME_ERROR_KEY") + err.toString());
+         if (_allowExit) {
+            System.exit(-1);
+         }
       } catch (ClassNotFoundException var20) {
          if (this._debug) {
             var20.printStackTrace();
@@ -142,6 +155,9 @@ public final class Transform {
 
          ErrorMsg err = new ErrorMsg("CLASS_NOT_FOUND_ERR", this._className);
          System.err.println(new ErrorMsg("RUNTIME_ERROR_KEY") + err.toString());
+         if (_allowExit) {
+            System.exit(-1);
+         }
       } catch (UnknownHostException var21) {
          if (this._debug) {
             var21.printStackTrace();
@@ -149,6 +165,9 @@ public final class Transform {
 
          ErrorMsg err = new ErrorMsg("INVALID_URI_ERR", this._fileName);
          System.err.println(new ErrorMsg("RUNTIME_ERROR_KEY") + err.toString());
+         if (_allowExit) {
+            System.exit(-1);
+         }
       } catch (SAXException var22) {
          Exception ex = var22.getException();
          if (this._debug) {
@@ -165,18 +184,29 @@ public final class Transform {
          } else {
             System.err.println(var22.getMessage());
          }
+
+         if (_allowExit) {
+            System.exit(-1);
+         }
       } catch (Exception var23) {
          if (this._debug) {
             var23.printStackTrace();
          }
 
          System.err.println(new ErrorMsg("RUNTIME_ERROR_KEY") + var23.getMessage());
+         if (_allowExit) {
+            System.exit(-1);
+         }
       }
 
    }
 
    public static void printUsage() {
       System.err.println(new ErrorMsg("TRANSFORM_USAGE_STR"));
+      if (_allowExit) {
+         System.exit(-1);
+      }
+
    }
 
    public static void main(String[] args) {
@@ -194,6 +224,8 @@ public final class Transform {
                   uri = true;
                } else if (args[i].equals("-x")) {
                   debug = true;
+               } else if (args[i].equals("-s")) {
+                  _allowExit = false;
                } else if (args[i].equals("-j")) {
                   isJarFileSpecified = true;
                   ++i;
@@ -231,6 +263,9 @@ public final class Transform {
             if (i == args.length) {
                handler.setParameters(params);
                handler.doTransform();
+               if (_allowExit) {
+                  System.exit(0);
+               }
             }
          } else {
             printUsage();

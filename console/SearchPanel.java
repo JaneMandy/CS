@@ -45,7 +45,6 @@ public class SearchPanel extends JPanel implements ActionListener {
          if (this.search.getText().trim().length() > 0) {
             this.status.setText("Phrase not found");
          }
-
       } else {
          try {
             if (this.index < 0) {
@@ -59,8 +58,8 @@ public class SearchPanel extends JPanel implements ActionListener {
             this.component.scrollRectToVisible(var4);
          } catch (BadLocationException var5) {
          }
-
       }
+
    }
 
    private void A() {
@@ -71,7 +70,7 @@ public class SearchPanel extends JPanel implements ActionListener {
 
          try {
             String var3 = this.component.getText().toLowerCase();
-            if ((System.getProperty("os.name") + "").indexOf("Windows") != -1) {
+            if (System.getProperty("os.name").makeConcatWithConstants<invokedynamic>(System.getProperty("os.name")).indexOf("Windows") != -1) {
                var3 = var3.replaceAll("\r\n", "\n");
             }
 
@@ -82,8 +81,8 @@ public class SearchPanel extends JPanel implements ActionListener {
             }
          } catch (Exception var5) {
          }
-
       }
+
    }
 
    public void requestFocus() {

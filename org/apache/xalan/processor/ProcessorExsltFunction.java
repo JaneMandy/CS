@@ -28,8 +28,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 public class ProcessorExsltFunction extends ProcessorTemplateElem {
-   static final long serialVersionUID = 2411427965578315332L;
-
    public void startElement(StylesheetHandler handler, String uri, String localName, String rawName, Attributes attributes) throws SAXException {
       String msg = "";
       if (!(handler.getElemTemplateElement() instanceof Stylesheet)) {

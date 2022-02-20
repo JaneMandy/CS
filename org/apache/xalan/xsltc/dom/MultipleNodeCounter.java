@@ -20,16 +20,8 @@ public abstract class MultipleNodeCounter extends NodeCounter {
    }
 
    public String getCounter() {
-      if (super._value != -2.147483648E9D) {
-         if (super._value == 0.0D) {
-            return "0";
-         } else if (Double.isNaN(super._value)) {
-            return "NaN";
-         } else if (super._value < 0.0D && Double.isInfinite(super._value)) {
-            return "-Infinity";
-         } else {
-            return Double.isInfinite(super._value) ? "Infinity" : this.formatNumbers((int)super._value);
-         }
+      if (super._value != Integer.MIN_VALUE) {
+         return this.formatNumbers(super._value);
       } else {
          IntegerArray ancestors = new IntegerArray();
          int next = super._node;

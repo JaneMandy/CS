@@ -39,13 +39,14 @@ public class PayloadGeneratorDialog implements DialogListener, SafeDialogCallbac
          } else {
             DialogUtils.showError("No x86 stager for listener " + var4);
          }
-
       } else {
          Map var5 = DialogUtils.toMap("ASPX: aspx, C: c, C#: cs, HTML Application: hta, Java: java, Perl: pl, PowerShell: ps1, PowerShell Command: txt, Python: py, Raw: bin, Ruby: rb, COM Scriptlet: sct, Veil: txt, VBA: vba");
          String var6 = DialogUtils.string(var2, "format");
-         String var7 = "payload." + var5.get(var6);
+         Object var10000 = var5.get(var6);
+         String var7 = "payload." + var10000;
          SafeDialogs.saveFile((JFrame)null, var7, this);
       }
+
    }
 
    public void dialogResult(String var1) {

@@ -21,13 +21,14 @@ public class PEClone {
    }
 
    public void set(String var1, long var2) {
-      this.set(var1, var2 + "");
+      this.set(var1, var2.makeConcatWithConstants<invokedynamic>(var2));
    }
 
    public void set(String var1, byte[] var2) {
       if (var2.length != 0) {
          this.set(var1, CommonUtils.toAggressorScriptHexString(var2));
       }
+
    }
 
    public void set(String var1, String var2) {
@@ -40,7 +41,8 @@ public class PEClone {
    public void _start(String var1) throws Exception {
       File var2 = new File(var1);
       PEParser var3 = PEParser.load((InputStream)(new FileInputStream(var2)));
-      this.out("# ./peclone " + (new File(var1)).getName());
+      File var10001 = new File(var1);
+      this.out("# ./peclone " + var10001.getName());
       this.out("stage {");
       this.set("checksum      ", (long)var3.get("CheckSum"));
       this.set("compile_time  ", CommonUtils.formatDateAny("dd MMM yyyy HH:mm:ss", var3.getDate("TimeDateStamp").getTime()));

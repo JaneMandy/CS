@@ -46,6 +46,7 @@ public class FilterPanel extends JPanel implements ActionListener {
          this.negate.setSelected(false);
          this.status.setText(this.action.toString() + " applied.");
       }
+
    }
 
    public void requestFocus() {

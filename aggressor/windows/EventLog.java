@@ -80,7 +80,9 @@ public class EventLog extends AObject implements ActionListener, ConsolePopup, C
          this.conn.call("aggressor.ping", CommonUtils.args(new Long(System.currentTimeMillis())), new Callback() {
             public void result(String var1, Object var2) {
                Long var3 = (Long)var2;
-               EventLog.this.lag = (int)((double)(System.currentTimeMillis() - var3) / 1000.0D) + "";
+               EventLog var10000 = EventLog.this;
+               double var10001 = (double)(System.currentTimeMillis() - var3);
+               var10000.lag = ((int)(var10001 / 1000.0D)).makeConcatWithConstants<invokedynamic>((int)(var10001 / 1000.0D));
             }
          });
       }
@@ -135,7 +137,9 @@ public class EventLog extends AObject implements ActionListener, ConsolePopup, C
          Collections.sort(var6);
          Stack var7 = new Stack();
          var7.push(SleepUtils.getArrayWrapper(var6));
-         this.console.append(this.engine.format("EVENT_USERS", var7) + "\n");
+         Console var10000 = this.console;
+         String var10001 = this.engine.format("EVENT_USERS", var7);
+         var10000.append(var10001 + "\n");
       }
 
    }
@@ -155,7 +159,7 @@ public class EventLog extends AObject implements ActionListener, ConsolePopup, C
 
          String var5;
          for(Iterator var4 = var2.iterator(); var4.hasNext(); var3.add(var5)) {
-            var5 = var4.next() + "";
+            var5 = ((Class)var4.next()).makeConcatWithConstants<invokedynamic>(var4.next());
             if (var1.indexOf(" ") > -1) {
                var3.add("/msg " + var5);
             }

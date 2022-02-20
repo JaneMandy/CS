@@ -52,7 +52,12 @@ public abstract class ToSAXHandler extends SerializerBase {
    }
 
    public void comment(String comment) throws SAXException {
-      this.flushPending();
+      if (super.m_elemContext.m_startTagOpen) {
+         this.closeStartTag();
+      } else if (super.m_cdataTagOpen) {
+         this.closeCDATA();
+      }
+
       if (this.m_lexHandler != null) {
          int len = comment.length();
          if (len > super.m_charsBuff.length) {

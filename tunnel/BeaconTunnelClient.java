@@ -52,6 +52,7 @@ public class BeaconTunnelClient {
    }
 
    public String toString() {
-      return "Tunnel client for " + this.client.getNick() + ", bid: " + this.bid + ", chid: " + this.chid;
+      String var10000 = this.client.getNick();
+      return "Tunnel client for " + var10000 + ", bid: " + this.bid + ", chid: " + this.chid;
    }
 }

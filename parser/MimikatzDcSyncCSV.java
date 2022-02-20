@@ -39,5 +39,6 @@ public class MimikatzDcSyncCSV extends Parser {
 
          this.resources.call("credentials.push");
       }
+
    }
 }

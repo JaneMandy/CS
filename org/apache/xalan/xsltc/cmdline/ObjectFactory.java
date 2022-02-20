@@ -69,7 +69,7 @@ class ObjectFactory {
             debugPrintln("found system property, value=" + factoryClassName);
             return factoryClassName;
          }
-      } catch (SecurityException var46) {
+      } catch (SecurityException var13) {
       }
 
       factoryClassName = null;
@@ -82,15 +82,14 @@ class ObjectFactory {
             propertiesFilename = javah + File.separator + "lib" + File.separator + "xalan.properties";
             propertiesFile = new File(propertiesFilename);
             propertiesFileExists = ss.getFileExists(propertiesFile);
-         } catch (SecurityException var45) {
+         } catch (SecurityException var12) {
             fLastModified = -1L;
             fXalanProperties = null;
          }
 
-         Class var53 = class$org$apache$xalan$xsltc$cmdline$ObjectFactory == null ? (class$org$apache$xalan$xsltc$cmdline$ObjectFactory = class$("org.apache.xalan.xsltc.cmdline.ObjectFactory")) : class$org$apache$xalan$xsltc$cmdline$ObjectFactory;
-         synchronized(var53) {
+         Class var18 = class$org$apache$xalan$xsltc$cmdline$ObjectFactory == null ? (class$org$apache$xalan$xsltc$cmdline$ObjectFactory = class$("org.apache.xalan.xsltc.cmdline.ObjectFactory")) : class$org$apache$xalan$xsltc$cmdline$ObjectFactory;
+         synchronized(var18) {
             boolean loadProperties = false;
-            FileInputStream fis = null;
 
             try {
                if (fLastModified >= 0L) {
@@ -107,20 +106,13 @@ class ObjectFactory {
 
                if (loadProperties) {
                   fXalanProperties = new Properties();
-                  fis = ss.getFileInputStream(propertiesFile);
+                  FileInputStream fis = ss.getFileInputStream(propertiesFile);
                   fXalanProperties.load(fis);
+                  fis.close();
                }
-            } catch (Exception var48) {
+            } catch (Exception var14) {
                fXalanProperties = null;
                fLastModified = -1L;
-            } finally {
-               if (fis != null) {
-                  try {
-                     fis.close();
-                  } catch (IOException var43) {
-                  }
-               }
-
             }
          }
 
@@ -128,22 +120,13 @@ class ObjectFactory {
             factoryClassName = fXalanProperties.getProperty(factoryId);
          }
       } else {
-         FileInputStream fis = null;
-
          try {
-            fis = ss.getFileInputStream(new File(propertiesFilename));
+            FileInputStream fis = ss.getFileInputStream(new File(propertiesFilename));
             Properties props = new Properties();
             props.load(fis);
+            fis.close();
             factoryClassName = props.getProperty(factoryId);
-         } catch (Exception var44) {
-         } finally {
-            if (fis != null) {
-               try {
-                  fis.close();
-               } catch (IOException var42) {
-               }
-            }
-
+         } catch (Exception var11) {
          }
       }
 
@@ -199,13 +182,7 @@ class ObjectFactory {
 
       try {
          if (security != null) {
-            int lastDot = className.lastIndexOf(".");
-            String packageName = className;
-            if (lastDot != -1) {
-               packageName = className.substring(0, lastDot);
-            }
-
-            security.checkPackageAccess(packageName);
+            security.checkPackageAccess(className);
          }
       } catch (SecurityException var7) {
          throw var7;
@@ -260,28 +237,17 @@ class ObjectFactory {
          BufferedReader rd;
          try {
             rd = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-         } catch (UnsupportedEncodingException var19) {
+         } catch (UnsupportedEncodingException var9) {
             rd = new BufferedReader(new InputStreamReader(is));
          }
 
          String factoryClassName = null;
 
-         label123: {
-            Object var8;
-            try {
-               factoryClassName = rd.readLine();
-               break label123;
-            } catch (IOException var20) {
-               var8 = null;
-            } finally {
-               try {
-                  rd.close();
-               } catch (IOException var18) {
-               }
-
-            }
-
-            return (String)var8;
+         try {
+            factoryClassName = rd.readLine();
+            rd.close();
+         } catch (IOException var8) {
+            return null;
          }
 
          if (factoryClassName != null && !"".equals(factoryClassName)) {
@@ -303,7 +269,6 @@ class ObjectFactory {
    }
 
    static class ConfigurationError extends Error {
-      static final long serialVersionUID = -6072257854297546607L;
       private Exception exception;
 
       ConfigurationError(String msg, Exception x) {

@@ -17,7 +17,8 @@ public class ReportUtils {
 
    public static String a(String var0, String var1) {
       StringBuffer var2 = new StringBuffer();
-      var2.append("<fo:basic-link color=\"" + accent() + "\" text-decoration=\"underline\" external-destination=\"" + var1 + "\">");
+      String var10001 = accent();
+      var2.append("<fo:basic-link color=\"" + var10001 + "\" text-decoration=\"underline\" external-destination=\"" + var1 + "\">");
       var2.append("<fo:inline>");
       var2.append(var0);
       var2.append("</fo:inline>");

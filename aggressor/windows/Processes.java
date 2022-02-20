@@ -125,6 +125,7 @@ public class Processes extends AObject implements Callback, TablePopup, TableMod
             }
          }
       }
+
    }
 
    public TreeCellRenderer getNewRenderer() {
@@ -223,8 +224,8 @@ public class Processes extends AObject implements Callback, TablePopup, TableMod
          if (var3 != null) {
             this.safeAdd(var3, var2, (DefaultMutableTreeNode)null);
          }
-
       }
+
    }
 
    public void tableChanged(TableModelEvent var1) {
@@ -339,7 +340,6 @@ public class Processes extends AObject implements Callback, TablePopup, TableMod
          return this.B + ": " + this.F;
       }
 
-      // $FF: synthetic method
       _A(Object var1) {
          this();
       }

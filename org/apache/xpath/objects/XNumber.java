@@ -7,7 +7,6 @@ import org.apache.xpath.XPathContext;
 import org.apache.xpath.XPathVisitor;
 
 public class XNumber extends XObject {
-   static final long serialVersionUID = -2720400709619020193L;
    double m_val;
 
    public XNumber(double d) {

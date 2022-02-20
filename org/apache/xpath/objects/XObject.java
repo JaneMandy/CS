@@ -21,7 +21,6 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 public class XObject extends Expression implements Serializable, Cloneable {
-   static final long serialVersionUID = -821887098985662951L;
    protected Object m_obj;
    public static final int CLASS_NULL = -1;
    public static final int CLASS_UNKNOWN = 0;

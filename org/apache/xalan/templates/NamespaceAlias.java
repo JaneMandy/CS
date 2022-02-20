@@ -1,7 +1,6 @@
 package org.apache.xalan.templates;
 
 public class NamespaceAlias extends ElemTemplateElement {
-   static final long serialVersionUID = 456173966637810718L;
    private String m_StylesheetPrefix;
    private String m_StylesheetNamespace;
    private String m_ResultPrefix;

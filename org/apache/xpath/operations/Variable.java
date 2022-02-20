@@ -20,7 +20,6 @@ import org.apache.xpath.objects.XObject;
 import org.apache.xpath.res.XPATHMessages;
 
 public class Variable extends Expression implements PathComponent {
-   static final long serialVersionUID = -4334975375609297049L;
    private boolean m_fixUpWasCalled = false;
    protected QName m_qname;
    protected int m_index;
@@ -80,32 +79,43 @@ public class Variable extends Expression implements PathComponent {
 
    public XObject execute(XPathContext xctxt, boolean destructiveOK) throws TransformerException {
       PrefixResolver xprefixResolver = xctxt.getNamespaceContext();
-      Object result;
       if (this.m_fixUpWasCalled) {
+         Object result;
          if (this.m_isGlobal) {
             result = xctxt.getVarStack().getGlobalVariable(xctxt, this.m_index, destructiveOK);
          } else {
             result = xctxt.getVarStack().getLocalVariable(xctxt, this.m_index, destructiveOK);
          }
+
+         if (null == result) {
+            this.warn(xctxt, "WG_ILLEGAL_VARIABLE_REFERENCE", new Object[]{this.m_qname.getLocalPart()});
+            result = new XNodeSet(xctxt.getDTMManager());
+         }
+
+         return (XObject)result;
       } else {
-         result = xctxt.getVarStack().getVariableOrParam(xctxt, this.m_qname);
-      }
+         synchronized(this) {
+            ElemVariable vvar = this.getElemVariable();
+            if (null != vvar) {
+               this.m_index = vvar.getIndex();
+               this.m_isGlobal = vvar.getIsTopLevel();
+               this.m_fixUpWasCalled = true;
+               XObject var6 = this.execute(xctxt);
+               return var6;
+            }
+         }
 
-      if (null == result) {
-         this.warn(xctxt, "WG_ILLEGAL_VARIABLE_REFERENCE", new Object[]{this.m_qname.getLocalPart()});
-         result = new XNodeSet(xctxt.getDTMManager());
+         throw new TransformerException(XPATHMessages.createXPATHMessage("ER_VAR_NOT_RESOLVABLE", new Object[]{this.m_qname.toString()}));
       }
-
-      return (XObject)result;
    }
 
    public ElemVariable getElemVariable() {
-      ElemVariable vvar = null;
       ExpressionNode owner = this.getExpressionOwner();
       if (null != owner && owner instanceof ElemTemplateElement) {
          ElemTemplateElement prev = (ElemTemplateElement)owner;
+         ElemVariable vvar;
          if (!(prev instanceof Stylesheet)) {
-            while(prev != null && !(prev.getParentNode() instanceof Stylesheet)) {
+            while(!(prev.getParentNode() instanceof Stylesheet)) {
                ElemTemplateElement savedprev = prev;
 
                while(null != (prev = prev.getPreviousSiblingElem())) {
@@ -114,8 +124,6 @@ public class Variable extends Expression implements PathComponent {
                      if (vvar.getName().equals(this.m_qname)) {
                         return vvar;
                      }
-
-                     vvar = null;
                   }
                }
 
@@ -123,12 +131,13 @@ public class Variable extends Expression implements PathComponent {
             }
          }
 
-         if (prev != null) {
-            vvar = prev.getStylesheetRoot().getVariableOrParamComposed(this.m_qname);
+         vvar = prev.getStylesheetRoot().getVariableOrParamComposed(this.m_qname);
+         if (null != vvar) {
+            return vvar;
          }
       }
 
-      return vvar;
+      return null;
    }
 
    public boolean isStableNumber() {

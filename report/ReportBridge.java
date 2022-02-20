@@ -80,7 +80,7 @@ public class ReportBridge implements Function, Loadable, Environment {
       Document var4 = new Document(var2, 0);
       SleepClosure var5 = (SleepClosure)this.reports.get(var1);
       var5.getOwner().getMetadata().put("document", var4);
-      SleepUtils.runCode((SleepClosure)var5, var1, (ScriptInstance)null, var3);
+      SleepUtils.runCode(var5, var1, (ScriptInstance)null, var3);
       var5.getOwner().getMetadata().put("document", (Object)null);
       var5.getOwner().getMetadata().put("document_stack", (Object)null);
       return var4;
@@ -117,7 +117,7 @@ public class ReportBridge implements Function, Loadable, Environment {
 
    protected void eval(Content var1, SleepClosure var2) {
       this.getContentStack(var2.getOwner()).push(var1);
-      SleepUtils.runCode((SleepClosure)var2, "", (ScriptInstance)null, new Stack());
+      SleepUtils.runCode(var2, "", (ScriptInstance)null, new Stack());
       this.getContentStack(var2.getOwner()).pop();
    }
 
@@ -216,141 +216,143 @@ public class ReportBridge implements Function, Loadable, Environment {
                   var4 = BridgeUtilities.getString(var3, "");
                   var5 = BridgeUtilities.getString(var3, "");
                   this.getContent(var2).img(var4, var5);
-               } else if ("&kvtable".equals(var1)) {
-                  Scalar var19 = (Scalar)var3.pop();
-                  LinkedHashMap var17 = new LinkedHashMap();
-                  Iterator var14 = var19.getHash().getData().entrySet().iterator();
-
-                  while(var14.hasNext()) {
-                     Entry var7 = (Entry)var14.next();
-                     var17.put(var7.getKey().toString(), var7.getValue() != null ? var7.getValue().toString() : "");
-                  }
-
-                  this.getContent(var2).kvtable(var17);
-               } else if ("&landscape".equals(var1)) {
-                  this.getCurrentDocument(var2).setOrientation(1);
                } else {
-                  SleepClosure var21;
-                  if ("&li".equals(var1)) {
-                     var21 = BridgeUtilities.getFunction(var3, var2);
-                     this.eval(this.getContent(var2).li(), var21);
-                  } else if ("&nobreak".equals(var1)) {
-                     var21 = BridgeUtilities.getFunction(var3, var2);
-                     this.eval(this.getContent(var2).nobreak(), var21);
-                  } else if ("&output".equals(var1)) {
-                     var21 = BridgeUtilities.getFunction(var3, var2);
-                     this.eval(this.getContent(var2).output("800"), var21);
-                  } else if ("&block".equals(var1)) {
-                     var21 = BridgeUtilities.getFunction(var3, var2);
-                     var5 = BridgeUtilities.getString(var3, "left");
-                     this.eval(this.getContent(var2).block(var5), var21);
-                  } else if ("&p".equals(var1)) {
-                     var4 = BridgeUtilities.getString(var3, "");
-                     var5 = BridgeUtilities.getString(var3, "left");
-                     this.getContent(var2).p(var4, var5);
+                  Iterator var16;
+                  if ("&kvtable".equals(var1)) {
+                     Scalar var19 = (Scalar)var3.pop();
+                     LinkedHashMap var17 = new LinkedHashMap();
+                     var16 = var19.getHash().getData().entrySet().iterator();
+
+                     while(var16.hasNext()) {
+                        Entry var7 = (Entry)var16.next();
+                        var17.put(var7.getKey().toString(), var7.getValue() != null ? var7.getValue().toString() : "");
+                     }
+
+                     this.getContent(var2).kvtable(var17);
+                  } else if ("&landscape".equals(var1)) {
+                     this.getCurrentDocument(var2).setOrientation(1);
                   } else {
-                     Content var11;
-                     Iterator var16;
-                     List var22;
-                     if ("&p_formatted".equals(var1)) {
+                     SleepClosure var21;
+                     if ("&li".equals(var1)) {
+                        var21 = BridgeUtilities.getFunction(var3, var2);
+                        this.eval(this.getContent(var2).li(), var21);
+                     } else if ("&nobreak".equals(var1)) {
+                        var21 = BridgeUtilities.getFunction(var3, var2);
+                        this.eval(this.getContent(var2).nobreak(), var21);
+                     } else if ("&output".equals(var1)) {
+                        var21 = BridgeUtilities.getFunction(var3, var2);
+                        this.eval(this.getContent(var2).output("800"), var21);
+                     } else if ("&block".equals(var1)) {
+                        var21 = BridgeUtilities.getFunction(var3, var2);
+                        var5 = BridgeUtilities.getString(var3, "left");
+                        this.eval(this.getContent(var2).block(var5), var21);
+                     } else if ("&p".equals(var1)) {
                         var4 = BridgeUtilities.getString(var3, "");
-                        var4 = CommonUtils.strrep(var4, "\n\n*", "\n*");
-                        var22 = CommonUtils.toList((Object[])var4.split("\n"));
-                        LinkedList var15 = new LinkedList();
-                        var16 = var22.iterator();
+                        var5 = BridgeUtilities.getString(var3, "left");
+                        this.getContent(var2).p(var4, var5);
+                     } else {
+                        Content var11;
+                        List var22;
+                        if ("&p_formatted".equals(var1)) {
+                           var4 = BridgeUtilities.getString(var3, "");
+                           var4 = CommonUtils.strrep(var4, "\n\n*", "\n*");
+                           var22 = CommonUtils.toList((Object[])var4.split("\n"));
+                           LinkedList var15 = new LinkedList();
+                           var16 = var22.iterator();
 
-                        while(true) {
-                           while(var16.hasNext()) {
-                              String var8 = (String)var16.next();
-                              var8 = var8.trim();
-                              if (!var8.equals("") && var8.charAt(0) == '*' && var8.length() > 1) {
-                                 var15.add(var8.substring(1));
-                              } else {
-                                 if (var15.size() > 0) {
-                                    this.getContent(var2).list_formatted(var15);
-                                    var15 = new LinkedList();
-                                    if ("".equals(var8)) {
-                                       continue;
+                           while(true) {
+                              while(var16.hasNext()) {
+                                 String var8 = (String)var16.next();
+                                 var8 = var8.trim();
+                                 if (!var8.equals("") && var8.charAt(0) == '*' && var8.length() > 1) {
+                                    var15.add(var8.substring(1));
+                                 } else {
+                                    if (var15.size() > 0) {
+                                       this.getContent(var2).list_formatted(var15);
+                                       var15 = new LinkedList();
+                                       if ("".equals(var8)) {
+                                          continue;
+                                       }
                                     }
-                                 }
 
-                                 RegexParser var9 = new RegexParser(var8);
-                                 if (var9.matches("===(.*?)===")) {
-                                    this.getContent(var2).h4(var9.group(1), "left");
-                                    if (var16.hasNext()) {
-                                       var8 = (String)var16.next();
-                                       if (!"".equals(var8)) {
+                                    RegexParser var9 = new RegexParser(var8);
+                                    if (var9.matches("===(.*?)===")) {
+                                       this.getContent(var2).h4(var9.group(1), "left");
+                                       if (var16.hasNext()) {
+                                          var8 = (String)var16.next();
+                                          if (!"".equals(var8)) {
+                                             this.getContent(var2).p(var8, "left");
+                                          }
+                                       }
+                                    } else if ("".equals(var8)) {
+                                       this.getContent(var2).br();
+                                    } else {
+                                       RegexParser var10 = new RegexParser(var8.trim());
+                                       if (var10.matches("'''(.*?)'''(.*?)")) {
+                                          var11 = this.getContent(var2).block("left");
+                                          var11.b(var10.group(1));
+                                          var11.text(var10.group(2));
+                                       } else {
                                           this.getContent(var2).p(var8, "left");
                                        }
                                     }
-                                 } else if ("".equals(var8)) {
-                                    this.getContent(var2).br();
-                                 } else {
-                                    RegexParser var10 = new RegexParser(var8.trim());
-                                    if (var10.matches("'''(.*?)'''(.*?)")) {
-                                       var11 = this.getContent(var2).block("left");
-                                       var11.b(var10.group(1));
-                                       var11.text(var10.group(2));
+                                 }
+                              }
+
+                              if (var15.size() > 0) {
+                                 this.getContent(var2).list(var15);
+                              }
+                              break;
+                           }
+                        } else if ("&text".equals(var1)) {
+                           var4 = BridgeUtilities.getString(var3, "");
+                           this.getContent(var2).text(var4);
+                        } else {
+                           List var27;
+                           if (!"&table".equals(var1) && !"&layout".equals(var1)) {
+                              if ("&ts".equals(var1)) {
+                                 var4 = BridgeUtilities.getString(var3, "");
+                                 this.getContent(var2).ts();
+                              } else if ("&ul".equals(var1)) {
+                                 var21 = BridgeUtilities.getFunction(var3, var2);
+                                 this.eval(this.getContent(var2).ul(), var21);
+                              } else if ("&list_unordered".equals(var1)) {
+                                 var27 = SleepUtils.getListFromArray((Scalar)var3.pop());
+                                 this.getContent(var2).list(var27);
+                              } else if ("&link".equals(var1)) {
+                                 var4 = BridgeUtilities.getString(var3, "");
+                                 var5 = BridgeUtilities.getString(var3, "");
+                                 this.getContent(var2).link_bullet(var4, var5);
+                              }
+                           } else {
+                              var27 = SleepUtils.getListFromArray((Scalar)var3.pop());
+                              var22 = SleepUtils.getListFromArray((Scalar)var3.pop());
+                              List var20 = SleepUtils.getListFromArray((Scalar)var3.pop());
+                              var16 = var20.iterator();
+
+                              while(var16.hasNext()) {
+                                 Iterator var23 = ((Map)var16.next()).entrySet().iterator();
+
+                                 while(var23.hasNext()) {
+                                    Entry var24 = (Entry)var23.next();
+                                    if (var24.getValue() instanceof SleepClosure) {
+                                       SleepClosure var26 = (SleepClosure)var24.getValue();
+                                       var11 = this.getContent(var2).string();
+                                       this.eval(var11, var26);
+                                       StringBuffer var12 = new StringBuffer();
+                                       var11.publish(var12);
+                                       var24.setValue(var12.toString());
                                     } else {
-                                       this.getContent(var2).p(var8, "left");
+                                       var24.setValue(Content.fixText(var24.getValue() != null ? var24.getValue().toString() : ""));
                                     }
                                  }
                               }
-                           }
 
-                           if (var15.size() > 0) {
-                              this.getContent(var2).list(var15);
-                           }
-                           break;
-                        }
-                     } else if ("&text".equals(var1)) {
-                        var4 = BridgeUtilities.getString(var3, "");
-                        this.getContent(var2).text(var4);
-                     } else {
-                        List var27;
-                        if (!"&table".equals(var1) && !"&layout".equals(var1)) {
-                           if ("&ts".equals(var1)) {
-                              var4 = BridgeUtilities.getString(var3, "");
-                              this.getContent(var2).ts();
-                           } else if ("&ul".equals(var1)) {
-                              var21 = BridgeUtilities.getFunction(var3, var2);
-                              this.eval(this.getContent(var2).ul(), var21);
-                           } else if ("&list_unordered".equals(var1)) {
-                              var27 = SleepUtils.getListFromArray((Scalar)var3.pop());
-                              this.getContent(var2).list(var27);
-                           } else if ("&link".equals(var1)) {
-                              var4 = BridgeUtilities.getString(var3, "");
-                              var5 = BridgeUtilities.getString(var3, "");
-                              this.getContent(var2).link_bullet(var4, var5);
-                           }
-                        } else {
-                           var27 = SleepUtils.getListFromArray((Scalar)var3.pop());
-                           var22 = SleepUtils.getListFromArray((Scalar)var3.pop());
-                           List var20 = SleepUtils.getListFromArray((Scalar)var3.pop());
-                           var16 = var20.iterator();
-
-                           while(var16.hasNext()) {
-                              Iterator var23 = ((Map)var16.next()).entrySet().iterator();
-
-                              while(var23.hasNext()) {
-                                 Entry var24 = (Entry)var23.next();
-                                 if (var24.getValue() instanceof SleepClosure) {
-                                    SleepClosure var26 = (SleepClosure)var24.getValue();
-                                    var11 = this.getContent(var2).string();
-                                    this.eval(var11, var26);
-                                    StringBuffer var12 = new StringBuffer();
-                                    var11.publish(var12);
-                                    var24.setValue(var12.toString());
-                                 } else {
-                                    var24.setValue(Content.fixText(var24.getValue() != null ? var24.getValue().toString() : ""));
-                                 }
+                              if ("&table".equals(var1)) {
+                                 this.getContent(var2).table(var27, var22, var20);
+                              } else {
+                                 this.getContent(var2).layout(var27, var22, var20);
                               }
-                           }
-
-                           if ("&table".equals(var1)) {
-                              this.getContent(var2).table(var27, var22, var20);
-                           } else {
-                              this.getContent(var2).layout(var27, var22, var20);
                            }
                         }
                      }

@@ -15,9 +15,13 @@ public class DefaultConfiguration extends AbstractConfiguration implements Mutab
    private String m_value;
    private boolean m_readOnly;
 
-   public DefaultConfiguration(Configuration config) throws ConfigurationException {
+   public DefaultConfiguration(Configuration config, boolean deepCopy) throws ConfigurationException {
       this(config.getName(), config.getLocation(), config.getNamespace(), config instanceof AbstractConfiguration ? ((AbstractConfiguration)config).getPrefix() : "");
-      this.addAll(config);
+      this.addAll(config, deepCopy);
+   }
+
+   public DefaultConfiguration(Configuration config) throws ConfigurationException {
+      this(config, false);
    }
 
    public DefaultConfiguration(String name) {
@@ -153,6 +157,10 @@ public class DefaultConfiguration extends AbstractConfiguration implements Mutab
       this.setValue(String.valueOf(value));
    }
 
+   public void setValue(double value) {
+      this.setValue(String.valueOf(value));
+   }
+
    public void setAttribute(String name, String value) {
       this.checkWriteable();
       if (null != value) {
@@ -183,6 +191,10 @@ public class DefaultConfiguration extends AbstractConfiguration implements Mutab
       this.setAttribute(name, String.valueOf(value));
    }
 
+   public void setAttribute(String name, double value) {
+      this.setAttribute(name, String.valueOf(value));
+   }
+
    /** @deprecated */
    public String addAttribute(String name, String value) {
       this.checkWriteable();
@@ -202,6 +214,13 @@ public class DefaultConfiguration extends AbstractConfiguration implements Mutab
       this.m_children.add(configuration);
    }
 
+   public void addAll(Configuration other, boolean deepCopy) throws ConfigurationException {
+      this.checkWriteable();
+      this.setValue(other.getValue((String)null));
+      this.addAllAttributes(other);
+      this.addAllChildren(other, deepCopy);
+   }
+
    public void addAll(Configuration other) {
       this.checkWriteable();
       this.setValue(other.getValue((String)null));
@@ -217,6 +236,20 @@ public class DefaultConfiguration extends AbstractConfiguration implements Mutab
          String name = attributes[i];
          String value = other.getAttribute(name, (String)null);
          this.setAttribute(name, value);
+      }
+
+   }
+
+   public void addAllChildren(Configuration other, boolean deepCopy) throws ConfigurationException {
+      this.checkWriteable();
+      Configuration[] children = other.getChildren();
+
+      for(int i = 0; i < children.length; ++i) {
+         if (deepCopy) {
+            this.addChild(new DefaultConfiguration(children[i], true));
+         } else {
+            this.addChild(children[i]);
+         }
       }
 
    }
@@ -330,8 +363,35 @@ public class DefaultConfiguration extends AbstractConfiguration implements Mutab
    public boolean equals(Object other) {
       if (other == null) {
          return false;
+      } else if (!(other instanceof DefaultConfiguration)) {
+         return false;
       } else {
-         return !(other instanceof Configuration) ? false : ConfigurationUtil.equals(this, (Configuration)other);
+         DefaultConfiguration c = (DefaultConfiguration)other;
+         if (this.m_readOnly ^ c.m_readOnly) {
+            return false;
+         } else if (this.check(this.m_name, c.m_name)) {
+            return false;
+         } else if (this.check(this.m_location, c.m_location)) {
+            return false;
+         } else if (this.check(this.m_namespace, c.m_namespace)) {
+            return false;
+         } else if (this.check(this.m_prefix, c.m_prefix)) {
+            return false;
+         } else if (this.check(this.m_value, c.m_value)) {
+            return false;
+         } else if (this.check(this.m_attributes, c.m_attributes)) {
+            return false;
+         } else {
+            return !this.check(this.m_children, c.m_children);
+         }
+      }
+   }
+
+   private boolean check(Object one, Object two) {
+      if (one == null) {
+         return two != null;
+      } else {
+         return !one.equals(two);
       }
    }
 
@@ -366,8 +426,7 @@ public class DefaultConfiguration extends AbstractConfiguration implements Mutab
          hash ^= this.m_value.hashCode();
       }
 
-      hash >>>= 7;
-      hash ^= this.m_readOnly ? 1 : 3;
+      hash >>>= this.m_readOnly ? 7 : 13;
       return hash;
    }
 }

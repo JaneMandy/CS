@@ -144,7 +144,8 @@ public class MenuBridge implements Loadable, Function, Environment {
                int var14 = BridgeUtilities.getInt(var3, 2);
                DynamicMenu var7 = new DynamicMenu("");
                if (var4.indexOf(38) > -1) {
-                  var7.setText(var4.substring(0, var4.indexOf(38)) + var4.substring(var4.indexOf(38) + 1, var4.length()));
+                  String var10001 = var4.substring(0, var4.indexOf(38));
+                  var7.setText(var10001 + var4.substring(var4.indexOf(38) + 1, var4.length()));
                   var7.setMnemonic(var4.charAt(var4.indexOf(38) + 1));
                } else {
                   var7.setText(var4);

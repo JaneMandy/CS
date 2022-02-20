@@ -16,6 +16,7 @@ public abstract class Type implements Constants {
    public static final Type Reference = new ReferenceType();
    public static final Type Void = new VoidType();
    public static final Type Object;
+   public static final Type ObjectString;
    public static final Type Node;
    public static final Type Root;
    public static final Type Element;
@@ -32,7 +33,7 @@ public abstract class Type implements Constants {
       if (javaClassName == "java.lang.Object") {
          return Object;
       } else {
-         return (Type)(javaClassName == "java.lang.String" ? String : new ObjectType(javaClassName));
+         return (Type)(javaClassName == "java.lang.String" ? ObjectString : new ObjectType(javaClassName));
       }
    }
 
@@ -40,7 +41,7 @@ public abstract class Type implements Constants {
       if (clazz == (class$java$lang$Object == null ? (class$java$lang$Object = class$("java.lang.Object")) : class$java$lang$Object)) {
          return Object;
       } else {
-         return (Type)(clazz == (class$java$lang$String == null ? (class$java$lang$String = class$("java.lang.String")) : class$java$lang$String) ? String : new ObjectType(clazz));
+         return (Type)(clazz == (class$java$lang$String == null ? (class$java$lang$String = class$("java.lang.String")) : class$java$lang$String) ? ObjectString : new ObjectType(clazz));
       }
    }
 
@@ -185,6 +186,7 @@ public abstract class Type implements Constants {
 
    static {
       Object = new ObjectType(class$java$lang$Object == null ? (class$java$lang$Object = class$("java.lang.Object")) : class$java$lang$Object);
+      ObjectString = new ObjectType(class$java$lang$String == null ? (class$java$lang$String = class$("java.lang.String")) : class$java$lang$String);
       Node = new NodeType(-1);
       Root = new NodeType(9);
       Element = new NodeType(1);

@@ -3,8 +3,6 @@ package org.apache.xpath.objects;
 import org.apache.xpath.XPathContext;
 
 public class XNull extends XNodeSet {
-   static final long serialVersionUID = -6841683711458983005L;
-
    public int getType() {
       return -1;
    }

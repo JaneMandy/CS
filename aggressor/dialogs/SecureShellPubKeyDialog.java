@@ -58,8 +58,8 @@ public class SecureShellPubKeyDialog implements DialogListener {
             var5.input("ssh-key " + var11 + ":" + var8 + " " + var6 + " " + var7);
             var5.SecureShellPubKey(var6, var9, var11, CommonUtils.toNumber(var8, 22));
          }
-
       }
+
    }
 
    public void show() {

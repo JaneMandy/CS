@@ -7,7 +7,6 @@ import org.apache.xalan.transformer.TransformerImpl;
 import org.apache.xml.utils.QName;
 
 public class ElemUse extends ElemTemplateElement {
-   static final long serialVersionUID = 5830057200289299736L;
    private QName[] m_attributeSetsNames = null;
 
    public void setUseAttributeSets(Vector v) {

@@ -76,8 +76,8 @@ public class XMLReaderManager {
    }
 
    public synchronized void releaseXMLReader(XMLReader reader) {
-      if (this.m_readers.get() == reader && reader != null) {
-         this.m_inUse.remove(reader);
+      if (this.m_readers.get() == reader) {
+         this.m_inUse.put(reader, Boolean.FALSE);
       }
 
    }

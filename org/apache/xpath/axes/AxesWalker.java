@@ -12,7 +12,6 @@ import org.apache.xpath.compiler.Compiler;
 import org.apache.xpath.res.XPATHMessages;
 
 public class AxesWalker extends PredicatedNodeTest implements Cloneable, PathComponent, ExpressionOwner {
-   static final long serialVersionUID = -2966031951306601247L;
    private DTM m_dtm;
    transient int m_root = -1;
    private transient int m_currentNode = -1;

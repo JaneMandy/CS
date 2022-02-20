@@ -4,10 +4,9 @@ import javax.xml.transform.TransformerException;
 import org.apache.xml.utils.WrappedRuntimeException;
 
 public class XBoolean extends XObject {
-   static final long serialVersionUID = -2964933058866100881L;
-   public static final XBoolean S_TRUE = new XBooleanStatic(true);
-   public static final XBoolean S_FALSE = new XBooleanStatic(false);
-   private final boolean m_val;
+   public static XBoolean S_TRUE = new XBooleanStatic(true);
+   public static XBoolean S_FALSE = new XBooleanStatic(false);
+   boolean m_val;
 
    public XBoolean(boolean b) {
       this.m_val = b;

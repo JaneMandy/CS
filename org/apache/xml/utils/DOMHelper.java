@@ -30,28 +30,17 @@ public class DOMHelper {
    protected Vector m_candidateNoAncestorXMLNS = new Vector();
    protected Document m_DOMFactory = null;
 
-   public static Document createDocument(boolean isSecureProcessing) {
+   public static Document createDocument() {
       try {
          DocumentBuilderFactory dfactory = DocumentBuilderFactory.newInstance();
          dfactory.setNamespaceAware(true);
          dfactory.setValidating(true);
-         if (isSecureProcessing) {
-            try {
-               dfactory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
-            } catch (ParserConfigurationException var4) {
-            }
-         }
-
          DocumentBuilder docBuilder = dfactory.newDocumentBuilder();
          Document outNode = docBuilder.newDocument();
          return outNode;
-      } catch (ParserConfigurationException var5) {
+      } catch (ParserConfigurationException var3) {
          throw new RuntimeException(XMLMessages.createXMLMessage("ER_CREATEDOCUMENT_NOT_SUPPORTED", (Object[])null));
       }
-   }
-
-   public static Document createDocument() {
-      return createDocument(false);
    }
 
    public boolean shouldStripSourceNode(Node textNode) throws TransformerException {

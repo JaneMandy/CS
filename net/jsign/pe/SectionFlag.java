@@ -48,11 +48,11 @@ public enum SectionFlag {
 
    static List getFlags(int flags) {
       List result = new ArrayList();
-      SectionFlag[] arr$ = values();
-      int len$ = arr$.length;
+      SectionFlag[] var2 = values();
+      int var3 = var2.length;
 
-      for(int i$ = 0; i$ < len$; ++i$) {
-         SectionFlag flag = arr$[i$];
+      for(int var4 = 0; var4 < var3; ++var4) {
+         SectionFlag flag = var2[var4];
          if ((flag.mask & flags) != 0) {
             result.add(flag);
          }

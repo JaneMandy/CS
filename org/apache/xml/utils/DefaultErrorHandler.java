@@ -12,26 +12,17 @@ import org.xml.sax.SAXParseException;
 
 public class DefaultErrorHandler implements ErrorHandler, ErrorListener {
    PrintWriter m_pw;
-   boolean m_throwExceptionOnError;
 
    public DefaultErrorHandler(PrintWriter pw) {
-      this.m_throwExceptionOnError = true;
       this.m_pw = pw;
    }
 
    public DefaultErrorHandler(PrintStream pw) {
-      this.m_throwExceptionOnError = true;
       this.m_pw = new PrintWriter(pw, true);
    }
 
    public DefaultErrorHandler() {
-      this(true);
-   }
-
-   public DefaultErrorHandler(boolean throwExceptionOnError) {
-      this.m_throwExceptionOnError = true;
       this.m_pw = new PrintWriter(System.err, true);
-      this.m_throwExceptionOnError = throwExceptionOnError;
    }
 
    public void warning(SAXParseException exception) throws SAXException {
@@ -53,21 +44,11 @@ public class DefaultErrorHandler implements ErrorHandler, ErrorListener {
    }
 
    public void error(TransformerException exception) throws TransformerException {
-      if (this.m_throwExceptionOnError) {
-         throw exception;
-      } else {
-         printLocation((PrintWriter)this.m_pw, (Throwable)exception);
-         this.m_pw.println(exception.getMessage());
-      }
+      throw exception;
    }
 
    public void fatalError(TransformerException exception) throws TransformerException {
-      if (this.m_throwExceptionOnError) {
-         throw exception;
-      } else {
-         printLocation((PrintWriter)this.m_pw, (Throwable)exception);
-         this.m_pw.println(exception.getMessage());
-      }
+      throw exception;
    }
 
    public static void ensureLocationSet(TransformerException exception) {

@@ -34,7 +34,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
 
 public class DTMManagerDefault extends DTMManager {
    private static final boolean DUMPTREE = false;
@@ -42,7 +41,6 @@ public class DTMManagerDefault extends DTMManager {
    protected DTM[] m_dtms = new DTM[256];
    int[] m_dtm_offsets = new int[256];
    protected XMLReaderManager m_readerManager = null;
-   protected DefaultHandler m_defaultHandler = new DefaultHandler();
    private ExpandedNameTable m_expandedNameTable = new ExpandedNameTable();
 
    public synchronized void addDTM(DTM dtm, int id) {
@@ -109,7 +107,7 @@ public class DTMManagerDefault extends DTMManager {
                   if (null != urlOfSource) {
                      try {
                         urlOfSource = SystemIDResolver.getAbsoluteURI(urlOfSource);
-                     } catch (Exception var42) {
+                     } catch (Exception var36) {
                         System.err.println("Can not absolutize URL: " + urlOfSource);
                      }
 
@@ -131,13 +129,13 @@ public class DTMManagerDefault extends DTMManager {
                }
 
                Object coParser;
-               if (super.m_incremental && incremental) {
+               if (DTMManager.m_incremental && incremental) {
                   coParser = null;
                   if (haveXercesParser) {
                      try {
                         coParser = (IncrementalSAXSource)Class.forName("org.apache.xml.dtm.ref.IncrementalSAXSource_Xerces").newInstance();
-                     } catch (Exception var41) {
-                        var41.printStackTrace();
+                     } catch (Exception var35) {
+                        var35.printStackTrace();
                         coParser = null;
                      }
                   }
@@ -154,8 +152,8 @@ public class DTMManagerDefault extends DTMManager {
 
                   ((SAX2DTM)dtm).setIncrementalSAXSource((IncrementalSAXSource)coParser);
                   if (null == xmlSource) {
-                     Object var46 = dtm;
-                     return (DTM)var46;
+                     Object var40 = dtm;
+                     return (DTM)var40;
                   }
 
                   if (null == reader.getErrorHandler()) {
@@ -166,12 +164,12 @@ public class DTMManagerDefault extends DTMManager {
 
                   try {
                      ((IncrementalSAXSource)coParser).startParse(xmlSource);
-                  } catch (RuntimeException var39) {
+                  } catch (RuntimeException var33) {
                      ((SAX2DTM)dtm).clearCoRoutine();
-                     throw var39;
-                  } catch (Exception var40) {
+                     throw var33;
+                  } catch (Exception var34) {
                      ((SAX2DTM)dtm).clearCoRoutine();
-                     throw new WrappedRuntimeException(var40);
+                     throw new WrappedRuntimeException(var34);
                   }
                } else {
                   if (null == reader) {
@@ -187,35 +185,24 @@ public class DTMManagerDefault extends DTMManager {
 
                   try {
                      reader.setProperty("http://xml.org/sax/properties/lexical-handler", dtm);
-                  } catch (SAXNotRecognizedException var37) {
-                  } catch (SAXNotSupportedException var38) {
+                  } catch (SAXNotRecognizedException var31) {
+                  } catch (SAXNotSupportedException var32) {
                   }
 
                   try {
                      reader.parse(xmlSource);
-                  } catch (RuntimeException var35) {
+                  } catch (RuntimeException var29) {
                      ((SAX2DTM)dtm).clearCoRoutine();
-                     throw var35;
-                  } catch (Exception var36) {
+                     throw var29;
+                  } catch (Exception var30) {
                      ((SAX2DTM)dtm).clearCoRoutine();
-                     throw new WrappedRuntimeException(var36);
+                     throw new WrappedRuntimeException(var30);
                   }
                }
 
                coParser = dtm;
                return (DTM)coParser;
             } finally {
-               if (reader != null && (!super.m_incremental || !incremental)) {
-                  reader.setContentHandler(this.m_defaultHandler);
-                  reader.setDTDHandler(this.m_defaultHandler);
-                  reader.setErrorHandler(this.m_defaultHandler);
-
-                  try {
-                     reader.setProperty("http://xml.org/sax/properties/lexical-handler", (Object)null);
-                  } catch (Exception var34) {
-                  }
-               }
-
                this.releaseXMLReader(reader);
             }
          }

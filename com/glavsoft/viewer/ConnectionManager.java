@@ -40,7 +40,6 @@ public class ConnectionManager {
       Socket socket = null;
       ConnectionDialog connectionDialog = null;
       boolean wasError = false;
-      int port = false;
       boolean hasJsch = false;
       this.forceConnectionDialog = false;
       String host = connectionParams.hostName;

@@ -28,18 +28,19 @@ public class Initializer {
       boolean var6;
       try {
          var5 = A(var0, var1);
-         if (var5 != null) {
-            var6 = A(var5, var2, var3);
-            return var6;
+         if (var5 == null) {
+            var6 = !var4;
+            boolean var7 = var6;
+            return var7;
          }
 
-         var6 = !var4;
+         var6 = A(var5, var2, var3);
       } finally {
          try {
             if (var5 != null) {
                var5.close();
             }
-         } catch (Throwable var14) {
+         } catch (Throwable var15) {
          }
 
       }
@@ -55,7 +56,8 @@ public class Initializer {
          var4 = A(var0);
          if (var4 == null) {
             var5 = !var3;
-            return var5;
+            boolean var6 = var5;
+            return var6;
          }
 
          var5 = A(var4, var1, var2);
@@ -64,7 +66,7 @@ public class Initializer {
             if (var4 != null) {
                var4.close();
             }
-         } catch (Throwable var13) {
+         } catch (Throwable var14) {
          }
 
       }
@@ -94,11 +96,7 @@ public class Initializer {
    private static final boolean A(ZipFile var0, String var1, long[] var2) {
       try {
          ZipEntry var3 = var0.getEntry(var1);
-         if (var3 == null) {
-            return false;
-         } else {
-            return A(var3.getCrc(), var2);
-         }
+         return var3 == null ? false : A(var3.getCrc(), var2);
       } catch (Throwable var4) {
          return true;
       }

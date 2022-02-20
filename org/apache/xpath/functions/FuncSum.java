@@ -9,8 +9,6 @@ import org.apache.xpath.objects.XNumber;
 import org.apache.xpath.objects.XObject;
 
 public class FuncSum extends FunctionOneArg {
-   static final long serialVersionUID = -2719049259574677519L;
-
    public XObject execute(XPathContext xctxt) throws TransformerException {
       DTMIterator nodes = super.m_arg0.asIterator(xctxt, xctxt.getCurrentNode());
       double sum = 0.0D;

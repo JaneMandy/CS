@@ -42,7 +42,7 @@ public class SocketObject extends IOObject {
    }
 
    public static void release(int var0) {
-      String var1 = var0 + "";
+      String var1 = var0.makeConcatWithConstants<invokedynamic>(var0);
       ServerSocket var2 = null;
       if (servers != null && servers.containsKey(var1)) {
          var2 = (ServerSocket)servers.get(var1);
@@ -58,7 +58,7 @@ public class SocketObject extends IOObject {
    }
 
    private static ServerSocket getServerSocket(int var0, SocketObject.SocketHandler var1) throws Exception {
-      String var2 = var0 + "";
+      String var2 = var0.makeConcatWithConstants<invokedynamic>(var0);
       if (servers == null) {
          servers = Collections.synchronizedMap(new HashMap());
       }
@@ -88,6 +88,7 @@ public class SocketObject extends IOObject {
       } catch (Exception var5) {
          var2.flagError(var5);
       }
+
    }
 
    public void close() {

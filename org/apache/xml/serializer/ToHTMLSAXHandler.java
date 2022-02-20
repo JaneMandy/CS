@@ -11,8 +11,7 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 
-public final class ToHTMLSAXHandler extends ToSAXHandler {
-   private boolean m_dtdHandled = false;
+public class ToHTMLSAXHandler extends ToSAXHandler {
    protected boolean m_escapeSetting = false;
 
    public Properties getOutputFormat() {
@@ -84,11 +83,11 @@ public final class ToHTMLSAXHandler extends ToSAXHandler {
    public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
    }
 
-   public void processingInstruction(String target, String data) throws SAXException {
+   public void processingInstruction(String arg0, String arg1) throws SAXException {
       this.flushPending();
-      super.m_saxHandler.processingInstruction(target, data);
+      super.m_saxHandler.processingInstruction(arg0, arg1);
       if (super.m_tracer != null) {
-         super.fireEscapingEvent(target, data);
+         super.fireEscapingEvent(arg0, arg1);
       }
 
    }
@@ -108,10 +107,7 @@ public final class ToHTMLSAXHandler extends ToSAXHandler {
 
    public void comment(char[] ch, int start, int length) throws SAXException {
       this.flushPending();
-      if (super.m_lexHandler != null) {
-         super.m_lexHandler.comment(ch, start, length);
-      }
-
+      super.m_lexHandler.comment(ch, start, length);
       if (super.m_tracer != null) {
          super.fireCommentEvent(ch, start, length);
       }
@@ -169,14 +165,14 @@ public final class ToHTMLSAXHandler extends ToSAXHandler {
    public void startElement(String elementNamespaceURI, String elementLocalName, String elementName) throws SAXException {
       super.startElement(elementNamespaceURI, elementLocalName, elementName);
       this.flushPending();
-      if (!this.m_dtdHandled) {
+      if (super.m_lexHandler != null) {
          String doctypeSystem = this.getDoctypeSystem();
          String doctypePublic = this.getDoctypePublic();
-         if ((doctypeSystem != null || doctypePublic != null) && super.m_lexHandler != null) {
+         if (doctypeSystem != null || doctypePublic != null) {
             super.m_lexHandler.startDTD(elementName, doctypePublic, doctypeSystem);
          }
 
-         this.m_dtdHandled = true;
+         super.m_lexHandler = null;
       }
 
       super.m_elemContext = super.m_elemContext.push(elementNamespaceURI, elementLocalName, elementName);

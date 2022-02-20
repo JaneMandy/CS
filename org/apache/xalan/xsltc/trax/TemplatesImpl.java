@@ -18,7 +18,6 @@ import org.apache.xalan.xsltc.runtime.AbstractTranslet;
 import org.apache.xalan.xsltc.runtime.Hashtable;
 
 public final class TemplatesImpl implements Templates, Serializable {
-   static final long serialVersionUID = 673094361519270707L;
    private static String ABSTRACT_TRANSLET = "org.apache.xalan.xsltc.runtime.AbstractTranslet";
    private String _name = null;
    private byte[][] _bytecodes = null;
@@ -187,10 +186,6 @@ public final class TemplatesImpl implements Templates, Serializable {
       TransformerImpl transformer = new TransformerImpl(this.getTransletInstance(), this._outputProperties, this._indentNumber, this._tfactory);
       if (this._uriResolver != null) {
          transformer.setURIResolver(this._uriResolver);
-      }
-
-      if (this._tfactory.getFeature("http://javax.xml.XMLConstants/feature/secure-processing")) {
-         transformer.setSecureProcessing(true);
       }
 
       return transformer;

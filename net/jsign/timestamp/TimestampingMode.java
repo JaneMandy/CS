@@ -5,11 +5,11 @@ public enum TimestampingMode {
    RFC3161;
 
    public static TimestampingMode of(String s) {
-      TimestampingMode[] arr$ = values();
-      int len$ = arr$.length;
+      TimestampingMode[] var1 = values();
+      int var2 = var1.length;
 
-      for(int i$ = 0; i$ < len$; ++i$) {
-         TimestampingMode mode = arr$[i$];
+      for(int var3 = 0; var3 < var2; ++var3) {
+         TimestampingMode mode = var1[var3];
          if (mode.name().equalsIgnoreCase(s)) {
             return mode;
          }

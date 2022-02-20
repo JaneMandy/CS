@@ -95,6 +95,33 @@ public class TeamQueue {
 
    }
 
+   private class _B implements Runnable {
+      public _B() {
+      }
+
+      public void run() {
+         while(true) {
+            try {
+               if (TeamQueue.this.socket.isConnected()) {
+                  Reply var1 = (Reply)TeamQueue.this.socket.readObject();
+                  if (var1 != null) {
+                     TeamQueue.this.processRead(var1);
+                     Thread.yield();
+                     continue;
+                  }
+
+                  TeamQueue.this.close();
+               }
+            } catch (Exception var2) {
+               MudgeSanity.logException("team reader", var2, false);
+               TeamQueue.this.close();
+            }
+
+            return;
+         }
+      }
+   }
+
    private class _A implements Runnable {
       protected LinkedList B = new LinkedList();
 
@@ -132,33 +159,6 @@ public class TeamQueue {
             }
          }
 
-      }
-   }
-
-   private class _B implements Runnable {
-      public _B() {
-      }
-
-      public void run() {
-         while(true) {
-            try {
-               if (TeamQueue.this.socket.isConnected()) {
-                  Reply var1 = (Reply)TeamQueue.this.socket.readObject();
-                  if (var1 != null) {
-                     TeamQueue.this.processRead(var1);
-                     Thread.yield();
-                     continue;
-                  }
-
-                  TeamQueue.this.close();
-               }
-            } catch (Exception var2) {
-               MudgeSanity.logException("team reader", var2, false);
-               TeamQueue.this.close();
-            }
-
-            return;
-         }
       }
    }
 }

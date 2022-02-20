@@ -8,7 +8,6 @@ import org.apache.xpath.objects.XObject;
 import org.apache.xpath.patterns.NodeTest;
 
 public class UnionChildIterator extends ChildTestIterator {
-   static final long serialVersionUID = 3500298482193003495L;
    private PredicatedNodeTest[] m_nodeTests = null;
 
    public UnionChildIterator() {
@@ -62,12 +61,12 @@ public class UnionChildIterator extends ChildTestIterator {
                }
             }
          }
+
+         return 3;
       } catch (TransformerException var11) {
          throw new RuntimeException(var11.getMessage());
       } finally {
          xctxt.popCurrentNode();
       }
-
-      return 3;
    }
 }

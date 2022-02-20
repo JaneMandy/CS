@@ -18,6 +18,7 @@ public class ZlibDecoder extends Decoder {
          Reader unzippedReader = new Reader(new ByteArrayInputStream(bytes, zippedLength, length));
          RawDecoder.getInstance().decode(unzippedReader, renderer, rect);
       }
+
    }
 
    protected byte[] unzip(Reader reader, int zippedLength, int length) throws TransportException {

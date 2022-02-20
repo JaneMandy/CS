@@ -30,7 +30,7 @@ public class Screenshot implements Serializable, Transcript, Loggable, ToScalar,
       this.computer = var4;
       this.desktop = var5;
       this.title = var6;
-      this.when = System.currentTimeMillis() + "";
+      this.when = System.currentTimeMillis().makeConcatWithConstants<invokedynamic>(System.currentTimeMillis());
       this.id = CommonUtils.ID();
    }
 
@@ -71,7 +71,8 @@ public class Screenshot implements Serializable, Transcript, Loggable, ToScalar,
    }
 
    public String getLogFile() {
-      return "screen_" + this.id.substring(0, 8) + "_" + this.bid + ".jpg";
+      String var10000 = this.id.substring(0, 8);
+      return "screen_" + var10000 + "_" + this.bid + ".jpg";
    }
 
    public String getLogFolder() {

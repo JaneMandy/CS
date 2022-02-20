@@ -52,7 +52,7 @@ public class ListenerPreview extends AObject implements ActionListener {
    }
 
    public void kv(StringBuffer var1, String var2, String var3) {
-      var1.append(CommonUtils.pad((String)(var2 + '\u0003' + "E:" + '\u000f'), 28));
+      var1.append(CommonUtils.pad((String)(var2 + "\u0003E:\u000f"), 28));
       var1.append(var3);
       var1.append("\n");
    }
@@ -104,7 +104,7 @@ public class ListenerPreview extends AObject implements ActionListener {
       while(var4.hasNext()) {
          Entry var5 = (Entry)var4.next();
          if (!"Notes".equals(var5.getKey())) {
-            var3.append(CommonUtils.pad((String)((String)var5.getKey() + '\u0003' + "E:" + '\u000f'), 28));
+            var3.append(CommonUtils.pad((String)((String)var5.getKey() + "\u0003E:\u000f"), 28));
             var3.append(var5.getValue());
             var3.append("\n");
          }

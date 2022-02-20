@@ -8,6 +8,7 @@ import org.xml.sax.SAXException;
 
 public class NamespaceMappings {
    private int count = 0;
+   private Stack m_prefixStack = new Stack();
    private Hashtable m_namespaces = new Hashtable();
    private Stack m_nodeStack = new Stack();
    private static final String EMPTYSTRING = "";
@@ -20,20 +21,17 @@ public class NamespaceMappings {
    private void initNamespaces() {
       Stack stack;
       this.m_namespaces.put("", stack = new Stack());
-      stack.push(new NamespaceMappings.MappingRecord("", "", 0));
+      stack.push("");
+      this.m_prefixStack.push("");
       this.m_namespaces.put("xml", stack = new Stack());
-      stack.push(new NamespaceMappings.MappingRecord("xml", "http://www.w3.org/XML/1998/namespace", 0));
-      this.m_nodeStack.push(new NamespaceMappings.MappingRecord((String)null, (String)null, -1));
+      stack.push("http://www.w3.org/XML/1998/namespace");
+      this.m_prefixStack.push("xml");
+      this.m_nodeStack.push(new Integer(-1));
    }
 
    public String lookupNamespace(String prefix) {
       Stack stack = (Stack)this.m_namespaces.get(prefix);
-      return stack != null && !stack.isEmpty() ? ((NamespaceMappings.MappingRecord)stack.peek()).m_uri : null;
-   }
-
-   NamespaceMappings.MappingRecord getMappingFromPrefix(String prefix) {
-      Stack stack = (Stack)this.m_namespaces.get(prefix);
-      return stack != null && !stack.isEmpty() ? (NamespaceMappings.MappingRecord)stack.peek() : null;
+      return stack != null && !stack.isEmpty() ? (String)stack.peek() : null;
    }
 
    public String lookupPrefix(String uri) {
@@ -52,23 +50,7 @@ public class NamespaceMappings {
       return foundPrefix;
    }
 
-   NamespaceMappings.MappingRecord getMappingFromURI(String uri) {
-      NamespaceMappings.MappingRecord foundMap = null;
-      Enumeration prefixes = this.m_namespaces.keys();
-
-      while(prefixes.hasMoreElements()) {
-         String prefix = (String)prefixes.nextElement();
-         NamespaceMappings.MappingRecord map2 = this.getMappingFromPrefix(prefix);
-         if (map2 != null && map2.m_uri.equals(uri)) {
-            foundMap = map2;
-            break;
-         }
-      }
-
-      return foundMap;
-   }
-
-   boolean popNamespace(String prefix) {
+   public boolean popNamespace(String prefix) {
       if (prefix.startsWith("xml")) {
          return false;
       } else {
@@ -82,7 +64,7 @@ public class NamespaceMappings {
       }
    }
 
-   boolean pushNamespace(String prefix, String uri, int elemDepth) {
+   public boolean pushNamespace(String prefix, String uri, int elemDepth) {
       if (prefix.startsWith("xml")) {
          return false;
       } else {
@@ -91,32 +73,31 @@ public class NamespaceMappings {
             this.m_namespaces.put(prefix, stack = new Stack());
          }
 
-         if (!stack.empty() && uri.equals(((NamespaceMappings.MappingRecord)stack.peek()).m_uri)) {
+         if (!stack.empty() && uri.equals(stack.peek())) {
             return false;
          } else {
-            NamespaceMappings.MappingRecord map = new NamespaceMappings.MappingRecord(prefix, uri, elemDepth);
-            stack.push(map);
-            this.m_nodeStack.push(map);
+            stack.push(uri);
+            this.m_prefixStack.push(prefix);
+            this.m_nodeStack.push(new Integer(elemDepth));
             return true;
          }
       }
    }
 
-   void popNamespaces(int elemDepth, ContentHandler saxHandler) {
+   public void popNamespaces(int elemDepth, ContentHandler saxHandler) {
       while(!this.m_nodeStack.isEmpty()) {
-         NamespaceMappings.MappingRecord map = (NamespaceMappings.MappingRecord)this.m_nodeStack.peek();
-         int depth = map.m_declarationDepth;
-         if (depth < elemDepth) {
+         Integer i = (Integer)this.m_nodeStack.peek();
+         if (i < elemDepth) {
             return;
          }
 
-         map = (NamespaceMappings.MappingRecord)this.m_nodeStack.pop();
-         String prefix = map.m_prefix;
+         this.m_nodeStack.pop();
+         String prefix = (String)this.m_prefixStack.pop();
          this.popNamespace(prefix);
          if (saxHandler != null) {
             try {
                saxHandler.endPrefixMapping(prefix);
-            } catch (SAXException var7) {
+            } catch (SAXException var6) {
             }
          }
       }
@@ -129,28 +110,18 @@ public class NamespaceMappings {
 
    public Object clone() throws CloneNotSupportedException {
       NamespaceMappings clone = new NamespaceMappings();
+      clone.m_prefixStack = (Stack)this.m_prefixStack.clone();
       clone.m_nodeStack = (Stack)this.m_nodeStack.clone();
       clone.m_namespaces = (Hashtable)this.m_namespaces.clone();
       clone.count = this.count;
       return clone;
    }
 
-   final void reset() {
+   public final void reset() {
       this.count = 0;
       this.m_namespaces.clear();
       this.m_nodeStack.clear();
+      this.m_prefixStack.clear();
       this.initNamespaces();
-   }
-
-   class MappingRecord {
-      final String m_prefix;
-      final String m_uri;
-      final int m_declarationDepth;
-
-      MappingRecord(String prefix, String uri, int depth) {
-         this.m_prefix = prefix;
-         this.m_uri = uri;
-         this.m_declarationDepth = depth;
-      }
    }
 }

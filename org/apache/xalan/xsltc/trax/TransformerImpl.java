@@ -70,11 +70,9 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
    private DOM _dom;
    private int _indentNumber;
    private TransformerFactoryImpl _tfactory;
-   private OutputStream _ostream;
    private XSLTCDTMManager _dtmManager;
    private XMLReaderManager _readerManager;
    private boolean _isIdentity;
-   private boolean _isSecureProcessing;
    private Hashtable _parameters;
 
    protected TransformerImpl(Properties outputProperties, int indentNumber, TransformerFactoryImpl tfactory) {
@@ -92,25 +90,15 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
       this._tohFactory = null;
       this._dom = null;
       this._tfactory = null;
-      this._ostream = null;
       this._dtmManager = null;
       this._readerManager = XMLReaderManager.getInstance();
       this._isIdentity = false;
-      this._isSecureProcessing = false;
       this._parameters = null;
       this._translet = (AbstractTranslet)translet;
       this._properties = this.createOutputProperties(outputProperties);
       this._propertiesClone = (Properties)this._properties.clone();
       this._indentNumber = indentNumber;
       this._tfactory = tfactory;
-   }
-
-   public boolean isSecureProcessing() {
-      return this._isSecureProcessing;
-   }
-
-   public void setSecureProcessing(boolean flag) {
-      this._isSecureProcessing = flag;
    }
 
    protected AbstractTranslet getTranslet() {
@@ -179,7 +167,6 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
             return this._tohFactory.getSerializationHandler();
          } else if (result instanceof DOMResult) {
             this._tohFactory.setNode(((DOMResult)result).getNode());
-            this._tohFactory.setNextSibling(((DOMResult)result).getNextSibling());
             this._tohFactory.setOutputType(2);
             return this._tohFactory.getSerializationHandler();
          } else if (result instanceof StreamResult) {
@@ -203,16 +190,16 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
                      URL url = null;
                      if (systemId.startsWith("file:")) {
                         url = new URL(systemId);
-                        this._tohFactory.setOutputStream(this._ostream = new FileOutputStream(url.getFile()));
+                        this._tohFactory.setOutputStream(new FileOutputStream(url.getFile()));
                         return this._tohFactory.getSerializationHandler();
                      } else if (systemId.startsWith("http:")) {
                         url = new URL(systemId);
                         URLConnection connection = url.openConnection();
-                        this._tohFactory.setOutputStream(this._ostream = connection.getOutputStream());
+                        this._tohFactory.setOutputStream(connection.getOutputStream());
                         return this._tohFactory.getSerializationHandler();
                      } else {
                         url = (new File(systemId)).toURL();
-                        this._tohFactory.setOutputStream(this._ostream = new FileOutputStream(url.getFile()));
+                        this._tohFactory.setOutputStream(new FileOutputStream(url.getFile()));
                         return this._tohFactory.getSerializationHandler();
                      }
                   }
@@ -276,10 +263,6 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
 
    protected TransformerFactoryImpl getTransformerFactory() {
       return this._tfactory;
-   }
-
-   protected TransletOutputHandlerFactory getTransletOutputHandlerFactory() {
-      return this._tohFactory;
    }
 
    private void transformIdentity(Source source, SerializationHandler handler) throws Exception {
@@ -377,35 +360,26 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
          } else {
             this._translet.transform(this.getDOM((Source)source), handler);
          }
-      } catch (TransletException var15) {
+      } catch (TransletException var13) {
+         if (this._errorListener != null) {
+            this.postErrorToListener(var13.getMessage());
+         }
+
+         throw new TransformerException(var13);
+      } catch (RuntimeException var14) {
+         if (this._errorListener != null) {
+            this.postErrorToListener(var14.getMessage());
+         }
+
+         throw new TransformerException(var14);
+      } catch (Exception var15) {
          if (this._errorListener != null) {
             this.postErrorToListener(var15.getMessage());
          }
 
          throw new TransformerException(var15);
-      } catch (RuntimeException var16) {
-         if (this._errorListener != null) {
-            this.postErrorToListener(var16.getMessage());
-         }
-
-         throw new TransformerException(var16);
-      } catch (Exception var17) {
-         if (this._errorListener != null) {
-            this.postErrorToListener(var17.getMessage());
-         }
-
-         throw new TransformerException(var17);
       } finally {
          this._dtmManager = null;
-      }
-
-      if (this._ostream != null) {
-         try {
-            this._ostream.close();
-         } catch (IOException var14) {
-         }
-
-         this._ostream = null;
       }
 
    }
@@ -769,18 +743,6 @@ public final class TransformerImpl extends Transformer implements DOMCache, Erro
          System.err.println(new ErrorMsg("WARNING_MSG", e.getMessageAndLocation()));
       }
 
-   }
-
-   public void reset() {
-      this._method = null;
-      this._encoding = null;
-      this._sourceSystemId = null;
-      this._errorListener = this;
-      this._uriResolver = null;
-      this._dom = null;
-      this._parameters = null;
-      this._indentNumber = 0;
-      this.setOutputProperties((Properties)null);
    }
 
    static class MessageHandler extends org.apache.xalan.xsltc.runtime.MessageHandler {

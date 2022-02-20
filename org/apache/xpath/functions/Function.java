@@ -10,8 +10,6 @@ import org.apache.xpath.objects.XObject;
 import org.apache.xpath.res.XPATHMessages;
 
 public abstract class Function extends Expression {
-   static final long serialVersionUID = 6927661240854599768L;
-
    public void setArg(Expression arg, int argNum) throws WrongNumberArgsException {
       this.reportWrongNumberArgs();
    }

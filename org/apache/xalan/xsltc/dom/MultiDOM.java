@@ -5,7 +5,6 @@ import org.apache.xalan.xsltc.StripFilter;
 import org.apache.xalan.xsltc.TransletException;
 import org.apache.xalan.xsltc.runtime.BasisLibrary;
 import org.apache.xalan.xsltc.runtime.Hashtable;
-import org.apache.xml.dtm.Axis;
 import org.apache.xml.dtm.DTMAxisIterator;
 import org.apache.xml.dtm.DTMManager;
 import org.apache.xml.dtm.ref.DTMAxisIteratorBase;
@@ -480,7 +479,7 @@ public final class MultiDOM implements DOM {
       }
 
       public boolean isReverse() {
-         return Axis.isReverse(this._axis);
+         return Axis.isReverse[this._axis];
       }
 
       public void setMark() {

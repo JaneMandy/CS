@@ -5,7 +5,6 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Properties;
 import java.util.Vector;
 import org.apache.xalan.res.XSLMessages;
@@ -33,13 +32,10 @@ public class DefaultConnectionPool implements ConnectionPool {
    }
 
    public void freeUnused() {
-      Iterator i = this.m_pool.iterator();
-
-      while(i.hasNext()) {
-         PooledConnection pcon = (PooledConnection)i.next();
+      for(int x = 0; x < this.m_pool.size(); ++x) {
+         PooledConnection pcon = (PooledConnection)this.m_pool.elementAt(x);
          if (!pcon.inUse()) {
             pcon.close();
-            i.remove();
          }
       }
 

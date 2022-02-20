@@ -7,8 +7,6 @@ import org.apache.xpath.objects.XBoolean;
 import org.apache.xpath.objects.XObject;
 
 public class FuncLang extends FunctionOneArg {
-   static final long serialVersionUID = -7868705139354872185L;
-
    public XObject execute(XPathContext xctxt) throws TransformerException {
       String lang = super.m_arg0.execute(xctxt).str();
       int parent = xctxt.getCurrentNode();

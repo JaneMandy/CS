@@ -9,8 +9,6 @@ import org.apache.xpath.objects.XBoolean;
 import org.apache.xpath.objects.XObject;
 
 public class FuncExtElementAvailable extends FunctionOneArg {
-   static final long serialVersionUID = -472533699257968546L;
-
    public XObject execute(XPathContext xctxt) throws TransformerException {
       String fullName = super.m_arg0.execute(xctxt).str();
       int indexOfNSSep = fullName.indexOf(58);

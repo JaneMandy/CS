@@ -14,7 +14,7 @@ import org.apache.xalan.xsltc.compiler.util.ErrorMsg;
 import org.apache.xalan.xsltc.compiler.util.MethodGenerator;
 import org.apache.xalan.xsltc.compiler.util.Type;
 import org.apache.xalan.xsltc.compiler.util.TypeCheckError;
-import org.apache.xml.utils.XML11Char;
+import org.apache.xml.utils.XMLChar;
 
 final class DecimalFormatting extends TopLevelElement {
    private static final String DFS_CLASS = "java.text.DecimalFormatSymbols";
@@ -27,7 +27,7 @@ final class DecimalFormatting extends TopLevelElement {
 
    public void parseContents(Parser parser) {
       String name = this.getAttribute("name");
-      if (name.length() > 0 && !XML11Char.isXML11ValidQName(name)) {
+      if (name.length() > 0 && !XMLChar.isValidQName(name)) {
          ErrorMsg err = new ErrorMsg("INVALID_QNAME_ERR", name, this);
          parser.reportError(3, err);
       }

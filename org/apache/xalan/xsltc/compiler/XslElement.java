@@ -15,7 +15,7 @@ import org.apache.xalan.xsltc.compiler.util.MethodGenerator;
 import org.apache.xalan.xsltc.compiler.util.Type;
 import org.apache.xalan.xsltc.compiler.util.TypeCheckError;
 import org.apache.xalan.xsltc.compiler.util.Util;
-import org.apache.xml.utils.XML11Char;
+import org.apache.xml.utils.XMLChar;
 
 final class XslElement extends Instruction {
    private String _prefix;
@@ -46,7 +46,7 @@ final class XslElement extends Instruction {
          String namespace = this.getAttribute("namespace");
          this._isLiteralName = Util.isLiteral(name);
          if (this._isLiteralName) {
-            if (!XML11Char.isXML11ValidQName(name)) {
+            if (!XMLChar.isValidQName(name)) {
                ErrorMsg msg = new ErrorMsg("ILLEGAL_ELEM_NAME_ERR", name, this);
                parser.reportError(4, msg);
                this.parseChildren(parser);

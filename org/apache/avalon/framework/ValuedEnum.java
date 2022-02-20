@@ -38,6 +38,25 @@ public abstract class ValuedEnum extends Enum {
       return this.m_value <= other.m_value;
    }
 
+   public boolean equals(Object o) {
+      boolean prelim = super.equals(o);
+      if (!prelim) {
+         return false;
+      } else if (!(o instanceof ValuedEnum)) {
+         return false;
+      } else {
+         ValuedEnum enumerated = (ValuedEnum)o;
+         return this.m_value == enumerated.m_value;
+      }
+   }
+
+   public int hashCode() {
+      int hash = super.hashCode();
+      hash ^= this.m_value;
+      hash >>>= this.m_value & 31;
+      return hash;
+   }
+
    public String toString() {
       return this.getClass().getName() + "[" + this.getName() + "=" + this.m_value + "]";
    }

@@ -50,8 +50,8 @@ public class SiteManager extends AObject implements Callback, ActionListener {
          Object[][] var2 = this.model.getSelectedValuesFromColumns(this.table, CommonUtils.toArray("URI, Port"));
 
          for(int var3 = 0; var3 < var2.length; ++var3) {
-            var4 = var2[var3][0] + "";
-            var5 = var2[var3][1] + "";
+            var4 = ((Class)var2[var3][0]).makeConcatWithConstants<invokedynamic>(var2[var3][0]);
+            var5 = ((Class)var2[var3][1]).makeConcatWithConstants<invokedynamic>(var2[var3][1]);
             this.conn.call("cloudstrike.kill_site", CommonUtils.args(var5, var4));
          }
       } else if ("Copy URL".equals(var1.getActionCommand())) {
@@ -60,12 +60,12 @@ public class SiteManager extends AObject implements Callback, ActionListener {
             return;
          }
 
-         String var9 = this.model.getSelectedValue(this.table) + "";
-         String var10 = this.model.getSelectedValueFromColumn(this.table, "Host") + "";
-         var4 = this.model.getSelectedValueFromColumn(this.table, "Port") + "";
-         var5 = this.model.getSelectedValueFromColumn(this.table, "Proto") + "";
+         String var9 = ((Class)this.model.getSelectedValue(this.table)).makeConcatWithConstants<invokedynamic>(this.model.getSelectedValue(this.table));
+         String var10 = ((Class)this.model.getSelectedValueFromColumn(this.table, "Host")).makeConcatWithConstants<invokedynamic>(this.model.getSelectedValueFromColumn(this.table, "Host"));
+         var4 = ((Class)this.model.getSelectedValueFromColumn(this.table, "Port")).makeConcatWithConstants<invokedynamic>(this.model.getSelectedValueFromColumn(this.table, "Port"));
+         var5 = ((Class)this.model.getSelectedValueFromColumn(this.table, "Proto")).makeConcatWithConstants<invokedynamic>(this.model.getSelectedValueFromColumn(this.table, "Proto"));
          String var6 = var5 + var10 + ":" + var4 + var9;
-         String var7 = this.model.getSelectedValueFromColumn(this.table, "Description") + "";
+         String var7 = ((Class)this.model.getSelectedValueFromColumn(this.table, "Description")).makeConcatWithConstants<invokedynamic>(this.model.getSelectedValueFromColumn(this.table, "Description"));
          if ("PowerShell Web Delivery".equals(var7)) {
             DialogUtils.addToClipboard(CommonUtils.PowerShellOneLiner(var6));
          } else if (var7.startsWith("Scripted Web Delivery (") && var7.endsWith(")")) {

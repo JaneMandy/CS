@@ -57,8 +57,8 @@ public class GeneralCache {
             if (var3 > 0) {
                CommonUtils.print_stat("Purged '" + var1 + "' cache of " + var3 + " entries. Size: " + this.checks.size());
             }
-
          }
+
       }
    }
 

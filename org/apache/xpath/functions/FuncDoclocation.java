@@ -7,8 +7,6 @@ import org.apache.xpath.objects.XObject;
 import org.apache.xpath.objects.XString;
 
 public class FuncDoclocation extends FunctionDef1Arg {
-   static final long serialVersionUID = 7469213946343568769L;
-
    public XObject execute(XPathContext xctxt) throws TransformerException {
       int whereNode = this.getArg0AsNode(xctxt);
       String fileLocation = null;

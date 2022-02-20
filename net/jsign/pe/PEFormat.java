@@ -14,11 +14,11 @@ public enum PEFormat {
    }
 
    static PEFormat valueOf(int value) {
-      PEFormat[] arr$ = values();
-      int len$ = arr$.length;
+      PEFormat[] var1 = values();
+      int var2 = var1.length;
 
-      for(int i$ = 0; i$ < len$; ++i$) {
-         PEFormat format = arr$[i$];
+      for(int var3 = 0; var3 < var2; ++var3) {
+         PEFormat format = var1[var3];
          if (format.value == value) {
             return format;
          }

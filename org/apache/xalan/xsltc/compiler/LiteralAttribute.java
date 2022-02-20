@@ -15,9 +15,8 @@ final class LiteralAttribute extends Instruction {
    private final String _name;
    private final AttributeValue _value;
 
-   public LiteralAttribute(String name, String value, Parser parser, SyntaxTreeNode parent) {
+   public LiteralAttribute(String name, String value, Parser parser) {
       this._name = name;
-      this.setParent(parent);
       this._value = AttributeValue.create(this, value, parser);
    }
 

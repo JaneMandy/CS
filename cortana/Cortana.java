@@ -161,7 +161,8 @@ public class Cortana extends AObject implements Loadable, RuntimeWarningWatcher,
    }
 
    public void processScriptWarning(ScriptWarning var1) {
-      String var2 = var1.getNameShort() + ":" + var1.getLineNumber();
+      String var10000 = var1.getNameShort();
+      String var2 = var10000 + ":" + var1.getLineNumber();
       SimpleDateFormat var3 = new SimpleDateFormat("HH:mm:ss");
       Date var4 = new Date();
       String var5 = var3.format(var4, new StringBuffer(), new FieldPosition(0)).toString();
@@ -177,7 +178,7 @@ public class Cortana extends AObject implements Loadable, RuntimeWarningWatcher,
       Iterator var2 = var0.iterator();
 
       while(var2.hasNext()) {
-         String var3 = var2.next() + "";
+         String var3 = ((Class)var2.next()).makeConcatWithConstants<invokedynamic>(var2.next());
          if (!var3.startsWith(var1)) {
             var2.remove();
          }
@@ -188,18 +189,15 @@ public class Cortana extends AObject implements Loadable, RuntimeWarningWatcher,
    public String findScript(String var1) {
       Iterator var2 = this.scripts.keySet().iterator();
 
-      String var3;
-      File var4;
-      do {
-         if (!var2.hasNext()) {
-            return null;
+      while(var2.hasNext()) {
+         String var3 = var2.next().toString();
+         File var4 = new File(var3);
+         if (var1.equals(var4.getName())) {
+            return var3;
          }
+      }
 
-         var3 = var2.next().toString();
-         var4 = new File(var3);
-      } while(!var1.equals(var4.getName()));
-
-      return var3;
+      return null;
    }
 
    public void unloadScript(String var1) {
@@ -208,6 +206,7 @@ public class Cortana extends AObject implements Loadable, RuntimeWarningWatcher,
          this.scripts.remove(var1);
          var2.unload();
       }
+
    }
 
    public void loadScript(String var1) throws YourCodeSucksException, IOException {
@@ -283,7 +282,7 @@ public class Cortana extends AObject implements Loadable, RuntimeWarningWatcher,
       if (this.application.isHeadless()) {
          System.out.println("\u001b[01;30m" + var1 + "\u001b[0m");
       } else {
-         this.p("\u0003E" + var1 + '\u000f');
+         this.p("\u0003E" + var1 + "\u000f");
       }
 
    }

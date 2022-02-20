@@ -5,7 +5,6 @@ import java.util.Vector;
 import org.apache.xml.res.XMLMessages;
 
 public class ObjectPool implements Serializable {
-   static final long serialVersionUID = -8519013691660936643L;
    private final Class objectType;
    private final Vector freeStack;
 

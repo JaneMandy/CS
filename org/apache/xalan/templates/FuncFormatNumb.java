@@ -16,8 +16,6 @@ import org.apache.xpath.objects.XObject;
 import org.apache.xpath.objects.XString;
 
 public class FuncFormatNumb extends Function3Args {
-   static final long serialVersionUID = -8869935264870858636L;
-
    public XObject execute(XPathContext xctxt) throws TransformerException {
       ElemTemplateElement templElem = (ElemTemplateElement)xctxt.getNamespaceContext();
       StylesheetRoot ss = templElem.getStylesheetRoot();

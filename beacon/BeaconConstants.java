@@ -239,7 +239,7 @@ public class BeaconConstants {
    }
 
    public static String lookupSettingName(int var0) {
-      String var1 = var0 + "";
+      String var1 = var0.makeConcatWithConstants<invokedynamic>(var0);
       return A.containsKey(var1) ? (String)A.get(var1) : "**UNKNOWN-(" + var1 + ")**";
    }
 

@@ -45,21 +45,14 @@ public class TrAXFilter extends XMLFilterImpl {
          try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             factory.setNamespaceAware(true);
-            if (this.m_transformer.getStylesheet().isSecureProcessing()) {
-               try {
-                  factory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
-               } catch (SAXException var8) {
-               }
-            }
-
             SAXParser jaxpParser = factory.newSAXParser();
             reader = jaxpParser.getXMLReader();
-         } catch (ParserConfigurationException var9) {
-            throw new SAXException(var9);
-         } catch (FactoryConfigurationError var10) {
-            throw new SAXException(var10.toString());
-         } catch (NoSuchMethodError var11) {
-         } catch (AbstractMethodError var12) {
+         } catch (ParserConfigurationException var8) {
+            throw new SAXException(var8);
+         } catch (FactoryConfigurationError var9) {
+            throw new SAXException(var9.toString());
+         } catch (NoSuchMethodError var10) {
+         } catch (AbstractMethodError var11) {
          }
 
          XMLReader parent;

@@ -49,8 +49,8 @@ public class Prefs {
          } catch (IOException var3) {
             MudgeSanity.logException("Load Preferences: " + var1, var3, false);
          }
-
       }
+
    }
 
    public void scrub() {
@@ -105,11 +105,11 @@ public class Prefs {
    }
 
    public boolean isSet(String var1, boolean var2) {
-      return "true".equals(this.getString(var1, var2 + ""));
+      return "true".equals(this.getString(var1, var2.makeConcatWithConstants<invokedynamic>(var2)));
    }
 
    public long getLongNumber(String var1, long var2) {
-      return CommonUtils.toLongNumber(this.getString(var1, var2 + ""), var2);
+      return CommonUtils.toLongNumber(this.getString(var1, var2.makeConcatWithConstants<invokedynamic>(var2)), var2);
    }
 
    public int getRandomPort(String var1, String var2) {

@@ -7,8 +7,6 @@ import org.apache.xpath.objects.XObject;
 import org.apache.xpath.objects.XString;
 
 public class FuncNamespace extends FunctionDef1Arg {
-   static final long serialVersionUID = -4695674566722321237L;
-
    public XObject execute(XPathContext xctxt) throws TransformerException {
       int context = this.getArg0AsNode(xctxt);
       if (context == -1) {

@@ -16,29 +16,21 @@ public abstract class AnyNodeCounter extends NodeCounter {
    }
 
    public String getCounter() {
-      if (super._value != -2.147483648E9D) {
-         if (super._value == 0.0D) {
-            return "0";
-         } else if (Double.isNaN(super._value)) {
-            return "NaN";
-         } else if (super._value < 0.0D && Double.isInfinite(super._value)) {
-            return "-Infinity";
-         } else {
-            return Double.isInfinite(super._value) ? "Infinity" : this.formatNumbers((int)super._value);
-         }
+      int result;
+      if (super._value != Integer.MIN_VALUE) {
+         result = super._value;
       } else {
          int next = super._node;
          int root = super._document.getDocument();
 
-         int result;
          for(result = 0; next >= root && !this.matchesFrom(next); --next) {
             if (this.matchesCount(next)) {
                ++result;
             }
          }
-
-         return this.formatNumbers(result);
       }
+
+      return this.formatNumbers(result);
    }
 
    public static NodeCounter getDefaultNodeCounter(Translet translet, DOM document, DTMAxisIterator iterator) {
@@ -52,24 +44,8 @@ public abstract class AnyNodeCounter extends NodeCounter {
 
       public String getCounter() {
          int result;
-         if (super._value != -2.147483648E9D) {
-            if (super._value == 0.0D) {
-               return "0";
-            }
-
-            if (Double.isNaN(super._value)) {
-               return "NaN";
-            }
-
-            if (super._value < 0.0D && Double.isInfinite(super._value)) {
-               return "-Infinity";
-            }
-
-            if (Double.isInfinite(super._value)) {
-               return "Infinity";
-            }
-
-            result = (int)super._value;
+         if (super._value != Integer.MIN_VALUE) {
+            result = super._value;
          } else {
             int next = super._node;
             result = 0;

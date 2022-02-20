@@ -53,7 +53,6 @@ public final class Stylesheet extends SyntaxTreeNode {
    public Stylesheet _includedFrom = null;
    private Vector _includedStylesheets = null;
    private int _importPrecedence = 1;
-   private int _minimumDescendantPrecedence = -1;
    private Hashtable _keys = new Hashtable();
    private SourceLoader _loader = null;
    private boolean _numberFormattingUsed = false;
@@ -187,24 +186,6 @@ public final class Stylesheet extends SyntaxTreeNode {
 
    public int getImportPrecedence() {
       return this._importPrecedence;
-   }
-
-   public int getMinimumDescendantPrecedence() {
-      if (this._minimumDescendantPrecedence == -1) {
-         int min = this.getImportPrecedence();
-         int inclImpCount = this._includedStylesheets != null ? this._includedStylesheets.size() : 0;
-
-         for(int i = 0; i < inclImpCount; ++i) {
-            int prec = ((Stylesheet)this._includedStylesheets.elementAt(i)).getMinimumDescendantPrecedence();
-            if (prec < min) {
-               min = prec;
-            }
-         }
-
-         this._minimumDescendantPrecedence = min;
-      }
-
-      return this._minimumDescendantPrecedence;
    }
 
    public boolean checkForLoop(String systemId) {
@@ -829,10 +810,10 @@ public final class Stylesheet extends SyntaxTreeNode {
    }
 
    private void peepHoleOptimization(MethodGenerator methodGen) {
-      String pattern = "`aload'`pop'`instruction'";
+      String pattern = "`ALOAD'`POP'`Instruction'";
       InstructionList il = methodGen.getInstructionList();
       InstructionFinder find = new InstructionFinder(il);
-      Iterator iter = find.search("`aload'`pop'`instruction'");
+      Iterator iter = find.search("`ALOAD'`POP'`Instruction'");
 
       while(iter.hasNext()) {
          InstructionHandle[] match = (InstructionHandle[])iter.next();

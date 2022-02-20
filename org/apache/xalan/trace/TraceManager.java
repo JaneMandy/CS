@@ -6,7 +6,6 @@ import java.util.Vector;
 import javax.xml.transform.TransformerException;
 import org.apache.xalan.templates.ElemTemplateElement;
 import org.apache.xalan.transformer.TransformerImpl;
-import org.apache.xml.dtm.DTM;
 import org.apache.xpath.XPath;
 import org.apache.xpath.objects.XObject;
 import org.w3c.dom.Node;
@@ -20,7 +19,7 @@ public class TraceManager {
    }
 
    public void addTraceListener(TraceListener tl) throws TooManyListenersException {
-      this.m_transformer.setDebug(true);
+      TransformerImpl.S_DEBUG = true;
       if (null == this.m_traceListeners) {
          this.m_traceListeners = new Vector();
       }
@@ -57,7 +56,7 @@ public class TraceManager {
    public void fireTraceEvent(ElemTemplateElement styleNode) {
       if (this.hasTraceListeners()) {
          int sourceNode = this.m_transformer.getXPathContext().getCurrentNode();
-         Node source = this.getDOMNodeFromDTM(sourceNode);
+         Node source = this.m_transformer.getXPathContext().getDTM(sourceNode).getNode(sourceNode);
          this.fireTraceEvent(new TracerEvent(this.m_transformer, source, this.m_transformer.getMode(), styleNode));
       }
 
@@ -66,7 +65,7 @@ public class TraceManager {
    public void fireTraceEndEvent(ElemTemplateElement styleNode) {
       if (this.hasTraceListeners()) {
          int sourceNode = this.m_transformer.getXPathContext().getCurrentNode();
-         Node source = this.getDOMNodeFromDTM(sourceNode);
+         Node source = this.m_transformer.getXPathContext().getDTM(sourceNode).getNode(sourceNode);
          this.fireTraceEndEvent(new TracerEvent(this.m_transformer, source, this.m_transformer.getMode(), styleNode));
       }
 
@@ -100,7 +99,7 @@ public class TraceManager {
 
    public void fireSelectedEvent(int sourceNode, ElemTemplateElement styleNode, String attributeName, XPath xpath, XObject selection) throws TransformerException {
       if (this.hasTraceListeners()) {
-         Node source = this.getDOMNodeFromDTM(sourceNode);
+         Node source = this.m_transformer.getXPathContext().getDTM(sourceNode).getNode(sourceNode);
          this.fireSelectedEvent(new SelectionEvent(this.m_transformer, source, styleNode, attributeName, xpath, selection));
       }
 
@@ -108,7 +107,7 @@ public class TraceManager {
 
    public void fireSelectedEndEvent(int sourceNode, ElemTemplateElement styleNode, String attributeName, XPath xpath, XObject selection) throws TransformerException {
       if (this.hasTraceListeners()) {
-         Node source = this.getDOMNodeFromDTM(sourceNode);
+         Node source = this.m_transformer.getXPathContext().getDTM(sourceNode).getNode(sourceNode);
          this.fireSelectedEndEvent(new EndSelectionEvent(this.m_transformer, source, styleNode, attributeName, xpath, selection));
       }
 
@@ -196,11 +195,5 @@ public class TraceManager {
          }
       }
 
-   }
-
-   private Node getDOMNodeFromDTM(int sourceNode) {
-      DTM dtm = this.m_transformer.getXPathContext().getDTM(sourceNode);
-      Node source = dtm == null ? null : dtm.getNode(sourceNode);
-      return source;
    }
 }

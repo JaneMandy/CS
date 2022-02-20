@@ -17,7 +17,6 @@ import org.apache.xpath.objects.XObject;
 import org.xml.sax.SAXException;
 
 public class ElemApplyTemplates extends ElemCallTemplate {
-   static final long serialVersionUID = 2903125371542621004L;
    private QName m_mode = null;
    private boolean m_isDefaultTemplate = false;
 
@@ -56,13 +55,13 @@ public class ElemApplyTemplates extends ElemCallTemplate {
             transformer.pushMode(this.m_mode);
          }
 
-         if (transformer.getDebug()) {
+         if (TransformerImpl.S_DEBUG) {
             transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
          }
 
          this.transformSelectedNodes(transformer);
       } finally {
-         if (transformer.getDebug()) {
+         if (TransformerImpl.S_DEBUG) {
             transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);
          }
 
@@ -96,7 +95,7 @@ public class ElemApplyTemplates extends ElemCallTemplate {
             sourceNodes = this.sortNodes(xctxt, keys, sourceNodes);
          }
 
-         if (transformer.getDebug()) {
+         if (TransformerImpl.S_DEBUG) {
             transformer.getTraceManager().fireSelectedEvent(sourceNode, this, "select", new XPath(super.m_selectExpression), new XNodeSet(sourceNodes));
          }
 
@@ -112,12 +111,12 @@ public class ElemApplyTemplates extends ElemCallTemplate {
 
             for(int i = 0; i < nParams; ++i) {
                ElemWithParam ewp = super.m_paramElems[i];
-               if (transformer.getDebug()) {
+               if (TransformerImpl.S_DEBUG) {
                   transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)ewp);
                }
 
                XObject obj = ewp.getValue(transformer, sourceNode);
-               if (transformer.getDebug()) {
+               if (TransformerImpl.S_DEBUG) {
                   transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)ewp);
                }
 
@@ -209,7 +208,7 @@ public class ElemApplyTemplates extends ElemCallTemplate {
                   currentFrameBottom = 0;
                }
 
-               if (transformer.getDebug()) {
+               if (TransformerImpl.S_DEBUG) {
                   transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)template);
                }
 
@@ -224,7 +223,7 @@ public class ElemApplyTemplates extends ElemCallTemplate {
                   }
                }
 
-               if (transformer.getDebug()) {
+               if (TransformerImpl.S_DEBUG) {
                   transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)template);
                }
 
@@ -241,7 +240,7 @@ public class ElemApplyTemplates extends ElemCallTemplate {
       } catch (SAXException var43) {
          transformer.getErrorListener().fatalError(new TransformerException(var43));
       } finally {
-         if (transformer.getDebug()) {
+         if (TransformerImpl.S_DEBUG) {
             transformer.getTraceManager().fireSelectedEndEvent(sourceNode, this, "select", new XPath(super.m_selectExpression), new XNodeSet(sourceNodes));
          }
 

@@ -25,11 +25,12 @@ public final class DataUtils {
    protected static Map tokenCache = new HashMap();
 
    public static final String getNick(DataManager var0) {
-      return var0.getMapSafe("metadata").get("nick") + "";
+      Map var10000 = var0.getMapSafe("metadata");
+      return ((Class)var10000.get("nick")).makeConcatWithConstants<invokedynamic>(var10000.get("nick"));
    }
 
    public static final Map getListenerByName(DataManager var0, String var1) {
-      return (Map)((Map)var0.getMapSafe("listeners").get(var1));
+      return (Map)var0.getMapSafe("listeners").get(var1);
    }
 
    public static final Map getListeners(DataManager var0) {
@@ -69,7 +70,7 @@ public final class DataUtils {
    }
 
    public static final long AdjustForSkew(DataManager var0, long var1) {
-      long var3 = CommonUtils.toLongNumber(var0.getMapSafe("metadata").get("clockskew") + "", 0L);
+      long var3 = CommonUtils.toLongNumber(((Class)var0.getMapSafe("metadata").get("clockskew")).makeConcatWithConstants<invokedynamic>(var0.getMapSafe("metadata").get("clockskew")), 0L);
       return var1 - var3;
    }
 
@@ -97,7 +98,7 @@ public final class DataUtils {
    }
 
    public static byte[] getPublicKey(DataManager var0) {
-      return (byte[])((byte[])var0.getMapSafe("metadata").get("pubkey"));
+      return (byte[])var0.getMapSafe("metadata").get("pubkey");
    }
 
    public static Profile getProfile(DataManager var0) {
@@ -148,7 +149,7 @@ public final class DataUtils {
    }
 
    public static final CodeSigner getSigner(DataManager var0) {
-      return (CodeSigner)((CodeSigner)var0.getMapSafe("metadata").get("signer"));
+      return (CodeSigner)var0.getMapSafe("metadata").get("signer");
    }
 
    public static final Collection getUsers(DataManager var0) {
@@ -276,21 +277,19 @@ public final class DataUtils {
       List var2 = var0.getListSafe("targets");
       Iterator var3 = var2.iterator();
 
-      Map var4;
-      do {
-         if (!var3.hasNext()) {
+      while(var3.hasNext()) {
+         Map var4 = (Map)var3.next();
+         if (var1.equals(var4.get("address"))) {
+            String var5 = (String)var4.get("name");
+            if (var5 != null && !"".equals(var5)) {
+               return var5;
+            }
+
             return var1;
          }
-
-         var4 = (Map)var3.next();
-      } while(!var1.equals(var4.get("address")));
-
-      String var5 = (String)var4.get("name");
-      if (var5 != null && !"".equals(var5)) {
-         return var5;
-      } else {
-         return var1;
       }
+
+      return var1;
    }
 
    public static List getListenerModel(DataManager var0) {
@@ -353,14 +352,9 @@ public final class DataUtils {
       List var1 = getListenerModel(var0);
       Iterator var2 = var1.iterator();
 
-      String var4;
-      do {
-         if (!var2.hasNext()) {
-            return "";
-         }
-
+      while(var2.hasNext()) {
          Map var3 = (Map)var2.next();
-         var4 = var3.get("payload") + "";
+         String var4 = ((Class)var3.get("payload")).makeConcatWithConstants<invokedynamic>(var3.get("payload"));
          if ("windows/beacon_http/reverse_http".equals(var4)) {
             return "HTTP Beacon";
          }
@@ -372,9 +366,13 @@ public final class DataUtils {
          if ("windows/beacon_dns/reverse_http".equals(var4)) {
             return "DNS Beacon";
          }
-      } while(!"windows/beacon_dns/reverse_dns_txt".equals(var4));
 
-      return "DNS Beacon";
+         if ("windows/beacon_dns/reverse_dns_txt".equals(var4)) {
+            return "DNS Beacon";
+         }
+      }
+
+      return "";
    }
 
    public static String getLocalIP(DataManager var0) {
@@ -382,7 +380,8 @@ public final class DataUtils {
    }
 
    public static String getTeamServerIP(DataManager var0) {
-      return var0.getMapSafe("options").get("host") + "";
+      Map var10000 = var0.getMapSafe("options");
+      return ((Class)var10000.get("host")).makeConcatWithConstants<invokedynamic>(var10000.get("host"));
    }
 
    public static List getInterfaceList(DataManager var0) {
@@ -402,16 +401,14 @@ public final class DataUtils {
       List var2 = var0.getListSafe("interfaces");
       Iterator var3 = var2.iterator();
 
-      Map var4;
-      do {
-         if (!var3.hasNext()) {
-            return new HashMap();
+      while(var3.hasNext()) {
+         Map var4 = (Map)var3.next();
+         if (var1.equals(var4.get("interface"))) {
+            return var4;
          }
+      }
 
-         var4 = (Map)var3.next();
-      } while(!var1.equals(var4.get("interface")));
-
-      return var4;
+      return new HashMap();
    }
 
    public static String getManualProxySetting(DataManager var0) {

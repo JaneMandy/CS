@@ -298,10 +298,11 @@ public class Program implements Serializable {
             var2.data = new ByteArrayInputStream(var7);
             var2.size = (long)var7.length;
             var2.offset = (long)var3.getDataOffset();
-            var2.addHeader("Content-Length", var7.length + "");
+            var2.addHeader("Content-Length", var7.length.makeConcatWithConstants<invokedynamic>(var7.length));
             break;
          case 5:
-            var2.addParameter(var6.argument + "=" + A(var3.getBytes()));
+            String var10001 = var6.argument;
+            var2.addParameter(var10001 + "=" + A(var3.getBytes()));
             break;
          case 6:
             var2.addHeader(var6.argument, A(var3.getBytes()));
@@ -359,7 +360,7 @@ public class Program implements Serializable {
       Iterator var3 = this.rsteps.iterator();
 
       while(true) {
-         label45:
+         label41:
          while(var3.hasNext()) {
             Program.Statement var4 = (Program.Statement)var3.next();
             int var5;
@@ -385,7 +386,7 @@ public class Program implements Serializable {
 
                while(true) {
                   if (var5 >= var4.argument.length()) {
-                     continue label45;
+                     continue label41;
                   }
 
                   var2.write(var4.argument.charAt(var5));

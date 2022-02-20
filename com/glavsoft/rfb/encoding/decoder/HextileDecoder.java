@@ -28,8 +28,8 @@ public class HextileDecoder extends Decoder {
                this.decodeHextileSubrectangle(reader, renderer, colors, tileX, tileY, tileWidth, tileHeight);
             }
          }
-
       }
+
    }
 
    private void decodeHextileSubrectangle(Reader reader, Renderer renderer, int[] colors, int tileX, int tileY, int tileWidth, int tileHeight) throws TransportException {
@@ -68,8 +68,8 @@ public class HextileDecoder extends Decoder {
 
                renderer.fillRect(colors[0], tileX + subtileX, tileY + subtileY, subtileWidth, subtileHeight);
             }
-
          }
       }
+
    }
 }

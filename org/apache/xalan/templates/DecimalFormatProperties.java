@@ -4,7 +4,6 @@ import java.text.DecimalFormatSymbols;
 import org.apache.xml.utils.QName;
 
 public class DecimalFormatProperties extends ElemTemplateElement {
-   static final long serialVersionUID = -6559409339256269446L;
    DecimalFormatSymbols m_dfs = new DecimalFormatSymbols();
    private QName m_qname = null;
 

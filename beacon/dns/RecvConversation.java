@@ -40,6 +40,7 @@ public class RecvConversation {
    }
 
    public String toString() {
-      return "[id: " + this.id + ", type: " + this.dtype + ", recv'd: " + this.buffer.size() + ", total: " + this.size + "]";
+      String var10000 = this.id;
+      return "[id: " + var10000 + ", type: " + this.dtype + ", recv'd: " + this.buffer.size() + ", total: " + this.size + "]";
    }
 }

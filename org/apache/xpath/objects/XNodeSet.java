@@ -17,13 +17,12 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 public class XNodeSet extends NodeSequence {
-   static final long serialVersionUID = 1916026368035639667L;
-   static final LessThanComparator S_LT = new LessThanComparator();
-   static final LessThanOrEqualComparator S_LTE = new LessThanOrEqualComparator();
-   static final GreaterThanComparator S_GT = new GreaterThanComparator();
-   static final GreaterThanOrEqualComparator S_GTE = new GreaterThanOrEqualComparator();
-   static final EqualComparator S_EQ = new EqualComparator();
-   static final NotEqualComparator S_NEQ = new NotEqualComparator();
+   static LessThanComparator S_LT = new LessThanComparator();
+   static LessThanOrEqualComparator S_LTE = new LessThanOrEqualComparator();
+   static GreaterThanComparator S_GT = new GreaterThanComparator();
+   static GreaterThanOrEqualComparator S_GTE = new GreaterThanOrEqualComparator();
+   static EqualComparator S_EQ = new EqualComparator();
+   static NotEqualComparator S_NEQ = new NotEqualComparator();
 
    protected XNodeSet() {
    }

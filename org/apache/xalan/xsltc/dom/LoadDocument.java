@@ -49,10 +49,6 @@ public final class LoadDocument {
       try {
          String baseURI;
          if (arg instanceof String) {
-            if (xslURI == null) {
-               xslURI = "";
-            }
-
             baseURI = xslURI;
             if (!SystemIDResolver.isAbsoluteURI(xslURI)) {
                baseURI = SystemIDResolver.getAbsoluteURIFromRelative(xslURI);

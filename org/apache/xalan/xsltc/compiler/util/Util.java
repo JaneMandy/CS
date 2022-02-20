@@ -1,7 +1,7 @@
 package org.apache.xalan.xsltc.compiler.util;
 
 import java.util.StringTokenizer;
-import org.apache.xml.utils.XML11Char;
+import org.apache.xml.utils.XMLChar;
 
 public final class Util {
    private static char filesep;
@@ -132,7 +132,7 @@ public final class Util {
          StringTokenizer tokens = new StringTokenizer(str);
 
          while(tokens.hasMoreTokens()) {
-            if (!XML11Char.isXML11ValidQName(tokens.nextToken())) {
+            if (!XMLChar.isValidQName(tokens.nextToken())) {
                return false;
             }
          }

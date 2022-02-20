@@ -100,7 +100,6 @@ public class PLiteral extends Step {
       private Fragment() {
       }
 
-      // $FF: synthetic method
       Fragment(Object var1) {
          this();
       }

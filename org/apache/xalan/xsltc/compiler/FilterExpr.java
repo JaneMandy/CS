@@ -1,14 +1,10 @@
 package org.apache.xalan.xsltc.compiler;
 
 import java.util.Vector;
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.InstructionConstants;
-import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.LocalVariableGen;
 import org.apache.bcel.generic.NEW;
 import org.apache.xalan.xsltc.compiler.util.ClassGenerator;
 import org.apache.xalan.xsltc.compiler.util.MethodGenerator;
@@ -16,7 +12,6 @@ import org.apache.xalan.xsltc.compiler.util.NodeSetType;
 import org.apache.xalan.xsltc.compiler.util.ReferenceType;
 import org.apache.xalan.xsltc.compiler.util.Type;
 import org.apache.xalan.xsltc.compiler.util.TypeCheckError;
-import org.apache.xalan.xsltc.compiler.util.Util;
 
 class FilterExpr extends Expression {
    private Expression _primary;
@@ -90,17 +85,11 @@ class FilterExpr extends Expression {
          int initCNLI = cpg.addMethodref("org.apache.xalan.xsltc.dom.CurrentNodeListIterator", "<init>", "(Lorg/apache/xml/dtm/DTMAxisIterator;ZLorg/apache/xalan/xsltc/dom/CurrentNodeListFilter;ILorg/apache/xalan/xsltc/runtime/AbstractTranslet;)V");
          Predicate predicate = (Predicate)this._predicates.lastElement();
          this._predicates.remove(predicate);
-         this.translatePredicates(classGen, methodGen);
-         LocalVariableGen nodeIteratorTemp = methodGen.addLocalVariable("filter_expr_tmp1", Util.getJCRefType("Lorg/apache/xml/dtm/DTMAxisIterator;"), il.getEnd(), (InstructionHandle)null);
-         il.append((org.apache.bcel.generic.Instruction)(new ASTORE(nodeIteratorTemp.getIndex())));
-         predicate.translate(classGen, methodGen);
-         LocalVariableGen filterTemp = methodGen.addLocalVariable("filter_expr_tmp2", Util.getJCRefType("Lorg/apache/xalan/xsltc/dom/CurrentNodeListFilter;"), il.getEnd(), (InstructionHandle)null);
-         il.append((org.apache.bcel.generic.Instruction)(new ASTORE(filterTemp.getIndex())));
          il.append((org.apache.bcel.generic.Instruction)(new NEW(cpg.addClass("org.apache.xalan.xsltc.dom.CurrentNodeListIterator"))));
          il.append((org.apache.bcel.generic.Instruction)InstructionConstants.DUP);
-         il.append((org.apache.bcel.generic.Instruction)(new ALOAD(nodeIteratorTemp.getIndex())));
+         this.translatePredicates(classGen, methodGen);
          il.append(InstructionConstants.ICONST_1);
-         il.append((org.apache.bcel.generic.Instruction)(new ALOAD(filterTemp.getIndex())));
+         predicate.translate(classGen, methodGen);
          il.append(methodGen.loadCurrentNode());
          il.append(classGen.loadTranslet());
          il.append((org.apache.bcel.generic.Instruction)(new INVOKESPECIAL(initCNLI)));

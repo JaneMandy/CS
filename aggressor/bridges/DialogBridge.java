@@ -198,7 +198,7 @@ public class DialogBridge implements Function, Loadable {
          var3.push(SleepUtils.getHashWrapper(var2));
          var3.push(SleepUtils.getScalar(var1.getActionCommand()));
          var3.push(SleepUtils.getScalar((Object)this));
-         SleepUtils.runCode((SleepClosure)this.F, "", (ScriptInstance)null, var3);
+         SleepUtils.runCode(this.F, "", (ScriptInstance)null, var3);
       }
 
       public void A() {

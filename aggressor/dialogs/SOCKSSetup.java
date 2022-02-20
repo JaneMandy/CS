@@ -36,7 +36,7 @@ public class SOCKSSetup extends AObject implements DialogListener {
       this.dialog.setLayout(new BorderLayout());
       DialogManager var1 = new DialogManager(this.dialog);
       var1.addDialogListener(this);
-      var1.set("ProxyPort", CommonUtils.randomPort() + "");
+      var1.set("ProxyPort", CommonUtils.randomPort().makeConcatWithConstants<invokedynamic>(CommonUtils.randomPort()));
       var1.text("ProxyPort", "Proxy Server Port:", 8);
       JButton var2 = var1.action("Launch");
       JButton var3 = var1.help("https://www.cobaltstrike.com/help-socks-proxy-pivoting");

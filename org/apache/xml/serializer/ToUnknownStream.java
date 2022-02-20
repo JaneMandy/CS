@@ -13,7 +13,7 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
-public final class ToUnknownStream extends SerializerBase {
+public class ToUnknownStream extends SerializerBase {
    private SerializationHandler m_handler = new ToXMLStream();
    private static final String EMPTYSTRING = "";
    private boolean m_wrapped_handler_not_initialized = false;
@@ -78,12 +78,12 @@ public final class ToUnknownStream extends SerializerBase {
       this.m_handler.setWriter(writer);
    }
 
-   public void addAttribute(String uri, String localName, String rawName, String type, String value, boolean XSLAttribute) throws SAXException {
+   public void addAttribute(String uri, String localName, String rawName, String type, String value) throws SAXException {
       if (this.m_firstTagNotEmitted) {
          this.flush();
       }
 
-      this.m_handler.addAttribute(uri, localName, rawName, type, value, XSLAttribute);
+      this.m_handler.addAttribute(uri, localName, rawName, type, value);
    }
 
    public void addAttribute(String rawName, String value) {

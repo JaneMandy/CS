@@ -11,7 +11,6 @@ import org.apache.xpath.objects.XObject;
 import org.xml.sax.SAXException;
 
 public class ElemValueOf extends ElemTemplateElement {
-   static final long serialVersionUID = 3490728458007586786L;
    private XPath m_selectExpression = null;
    private boolean m_isDot = false;
    private boolean m_disableOutputEscaping = false;
@@ -57,7 +56,7 @@ public class ElemValueOf extends ElemTemplateElement {
    public void execute(TransformerImpl transformer) throws TransformerException {
       XPathContext xctxt = transformer.getXPathContext();
       SerializationHandler rth = transformer.getResultTreeHandler();
-      if (transformer.getDebug()) {
+      if (TransformerImpl.S_DEBUG) {
          transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
       }
 
@@ -71,7 +70,7 @@ public class ElemValueOf extends ElemTemplateElement {
 
          try {
             Expression expr = this.m_selectExpression.getExpression();
-            if (transformer.getDebug()) {
+            if (TransformerImpl.S_DEBUG) {
                XObject obj = expr.execute(xctxt);
                transformer.getTraceManager().fireSelectedEvent(current, this, "select", this.m_selectExpression, obj);
                obj.dispatchCharactersEvents(rth);
@@ -93,7 +92,7 @@ public class ElemValueOf extends ElemTemplateElement {
          te.setLocator(this);
          throw te;
       } finally {
-         if (transformer.getDebug()) {
+         if (TransformerImpl.S_DEBUG) {
             transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);
          }
 

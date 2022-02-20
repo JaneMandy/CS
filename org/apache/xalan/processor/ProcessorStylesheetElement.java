@@ -9,9 +9,7 @@ import org.apache.xalan.templates.StylesheetRoot;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-public class ProcessorStylesheetElement extends XSLTElementProcessor {
-   static final long serialVersionUID = -877798927447840792L;
-
+class ProcessorStylesheetElement extends XSLTElementProcessor {
    public void startElement(StylesheetHandler handler, String uri, String localName, String rawName, Attributes attributes) throws SAXException {
       super.startElement(handler, uri, localName, rawName, attributes);
 
@@ -20,7 +18,7 @@ public class ProcessorStylesheetElement extends XSLTElementProcessor {
          Object stylesheet;
          if (stylesheetType == 1) {
             try {
-               stylesheet = this.getStylesheetRoot(handler);
+               stylesheet = new StylesheetRoot(handler.getSchema(), handler.getStylesheetProcessor().getErrorListener());
             } catch (TransformerConfigurationException var10) {
                throw new TransformerException(var10);
             }
@@ -45,15 +43,6 @@ public class ProcessorStylesheetElement extends XSLTElementProcessor {
       } catch (TransformerException var11) {
          throw new SAXException(var11);
       }
-   }
-
-   protected Stylesheet getStylesheetRoot(StylesheetHandler handler) throws TransformerConfigurationException {
-      StylesheetRoot stylesheet = new StylesheetRoot(handler.getSchema(), handler.getStylesheetProcessor().getErrorListener());
-      if (handler.getStylesheetProcessor().isSecureProcessing()) {
-         stylesheet.setSecureProcessing(true);
-      }
-
-      return stylesheet;
    }
 
    public void endElement(StylesheetHandler handler, String uri, String localName, String rawName) throws SAXException {

@@ -27,5 +27,6 @@ public class Beacons extends Sessions implements AdjustData {
          var3 = CommonUtils.apply(var1, var3, this);
          DialogUtils.setTable(this.table, this.model, var3);
       }
+
    }
 }

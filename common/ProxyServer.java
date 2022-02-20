@@ -84,7 +84,7 @@ public class ProxyServer {
          }
 
          var1.put("phost", this.phost);
-         var1.put("pport", this.pport + "");
+         var1.put("pport", this.pport.makeConcatWithConstants<invokedynamic>(this.pport));
          var1.put("ptype", this.ptype);
          return var1;
       }

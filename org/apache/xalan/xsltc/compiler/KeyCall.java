@@ -73,14 +73,13 @@ final class KeyCall extends FunctionCall {
       InstructionList il = methodGen.getInstructionList();
       int getNodeHandle = cpg.addInterfaceMethodref("org.apache.xalan.xsltc.DOM", "getNodeHandle", "(I)I");
       int dupInit = cpg.addMethodref("org.apache.xalan.xsltc.dom.DupFilterIterator", "<init>", "(Lorg/apache/xml/dtm/DTMAxisIterator;)V");
-      LocalVariableGen keyIterator = this.translateCall(classGen, methodGen);
       il.append((org.apache.bcel.generic.Instruction)(new NEW(cpg.addClass("org.apache.xalan.xsltc.dom.DupFilterIterator"))));
       il.append((org.apache.bcel.generic.Instruction)InstructionConstants.DUP);
-      il.append((org.apache.bcel.generic.Instruction)(new ALOAD(keyIterator.getIndex())));
+      this.translateCall(classGen, methodGen);
       il.append((org.apache.bcel.generic.Instruction)(new INVOKESPECIAL(dupInit)));
    }
 
-   private LocalVariableGen translateCall(ClassGenerator classGen, MethodGenerator methodGen) {
+   private void translateCall(ClassGenerator classGen, MethodGenerator methodGen) {
       ConstantPoolGen cpg = classGen.getConstantPool();
       InstructionList il = methodGen.getInstructionList();
       int getNodeValue = cpg.addInterfaceMethodref("org.apache.xalan.xsltc.DOM", "getStringValueX", "(I)Ljava/lang/String;");
@@ -137,6 +136,7 @@ final class KeyCall extends FunctionCall {
          il.append((BranchInstruction)(new IFGT(loop)));
          il.append(methodGen.storeIterator());
          il.append(methodGen.storeCurrentNode());
+         il.append((org.apache.bcel.generic.Instruction)(new ALOAD(returnIndex.getIndex())));
       } else {
          il.append(classGen.loadTranslet());
          if (this._name == null) {
@@ -155,10 +155,7 @@ final class KeyCall extends FunctionCall {
          } else {
             il.append((org.apache.bcel.generic.Instruction)(new INVOKEVIRTUAL(lookupKey)));
          }
-
-         il.append((org.apache.bcel.generic.Instruction)(new ASTORE(returnIndex.getIndex())));
       }
 
-      return returnIndex;
    }
 }

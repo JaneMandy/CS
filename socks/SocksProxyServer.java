@@ -26,7 +26,7 @@ public class SocksProxyServer implements Runnable, Mortal {
    public Map toMap() {
       HashMap var1 = new HashMap();
       var1.put("type", "SOCKS4a Proxy");
-      var1.put("port", this.port + "");
+      var1.put("port", this.port.makeConcatWithConstants<invokedynamic>(this.port));
       return var1;
    }
 

@@ -142,16 +142,17 @@ public abstract class BaseSecurity {
          var9.write(var17, 0, 16);
          byte[] var10 = var9.toByteArray();
          return var10;
-      } catch (InvalidKeyException var13) {
-         MudgeSanity.logException("encrypt failure for: " + var1, var13, false);
+      } catch (InvalidKeyException var15) {
+         MudgeSanity.logException("encrypt failure for: " + var1, var15, false);
          CommonUtils.print_error_file("resources/crypto.txt");
          MudgeSanity.debugJava();
          SecretKey var4 = this.getKey(var1);
          if (var4 != null) {
-            CommonUtils.print_info("Key's algorithm is: '" + var4.getAlgorithm() + "' ivspec is: " + this.ivspec);
+            String var10000 = var4.getAlgorithm();
+            CommonUtils.print_info("Key's algorithm is: '" + var10000 + "' ivspec is: " + this.ivspec);
          }
-      } catch (Exception var14) {
-         MudgeSanity.logException("encrypt failure for: " + var1, var14, false);
+      } catch (Exception var16) {
+         MudgeSanity.logException("encrypt failure for: " + var1, var16, false);
       }
 
       return new byte[0];
@@ -205,8 +206,8 @@ public abstract class BaseSecurity {
                }
             }
          }
-      } catch (Exception var17) {
-         var17.printStackTrace();
+      } catch (Exception var19) {
+         var19.printStackTrace();
          return new byte[0];
       }
    }
@@ -220,7 +221,8 @@ public abstract class BaseSecurity {
       byte[] var5 = var1.decrypt("1234", var4);
       CommonUtils.print_info("Cipher [H]:  " + CommonUtils.toHexString(var4));
       CommonUtils.print_info("Plain  [H]:  " + CommonUtils.toHexString(var5));
-      CommonUtils.print_info("Cipher:      " + CommonUtils.bString(var4).replaceAll("\\P{Print}", "."));
+      String var10000 = CommonUtils.bString(var4);
+      CommonUtils.print_info("Cipher:      " + var10000.replaceAll("\\P{Print}", "."));
       CommonUtils.print_info("Plain:       " + CommonUtils.bString(var5));
       CommonUtils.print_info("[Cipher]:    " + var4.length);
       CommonUtils.print_info("[Plain]:     " + var5.length);
@@ -242,7 +244,6 @@ public abstract class BaseSecurity {
          this.A = 0L;
       }
 
-      // $FF: synthetic method
       _A(Object var1) {
          this();
       }

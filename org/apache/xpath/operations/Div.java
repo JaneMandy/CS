@@ -6,8 +6,6 @@ import org.apache.xpath.objects.XNumber;
 import org.apache.xpath.objects.XObject;
 
 public class Div extends Operation {
-   static final long serialVersionUID = 6220756595959798135L;
-
    public XObject operate(XObject left, XObject right) throws TransformerException {
       return new XNumber(left.num() / right.num());
    }

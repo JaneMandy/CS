@@ -12,7 +12,7 @@ import org.apache.xalan.xsltc.compiler.util.ClassGenerator;
 import org.apache.xalan.xsltc.compiler.util.MethodGenerator;
 import org.apache.xalan.xsltc.compiler.util.Type;
 import org.apache.xalan.xsltc.compiler.util.TypeCheckError;
-import org.apache.xml.dtm.Axis;
+import org.apache.xalan.xsltc.dom.Axis;
 
 final class UnionPathExpr extends Expression {
    private final Expression _pathExpr;
@@ -44,7 +44,7 @@ final class UnionPathExpr extends Expression {
                this._components[0] = step;
             }
 
-            if (Axis.isReverse(axis)) {
+            if (Axis.isReverse[axis]) {
                this._reverse = true;
             }
          }

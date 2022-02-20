@@ -8,6 +8,7 @@ import sleep.engine.ObjectUtilities;
 import sleep.engine.Step;
 import sleep.runtime.Scalar;
 import sleep.runtime.ScriptEnvironment;
+import sleep.runtime.ScriptInstance;
 import sleep.runtime.SleepUtils;
 
 public class ObjectAccess extends Step {
@@ -54,18 +55,11 @@ public class ObjectAccess extends Step {
       } else {
          Scalar var5 = SleepUtils.getEmptyScalar();
          Method var6 = ObjectUtilities.findMethod(var3, this.name, var1.getCurrentFrame());
-         if (var6 != null && (this.classRef == null || (var6.getModifiers() & 8) == 8)) {
-            try {
-               var6.setAccessible(true);
-            } catch (Exception var9) {
-            }
-
-            ObjectAccess.MethodCallRequest var15 = new ObjectAccess.MethodCallRequest(var1, this.getLineNumber(), var6, var4, this.name, var3);
-            var15.CallFunction();
-            return null;
-         } else {
+         if (var6 == null || this.classRef != null && (var6.getModifiers() & 8) != 8) {
             if (var6 == null && !var1.getCurrentFrame().isEmpty()) {
-               var1.getScriptInstance().fireWarning("there is no method that matches " + this.name + "(" + SleepUtils.describe(var1.getCurrentFrame()) + ") in " + var3.getName(), this.getLineNumber());
+               ScriptInstance var10000 = var1.getScriptInstance();
+               String var10001 = this.name;
+               var10000.fireWarning("there is no method that matches " + var10001 + "(" + SleepUtils.describe(var1.getCurrentFrame()) + ") in " + var3.getName(), this.getLineNumber());
             } else {
                try {
                   Field var7;
@@ -93,6 +87,15 @@ public class ObjectAccess extends Step {
             }
 
             var1.FrameResult(var5);
+            return null;
+         } else {
+            try {
+               var6.setAccessible(true);
+            } catch (Exception var9) {
+            }
+
+            ObjectAccess.MethodCallRequest var15 = new ObjectAccess.MethodCallRequest(var1, this.getLineNumber(), var6, var4, this.name, var3);
+            var15.CallFunction();
             return null;
          }
       }

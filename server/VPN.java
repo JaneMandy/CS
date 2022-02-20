@@ -116,8 +116,8 @@ public class VPN implements ServerHook, Do {
                this.loaded = true;
                Timers.getTimers().every(1000L, "vpn", this);
                var10000 = true;
-            } catch (Exception var4) {
-               MudgeSanity.logException("loadTapLibrary", var4, false);
+            } catch (Exception var5) {
+               MudgeSanity.logException("loadTapLibrary", var5, false);
                return false;
             }
 
@@ -141,8 +141,8 @@ public class VPN implements ServerHook, Do {
 
                this.iserver = new Server();
                var10000 = this.iserver;
-            } catch (Exception var4) {
-               MudgeSanity.logException("loadICMPLibrary", var4, false);
+            } catch (Exception var5) {
+               MudgeSanity.logException("loadICMPLibrary", var5, false);
                return null;
             }
 
@@ -234,12 +234,12 @@ public class VPN implements ServerHook, Do {
 
             this.report(var3, var4, var7, var6, var5, "not connected", var9);
             this.taps.put(var3, var8);
-         } catch (Exception var13) {
-            MudgeSanity.logException("start_tap", var13, false);
-            var1.writeNow(var2.reply(var13.getMessage()));
+         } catch (Exception var14) {
+            MudgeSanity.logException("start_tap", var14, false);
+            var1.writeNow(var2.reply(var14.getMessage()));
          }
-
       }
+
    }
 
    public void call(Request var1, ManageUser var2) {

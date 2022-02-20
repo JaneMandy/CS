@@ -45,7 +45,8 @@ public class YourCodeSucksException extends RuntimeException {
 
       while(var3.hasNext()) {
          SyntaxError var4 = (SyntaxError)var3.next();
-         var1.append("Error: " + var4.getDescription() + " at line " + var4.getLineNumber() + "\n");
+         String var10001 = var4.getDescription();
+         var1.append("Error: " + var10001 + " at line " + var4.getLineNumber() + "\n");
          var1.append("       " + var4.getCodeSnippet() + "\n");
          if (var4.getMarker() != null) {
             var1.append("       " + var4.getMarker() + "\n");

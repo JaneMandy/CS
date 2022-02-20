@@ -117,7 +117,7 @@ public class BeaconData {
             Iterator var7 = var5.iterator();
 
             while(var7.hasNext()) {
-               byte[] var8 = (byte[])((byte[])var7.next());
+               byte[] var8 = (byte[])var7.next();
                if (var4 + var8.length < var2) {
                   var6.write(var8, 0, var8.length);
                   var7.remove();

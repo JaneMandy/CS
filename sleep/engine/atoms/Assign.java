@@ -34,9 +34,9 @@ public class Assign extends Step {
       } else {
          var1.CreateFrame();
          this.variable.evaluate(var1);
-         Scalar var2 = (Scalar)((Scalar)var1.getCurrentFrame().pop());
+         Scalar var2 = (Scalar)var1.getCurrentFrame().pop();
          var1.KillFrame();
-         Scalar var3 = (Scalar)((Scalar)var1.getCurrentFrame().pop());
+         Scalar var3 = (Scalar)var1.getCurrentFrame().pop();
          if (this.operator != null) {
             var1.CreateFrame();
             var1.getCurrentFrame().push(var3);

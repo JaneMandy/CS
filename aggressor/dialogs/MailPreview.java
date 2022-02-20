@@ -47,7 +47,8 @@ public class MailPreview extends AObject implements ActionListener {
          this._processOptions();
          return true;
       } catch (Exception var2) {
-         DialogUtils.showError("Trouble processing " + this.templatef + ":\n" + var2.getMessage());
+         String var10000 = this.templatef;
+         DialogUtils.showError("Trouble processing " + var10000 + ":\n" + var2.getMessage());
          MudgeSanity.logException("process phishing preview", var2, false);
          return false;
       }
@@ -61,7 +62,7 @@ public class MailPreview extends AObject implements ActionListener {
 
       Map var2 = (Map)CommonUtils.pick((List)this.contacts);
       String var3 = (String)var2.get("To");
-      String var4 = (String)var2.get("To_Name") + "";
+      String var4 = ((String)var2.get("To_Name")).makeConcatWithConstants<invokedynamic>((String)var2.get("To_Name"));
       byte[] var5 = var1.getMessage((String)null, var4.length() > 0 ? var4 + " <" + var3 + ">" : var3);
       String var6 = PhishingUtils.updateMessage(CommonUtils.bString(var5), var2, this.urlv, "1234567890ab");
       Eater var7 = new Eater(new ByteArrayInputStream(CommonUtils.toBytes(var6)));
@@ -117,14 +118,14 @@ public class MailPreview extends AObject implements ActionListener {
       var2.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
       var2.addHyperlinkListener(new HyperlinkListener() {
          public void hyperlinkUpdate(HyperlinkEvent var1x) {
-            String var2 = var1x.getEventType() + "";
+            String var2 = var1x.getEventType().makeConcatWithConstants<invokedynamic>(var1x.getEventType());
             if (var2.equals("ENTERED")) {
-               var1.setText(var1x.getURL() + "");
+               var1.setText(var1x.getURL().makeConcatWithConstants<invokedynamic>(var1x.getURL()));
                var1.setCaretPosition(0);
             } else if (var2.equals("EXITED")) {
                var1.setText("");
             } else if (var2.equals("ACTIVATED")) {
-               DialogUtils.showInput(MailPreview.this.dialog, "You clicked", var1x.getURL() + "");
+               DialogUtils.showInput(MailPreview.this.dialog, "You clicked", var1x.getURL().makeConcatWithConstants<invokedynamic>(var1x.getURL()));
             }
 
          }
@@ -167,5 +168,6 @@ public class MailPreview extends AObject implements ActionListener {
          this.dialog.setVisible(true);
          this.dialog.show();
       }
+
    }
 }

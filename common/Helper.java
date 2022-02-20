@@ -60,26 +60,28 @@ public class Helper {
    private static final boolean A(Class var0, Class var1, String var2, long[] var3, boolean var4) {
       ZipFile var5 = null;
 
-      boolean var6;
+      boolean var7;
       try {
          var5 = A(var0, var1);
-         if (var5 != null) {
-            var6 = A(var5, var2, var3);
+         boolean var6;
+         if (var5 == null) {
+            var6 = !var4;
             return var6;
          }
 
-         var6 = !var4;
+         var6 = A(var5, var2, var3);
+         var7 = var6;
       } finally {
          try {
             if (var5 != null) {
                var5.close();
             }
-         } catch (Throwable var14) {
+         } catch (Throwable var15) {
          }
 
       }
 
-      return var6;
+      return var7;
    }
 
    private static final ZipFile A(Class var0, Class var1) {
@@ -95,11 +97,7 @@ public class Helper {
    private static final boolean A(ZipFile var0, String var1, long[] var2) {
       try {
          ZipEntry var3 = var0.getEntry(var1);
-         if (var3 == null) {
-            return false;
-         } else {
-            return A(var3.getCrc(), var2);
-         }
+         return var3 == null ? false : A(var3.getCrc(), var2);
       } catch (Throwable var4) {
          return true;
       }

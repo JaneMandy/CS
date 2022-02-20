@@ -21,7 +21,7 @@ public class CodeGenerator implements ParserConstants {
    protected static HashMap escape_constants = new HashMap();
 
    public static void installEscapeConstant(char var0, String var1) {
-      escape_constants.put(var0 + "", var1);
+      escape_constants.put(var0.makeConcatWithConstants<invokedynamic>(var0), var1);
    }
 
    public Block getRunnableBlock() {
@@ -40,7 +40,7 @@ public class CodeGenerator implements ParserConstants {
 
    public Block restore() {
       Block var1 = this.CURRENT_BLOCK;
-      this.CURRENT_BLOCK = (Block)((Block)this.BACKUP_BLOCKS.pop());
+      this.CURRENT_BLOCK = (Block)this.BACKUP_BLOCKS.pop();
       return var1;
    }
 
@@ -107,6 +107,7 @@ public class CodeGenerator implements ParserConstants {
       if (!this.parser.hasErrors()) {
          this.parseObject(var2);
       }
+
    }
 
    public void parseObject(Statement var1) {
@@ -182,8 +183,8 @@ public class CodeGenerator implements ParserConstants {
          } else {
             this.parseBlock(var2);
          }
-
       }
+
    }
 
    public void parseBlock(LinkedList var1) {
@@ -221,6 +222,7 @@ public class CodeGenerator implements ParserConstants {
       String var10;
       TokenList var24;
       Token[] var25;
+      int var23;
       switch(var1.getType()) {
       case 100:
          this.backup();
@@ -395,11 +397,11 @@ public class CodeGenerator implements ParserConstants {
 
                this.parser.importPackage(var12[0], var12[1]);
             }
-         } catch (Exception var32) {
+         } catch (Exception var30) {
             if (var13.length == 2) {
-               this.parser.reportError(var32.getMessage(), ParserUtilities.makeToken("import " + var12[0] + " from: " + var12[1], var13[1]));
+               this.parser.reportError(var30.getMessage(), ParserUtilities.makeToken("import " + var12[0] + " from: " + var12[1], var13[1]));
             } else {
-               this.parser.reportError(var32.getMessage(), ParserUtilities.makeToken("import " + var12[0], var13[0]));
+               this.parser.reportError(var30.getMessage(), ParserUtilities.makeToken("import " + var12[0], var13[0]));
             }
          }
          break;
@@ -515,7 +517,7 @@ public class CodeGenerator implements ParserConstants {
          var12 = var39.getStrings();
          var13 = var39.getTokens();
          if (var12[0].charAt(0) != '&') {
-            var12[0] = '&' + var12[0];
+            var12[0] = "&" + var12[0];
          }
 
          if ((var12[0].equals("&iff") || var12[0].equals("&?")) && var13.length > 1) {
@@ -569,10 +571,9 @@ public class CodeGenerator implements ParserConstants {
 
          while(var21.hasNext()) {
             char var22 = var21.next();
-            int var23;
             if (var22 == '\\' && var21.hasNext()) {
                var22 = var21.next();
-               var10 = var22 + "";
+               var10 = var22.makeConcatWithConstants<invokedynamic>(var22);
                if (escape_constants.containsKey(var10)) {
                   var20.append(escape_constants.get(var10));
                } else if (var22 == 'u') {
@@ -584,7 +585,7 @@ public class CodeGenerator implements ParserConstants {
                      try {
                         var23 = Integer.parseInt(var10, 16);
                         var20.append((char)var23);
-                     } catch (NumberFormatException var31) {
+                     } catch (NumberFormatException var29) {
                         this.parser.reportErrorWithMarker("invalid unicode escape \\u" + var10 + " - must be hex digits", var21.getErrorToken());
                      }
                   }
@@ -597,7 +598,7 @@ public class CodeGenerator implements ParserConstants {
                      try {
                         var23 = Integer.parseInt(var10, 16);
                         var20.append((char)var23);
-                     } catch (NumberFormatException var30) {
+                     } catch (NumberFormatException var28) {
                         this.parser.reportErrorWithMarker("invalid unicode escape \\x" + var10 + " - must be hex digits", var21.getErrorToken());
                      }
                   }
@@ -608,7 +609,40 @@ public class CodeGenerator implements ParserConstants {
                var21.skip(3);
             } else if (var22 == '$' && var21.isNextChar('+')) {
                this.parser.reportErrorWithMarker("operator $+ must be surrounded with whitespace", var21.getErrorToken());
-            } else if (var36 && (Checkers.isEndOfVar(var21.peek()) || !var21.hasNext())) {
+            } else if (!var36 || !Checkers.isEndOfVar(var21.peek()) && var21.hasNext()) {
+               if (var22 == '$' && !Checkers.isEndOfVar(var21.peek()) && var21.hasNext()) {
+                  var9.add(PLiteral.fragment(1, var20.toString()));
+                  var20 = new StringBuffer();
+                  var20.append('$');
+                  var36 = true;
+                  if (var21.isNextChar('[')) {
+                     var23 = 0;
+
+                     do {
+                        var22 = var21.next();
+                        if (var22 == '[') {
+                           ++var23;
+                        }
+
+                        if (var22 == ']') {
+                           --var23;
+                        }
+
+                        var20.append(var22);
+                     } while(var21.hasNext() && var23 > 0);
+
+                     if (var23 != 0) {
+                        this.parser.reportError("missing close brace for variable alignment", new Token(var20.toString(), var21.getLineNumber()));
+                        var36 = false;
+                     } else if (!var21.hasNext() || Checkers.isEndOfVar(var21.peek())) {
+                        this.parser.reportErrorWithMarker("can not align an empty variable", var21.getErrorToken());
+                        var36 = false;
+                     }
+                  }
+               } else {
+                  var20.append(var22);
+               }
+            } else {
                var20.append(var22);
                String[] var38 = LexicalAnalyzer.CreateTerms(this.parser, new StringIterator(var20.toString(), var21.getLineNumber())).getStrings();
                String var18;
@@ -629,37 +663,6 @@ public class CodeGenerator implements ParserConstants {
                var9.add(PLiteral.fragment(3, (Object)null));
                var36 = false;
                var20 = new StringBuffer();
-            } else if (var22 == '$' && !Checkers.isEndOfVar(var21.peek()) && var21.hasNext()) {
-               var9.add(PLiteral.fragment(1, var20.toString()));
-               var20 = new StringBuffer();
-               var20.append('$');
-               var36 = true;
-               if (var21.isNextChar('[')) {
-                  var23 = 0;
-
-                  do {
-                     var22 = var21.next();
-                     if (var22 == '[') {
-                        ++var23;
-                     }
-
-                     if (var22 == ']') {
-                        --var23;
-                     }
-
-                     var20.append(var22);
-                  } while(var21.hasNext() && var23 > 0);
-
-                  if (var23 != 0) {
-                     this.parser.reportError("missing close brace for variable alignment", new Token(var20.toString(), var21.getLineNumber()));
-                     var36 = false;
-                  } else if (!var21.hasNext() || Checkers.isEndOfVar(var21.peek())) {
-                     this.parser.reportErrorWithMarker("can not align an empty variable", var21.getErrorToken());
-                     var36 = false;
-                  }
-               }
-            } else {
-               var20.append(var22);
             }
 
             if (!var21.hasNext() && var20.length() > 0) {
@@ -673,11 +676,11 @@ public class CodeGenerator implements ParserConstants {
       case 606:
          StringBuffer var11 = new StringBuffer(ParserUtilities.extract(var12[0]));
 
-         for(int var34 = 0; var34 < var11.length(); ++var34) {
-            if (var11.charAt(var34) == '\\' && var34 + 1 < var11.length()) {
-               char var35 = var11.charAt(var34 + 1);
+         for(var23 = 0; var23 < var11.length(); ++var23) {
+            if (var11.charAt(var23) == '\\' && var23 + 1 < var11.length()) {
+               char var35 = var11.charAt(var23 + 1);
                if (var35 == '\'' || var35 == '\\') {
-                  var11.deleteCharAt(var34);
+                  var11.deleteCharAt(var23);
                }
             }
          }
@@ -688,9 +691,9 @@ public class CodeGenerator implements ParserConstants {
          break;
       case 607:
          if (var12[0].endsWith("L")) {
-            var6 = SleepUtils.getScalar(Long.decode(var12[0].substring(0, var12[0].length() - 1)));
+            var6 = SleepUtils.getScalar((Object)Long.decode(var12[0].substring(0, var12[0].length() - 1)));
          } else {
-            var6 = SleepUtils.getScalar(Integer.decode(var12[0]));
+            var6 = SleepUtils.getScalar((Object)Integer.decode(var12[0]));
          }
 
          var5 = this.factory.SValue(var6);
@@ -702,7 +705,7 @@ public class CodeGenerator implements ParserConstants {
          this.add(var5, var13[0]);
          break;
       case 609:
-         var6 = SleepUtils.getScalar(Boolean.valueOf(var12[0]));
+         var6 = SleepUtils.getScalar((Object)Boolean.valueOf(var12[0]));
          var5 = this.factory.SValue(var6);
          this.add(var5, var13[0]);
          break;

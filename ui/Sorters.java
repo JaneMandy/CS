@@ -57,76 +57,6 @@ public class Sorters {
       A.add("Session");
    }
 
-   private static class _C implements Comparator {
-      private _C() {
-      }
-
-      public int compare(Object var1, Object var2) {
-         if (var1 == null && var2 == null) {
-            return this.compare("", "");
-         } else if (var1 == null) {
-            return this.compare("", var2);
-         } else {
-            return var2 == null ? this.compare(var1, "") : var1.toString().compareTo(var2.toString());
-         }
-      }
-
-      // $FF: synthetic method
-      _C(Object var1) {
-         this();
-      }
-   }
-
-   private static class _B implements Comparator {
-      private _B() {
-      }
-
-      public int compare(Object var1, Object var2) {
-         String var3 = var1.toString();
-         String var4 = var2.toString();
-         long var5 = CommonUtils.toLongNumber(var3, 0L);
-         long var7 = CommonUtils.toLongNumber(var4, 0L);
-         if (var5 == var7) {
-            return 0;
-         } else {
-            return var5 > var7 ? 1 : -1;
-         }
-      }
-
-      // $FF: synthetic method
-      _B(Object var1) {
-         this();
-      }
-   }
-
-   private static class _A implements Comparator {
-      private _A() {
-      }
-
-      public int compare(Object var1, Object var2) {
-         String var3 = var1.toString();
-         String var4 = var2.toString();
-         if (var3.equals("unknown")) {
-            return this.compare("0.0.0.0", var2);
-         } else if (var4.equals("unknown")) {
-            return this.compare(var1, "0.0.0.0");
-         } else {
-            long var5 = Route.ipToLong(var3);
-            long var7 = Route.ipToLong(var4);
-            if (var5 == var7) {
-               return 0;
-            } else {
-               return var5 > var7 ? 1 : -1;
-            }
-         }
-      }
-
-      // $FF: synthetic method
-      _A(Object var1) {
-         this();
-      }
-   }
-
    private static class _D implements Comparator {
       protected SimpleDateFormat A = null;
 
@@ -162,6 +92,73 @@ public class Sorters {
          } else {
             return var5 > var7 ? 1 : -1;
          }
+      }
+   }
+
+   private static class _A implements Comparator {
+      private _A() {
+      }
+
+      public int compare(Object var1, Object var2) {
+         String var3 = var1.toString();
+         String var4 = var2.toString();
+         if (var3.equals("unknown")) {
+            return this.compare("0.0.0.0", var2);
+         } else if (var4.equals("unknown")) {
+            return this.compare(var1, "0.0.0.0");
+         } else {
+            long var5 = Route.ipToLong(var3);
+            long var7 = Route.ipToLong(var4);
+            if (var5 == var7) {
+               return 0;
+            } else {
+               return var5 > var7 ? 1 : -1;
+            }
+         }
+      }
+
+      _A(Object var1) {
+         this();
+      }
+   }
+
+   private static class _B implements Comparator {
+      private _B() {
+      }
+
+      public int compare(Object var1, Object var2) {
+         String var3 = var1.toString();
+         String var4 = var2.toString();
+         long var5 = CommonUtils.toLongNumber(var3, 0L);
+         long var7 = CommonUtils.toLongNumber(var4, 0L);
+         if (var5 == var7) {
+            return 0;
+         } else {
+            return var5 > var7 ? 1 : -1;
+         }
+      }
+
+      _B(Object var1) {
+         this();
+      }
+   }
+
+   private static class _C implements Comparator {
+      private _C() {
+      }
+
+      public int compare(Object var1, Object var2) {
+         if (var1 == null && var2 == null) {
+            return this.compare("", "");
+         } else if (var1 == null) {
+            return this.compare("", var2);
+         } else {
+            return var2 == null ? this.compare(var1, "") : var1.toString().compareTo(var2.toString());
+         }
+      }
+
+      _C(Object var1) {
+         this();
       }
    }
 }

@@ -118,6 +118,7 @@ public class SQLDocument extends DTMDocument {
             this.extractSQLMetaData(this.m_ResultSet.getMetaData());
          }
 
+         this.addRowToDTMFromResultSet();
       } catch (SQLException var4) {
          this.m_HasErrors = true;
          throw var4;
@@ -129,7 +130,9 @@ public class SQLDocument extends DTMDocument {
       Connection conn = this.m_ConnectionPool.getConnection();
       if (!this.m_QueryParser.hasParameters()) {
          this.m_Statement = conn.createStatement();
-         this.m_ResultSet = this.m_Statement.executeQuery(this.m_QueryParser.getSQLQuery());
+         if (!this.m_Statement.execute(this.m_QueryParser.getSQLQuery())) {
+            throw new SQLException("Error in Query");
+         }
       } else if (this.m_QueryParser.isCallable()) {
          CallableStatement cstmt = conn.prepareCall(this.m_QueryParser.getSQLQuery());
          this.m_QueryParser.registerOutputParameters(cstmt);
@@ -138,32 +141,16 @@ public class SQLDocument extends DTMDocument {
          if (!cstmt.execute()) {
             throw new SQLException("Error in Callable Statement");
          }
-
-         this.m_ResultSet = this.m_Statement.getResultSet();
       } else {
          PreparedStatement stmt = conn.prepareStatement(this.m_QueryParser.getSQLQuery());
          this.m_QueryParser.populateStatement(stmt, this.m_ExpressionContext);
          this.m_Statement = stmt;
-         this.m_ResultSet = stmt.executeQuery();
-      }
-
-   }
-
-   public void skip(int value) {
-      try {
-         if (this.m_ResultSet != null) {
-            this.m_ResultSet.relative(value);
-         }
-      } catch (Exception var5) {
-         try {
-            for(int x = 0; x < value && this.m_ResultSet.next(); ++x) {
-            }
-         } catch (Exception var4) {
-            this.m_XConnection.setError(var5, this, this.checkWarnings());
-            this.m_XConnection.setError(var4, this, this.checkWarnings());
+         if (!stmt.execute()) {
+            throw new SQLException("Error in Prepared Statement");
          }
       }
 
+      this.m_ResultSet = this.m_Statement.getResultSet();
    }
 
    private void extractSQLMetaData(ResultSetMetaData meta) {
@@ -413,13 +400,13 @@ public class SQLDocument extends DTMDocument {
       return this.m_HasErrors;
    }
 
-   public void close(boolean flushConnPool) {
+   public void close() {
       try {
          SQLWarning warn = this.checkWarnings();
          if (warn != null) {
             this.m_XConnection.setError((Exception)null, (SQLDocument)null, warn);
          }
-      } catch (Exception var7) {
+      } catch (Exception var6) {
       }
 
       try {
@@ -427,7 +414,7 @@ public class SQLDocument extends DTMDocument {
             this.m_ResultSet.close();
             this.m_ResultSet = null;
          }
-      } catch (Exception var6) {
+      } catch (Exception var5) {
       }
 
       Connection conn = null;
@@ -438,7 +425,7 @@ public class SQLDocument extends DTMDocument {
             this.m_Statement.close();
             this.m_Statement = null;
          }
-      } catch (Exception var5) {
+      } catch (Exception var4) {
       }
 
       try {
@@ -449,7 +436,7 @@ public class SQLDocument extends DTMDocument {
                this.m_ConnectionPool.releaseConnection(conn);
             }
          }
-      } catch (Exception var4) {
+      } catch (Exception var3) {
       }
 
       this.getManager().release(this, true);
@@ -470,10 +457,6 @@ public class SQLDocument extends DTMDocument {
    protected int _nextsib(int identity) {
       if (this.m_ResultSet != null) {
          int id = this._exptype(identity);
-         if (this.m_FirstRowIdx == -1) {
-            this.addRowToDTMFromResultSet();
-         }
-
          if (id == this.m_Row_TypeID && identity >= this.m_LastRowIdx) {
             if (this.DEBUG) {
                System.out.println("reading from the ResultSet");

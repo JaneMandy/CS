@@ -31,7 +31,7 @@ public class AutoRunDialog implements DialogListener, SafeDialogCallback {
    }
 
    public void dialogResult(String var1) {
-      String var2 = (new File(this.options.get("EXE") + "")).getName();
+      String var2 = (new File(((Class)this.options.get("EXE")).makeConcatWithConstants<invokedynamic>(this.options.get("EXE")))).getName();
       File var3 = new File(var1);
       var3.mkdirs();
       var3.mkdir();
@@ -47,7 +47,7 @@ public class AutoRunDialog implements DialogListener, SafeDialogCallback {
       var4.append("shellexecute=" + var2 + "\n");
       var4.append("UseAutoPlay=1\n");
       CommonUtils.writeToFile(new File(var3, "autorun.inf"), CommonUtils.toBytes(var4.toString()));
-      CommonUtils.copyFile(this.options.get("EXE") + "", new File(var1, var2));
+      CommonUtils.copyFile(((Class)this.options.get("EXE")).makeConcatWithConstants<invokedynamic>(this.options.get("EXE")), new File(var1, var2));
       DialogUtils.showInfo("Created autorun.inf in " + var1 + ".\nCopy files to root of USB drive or burn to CD.");
    }
 

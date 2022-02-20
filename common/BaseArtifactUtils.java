@@ -228,6 +228,6 @@ public class BaseArtifactUtils {
       var0.add(new byte[]{102, -121, -46});
       var0.add(new byte[]{102, -121, -1});
       var0.add(new byte[]{102, -121, -10});
-      return (byte[])((byte[])CommonUtils.pick((List)var0));
+      return (byte[])CommonUtils.pick((List)var0);
    }
 }

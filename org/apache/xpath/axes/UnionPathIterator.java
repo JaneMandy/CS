@@ -15,7 +15,6 @@ import org.apache.xpath.compiler.Compiler;
 import org.apache.xpath.compiler.OpMap;
 
 public class UnionPathIterator extends LocPathIterator implements Cloneable, DTMIterator, Serializable, PathComponent {
-   static final long serialVersionUID = -3910351546843826781L;
    protected LocPathIterator[] m_exprs;
    protected DTMIterator[] m_iterators;
 
@@ -140,15 +139,6 @@ public class UnionPathIterator extends LocPathIterator implements Cloneable, DTM
 
    public Object clone() throws CloneNotSupportedException {
       UnionPathIterator clone = (UnionPathIterator)super.clone();
-      if (this.m_iterators != null) {
-         int n = this.m_iterators.length;
-         clone.m_iterators = new DTMIterator[n];
-
-         for(int i = 0; i < n; ++i) {
-            clone.m_iterators[i] = (DTMIterator)this.m_iterators[i].clone();
-         }
-      }
-
       return clone;
    }
 

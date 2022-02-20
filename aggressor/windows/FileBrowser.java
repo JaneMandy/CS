@@ -91,6 +91,7 @@ public class FileBrowser extends AObject {
             }
          }
       }
+
    }
 
    public JComponent getTree() {

@@ -42,8 +42,8 @@ public abstract class BasicClient implements Runnable {
             }
          } catch (IOException var3) {
          }
-
       }
+
    }
 
    public boolean isAlive() {
@@ -86,9 +86,9 @@ public abstract class BasicClient implements Runnable {
          }
 
          this.die();
-      } catch (InterruptedException var4) {
+      } catch (InterruptedException var5) {
          this.die();
-      } catch (IOException var5) {
+      } catch (IOException var6) {
          this.die();
       }
 

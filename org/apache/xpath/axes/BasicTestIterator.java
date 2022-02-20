@@ -8,8 +8,6 @@ import org.apache.xpath.compiler.Compiler;
 import org.apache.xpath.compiler.OpMap;
 
 public abstract class BasicTestIterator extends LocPathIterator {
-   static final long serialVersionUID = 3505378079378096623L;
-
    protected BasicTestIterator() {
    }
 

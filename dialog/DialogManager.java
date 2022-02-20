@@ -97,7 +97,7 @@ public class DialogManager {
 
       while(var2.hasNext()) {
          Entry var3 = (Entry)var2.next();
-         this.options.put(var3.getKey() + "", var3.getValue() + "");
+         this.options.put(((Class)var3.getKey()).makeConcatWithConstants<invokedynamic>(var3.getKey()), ((Class)var3.getValue()).makeConcatWithConstants<invokedynamic>(var3.getValue()));
       }
 
    }
@@ -150,9 +150,13 @@ public class DialogManager {
       final DialogManager.DialogRow var4 = this.text(var1 + ".title", var2);
       ((JTextField)var4.c[1]).setEditable(false);
       if (this.options.containsKey(var1)) {
-         BeaconEntry var5 = DataUtils.getBeacon(var3.getData(), this.options.get(var1) + "");
+         DataManager var10000 = var3.getData();
+         Object var10001 = this.options.get(var1);
+         BeaconEntry var5 = DataUtils.getBeacon(var10000, ((Class)var10001).makeConcatWithConstants<invokedynamic>(var10001));
          if (var5 != null) {
-            ((JTextField)var4.c[1]).setText(var5.getUser() + var5.title(" via "));
+            JTextField var7 = (JTextField)var4.c[1];
+            String var8 = var5.getUser();
+            var7.setText(var8 + var5.title(" via "));
          }
       }
 
@@ -164,7 +168,9 @@ public class DialogManager {
                   DialogManager.this.options.put(var1, var1x);
                   BeaconEntry var2 = DataUtils.getBeacon(var3.getData(), var1x);
                   if (var2 != null) {
-                     ((JTextField)var4.c[1]).setText(var2.getUser() + var2.title(" via "));
+                     JTextField var10000 = (JTextField)var4.c[1];
+                     String var10001 = var2.getUser();
+                     var10000.setText(var10001 + var2.title(" via "));
                   }
 
                }
@@ -382,16 +388,16 @@ public class DialogManager {
    public DialogManager.DialogRow color(String var1, String var2) {
       DialogManager.DialogRow var3 = this.text(var1, var2);
       final JTextField var4 = (JTextField)var3.c[1];
-      final Color var5 = Color.black;
+      final Color var5_1 = Color.black;
       if (var4.getText() != null && var4.getText().length() > 0) {
-         var5 = Color.decode(var4.getText());
+         var5_1 = Color.decode(var4.getText());
       }
 
-      final SolidIcon var6 = new SolidIcon(var5, 16, 16);
+      final SolidIcon var6 = new SolidIcon(var5_1, 16, 16);
       JButton var7 = new JButton(var6);
       var7.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent var1) {
-            SafeDialogs.chooseColor("pick a color", var5, new SafeDialogCallback() {
+            SafeDialogs.chooseColor("pick a color", var5_1, new SafeDialogCallback() {
                public void dialogResult(String var1) {
                   var4.setText(var1);
                   var6.setColor(Color.decode(var1));
@@ -483,7 +489,8 @@ public class DialogManager {
    public DialogManager.DialogRow text(final String var1, String var2, int var3) {
       final ATextField var4 = new ATextField(var3);
       if (this.options.containsKey(var1)) {
-         var4.setText(this.options.get(var1) + "");
+         Object var10001 = this.options.get(var1);
+         var4.setText(((Class)var10001).makeConcatWithConstants<invokedynamic>(var10001));
       }
 
       this.addDialogListenerInternal(new DialogListener() {
@@ -518,7 +525,8 @@ public class DialogManager {
       JScrollPane var7 = new JScrollPane(var6, 20, 30);
       var7.setPreferredSize(new Dimension(240, var5));
       if (this.options.containsKey(var1)) {
-         String var8 = this.options.get(var1) + "";
+         Object var10000 = this.options.get(var1);
+         String var8 = ((Class)var10000).makeConcatWithConstants<invokedynamic>(var10000);
          if (!"".equals(var8)) {
             var6.setListData(CommonUtils.toArray(var8));
          }
@@ -625,7 +633,8 @@ public class DialogManager {
       var6.setPreferredSize(new Dimension(240, var4));
       String[] var8;
       if (this.options.containsKey(var1)) {
-         String var7 = this.options.get(var1) + "";
+         Object var10000 = this.options.get(var1);
+         String var7 = ((Class)var10000).makeConcatWithConstants<invokedynamic>(var10000);
          if (!"".equals(var7)) {
             if ("connection.profiles".equals(var1)) {
                var8 = var7.split("!!");
@@ -740,7 +749,8 @@ public class DialogManager {
       var4.setLineWrap(true);
       var4.setWrapStyleWord(true);
       if (this.options.containsKey(var1)) {
-         var4.setText(this.options.get(var1) + "");
+         Object var10001 = this.options.get(var1);
+         var4.setText(((Class)var10001).makeConcatWithConstants<invokedynamic>(var10001));
       }
 
       this.addDialogListenerInternal(new DialogListener() {
@@ -765,7 +775,8 @@ public class DialogManager {
    public DialogManager.DialogRow password(final String var1, String var2, int var3) {
       final APasswordField var4 = new APasswordField(var3);
       if (this.options.containsKey(var1)) {
-         var4.setText(this.options.get(var1) + "");
+         Object var10001 = this.options.get(var1);
+         var4.setText(((Class)var10001).makeConcatWithConstants<invokedynamic>(var10001));
       }
 
       this.addDialogListenerInternal(new DialogListener() {
@@ -892,6 +903,24 @@ public class DialogManager {
       return var3;
    }
 
+   public static final class DialogRow {
+      public JComponent[] c = new JComponent[3];
+
+      public DialogRow(JComponent var1, JComponent var2, JComponent var3) {
+         this.c[0] = var1;
+         this.c[1] = var2;
+         this.c[2] = var3;
+      }
+
+      public JComponent get(int var1) {
+         return this.c[var1];
+      }
+
+      public void last(JComponent var1) {
+         this.c[2] = var1;
+      }
+   }
+
    private static class _A implements ActionListener, Callback {
       protected JComboBox ĥ;
       protected TeamQueue Ħ;
@@ -912,28 +941,10 @@ public class DialogManager {
       public void result(String var1, final Object var2) {
          CommonUtils.runSafe(new Runnable() {
             public void run() {
-               _A.this.ĥ.addItem(var2 + "");
-               _A.this.ĥ.setSelectedItem(var2 + "");
+               _A.this.ĥ.addItem(((Class)var2).makeConcatWithConstants<invokedynamic>(var2));
+               _A.this.ĥ.setSelectedItem(((Class)var2).makeConcatWithConstants<invokedynamic>(var2));
             }
          });
-      }
-   }
-
-   public static final class DialogRow {
-      public JComponent[] c = new JComponent[3];
-
-      public DialogRow(JComponent var1, JComponent var2, JComponent var3) {
-         this.c[0] = var1;
-         this.c[1] = var2;
-         this.c[2] = var3;
-      }
-
-      public JComponent get(int var1) {
-         return this.c[var1];
-      }
-
-      public void last(JComponent var1) {
-         this.c[2] = var1;
       }
    }
 }

@@ -33,49 +33,53 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 public class PipeDocument {
    public void pipeDocument(XSLProcessorContext context, ElemExtensionCall elem) throws TransformerException, TransformerConfigurationException, SAXException, IOException, FileNotFoundException {
-      SAXTransformerFactory saxTFactory = (SAXTransformerFactory)TransformerFactory.newInstance();
-      String source = elem.getAttribute("source", context.getContextNode(), context.getTransformer());
-      TransformerImpl transImpl = context.getTransformer();
-      String baseURLOfSource = transImpl.getBaseURLOfSource();
-      String absSourceURL = SystemIDResolver.getAbsoluteURI(source, baseURLOfSource);
-      String target = elem.getAttribute("target", context.getContextNode(), context.getTransformer());
-      XPathContext xctxt = context.getTransformer().getXPathContext();
-      int xt = xctxt.getDTMHandleFromNode(context.getContextNode());
-      String sysId = elem.getSystemId();
-      NodeList ssNodes = null;
-      NodeList paramNodes = null;
-      Node ssNode = null;
-      Node paramNode = null;
-      if (elem.hasChildNodes()) {
-         ssNodes = elem.getChildNodes();
-         Vector vTHandler = new Vector(ssNodes.getLength());
+      try {
+         SAXTransformerFactory saxTFactory = (SAXTransformerFactory)TransformerFactory.newInstance();
+         String source = elem.getAttribute("source", context.getContextNode(), context.getTransformer());
+         TransformerImpl transImpl = context.getTransformer();
+         String baseURLOfSource = transImpl.getBaseURLOfSource();
+         String absSourceURL = SystemIDResolver.getAbsoluteURI(source, baseURLOfSource);
+         String target = elem.getAttribute("target", context.getContextNode(), context.getTransformer());
+         XPathContext xctxt = context.getTransformer().getXPathContext();
+         int xt = xctxt.getDTMHandleFromNode(context.getContextNode());
+         String sysId = elem.getSystemId();
+         NodeList ssNodes = null;
+         NodeList paramNodes = null;
+         Node ssNode = null;
+         Node paramNode = null;
+         if (elem.hasChildNodes()) {
+            ssNodes = elem.getChildNodes();
+            Vector vTHandler = new Vector(ssNodes.getLength());
 
-         for(int i = 0; i < ssNodes.getLength(); ++i) {
-            ssNode = ssNodes.item(i);
-            if (ssNode.getNodeType() == 1 && ((Element)ssNode).getTagName().equals("stylesheet") && ssNode instanceof ElemLiteralResult) {
-               AVT avt = ((ElemLiteralResult)ssNode).getLiteralResultAttribute("href");
-               String href = avt.evaluate(xctxt, xt, elem);
-               String absURI = SystemIDResolver.getAbsoluteURI(href, sysId);
-               Templates tmpl = saxTFactory.newTemplates(new StreamSource(absURI));
-               TransformerHandler tHandler = saxTFactory.newTransformerHandler(tmpl);
-               Transformer trans = tHandler.getTransformer();
-               vTHandler.addElement(tHandler);
-               paramNodes = ssNode.getChildNodes();
+            for(int i = 0; i < ssNodes.getLength(); ++i) {
+               ssNode = ssNodes.item(i);
+               if (ssNode.getNodeType() == 1 && ((Element)ssNode).getTagName().equals("stylesheet") && ssNode instanceof ElemLiteralResult) {
+                  AVT avt = ((ElemLiteralResult)ssNode).getLiteralResultAttribute("href");
+                  String href = avt.evaluate(xctxt, xt, elem);
+                  String absURI = SystemIDResolver.getAbsoluteURI(href, sysId);
+                  Templates tmpl = saxTFactory.newTemplates(new StreamSource(absURI));
+                  TransformerHandler tHandler = saxTFactory.newTransformerHandler(tmpl);
+                  Transformer trans = tHandler.getTransformer();
+                  vTHandler.addElement(tHandler);
+                  paramNodes = ssNode.getChildNodes();
 
-               for(int j = 0; j < paramNodes.getLength(); ++j) {
-                  paramNode = paramNodes.item(j);
-                  if (paramNode.getNodeType() == 1 && ((Element)paramNode).getTagName().equals("param") && paramNode instanceof ElemLiteralResult) {
-                     avt = ((ElemLiteralResult)paramNode).getLiteralResultAttribute("name");
-                     String pName = avt.evaluate(xctxt, xt, elem);
-                     avt = ((ElemLiteralResult)paramNode).getLiteralResultAttribute("value");
-                     String pValue = avt.evaluate(xctxt, xt, elem);
-                     trans.setParameter(pName, pValue);
+                  for(int j = 0; j < paramNodes.getLength(); ++j) {
+                     paramNode = paramNodes.item(j);
+                     if (paramNode.getNodeType() == 1 && ((Element)paramNode).getTagName().equals("param") && paramNode instanceof ElemLiteralResult) {
+                        avt = ((ElemLiteralResult)paramNode).getLiteralResultAttribute("name");
+                        String pName = avt.evaluate(xctxt, xt, elem);
+                        avt = ((ElemLiteralResult)paramNode).getLiteralResultAttribute("value");
+                        String pValue = avt.evaluate(xctxt, xt, elem);
+                        trans.setParameter(pName, pValue);
+                     }
                   }
                }
             }
-         }
 
-         this.usePipe(vTHandler, absSourceURL, target);
+            this.usePipe(vTHandler, absSourceURL, target);
+         }
+      } catch (Exception var27) {
+         var27.printStackTrace();
       }
 
    }

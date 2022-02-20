@@ -36,9 +36,11 @@ public class PayloadGeneratorStageDialog implements DialogListener, SafeDialogCa
       if (this.stager.length != 0) {
          Map var6 = DialogUtils.toMap("ASPX: aspx, C: c, C#: cs, HTML Application: hta, Java: java, Perl: pl, PowerShell: ps1, PowerShell Command: txt, Python: py, Raw: bin, Ruby: rb, COM Scriptlet: sct, Veil: txt, VBA: vba");
          String var7 = DialogUtils.string(var2, "format");
-         String var8 = "payload." + var6.get(var7);
+         Object var10000 = var6.get(var7);
+         String var8 = "payload." + var10000;
          SafeDialogs.saveFile((JFrame)null, var8, this);
       }
+
    }
 
    public void dialogResult(String var1) {

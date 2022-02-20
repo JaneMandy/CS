@@ -21,7 +21,8 @@ public abstract class GenericBindStager {
    public abstract int getBindHostOffset();
 
    public byte[] generate(int var1) {
-      String var2 = CommonUtils.bString(CommonUtils.readResource(this.getFile())) + this.listener.getConfig().getWatermark();
+      String var10000 = CommonUtils.bString(CommonUtils.readResource(this.getFile()));
+      String var2 = var10000 + this.listener.getConfig().getWatermark();
       Packer var3 = new Packer();
       var3.addShort(var1);
       var2 = CommonUtils.replaceAt(var2, CommonUtils.bString(var3.getBytes()), this.getPortOffset());

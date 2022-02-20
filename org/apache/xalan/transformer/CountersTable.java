@@ -8,7 +8,6 @@ import org.apache.xpath.NodeSetDTM;
 import org.apache.xpath.XPathContext;
 
 public class CountersTable extends Hashtable {
-   static final long serialVersionUID = 2159100770924179875L;
    private transient NodeSetDTM m_newFound;
    transient int m_countersMade = 0;
 

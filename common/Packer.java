@@ -190,11 +190,11 @@ public class Packer {
    }
 
    public void addLengthAndWideStringASCIIZ(String var1) {
-      this.addLengthAndString(CommonUtils.toBytes(var1 + '\u0000', "UTF-16LE"));
+      this.addLengthAndString(CommonUtils.toBytes(var1 + "\u0000", "UTF-16LE"));
    }
 
    public void addLengthAndStringASCIIZ(String var1) {
-      this.addLengthAndString(var1 + '\u0000');
+      this.addLengthAndString(var1 + "\u0000");
    }
 
    public void addEncodedString(AggressorClient var1, String var2, String var3) {
@@ -206,7 +206,7 @@ public class Packer {
    }
 
    public void addLengthAndEncodedStringASCIIZ(AggressorClient var1, String var2, String var3) {
-      this.addLengthAndEncodedString(var1, var2, var3 + '\u0000');
+      this.addLengthAndEncodedString(var1, var2, var3 + "\u0000");
    }
 
    public void addLengthAndString(byte[] var1) {

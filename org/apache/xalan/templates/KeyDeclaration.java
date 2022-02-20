@@ -6,7 +6,6 @@ import org.apache.xml.utils.QName;
 import org.apache.xpath.XPath;
 
 public class KeyDeclaration extends ElemTemplateElement {
-   static final long serialVersionUID = 7724030248631137918L;
    private QName m_name;
    private XPath m_matchPattern = null;
    private XPath m_use;

@@ -9,7 +9,6 @@ import org.apache.xalan.xsltc.StripFilter;
 import org.apache.xalan.xsltc.TransletException;
 import org.apache.xalan.xsltc.runtime.BasisLibrary;
 import org.apache.xalan.xsltc.runtime.Hashtable;
-import org.apache.xml.dtm.Axis;
 import org.apache.xml.dtm.DTMAxisIterator;
 import org.apache.xml.dtm.DTMManager;
 import org.apache.xml.dtm.DTMWSFilter;
@@ -643,7 +642,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
          return new SAX2DTM2.FollowingSiblingIterator();
       case 8:
       default:
-         BasisLibrary.runTimeError("AXIS_SUPPORT_ERR", (Object)Axis.getNames(axis));
+         BasisLibrary.runTimeError("AXIS_SUPPORT_ERR", (Object)org.apache.xml.dtm.Axis.names[axis]);
          return null;
       case 9:
          return new DTMDefaultBaseIterators.NamespaceIterator();
@@ -683,7 +682,7 @@ public final class SAXImpl extends SAX2DTM2 implements DOMEnhancedForDTM, DOMBui
             return new SAX2DTM2.TypedFollowingSiblingIterator(type);
          case 8:
          default:
-            BasisLibrary.runTimeError("TYPED_AXIS_SUPPORT_ERR", (Object)Axis.getNames(axis));
+            BasisLibrary.runTimeError("TYPED_AXIS_SUPPORT_ERR", (Object)org.apache.xml.dtm.Axis.names[axis]);
             return null;
          case 9:
             return new SAXImpl.TypedNamespaceIterator(type);

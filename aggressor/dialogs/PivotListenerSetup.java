@@ -52,15 +52,15 @@ public class PivotListenerSetup extends AObject implements DialogListener, Callb
 
       HashMap var9 = new HashMap();
       var9.put("payload", var6);
-      var9.put("port", var5 + "");
+      var9.put("port", var5.makeConcatWithConstants<invokedynamic>(var5));
       var9.put("host", var4);
       var9.put("name", var3);
-      var9.put("bid", var7 + "");
+      var9.put("bid", var7.makeConcatWithConstants<invokedynamic>(var7));
       this.client.getConnection().call("listeners.create", CommonUtils.args(var3, var9), this);
    }
 
    public void result(String var1, Object var2) {
-      String var3 = var2 + "";
+      String var3 = ((Class)var2).makeConcatWithConstants<invokedynamic>(var2);
       if (!"".equals(var3)) {
          if (var3.equals("success")) {
             DialogUtils.showInfo("Started Listener");

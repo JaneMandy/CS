@@ -59,7 +59,7 @@ public class Listeners implements ServerHook {
       String var3;
       Map var4;
       if (var1.is("listeners.create", 2)) {
-         var3 = var1.arg(0) + "";
+         var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
          var4 = (Map)var1.arg(1);
          synchronized(this) {
             this.listeners.put(var3, var4);
@@ -73,7 +73,7 @@ public class Listeners implements ServerHook {
             var2.write(var1.reply(""));
          }
       } else if (var1.is("listeners.remove", 1)) {
-         var3 = var1.arg(0) + "";
+         var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
          var4 = null;
          synchronized(this) {
             var4 = (Map)this.listeners.get(var3);
@@ -90,7 +90,7 @@ public class Listeners implements ServerHook {
             this.resources.call(var2, var1.derive("beacons.stop", CommonUtils.args(var4)));
          }
       } else if (var1.is("listeners.restart", 1)) {
-         var3 = var1.arg(0) + "";
+         var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
          var4 = null;
          synchronized(this) {
             var4 = (Map)this.listeners.get(var3);
@@ -103,7 +103,7 @@ public class Listeners implements ServerHook {
             var2.write(var1.reply((Object)null));
          }
       } else if (var1.is("listeners.stop", 1)) {
-         var3 = var1.arg(0) + "";
+         var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
          var4 = null;
          synchronized(this) {
             var4 = (Map)this.listeners.get(var3);
@@ -116,57 +116,63 @@ public class Listeners implements ServerHook {
          if (isBeacon(var4)) {
             this.resources.call("beacons.stop", CommonUtils.args(var4));
          }
-      } else if (var1.is("listeners.go", 0)) {
-         Iterator var20 = this.buildListenerModel().entrySet().iterator();
-
-         while(var20.hasNext()) {
-            Entry var21 = (Entry)var20.next();
-            if (isBeacon((Map)var21.getValue())) {
-               this.resources.call("beacons.start", CommonUtils.args(var21.getValue()));
-            }
-         }
-      } else if (var1.is("listeners.localip", 1)) {
-         var3 = var1.arg(0) + "";
-         this.resources.put("localip", var3);
-         this.resources.broadcast("localip", var3, true);
-      } else if (var1.is("listeners.update", 2)) {
-         var3 = var1.arg(0) + "";
-         var4 = (Map)var1.arg(1);
-         synchronized(this) {
-            Map var6 = (Map)this.listeners.get(var3);
-            if (var6 == null) {
-               return;
-            }
-
-            Iterator var7 = var4.entrySet().iterator();
-
-            while(var7.hasNext()) {
-               Entry var8 = (Entry)var7.next();
-               var6.put(var8.getKey(), var8.getValue());
-            }
-         }
-      } else if (var1.is("listeners.push", 0)) {
-         synchronized(this) {
-            this.save();
-            this.resources.broadcast("listeners", this.buildListenerModel(), true);
-         }
-      } else if (var1.is("listeners.set_status", 2)) {
-         var3 = var1.arg(0) + "";
-         String var22 = var1.arg(1) + "";
-         Map var5 = null;
-         synchronized(this) {
-            var5 = (Map)this.listeners.get(var3);
-            var5.put("status", var22);
-            this.resources.broadcast("listeners", this.buildListenerModel(), true);
-         }
       } else {
-         var2.writeNow(new Reply("server_error", 0L, var1 + ": incorrect number of arguments"));
+         Entry var5;
+         if (var1.is("listeners.go", 0)) {
+            Iterator var20 = this.buildListenerModel().entrySet().iterator();
+
+            while(var20.hasNext()) {
+               var5 = (Entry)var20.next();
+               if (isBeacon((Map)var5.getValue())) {
+                  this.resources.call("beacons.start", CommonUtils.args(var5.getValue()));
+               }
+            }
+         } else if (var1.is("listeners.localip", 1)) {
+            var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
+            this.resources.put("localip", var3);
+            this.resources.broadcast("localip", var3, true);
+         } else {
+            Map var6;
+            if (var1.is("listeners.update", 2)) {
+               var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
+               var4 = (Map)var1.arg(1);
+               synchronized(this) {
+                  var6 = (Map)this.listeners.get(var3);
+                  if (var6 == null) {
+                     return;
+                  }
+
+                  Iterator var7 = var4.entrySet().iterator();
+
+                  while(var7.hasNext()) {
+                     Entry var8 = (Entry)var7.next();
+                     var6.put(var8.getKey(), var8.getValue());
+                  }
+               }
+            } else if (var1.is("listeners.push", 0)) {
+               synchronized(this) {
+                  this.save();
+                  this.resources.broadcast("listeners", this.buildListenerModel(), true);
+               }
+            } else if (var1.is("listeners.set_status", 2)) {
+               var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
+               String var22 = ((Class)var1.arg(1)).makeConcatWithConstants<invokedynamic>(var1.arg(1));
+               var5 = null;
+               synchronized(this) {
+                  var6 = (Map)this.listeners.get(var3);
+                  var6.put("status", var22);
+                  this.resources.broadcast("listeners", this.buildListenerModel(), true);
+               }
+            } else {
+               var2.writeNow(new Reply("server_error", 0L, var1 + ": incorrect number of arguments"));
+            }
+         }
       }
 
    }
 
    public static boolean isBeacon(Map var0) {
-      String var1 = var0.get("payload") + "";
+      String var1 = ((Class)var0.get("payload")).makeConcatWithConstants<invokedynamic>(var0.get("payload"));
       HashSet var2 = new HashSet();
       var2.add("windows/beacon_bind_pipe");
       var2.add("windows/beacon_reverse_tcp");

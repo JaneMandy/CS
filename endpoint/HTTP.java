@@ -98,7 +98,7 @@ public class HTTP extends Base implements WebService {
 
          return new Response("200 OK", "application/json", "{ \"status\": \"OK\" }");
       } else if (var1.startsWith("/receive")) {
-         this.tap.setRemoteHost((var3.get("REMOTE_ADDRESS") + "").substring(1));
+         this.tap.setRemoteHost(((Class)var3.get("REMOTE_ADDRESS")).makeConcatWithConstants<invokedynamic>(var3.get("REMOTE_ADDRESS")).substring(1));
          ByteArrayInputStream var5 = null;
          synchronized(this) {
             var5 = new ByteArrayInputStream(this.outframes.toByteArray());

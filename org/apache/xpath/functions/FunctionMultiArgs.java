@@ -7,7 +7,6 @@ import org.apache.xpath.XPathVisitor;
 import org.apache.xpath.res.XPATHMessages;
 
 public class FunctionMultiArgs extends Function3Args {
-   static final long serialVersionUID = 7117257746138417181L;
    Expression[] m_args;
 
    public Expression[] getArgs() {

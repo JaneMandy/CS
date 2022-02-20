@@ -44,13 +44,13 @@ public class TestConnection implements Runnable, Callback, ArmitageTrustListener
             this.Ā = new TeamQueue(new TeamSocket(var1.getSocket()));
             this.Ā.call("aggressor.authenticate", CommonUtils.args(this.Ą, this.Ć, Aggressor.VERSION), this);
             return;
-         } catch (Exception var3) {
+         } catch (Exception var4) {
             for(; this.ć > 0; --this.ć) {
                try {
                   this.ą.setText("Server unavailable, retry in " + this.ć + " seconds");
                   this.ą.getParent().validate();
                   Thread.sleep(1000L);
-               } catch (InterruptedException var2) {
+               } catch (InterruptedException var3) {
                }
             }
 

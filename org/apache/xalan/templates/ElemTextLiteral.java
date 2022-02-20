@@ -6,7 +6,6 @@ import org.apache.xml.serializer.SerializationHandler;
 import org.xml.sax.SAXException;
 
 public class ElemTextLiteral extends ElemTemplateElement {
-   static final long serialVersionUID = -7872620006767660088L;
    private boolean m_preserveSpace;
    private char[] m_ch;
    private String m_str;
@@ -55,7 +54,7 @@ public class ElemTextLiteral extends ElemTemplateElement {
    public void execute(TransformerImpl transformer) throws TransformerException {
       try {
          SerializationHandler rth = transformer.getResultTreeHandler();
-         if (transformer.getDebug()) {
+         if (TransformerImpl.S_DEBUG) {
             rth.flushPending();
             transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
          }
@@ -71,7 +70,7 @@ public class ElemTextLiteral extends ElemTemplateElement {
       } catch (SAXException var11) {
          throw new TransformerException(var11);
       } finally {
-         if (transformer.getDebug()) {
+         if (TransformerImpl.S_DEBUG) {
             try {
                transformer.getResultTreeHandler().flushPending();
                transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);

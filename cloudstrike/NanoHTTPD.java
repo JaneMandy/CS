@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
@@ -75,10 +76,13 @@ public class NanoHTTPD {
    }
 
    public static void logException(String activity, Throwable ex, boolean expected) {
+      String var10000;
       if (expected) {
-         print_warn("Trapped " + ex.getClass().getName() + " during " + activity + " [" + Thread.currentThread().getName() + "]: " + ex.getMessage());
+         var10000 = ex.getClass().getName();
+         print_warn("Trapped " + var10000 + " during " + activity + " [" + Thread.currentThread().getName() + "]: " + ex.getMessage());
       } else {
-         print_error("Trapped " + ex.getClass().getName() + " during " + activity + " [" + Thread.currentThread().getName() + "]: " + ex.getMessage());
+         var10000 = ex.getClass().getName();
+         print_error("Trapped " + var10000 + " during " + activity + " [" + Thread.currentThread().getName() + "]: " + ex.getMessage());
          ex.printStackTrace();
       }
 
@@ -153,13 +157,16 @@ public class NanoHTTPD {
                   try {
                      Socket temp = NanoHTTPD.this.ss.accept();
                      if (temp != null) {
-                        NanoHTTPD.this.new HTTPSession(temp);
+                        NanoHTTPD var10002 = NanoHTTPD.this;
+                        Objects.requireNonNull(var10002);
+                        var10002.new HTTPSession(temp);
                      }
                   } catch (SocketTimeoutException var2) {
                   }
                }
             } catch (IOException var3) {
-               NanoHTTPD.print_error("Web Server on port " + NanoHTTPD.this.myTcpPort + " error: " + var3.getMessage());
+               int var10000 = NanoHTTPD.this.myTcpPort;
+               NanoHTTPD.print_error("Web Server on port " + var10000 + " error: " + var3.getMessage());
                var3.printStackTrace();
             }
 
@@ -215,6 +222,18 @@ public class NanoHTTPD {
       gmtFrmt = new SimpleDateFormat("E, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
       gmtFrmt.setTimeZone(TimeZone.getTimeZone("GMT"));
       System.setProperty("https.protocols", "SSLv3,SSLv2Hello,TLSv1");
+   }
+
+   public static class TrustEverything implements X509TrustManager {
+      public void checkClientTrusted(X509Certificate[] ax509certificate, String authType) {
+      }
+
+      public void checkServerTrusted(X509Certificate[] ax509certificate, String authType) throws CertificateException {
+      }
+
+      public X509Certificate[] getAcceptedIssuers() {
+         return new X509Certificate[0];
+      }
    }
 
    private class HTTPSession implements Runnable {
@@ -376,8 +395,8 @@ public class NanoHTTPD {
                   p.put(this.decodePercent(e.substring(0, sep)).trim(), this.decodePercent(e.substring(sep + 1)));
                }
             }
-
          }
+
       }
 
       private void sendError(String status, String msg) throws InterruptedException {
@@ -396,7 +415,9 @@ public class NanoHTTPD {
             PrintWriter pw = new PrintWriter(out);
             pw.print("HTTP/1.1 " + status + "\r\n");
             if (header == null || header.get("Date") == null) {
-               pw.print("Date: " + NanoHTTPD.gmtFrmt.format(new Date()) + "\r\n");
+               SimpleDateFormat var10001 = NanoHTTPD.gmtFrmt;
+               Date var10002 = new Date();
+               pw.print("Date: " + var10001.format(var10002) + "\r\n");
             }
 
             if ((header == null || header.get("Content-Type") == null) && mime != null) {
@@ -434,25 +455,13 @@ public class NanoHTTPD {
             if (data != null) {
                data.close();
             }
-         } catch (IOException var12) {
+         } catch (IOException var13) {
             try {
                this.mySocket.close();
-            } catch (Throwable var11) {
+            } catch (Throwable var12) {
             }
          }
 
-      }
-   }
-
-   public static class TrustEverything implements X509TrustManager {
-      public void checkClientTrusted(X509Certificate[] ax509certificate, String authType) {
-      }
-
-      public void checkServerTrusted(X509Certificate[] ax509certificate, String authType) throws CertificateException {
-      }
-
-      public X509Certificate[] getAcceptedIssuers() {
-         return new X509Certificate[0];
       }
    }
 }

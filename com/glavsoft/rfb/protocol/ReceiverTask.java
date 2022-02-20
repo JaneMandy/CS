@@ -98,7 +98,9 @@ public class ReceiverTask implements Runnable {
             PrintWriter pw = new PrintWriter(sw);
             var7.printStackTrace(pw);
             if (this.isRunning) {
-               this.context.cleanUpSession(var7.getMessage() + "\n" + sw.toString());
+               ProtocolContext var10000 = this.context;
+               String var10001 = var7.getMessage();
+               var10000.cleanUpSession(var10001 + "\n" + sw.toString());
             }
 
             this.stopTask();
@@ -135,7 +137,9 @@ public class ReceiverTask implements Runnable {
          FramebufferUpdateRectangle rect = new FramebufferUpdateRectangle();
          rect.fill(this.reader);
          Decoder decoder = this.decoders.getDecoderByType(rect.getEncodingType());
-         logger.finest(rect.toString() + (0 == numberOfRectangles ? "\n---" : ""));
+         Logger var9 = logger;
+         String var10001 = rect.toString();
+         var9.finest(var10001 + (0 == numberOfRectangles ? "\n---" : ""));
          if (decoder != null) {
             decoder.decode(this.reader, this.renderer, rect);
             this.repaintController.repaintBitmap(rect);

@@ -1,6 +1,7 @@
 package icmp;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -75,7 +76,9 @@ public class Server implements Runnable {
       Server var1 = new Server();
       var1.addIcmpListener("foob", new Server.IcmpListener() {
          public byte[] icmp_ping(String var1, byte[] var2) {
-            System.err.println("Received: " + new String(var2));
+            PrintStream var10000 = System.err;
+            String var10001 = new String(var2);
+            var10000.println("Received: " + var10001);
             System.err.println("From:     " + var1);
             return "hey, this is a reply".getBytes();
          }

@@ -27,8 +27,10 @@ public class BeaconObjectTask {
       byte[] var2 = SleevedResource.readResource(this.file);
       OBJExecutable var3 = new OBJExecutable(var2, this.func);
       var3.parse();
+      String var10001;
       if (var3.hasErrors()) {
-         this.error("object parser errors for " + this.getName() + ":\n\n" + var3.getErrors());
+         var10001 = this.getName();
+         this.error("object parser errors for " + var10001 + ":\n\n" + var3.getErrors());
          return new byte[0];
       } else if (var3.getInfo().is64() && "x86".equals(this.arch)) {
          this.error("Can't run x64 object " + this.getName() + " in x86 session");
@@ -50,7 +52,8 @@ public class BeaconObjectTask {
          var8.addLengthAndString(var7);
          var8.addLengthAndString(var1);
          if (var3.hasErrors()) {
-            this.error("linker errors for " + this.getName() + ":\n\n" + var3.getErrors());
+            var10001 = this.getName();
+            this.error("linker errors for " + var10001 + ":\n\n" + var3.getErrors());
             return new byte[0];
          } else {
             return var8.build();

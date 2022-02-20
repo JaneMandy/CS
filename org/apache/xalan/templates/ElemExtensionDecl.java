@@ -8,7 +8,6 @@ import org.apache.xalan.transformer.TransformerImpl;
 import org.apache.xml.utils.StringVector;
 
 public class ElemExtensionDecl extends ElemTemplateElement {
-   static final long serialVersionUID = -4692738885172766789L;
    private String m_prefix = null;
    private StringVector m_functions = new StringVector();
    private StringVector m_elements = null;

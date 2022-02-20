@@ -11,6 +11,8 @@ public interface MutableConfiguration extends Configuration {
 
    void setValue(float var1);
 
+   void setValue(double var1);
+
    void setAttribute(String var1, String var2);
 
    void setAttribute(String var1, int var2);
@@ -20,6 +22,8 @@ public interface MutableConfiguration extends Configuration {
    void setAttribute(String var1, boolean var2);
 
    void setAttribute(String var1, float var2);
+
+   void setAttribute(String var1, double var2);
 
    void addChild(Configuration var1);
 

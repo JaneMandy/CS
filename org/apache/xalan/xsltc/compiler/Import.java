@@ -23,51 +23,52 @@ final class Import extends TopLevelElement {
 
       try {
          String docToLoad = this.getAttribute("href");
-         if (!context.checkForLoop(docToLoad)) {
-            InputSource input = null;
-            XMLReader reader = null;
-            String currLoadedDoc = context.getSystemId();
-            SourceLoader loader = context.getSourceLoader();
-            if (loader != null) {
-               input = loader.loadSource(docToLoad, currLoadedDoc, xsltc);
-               if (input != null) {
-                  docToLoad = input.getSystemId();
-                  reader = xsltc.getXMLReader();
-               }
-            }
+         if (context.checkForLoop(docToLoad)) {
+            ErrorMsg msg = new ErrorMsg("CIRCULAR_INCLUDE_ERR", docToLoad, this);
+            parser.reportError(2, msg);
+            return;
+         }
 
-            if (input == null) {
-               docToLoad = SystemIDResolver.getAbsoluteURI(docToLoad, currLoadedDoc);
-               input = new InputSource(docToLoad);
+         InputSource input = null;
+         XMLReader reader = null;
+         String currLoadedDoc = context.getSystemId();
+         SourceLoader loader = context.getSourceLoader();
+         if (loader != null) {
+            input = loader.loadSource(docToLoad, currLoadedDoc, xsltc);
+            if (input != null) {
+               docToLoad = input.getSystemId();
+               reader = xsltc.getXMLReader();
             }
+         }
 
-            if (input == null) {
-               ErrorMsg msg = new ErrorMsg("FILE_NOT_FOUND_ERR", docToLoad, this);
-               parser.reportError(2, msg);
-               return;
-            }
+         if (input == null) {
+            docToLoad = SystemIDResolver.getAbsoluteURI(docToLoad, currLoadedDoc);
+            input = new InputSource(docToLoad);
+         }
 
-            SyntaxTreeNode root;
-            if (reader != null) {
-               root = parser.parse(reader, input);
-            } else {
-               root = parser.parse(input);
-            }
+         if (input == null) {
+            ErrorMsg msg = new ErrorMsg("FILE_NOT_FOUND_ERR", docToLoad, this);
+            parser.reportError(2, msg);
+            return;
+         }
 
-            if (root == null) {
-               return;
-            }
+         SyntaxTreeNode root;
+         if (reader != null) {
+            root = parser.parse(reader, input);
+         } else {
+            root = parser.parse(input);
+         }
 
-            this._imported = parser.makeStylesheet(root);
-            if (this._imported == null) {
-               return;
-            }
+         if (root == null) {
+            return;
+         }
 
+         this._imported = parser.makeStylesheet(root);
+         if (this._imported != null) {
             this._imported.setSourceLoader(loader);
             this._imported.setSystemId(docToLoad);
             this._imported.setParentStylesheet(context);
             this._imported.setImportingStylesheet(context);
-            this._imported.setTemplateInlining(context.getTemplateInlining());
             int currPrecedence = parser.getCurrentImportPrecedence();
             int nextPrecedence = parser.getNextImportPrecedence();
             this._imported.setImportPrecedence(currPrecedence);
@@ -92,9 +93,6 @@ final class Import extends TopLevelElement {
 
             return;
          }
-
-         ErrorMsg msg = new ErrorMsg("CIRCULAR_INCLUDE_ERR", docToLoad, this);
-         parser.reportError(2, msg);
       } catch (Exception var19) {
          var19.printStackTrace();
          return;

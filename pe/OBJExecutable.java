@@ -61,11 +61,11 @@ public class OBJExecutable {
          } else {
             this.exesect = this.info.getExeSect();
          }
-
       } catch (Exception var2) {
          this.error(var2.getMessage());
          MudgeSanity.logException("Error parsing object file", var2, false);
       }
+
    }
 
    public int getEntryPoint() {

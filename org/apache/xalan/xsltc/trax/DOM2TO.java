@@ -61,29 +61,21 @@ public class DOM2TO implements XMLReader, Locator {
             this._handler.startElement((String)null, (String)null, qname);
             NamedNodeMap map = node.getAttributes();
             int length = map.getLength();
+            NamespaceMappings nm = new NamespaceMappings();
 
-            int colon;
             String prefix;
-            String uri;
             for(int i = 0; i < length; ++i) {
                Node attr = map.item(i);
                String qnameAttr = attr.getNodeName();
+               int colon;
+               String uriAttr;
                if (qnameAttr.startsWith("xmlns")) {
-                  uri = attr.getNodeValue();
+                  uriAttr = attr.getNodeValue();
                   colon = qnameAttr.lastIndexOf(58);
                   prefix = colon > 0 ? qnameAttr.substring(colon + 1) : "";
-                  this._handler.namespaceAfterStartElement(prefix, uri);
-               }
-            }
-
-            NamespaceMappings nm = new NamespaceMappings();
-
-            String qnameAttr;
-            for(int i = 0; i < length; ++i) {
-               Node attr = map.item(i);
-               qnameAttr = attr.getNodeName();
-               if (!qnameAttr.startsWith("xmlns")) {
-                  String uriAttr = attr.getNamespaceURI();
+                  this._handler.namespaceAfterStartElement(prefix, uriAttr);
+               } else {
+                  uriAttr = attr.getNamespaceURI();
                   if (uriAttr != null && !uriAttr.equals("")) {
                      colon = qnameAttr.lastIndexOf(58);
                      String newPrefix = nm.lookupPrefix(uriAttr);
@@ -100,13 +92,13 @@ public class DOM2TO implements XMLReader, Locator {
                }
             }
 
-            uri = node.getNamespaceURI();
-            qnameAttr = node.getLocalName();
+            String uri = node.getNamespaceURI();
+            String localName = node.getLocalName();
             if (uri != null) {
-               colon = qname.lastIndexOf(58);
+               int colon = qname.lastIndexOf(58);
                prefix = colon > 0 ? qname.substring(0, colon) : "";
                this._handler.namespaceAfterStartElement(prefix, uri);
-            } else if (uri == null && qnameAttr != null) {
+            } else if (uri == null && localName != null) {
                prefix = "";
                this._handler.namespaceAfterStartElement(prefix, "");
             }

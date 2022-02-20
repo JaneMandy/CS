@@ -7,7 +7,6 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
 public class ElemSort extends ElemTemplateElement {
-   static final long serialVersionUID = -4991510257335851938L;
    private XPath m_selectExpression = null;
    private AVT m_lang_avt = null;
    private AVT m_dataType_avt = null;

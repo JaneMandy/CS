@@ -25,17 +25,15 @@ public class ImportHosts implements ImportHandler, Runnable {
       File var2 = new File(var1);
       Iterator var3 = Importer.importers(this).iterator();
 
-      Importer var4;
-      do {
-         if (!var3.hasNext()) {
-            DialogUtils.showError("Import canceled: " + var2.getName() + " is not a recognized format");
-            return false;
+      while(var3.hasNext()) {
+         Importer var4 = (Importer)var3.next();
+         if (var4.process(var2)) {
+            return true;
          }
+      }
 
-         var4 = (Importer)var3.next();
-      } while(!var4.process(var2));
-
-      return true;
+      DialogUtils.showError("Import canceled: " + var2.getName() + " is not a recognized format");
+      return false;
    }
 
    public void run() {
@@ -76,7 +74,7 @@ public class ImportHosts implements ImportHandler, Runnable {
       if (var3 != null) {
          var6.put("os", var3);
          if (var4 != 0.0D) {
-            var6.put("version", var4 + "");
+            var6.put("version", var4.makeConcatWithConstants<invokedynamic>(var4));
          }
       }
 

@@ -24,6 +24,7 @@ public class ScanResults extends Parser {
          var3.put("address", var2);
          var1.put(var2, var3);
       }
+
    }
 
    public Map service(String var1, String var2) {

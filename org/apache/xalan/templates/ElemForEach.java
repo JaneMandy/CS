@@ -1,7 +1,5 @@
 package org.apache.xalan.templates;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.util.Vector;
 import javax.xml.transform.TransformerException;
 import org.apache.xalan.transformer.NodeSorter;
@@ -17,7 +15,6 @@ import org.apache.xpath.objects.XNodeSet;
 import org.apache.xpath.objects.XObject;
 
 public class ElemForEach extends ElemTemplateElement implements ExpressionOwner {
-   static final long serialVersionUID = 6018140636363583690L;
    static final boolean DEBUG = false;
    public boolean m_doc_cache_off = false;
    protected Expression m_selectExpression = null;
@@ -86,14 +83,14 @@ public class ElemForEach extends ElemTemplateElement implements ExpressionOwner 
 
    public void execute(TransformerImpl transformer) throws TransformerException {
       transformer.pushCurrentTemplateRuleIsNull(true);
-      if (transformer.getDebug()) {
+      if (TransformerImpl.S_DEBUG) {
          transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
       }
 
       try {
          this.transformSelectedNodes(transformer);
       } finally {
-         if (transformer.getDebug()) {
+         if (TransformerImpl.S_DEBUG) {
             transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);
          }
 
@@ -133,7 +130,7 @@ public class ElemForEach extends ElemTemplateElement implements ExpressionOwner 
             sourceNodes = this.sortNodes(xctxt, keys, sourceNodes);
          }
 
-         if (transformer.getDebug()) {
+         if (TransformerImpl.S_DEBUG) {
             Expression expr = this.m_xpath.getExpression();
             XObject xObject = expr.execute(xctxt);
             int current = xctxt.getCurrentNode();
@@ -160,7 +157,7 @@ public class ElemForEach extends ElemTemplateElement implements ExpressionOwner 
             }
 
             dtm.getNodeType(child);
-            if (transformer.getDebug()) {
+            if (TransformerImpl.S_DEBUG) {
                transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
             }
 
@@ -170,7 +167,7 @@ public class ElemForEach extends ElemTemplateElement implements ExpressionOwner 
                t.execute(transformer);
             }
 
-            if (transformer.getDebug()) {
+            if (TransformerImpl.S_DEBUG) {
                transformer.setCurrentElement((ElemTemplateElement)null);
                transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);
             }
@@ -181,7 +178,7 @@ public class ElemForEach extends ElemTemplateElement implements ExpressionOwner 
             }
          }
       } finally {
-         if (transformer.getDebug()) {
+         if (TransformerImpl.S_DEBUG) {
             transformer.getTraceManager().fireSelectedEndEvent(sourceNode, this, "select", new XPath(this.m_selectExpression), new XNodeSet(sourceNodes));
          }
 
@@ -226,10 +223,5 @@ public class ElemForEach extends ElemTemplateElement implements ExpressionOwner 
    public void setExpression(Expression exp) {
       exp.exprSetParent(this);
       this.m_selectExpression = exp;
-   }
-
-   private void readObject(ObjectInputStream os) throws IOException, ClassNotFoundException {
-      os.defaultReadObject();
-      this.m_xpath = null;
    }
 }

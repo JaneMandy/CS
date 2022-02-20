@@ -17,16 +17,14 @@ public class ReflectiveDLL {
       List var1 = var0.getExportedFunctions();
       Iterator var2 = var1.iterator();
 
-      String var3;
-      do {
-         if (!var2.hasNext()) {
-            return -1;
+      while(var2.hasNext()) {
+         String var3 = (String)var2.next();
+         if (var3.indexOf("ReflectiveLoader") >= 0) {
+            return var0.getFunctionOffset(var3);
          }
+      }
 
-         var3 = (String)var2.next();
-      } while(var3.indexOf("ReflectiveLoader") < 0);
-
-      return var0.getFunctionOffset(var3);
+      return -1;
    }
 
    public static int findReflectiveLoader(byte[] var0) {

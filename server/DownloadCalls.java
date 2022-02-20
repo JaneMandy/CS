@@ -30,10 +30,10 @@ public class DownloadCalls implements ServerHook {
          FileInputStream var4 = new FileInputStream(var3);
          synchronized(this) {
             ++this.ids;
-            this.sessions.put(this.ids + "", var4);
+            this.sessions.put(this.ids.makeConcatWithConstants<invokedynamic>(this.ids), var4);
          }
 
-         return this.ids + "";
+         return this.ids.makeConcatWithConstants<invokedynamic>(this.ids);
       } catch (IOException var8) {
          MudgeSanity.logException("makeSession", var8, false);
          var2.writeNow(var1.reply(DownloadMessage.Error((String)null, var8.getMessage())));
@@ -69,15 +69,16 @@ public class DownloadCalls implements ServerHook {
             MudgeSanity.logException("getChunk", var10, false);
             var2.writeNow(var1.reply(DownloadMessage.Error(var3, var10.getMessage())));
          }
-
       }
+
    }
 
    public void call(Request var1, ManageUser var2) {
       if (var1.is("download.start", 1)) {
-         File var3 = new File(var1.arg(0) + "");
+         File var3 = new File(((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0)));
          if (!CommonUtils.isSafeFile(new File("downloads"), var3)) {
-            CommonUtils.print_error(var2.getNick() + " attempted to sync '" + var1.arg(0) + "'. Rejected: not in the downloads/ folder.");
+            String var10000 = var2.getNick();
+            CommonUtils.print_error(var10000 + " attempted to sync '" + var1.arg(0) + "'. Rejected: not in the downloads/ folder.");
             var2.writeNow(var1.reply(DownloadMessage.Error((String)null, "argument is not in downloads/ folder")));
             return;
          }
@@ -94,7 +95,7 @@ public class DownloadCalls implements ServerHook {
 
          var2.writeNow(var1.reply(DownloadMessage.Start(var4, var3.length())));
       } else if (var1.is("download.get", 1)) {
-         this.getChunk(var1, var2, var1.arg(0) + "");
+         this.getChunk(var1, var2, ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0)));
       } else {
          var2.writeNow(new Reply("server_error", 0L, var1 + ": incorrect number of arguments"));
       }

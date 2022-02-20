@@ -51,7 +51,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
       case 17:
       case 18:
       default:
-         throw new DTMException(XMLMessages.createXMLMessage("ER_TYPED_ITERATOR_AXIS_NOT_IMPLEMENTED", new Object[]{Axis.getNames(axis)}));
+         throw new DTMException(XMLMessages.createXMLMessage("ER_TYPED_ITERATOR_AXIS_NOT_IMPLEMENTED", new Object[]{Axis.names[axis]}));
       case 9:
          iterator = new DTMDefaultBaseIterators.TypedNamespaceIterator(type);
          break;
@@ -104,7 +104,7 @@ public abstract class DTMDefaultBaseIterators extends DTMDefaultBaseTraversers {
       case 17:
       case 18:
       default:
-         throw new DTMException(XMLMessages.createXMLMessage("ER_ITERATOR_AXIS_NOT_IMPLEMENTED", new Object[]{Axis.getNames(axis)}));
+         throw new DTMException(XMLMessages.createXMLMessage("ER_ITERATOR_AXIS_NOT_IMPLEMENTED", new Object[]{Axis.names[axis]}));
       case 9:
          iterator = new DTMDefaultBaseIterators.NamespaceIterator();
          break;

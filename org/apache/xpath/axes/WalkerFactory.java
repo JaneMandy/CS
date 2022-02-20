@@ -429,10 +429,11 @@ public class WalkerFactory {
          default:
             throw new RuntimeException(XPATHMessages.createXPATHMessage("ER_NULL_ERROR_HANDLER", new Object[]{Integer.toString(stepType)}));
          case 40:
-            if (!foundDS && (!foundDorDS || !foundSelf)) {
-               return false;
+            if (foundDS || foundDorDS && foundSelf) {
+               break;
             }
-            break;
+
+            return false;
          case 42:
             foundDS = true;
          case 41:

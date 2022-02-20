@@ -2,7 +2,6 @@ package org.apache.xalan.xsltc.compiler;
 
 import org.apache.bcel.generic.CompoundInstruction;
 import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.PUSH;
@@ -52,26 +51,18 @@ final class TransletOutput extends Instruction {
    public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
       ConstantPoolGen cpg = classGen.getConstantPool();
       InstructionList il = methodGen.getInstructionList();
-      boolean isSecureProcessing = classGen.getParser().getXSLTC().isSecureProcessing();
-      int open;
-      if (isSecureProcessing) {
-         open = cpg.addMethodref("org.apache.xalan.xsltc.runtime.BasisLibrary", "unallowed_extension_elementF", "(Ljava/lang/String;)V");
-         il.append((CompoundInstruction)(new PUSH(cpg, "redirect")));
-         il.append((org.apache.bcel.generic.Instruction)(new INVOKESTATIC(open)));
-      } else {
-         il.append(methodGen.loadHandler());
-         open = cpg.addMethodref("org.apache.xalan.xsltc.runtime.AbstractTranslet", "openOutputHandler", "(Ljava/lang/String;Z)Lorg/apache/xml/serializer/SerializationHandler;");
-         int close = cpg.addMethodref("org.apache.xalan.xsltc.runtime.AbstractTranslet", "closeOutputHandler", "(Lorg/apache/xml/serializer/SerializationHandler;)V");
-         il.append(classGen.loadTranslet());
-         this._filename.translate(classGen, methodGen);
-         il.append((CompoundInstruction)(new PUSH(cpg, this._append)));
-         il.append((org.apache.bcel.generic.Instruction)(new INVOKEVIRTUAL(open)));
-         il.append(methodGen.storeHandler());
-         this.translateContents(classGen, methodGen);
-         il.append(classGen.loadTranslet());
-         il.append(methodGen.loadHandler());
-         il.append((org.apache.bcel.generic.Instruction)(new INVOKEVIRTUAL(close)));
-         il.append(methodGen.storeHandler());
-      }
+      il.append(methodGen.loadHandler());
+      int open = cpg.addMethodref("org.apache.xalan.xsltc.runtime.AbstractTranslet", "openOutputHandler", "(Ljava/lang/String;Z)Lorg/apache/xml/serializer/SerializationHandler;");
+      int close = cpg.addMethodref("org.apache.xalan.xsltc.runtime.AbstractTranslet", "closeOutputHandler", "(Lorg/apache/xml/serializer/SerializationHandler;)V");
+      il.append(classGen.loadTranslet());
+      this._filename.translate(classGen, methodGen);
+      il.append((CompoundInstruction)(new PUSH(cpg, this._append)));
+      il.append((org.apache.bcel.generic.Instruction)(new INVOKEVIRTUAL(open)));
+      il.append(methodGen.storeHandler());
+      this.translateContents(classGen, methodGen);
+      il.append(classGen.loadTranslet());
+      il.append(methodGen.loadHandler());
+      il.append((org.apache.bcel.generic.Instruction)(new INVOKEVIRTUAL(close)));
+      il.append(methodGen.storeHandler());
    }
 }

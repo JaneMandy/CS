@@ -47,8 +47,8 @@ public class ToolBarBridge implements Function, Loadable {
             var9 = BridgeUtilities.getString(var3, "");
             BufferedImage var10 = ImageIO.read(CommonUtils.resource(var9));
             return SleepUtils.getScalar((Object)(new ImageIcon(var10)));
-         } catch (IOException var8) {
-            throw new RuntimeException(var8);
+         } catch (IOException var9) {
+            throw new RuntimeException(var9);
          }
       } else {
          if (var1.equals("&toolbar")) {
@@ -61,7 +61,7 @@ public class ToolBarBridge implements Function, Loadable {
                public void actionPerformed(ActionEvent var1) {
                   Stack var2 = new Stack();
                   var2.push(SleepUtils.getScalar(var5));
-                  SleepUtils.runCode((SleepClosure)var6, "toolbar", (ScriptInstance)null, var2);
+                  SleepUtils.runCode(var6, "toolbar", (ScriptInstance)null, var2);
                }
             });
             this.toolbar.add(var7);

@@ -1,6 +1,5 @@
 package org.apache.xalan.xsltc.compiler.util;
 
-import java.util.Hashtable;
 import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -14,7 +13,6 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.LocalVariableGen;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.xalan.xsltc.compiler.Constants;
-import org.apache.xalan.xsltc.compiler.Pattern;
 
 public class MethodGenerator extends MethodGen implements Constants {
    protected static final int INVALID_INDEX = -1;
@@ -44,7 +42,6 @@ public class MethodGenerator extends MethodGen implements Constants {
    private final Instruction _nextNode;
    private SlotAllocator _slotAllocator;
    private boolean _allocatorInit = false;
-   private Hashtable _preCompiled = new Hashtable();
 
    public MethodGenerator(int access_flags, org.apache.bcel.generic.Type return_type, org.apache.bcel.generic.Type[] arg_types, String[] arg_names, String method_name, String class_name, InstructionList il, ConstantPoolGen cpg) {
       super(access_flags, return_type, arg_types, arg_names, method_name, class_name, il, cpg);
@@ -203,13 +200,5 @@ public class MethodGenerator extends MethodGen implements Constants {
       }
 
       super.setMaxLocals(maxLocals);
-   }
-
-   public void addInstructionList(Pattern pattern, InstructionList ilist) {
-      this._preCompiled.put(pattern, ilist);
-   }
-
-   public InstructionList getInstructionList(Pattern pattern) {
-      return (InstructionList)this._preCompiled.get(pattern);
    }
 }

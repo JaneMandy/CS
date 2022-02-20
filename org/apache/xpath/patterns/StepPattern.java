@@ -13,7 +13,6 @@ import org.apache.xpath.axes.SubContextList;
 import org.apache.xpath.objects.XObject;
 
 public class StepPattern extends NodeTest implements SubContextList, ExpressionOwner {
-   static final long serialVersionUID = 9071668960168152644L;
    protected int m_axis;
    String m_targetString;
    StepPattern m_relativePathPattern;
@@ -372,7 +371,7 @@ public class StepPattern extends NodeTest implements SubContextList, ExpressionO
             buf.append("/");
          }
 
-         buf.append(Axis.getNames(pat.m_axis));
+         buf.append(Axis.names[pat.m_axis]);
          buf.append("::");
          if (20480 == pat.m_whatToShow) {
             buf.append("doc()");

@@ -8,8 +8,6 @@ import org.apache.xpath.objects.XString;
 import org.apache.xpath.res.XPATHMessages;
 
 public class FunctionDef1Arg extends FunctionOneArg {
-   static final long serialVersionUID = 2325189412814149264L;
-
    protected int getArg0AsNode(XPathContext xctxt) throws TransformerException {
       return null == super.m_arg0 ? xctxt.getCurrentNode() : super.m_arg0.asNode(xctxt);
    }

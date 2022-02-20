@@ -12,7 +12,6 @@ import org.apache.xpath.axes.LocPathIterator;
 import org.apache.xpath.axes.UnionPathIterator;
 import org.apache.xpath.axes.WalkerFactory;
 import org.apache.xpath.functions.FuncExtFunction;
-import org.apache.xpath.functions.FuncExtFunctionAvailable;
 import org.apache.xpath.functions.Function;
 import org.apache.xpath.functions.WrongNumberArgsException;
 import org.apache.xpath.objects.XNumber;
@@ -49,12 +48,10 @@ public class Compiler extends OpMap {
    private PrefixResolver m_currentPrefixResolver = null;
    ErrorListener m_errorHandler;
    SourceLocator m_locator;
-   private FunctionTable m_functionTable;
 
-   public Compiler(ErrorListener errorHandler, SourceLocator locator, FunctionTable fTable) {
+   public Compiler(ErrorListener errorHandler, SourceLocator locator) {
       this.m_errorHandler = errorHandler;
       this.m_locator = locator;
-      this.m_functionTable = fTable;
    }
 
    public Compiler() {
@@ -293,10 +290,6 @@ public class Compiler extends OpMap {
       return this.locPathDepth;
    }
 
-   FunctionTable getFunctionTable() {
-      return this.m_functionTable;
-   }
-
    public Expression locationPath(int opPos) throws TransformerException {
       ++this.locPathDepth;
 
@@ -511,15 +504,8 @@ public class Compiler extends OpMap {
       opPos = OpMap.getFirstChildPos(opPos);
       int funcID = this.getOp(opPos);
       ++opPos;
-      if (-1 == funcID) {
-         this.error("ER_FUNCTION_TOKEN_NOT_FOUND", (Object[])null);
-         return null;
-      } else {
-         Function func = this.m_functionTable.getFunction(funcID);
-         if (func instanceof FuncExtFunctionAvailable) {
-            ((FuncExtFunctionAvailable)func).setFunctionTable(this.m_functionTable);
-         }
-
+      if (-1 != funcID) {
+         Function func = FunctionTable.getFunction(funcID);
          func.postCompileStep(this);
 
          try {
@@ -532,11 +518,14 @@ public class Compiler extends OpMap {
 
             func.checkNumberArgs(i);
          } catch (WrongNumberArgsException var7) {
-            java.lang.String name = this.m_functionTable.getFunctionName(funcID);
+            java.lang.String name = FunctionTable.m_functions[funcID].getName();
             this.m_errorHandler.fatalError(new TransformerException(XPATHMessages.createXPATHMessage("ER_ONLY_ALLOWS", new Object[]{name, var7.getMessage()}), this.m_locator));
          }
 
          return func;
+      } else {
+         this.error("ER_FUNCTION_TOKEN_NOT_FOUND", (Object[])null);
+         return null;
       }
    }
 

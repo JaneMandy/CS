@@ -9,7 +9,6 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.traversal.NodeIterator;
 
 public class XNodeSetForDOM extends XNodeSet {
-   static final long serialVersionUID = -8396190713754624640L;
    Object m_origObj;
 
    public XNodeSetForDOM(Node node, DTMManager dtmMgr) {

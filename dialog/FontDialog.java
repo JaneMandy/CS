@@ -42,7 +42,8 @@ public class FontDialog implements ItemListener, DialogListener {
    }
 
    public String getResult() {
-      return this.family.getSelectedItem() + "-" + this.style.getSelectedItem().toString().toUpperCase() + "-" + this.size.getSelectedItem();
+      Object var10000 = this.family.getSelectedItem();
+      return var10000 + "-" + this.style.getSelectedItem().toString().toUpperCase() + "-" + this.size.getSelectedItem();
    }
 
    public void itemStateChanged(ItemEvent var1) {
@@ -67,7 +68,7 @@ public class FontDialog implements ItemListener, DialogListener {
       this.dialog.setLayout(new BorderLayout());
       DialogManager var1 = new DialogManager(this.dialog);
       var1.addDialogListener(this);
-      var1.set("size", this.font.getSize() + "");
+      var1.set("size", this.font.getSize().makeConcatWithConstants<invokedynamic>(this.font.getSize()));
       var1.set("family", this.font.getFamily());
       String var2 = "Plain";
       if (this.font.isItalic()) {

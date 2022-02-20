@@ -46,10 +46,16 @@ public class LintURI {
    public void check(Map var1, Map var2) {
       String var3 = URI(var1);
       String var4 = URI(var2);
+      List var10000;
+      String var10001;
       if (var3.equals(var4)) {
-         this.errors.add(KEY(var1) + " and " + KEY(var2) + " have same URI '" + var3 + "'. These values must be unique");
+         var10000 = this.errors;
+         var10001 = KEY(var1);
+         var10000.add(var10001 + " and " + KEY(var2) + " have same URI '" + var3 + "'. These values must be unique");
       } else if (var3.startsWith(var4)) {
-         this.warnings.add(KEY(var2) + " URI " + var4 + " has common base with " + KEY(var1) + " URI " + var3 + " (this may confuse uri-append)");
+         var10000 = this.warnings;
+         var10001 = KEY(var2);
+         var10000.add(var10001 + " URI " + var4 + " has common base with " + KEY(var1) + " URI " + var3 + " (this may confuse uri-append)");
       }
 
    }

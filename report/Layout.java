@@ -54,5 +54,6 @@ public class Layout implements ReportElement {
          var1.append("\t</fo:table-body>\n");
          var1.append("</fo:table>");
       }
+
    }
 }

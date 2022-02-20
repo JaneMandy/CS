@@ -3,7 +3,6 @@ package org.apache.xalan.xsltc.compiler.util;
 import org.apache.xalan.xsltc.compiler.SyntaxTreeNode;
 
 public class TypeCheckError extends Exception {
-   static final long serialVersionUID = 3246224233917854640L;
    ErrorMsg _error = null;
    SyntaxTreeNode _node = null;
 

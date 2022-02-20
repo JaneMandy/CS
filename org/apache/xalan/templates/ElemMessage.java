@@ -5,7 +5,6 @@ import org.apache.xalan.res.XSLMessages;
 import org.apache.xalan.transformer.TransformerImpl;
 
 public class ElemMessage extends ElemTemplateElement {
-   static final long serialVersionUID = 1530472462155060023L;
    private boolean m_terminate = false;
 
    public void setTerminate(boolean v) {
@@ -25,7 +24,7 @@ public class ElemMessage extends ElemTemplateElement {
    }
 
    public void execute(TransformerImpl transformer) throws TransformerException {
-      if (transformer.getDebug()) {
+      if (TransformerImpl.S_DEBUG) {
          transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
       }
 
@@ -35,7 +34,7 @@ public class ElemMessage extends ElemTemplateElement {
          transformer.getErrorListener().fatalError(new TransformerException(XSLMessages.createMessage("ER_STYLESHEET_DIRECTED_TERMINATION", (Object[])null)));
       }
 
-      if (transformer.getDebug()) {
+      if (TransformerImpl.S_DEBUG) {
          transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);
       }
 

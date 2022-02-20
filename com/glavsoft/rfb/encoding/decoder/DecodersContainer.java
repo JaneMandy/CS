@@ -34,7 +34,9 @@ public class DecodersContainer {
    }
 
    private void logError(EncodingType enc, Exception e) {
-      Logger.getLogger(this.getClass().getName()).severe("Can not instantiate decoder for encoding type '" + enc.getName() + "' " + e.getMessage());
+      Logger var10000 = Logger.getLogger(this.getClass().getName());
+      String var10001 = enc.getName();
+      var10000.severe("Can not instantiate decoder for encoding type '" + var10001 + "' " + e.getMessage());
    }
 
    public Decoder getDecoderByType(EncodingType type) {

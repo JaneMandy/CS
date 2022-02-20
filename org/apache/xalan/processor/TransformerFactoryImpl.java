@@ -21,6 +21,8 @@ import org.apache.xalan.res.XSLMessages;
 import org.apache.xalan.transformer.TrAXFilter;
 import org.apache.xalan.transformer.TransformerIdentityImpl;
 import org.apache.xalan.transformer.TransformerImpl;
+import org.apache.xml.dtm.DTMManager;
+import org.apache.xml.dtm.ref.sax2dtm.SAX2DTM;
 import org.apache.xml.utils.DOM2Helper;
 import org.apache.xml.utils.DefaultErrorHandler;
 import org.apache.xml.utils.StopParseException;
@@ -36,16 +38,14 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 public class TransformerFactoryImpl extends SAXTransformerFactory {
    public static final String XSLT_PROPERTIES = "org/apache/xalan/res/XSLTInfo.properties";
-   private boolean m_isSecureProcessing = false;
    public static final String FEATURE_INCREMENTAL = "http://xml.apache.org/xalan/features/incremental";
    public static final String FEATURE_OPTIMIZE = "http://xml.apache.org/xalan/features/optimize";
    public static final String FEATURE_SOURCE_LOCATION = "http://xml.apache.org/xalan/properties/source-location";
    private String m_DOMsystemID = null;
-   private boolean m_optimize = true;
-   private boolean m_source_location = false;
-   private boolean m_incremental = false;
+   public static boolean m_optimize = true;
+   public static boolean m_source_location = false;
    URIResolver m_uriResolver;
-   private ErrorListener m_errorListener = new DefaultErrorHandler(false);
+   private ErrorListener m_errorListener = new DefaultErrorHandler();
 
    public Templates processFromNode(Node node) throws TransformerConfigurationException {
       try {
@@ -53,35 +53,31 @@ public class TransformerFactoryImpl extends SAXTransformerFactory {
          TreeWalker walker = new TreeWalker(builder, new DOM2Helper(), builder.getSystemId());
          walker.traverse(node);
          return builder.getTemplates();
-      } catch (SAXException var11) {
-         SAXException se = var11;
+      } catch (SAXException var8) {
+         SAXException se = var8;
          if (this.m_errorListener != null) {
             try {
                this.m_errorListener.fatalError(new TransformerException(se));
                return null;
-            } catch (TransformerConfigurationException var7) {
-               throw var7;
-            } catch (TransformerException var8) {
-               throw new TransformerConfigurationException(var8);
+            } catch (TransformerException var7) {
+               throw new TransformerConfigurationException(var7);
             }
          } else {
-            throw new TransformerConfigurationException(XSLMessages.createMessage("ER_PROCESSFROMNODE_FAILED", (Object[])null), var11);
+            throw new TransformerConfigurationException(XSLMessages.createMessage("ER_PROCESSFROMNODE_FAILED", (Object[])null), var8);
          }
-      } catch (TransformerConfigurationException var12) {
-         throw var12;
-      } catch (Exception var13) {
-         Exception e = var13;
+      } catch (TransformerConfigurationException var9) {
+         throw var9;
+      } catch (Exception var10) {
+         Exception e = var10;
          if (this.m_errorListener != null) {
             try {
                this.m_errorListener.fatalError(new TransformerException(e));
                return null;
-            } catch (TransformerConfigurationException var9) {
-               throw var9;
-            } catch (TransformerException var10) {
-               throw new TransformerConfigurationException(var10);
+            } catch (TransformerException var6) {
+               throw new TransformerConfigurationException(var6);
             }
          } else {
-            throw new TransformerConfigurationException(XSLMessages.createMessage("ER_PROCESSFROMNODE_FAILED", (Object[])null), var13);
+            throw new TransformerConfigurationException(XSLMessages.createMessage("ER_PROCESSFROMNODE_FAILED", (Object[])null), var10);
          }
       }
    }
@@ -122,21 +118,14 @@ public class TransformerFactoryImpl extends SAXTransformerFactory {
             try {
                SAXParserFactory factory = SAXParserFactory.newInstance();
                factory.setNamespaceAware(true);
-               if (this.m_isSecureProcessing) {
-                  try {
-                     factory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
-                  } catch (SAXException var14) {
-                  }
-               }
-
                SAXParser jaxpParser = factory.newSAXParser();
                reader = jaxpParser.getXMLReader();
-            } catch (ParserConfigurationException var15) {
-               throw new SAXException(var15);
-            } catch (FactoryConfigurationError var16) {
-               throw new SAXException(var16.toString());
-            } catch (NoSuchMethodError var17) {
-            } catch (AbstractMethodError var18) {
+            } catch (ParserConfigurationException var14) {
+               throw new SAXException(var14);
+            } catch (FactoryConfigurationError var15) {
+               throw new SAXException(var15.toString());
+            } catch (NoSuchMethodError var16) {
+            } catch (AbstractMethodError var17) {
             }
 
             if (null == reader) {
@@ -146,11 +135,11 @@ public class TransformerFactoryImpl extends SAXTransformerFactory {
             reader.setContentHandler(handler);
             reader.parse(isource);
          }
-      } catch (StopParseException var19) {
-      } catch (SAXException var20) {
+      } catch (StopParseException var18) {
+      } catch (SAXException var19) {
+         throw new TransformerConfigurationException("getAssociatedStylesheets failed", var19);
+      } catch (IOException var20) {
          throw new TransformerConfigurationException("getAssociatedStylesheets failed", var20);
-      } catch (IOException var21) {
-         throw new TransformerConfigurationException("getAssociatedStylesheets failed", var21);
       }
 
       return handler.getAssociatedStylesheet();
@@ -160,25 +149,9 @@ public class TransformerFactoryImpl extends SAXTransformerFactory {
       return new StylesheetHandler(this);
    }
 
-   public void setFeature(String name, boolean value) throws TransformerConfigurationException {
-      if (name == null) {
-         throw new NullPointerException(XSLMessages.createMessage("ER_SET_FEATURE_NULL_NAME", (Object[])null));
-      } else if (name.equals("http://javax.xml.XMLConstants/feature/secure-processing")) {
-         this.m_isSecureProcessing = value;
-      } else {
-         throw new TransformerConfigurationException(XSLMessages.createMessage("ER_UNSUPPORTED_FEATURE", new Object[]{name}));
-      }
-   }
-
    public boolean getFeature(String name) {
-      if (name == null) {
-         throw new NullPointerException(XSLMessages.createMessage("ER_GET_FEATURE_NULL_NAME", (Object[])null));
-      } else if ("http://javax.xml.transform.dom.DOMResult/feature" != name && "http://javax.xml.transform.dom.DOMSource/feature" != name && "http://javax.xml.transform.sax.SAXResult/feature" != name && "http://javax.xml.transform.sax.SAXSource/feature" != name && "http://javax.xml.transform.stream.StreamResult/feature" != name && "http://javax.xml.transform.stream.StreamSource/feature" != name && "http://javax.xml.transform.sax.SAXTransformerFactory/feature" != name && "http://javax.xml.transform.sax.SAXTransformerFactory/feature/xmlfilter" != name) {
-         if (!"http://javax.xml.transform.dom.DOMResult/feature".equals(name) && !"http://javax.xml.transform.dom.DOMSource/feature".equals(name) && !"http://javax.xml.transform.sax.SAXResult/feature".equals(name) && !"http://javax.xml.transform.sax.SAXSource/feature".equals(name) && !"http://javax.xml.transform.stream.StreamResult/feature".equals(name) && !"http://javax.xml.transform.stream.StreamSource/feature".equals(name) && !"http://javax.xml.transform.sax.SAXTransformerFactory/feature".equals(name) && !"http://javax.xml.transform.sax.SAXTransformerFactory/feature/xmlfilter".equals(name)) {
-            return name.equals("http://javax.xml.XMLConstants/feature/secure-processing") ? this.m_isSecureProcessing : false;
-         } else {
-            return true;
-         }
+      if ("http://javax.xml.transform.dom.DOMResult/feature" != name && "http://javax.xml.transform.dom.DOMSource/feature" != name && "http://javax.xml.transform.sax.SAXResult/feature" != name && "http://javax.xml.transform.sax.SAXSource/feature" != name && "http://javax.xml.transform.stream.StreamResult/feature" != name && "http://javax.xml.transform.stream.StreamSource/feature" != name && "http://javax.xml.transform.sax.SAXTransformerFactory/feature" != name && "http://javax.xml.transform.sax.SAXTransformerFactory/feature/xmlfilter" != name) {
+         return "http://javax.xml.transform.dom.DOMResult/feature".equals(name) || "http://javax.xml.transform.dom.DOMSource/feature".equals(name) || "http://javax.xml.transform.sax.SAXResult/feature".equals(name) || "http://javax.xml.transform.sax.SAXSource/feature".equals(name) || "http://javax.xml.transform.stream.StreamResult/feature".equals(name) || "http://javax.xml.transform.stream.StreamSource/feature".equals(name) || "http://javax.xml.transform.sax.SAXTransformerFactory/feature".equals(name) || "http://javax.xml.transform.sax.SAXTransformerFactory/feature/xmlfilter".equals(name);
       } else {
          return true;
       }
@@ -187,23 +160,23 @@ public class TransformerFactoryImpl extends SAXTransformerFactory {
    public void setAttribute(String name, Object value) throws IllegalArgumentException {
       if (name.equals("http://xml.apache.org/xalan/features/incremental")) {
          if (value instanceof Boolean) {
-            this.m_incremental = (Boolean)value;
+            DTMManager.setIncremental((Boolean)value);
          } else {
             if (!(value instanceof String)) {
                throw new IllegalArgumentException(XSLMessages.createMessage("ER_BAD_VALUE", new Object[]{name, value}));
             }
 
-            this.m_incremental = new Boolean((String)value);
+            DTMManager.setIncremental(new Boolean((String)value));
          }
       } else if (name.equals("http://xml.apache.org/xalan/features/optimize")) {
          if (value instanceof Boolean) {
-            this.m_optimize = (Boolean)value;
+            m_optimize = (Boolean)value;
          } else {
             if (!(value instanceof String)) {
                throw new IllegalArgumentException(XSLMessages.createMessage("ER_BAD_VALUE", new Object[]{name, value}));
             }
 
-            this.m_optimize = new Boolean((String)value);
+            m_optimize = new Boolean((String)value);
          }
       } else {
          if (!name.equals("http://xml.apache.org/xalan/properties/source-location")) {
@@ -211,13 +184,15 @@ public class TransformerFactoryImpl extends SAXTransformerFactory {
          }
 
          if (value instanceof Boolean) {
-            this.m_source_location = (Boolean)value;
+            m_source_location = (Boolean)value;
+            SAX2DTM.setUseSourceLocation(m_source_location);
          } else {
             if (!(value instanceof String)) {
                throw new IllegalArgumentException(XSLMessages.createMessage("ER_BAD_VALUE", new Object[]{name, value}));
             }
 
-            this.m_source_location = new Boolean((String)value);
+            m_source_location = new Boolean((String)value);
+            SAX2DTM.setUseSourceLocation(m_source_location);
          }
       }
 
@@ -225,11 +200,11 @@ public class TransformerFactoryImpl extends SAXTransformerFactory {
 
    public Object getAttribute(String name) throws IllegalArgumentException {
       if (name.equals("http://xml.apache.org/xalan/features/incremental")) {
-         return new Boolean(this.m_incremental);
+         return new Boolean(DTMManager.getIncremental());
       } else if (name.equals("http://xml.apache.org/xalan/features/optimize")) {
-         return new Boolean(this.m_optimize);
+         return new Boolean(m_optimize);
       } else if (name.equals("http://xml.apache.org/xalan/properties/source-location")) {
-         return new Boolean(this.m_source_location);
+         return new Boolean(m_source_location);
       } else {
          throw new IllegalArgumentException(XSLMessages.createMessage("ER_ATTRIB_VALUE_NOT_RECOGNIZED", new Object[]{name}));
       }
@@ -243,20 +218,18 @@ public class TransformerFactoryImpl extends SAXTransformerFactory {
    public XMLFilter newXMLFilter(Templates templates) throws TransformerConfigurationException {
       try {
          return new TrAXFilter(templates);
-      } catch (TransformerConfigurationException var7) {
-         TransformerConfigurationException ex = var7;
+      } catch (TransformerConfigurationException var5) {
+         TransformerConfigurationException ex = var5;
          if (this.m_errorListener != null) {
             try {
                this.m_errorListener.fatalError(ex);
                return null;
-            } catch (TransformerConfigurationException var5) {
-               throw var5;
-            } catch (TransformerException var6) {
-               throw new TransformerConfigurationException(var6);
+            } catch (TransformerException var4) {
+               new TransformerConfigurationException(var4);
             }
-         } else {
-            throw var7;
          }
+
+         throw var5;
       }
    }
 
@@ -271,25 +244,23 @@ public class TransformerFactoryImpl extends SAXTransformerFactory {
          transformer.setURIResolver(this.m_uriResolver);
          TransformerHandler th = (TransformerHandler)transformer.getInputContentHandler(true);
          return th;
-      } catch (TransformerConfigurationException var7) {
-         TransformerConfigurationException ex = var7;
+      } catch (TransformerConfigurationException var5) {
+         TransformerConfigurationException ex = var5;
          if (this.m_errorListener != null) {
             try {
                this.m_errorListener.fatalError(ex);
                return null;
-            } catch (TransformerConfigurationException var5) {
-               throw var5;
-            } catch (TransformerException var6) {
-               throw new TransformerConfigurationException(var6);
+            } catch (TransformerException var4) {
+               ex = new TransformerConfigurationException(var4);
             }
-         } else {
-            throw var7;
          }
+
+         throw ex;
       }
    }
 
    public TransformerHandler newTransformerHandler() throws TransformerConfigurationException {
-      return new TransformerIdentityImpl(this.m_isSecureProcessing);
+      return new TransformerIdentityImpl();
    }
 
    public Transformer newTransformer(Source source) throws TransformerConfigurationException {
@@ -302,25 +273,23 @@ public class TransformerFactoryImpl extends SAXTransformerFactory {
             transformer.setURIResolver(this.m_uriResolver);
             return transformer;
          }
-      } catch (TransformerConfigurationException var7) {
-         TransformerConfigurationException ex = var7;
+      } catch (TransformerConfigurationException var5) {
+         TransformerConfigurationException ex = var5;
          if (this.m_errorListener != null) {
             try {
                this.m_errorListener.fatalError(ex);
                return null;
-            } catch (TransformerConfigurationException var5) {
-               throw var5;
-            } catch (TransformerException var6) {
-               throw new TransformerConfigurationException(var6);
+            } catch (TransformerException var4) {
+               ex = new TransformerConfigurationException(var4);
             }
-         } else {
-            throw var7;
          }
+
+         throw ex;
       }
    }
 
    public Transformer newTransformer() throws TransformerConfigurationException {
-      return new TransformerIdentityImpl(this.m_isSecureProcessing);
+      return new TransformerIdentityImpl();
    }
 
    public Templates newTemplates(Source source) throws TransformerConfigurationException {
@@ -354,21 +323,14 @@ public class TransformerFactoryImpl extends SAXTransformerFactory {
                try {
                   SAXParserFactory factory = SAXParserFactory.newInstance();
                   factory.setNamespaceAware(true);
-                  if (this.m_isSecureProcessing) {
-                     try {
-                        factory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
-                     } catch (SAXException var14) {
-                     }
-                  }
-
                   SAXParser jaxpParser = factory.newSAXParser();
                   reader = jaxpParser.getXMLReader();
-               } catch (ParserConfigurationException var15) {
-                  throw new SAXException(var15);
-               } catch (FactoryConfigurationError var16) {
-                  throw new SAXException(var16.toString());
-               } catch (NoSuchMethodError var17) {
-               } catch (AbstractMethodError var18) {
+               } catch (ParserConfigurationException var12) {
+                  throw new SAXException(var12);
+               } catch (FactoryConfigurationError var13) {
+                  throw new SAXException(var13.toString());
+               } catch (NoSuchMethodError var14) {
+               } catch (AbstractMethodError var15) {
                }
             }
 
@@ -378,33 +340,29 @@ public class TransformerFactoryImpl extends SAXTransformerFactory {
 
             reader.setContentHandler(builder);
             reader.parse(isource);
-         } catch (SAXException var19) {
-            SAXException se = var19;
+         } catch (SAXException var16) {
+            SAXException se = var16;
             if (this.m_errorListener == null) {
-               throw new TransformerConfigurationException(var19.getMessage(), var19);
+               throw new TransformerConfigurationException(var16.getMessage(), var16);
             }
 
             try {
                this.m_errorListener.fatalError(new TransformerException(se));
-            } catch (TransformerConfigurationException var12) {
-               throw var12;
-            } catch (TransformerException var13) {
-               throw new TransformerConfigurationException(var13);
+            } catch (TransformerException var11) {
+               throw new TransformerConfigurationException(var11);
             }
-         } catch (Exception var20) {
-            Exception e = var20;
+         } catch (Exception var17) {
+            Exception e = var17;
             if (this.m_errorListener != null) {
                try {
                   this.m_errorListener.fatalError(new TransformerException(e));
                   return null;
-               } catch (TransformerConfigurationException var10) {
-                  throw var10;
-               } catch (TransformerException var11) {
-                  throw new TransformerConfigurationException(var11);
+               } catch (TransformerException var10) {
+                  throw new TransformerConfigurationException(var10);
                }
             }
 
-            throw new TransformerConfigurationException(var20.getMessage(), var20);
+            throw new TransformerConfigurationException(var17.getMessage(), var17);
          }
 
          return builder.getTemplates();
@@ -429,9 +387,5 @@ public class TransformerFactoryImpl extends SAXTransformerFactory {
       } else {
          this.m_errorListener = listener;
       }
-   }
-
-   public boolean isSecureProcessing() {
-      return this.m_isSecureProcessing;
    }
 }

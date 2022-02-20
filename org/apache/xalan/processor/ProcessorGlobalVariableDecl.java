@@ -5,8 +5,6 @@ import org.apache.xalan.templates.ElemVariable;
 import org.xml.sax.SAXException;
 
 class ProcessorGlobalVariableDecl extends ProcessorTemplateElem {
-   static final long serialVersionUID = -5954332402269819582L;
-
    protected void appendAndPush(StylesheetHandler handler, ElemTemplateElement elem) throws SAXException {
       handler.pushElemTemplateElement(elem);
    }

@@ -4,8 +4,6 @@ import javax.xml.transform.TransformerException;
 import org.apache.xalan.transformer.TransformerImpl;
 
 public class ElemUnknown extends ElemLiteralResult {
-   static final long serialVersionUID = -4573981712648730168L;
-
    public int getXSLToken() {
       return -1;
    }
@@ -35,7 +33,7 @@ public class ElemUnknown extends ElemLiteralResult {
    }
 
    public void execute(TransformerImpl transformer) throws TransformerException {
-      if (transformer.getDebug()) {
+      if (TransformerImpl.S_DEBUG) {
          transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
       }
 
@@ -47,7 +45,7 @@ public class ElemUnknown extends ElemLiteralResult {
          transformer.getErrorListener().fatalError(var3);
       }
 
-      if (transformer.getDebug()) {
+      if (TransformerImpl.S_DEBUG) {
          transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);
       }
 

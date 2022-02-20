@@ -20,6 +20,7 @@ public class KeyValuePair {
    }
 
    public String toString() {
-      return this.key.toString() + "=" + this.value.toString();
+      String var10000 = this.key.toString();
+      return var10000 + "=" + this.value.toString();
    }
 }

@@ -48,12 +48,14 @@ public class DownloadBrowser extends AObject implements AdjustData, ActionListen
       } else {
          SafeDialogs.openFile("Sync downloads to?", (String)null, (String)null, false, true, this);
       }
+
    }
 
    public void dialogResult(String var1) {
       if (var1 != null) {
          (new DownloadFiles(this.client.getConnection(), this.model.getSelectedRows(this.table), new File(var1))).startNextDownload();
       }
+
    }
 
    public JComponent getContent() {
@@ -89,6 +91,7 @@ public class DownloadBrowser extends AObject implements AdjustData, ActionListen
          DialogUtils.addToTable(this.table, this.model, this.format(var1, var2));
          this.dialog.touch();
       }
+
    }
 
    public void showPopup(MouseEvent var1) {

@@ -11,8 +11,6 @@ import org.apache.xpath.objects.XNodeSet;
 import org.apache.xpath.objects.XObject;
 
 public class FuncId extends FunctionOneArg {
-   static final long serialVersionUID = 8930573966143567310L;
-
    private StringVector getNodesByID(XPathContext xctxt, int docContext, String refval, StringVector usedrefs, NodeSetDTM nodeSet, boolean mayBeMore) {
       if (null != refval) {
          String ref = null;

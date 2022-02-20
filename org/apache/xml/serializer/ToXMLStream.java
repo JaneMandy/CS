@@ -5,12 +5,12 @@ import java.io.Writer;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import org.apache.xml.serializer.utils.Utils;
+import org.apache.xml.res.XMLMessages;
 import org.xml.sax.SAXException;
 
-public final class ToXMLStream extends ToStream {
+public class ToXMLStream extends ToStream {
    boolean m_cdataTagOpen = false;
-   private static CharInfo m_xmlcharInfo = CharInfo.getCharInfo("org.apache.xml.serializer.XMLEntities", "xml");
+   protected static CharInfo m_xmlcharInfo;
 
    public ToXMLStream() {
       super.m_charInfo = m_xmlcharInfo;
@@ -34,7 +34,7 @@ public final class ToXMLStream extends ToStream {
       this.setDoctypePublic(xmlListener.getDoctypePublic());
       this.setStandalone(xmlListener.getStandalone());
       this.setMediaType(xmlListener.getMediaType());
-      super.m_encodingInfo = xmlListener.m_encodingInfo;
+      super.m_maxCharacter = xmlListener.m_maxCharacter;
       super.m_spaceBeforeClose = xmlListener.m_spaceBeforeClose;
       super.m_cdataStartCalled = xmlListener.m_cdataStartCalled;
    }
@@ -49,9 +49,13 @@ public final class ToXMLStream extends ToStream {
 
          super.m_needToOutputDocTypeDecl = true;
          super.m_startNewLine = false;
-         String version = this.getXMLVersion();
          if (!this.getOmitXMLDeclaration()) {
             String encoding = Encodings.getMimeEncoding(this.getEncoding());
+            String version = this.getVersion();
+            if (version == null) {
+               version = "1.0";
+            }
+
             String standalone;
             if (super.m_standaloneWasSpecified) {
                standalone = " standalone=\"" + this.getStandalone() + "\"";
@@ -117,8 +121,6 @@ public final class ToXMLStream extends ToStream {
                if (super.m_elemContext.m_startTagOpen) {
                   this.closeStartTag();
                   super.m_elemContext.m_startTagOpen = false;
-               } else if (super.m_needToCallStartDocument) {
-                  this.startDocumentInternal();
                }
 
                if (this.shouldIndent()) {
@@ -215,29 +217,29 @@ public final class ToXMLStream extends ToStream {
 
    }
 
-   public void addAttribute(String uri, String localName, String rawName, String type, String value, boolean xslAttribute) throws SAXException {
+   public void addAttribute(String uri, String localName, String rawName, String type, String value) throws SAXException {
+      String prefixUsed;
       if (super.m_elemContext.m_startTagOpen) {
-         boolean was_added = this.addAttributeAlways(uri, localName, rawName, type, value, xslAttribute);
-         if (was_added && !xslAttribute && !rawName.startsWith("xmlns")) {
-            String prefixUsed = this.ensureAttributesNamespaceIsDeclared(uri, localName, rawName);
+         if (!rawName.startsWith("xmlns")) {
+            prefixUsed = this.ensureAttributesNamespaceIsDeclared(uri, localName, rawName);
             if (prefixUsed != null && rawName != null && !rawName.startsWith(prefixUsed)) {
                rawName = prefixUsed + ":" + localName;
             }
          }
 
-         this.addAttributeAlways(uri, localName, rawName, type, value, xslAttribute);
+         this.addAttributeAlways(uri, localName, rawName, type, value);
       } else {
-         String msg = Utils.messages.createMessage("ER_ILLEGAL_ATTRIBUTE_POSITION", new Object[]{localName});
+         prefixUsed = XMLMessages.createXMLMessage("ER_ILLEGAL_ATTRIBUTE_POSITION", new Object[]{localName});
 
          try {
             Transformer tran = super.getTransformer();
             ErrorListener errHandler = tran.getErrorListener();
             if (null != errHandler && super.m_sourceLocator != null) {
-               errHandler.warning(new TransformerException(msg, super.m_sourceLocator));
+               errHandler.warning(new TransformerException(prefixUsed, super.m_sourceLocator));
             } else {
-               System.out.println(msg);
+               System.out.println(prefixUsed);
             }
-         } catch (Exception var10) {
+         } catch (Exception var9) {
          }
       }
 
@@ -284,31 +286,7 @@ public final class ToXMLStream extends ToStream {
       this.m_cdataTagOpen = false;
    }
 
-   private String getXMLVersion() {
-      String xmlVersion = this.getVersion();
-      if (xmlVersion != null && !xmlVersion.equals("1.0")) {
-         if (xmlVersion.equals("1.1")) {
-            xmlVersion = "1.1";
-         } else {
-            String msg = Utils.messages.createMessage("ER_XML_VERSION_NOT_SUPPORTED", new Object[]{xmlVersion});
-
-            try {
-               Transformer tran = super.getTransformer();
-               ErrorListener errHandler = tran.getErrorListener();
-               if (null != errHandler && super.m_sourceLocator != null) {
-                  errHandler.warning(new TransformerException(msg, super.m_sourceLocator));
-               } else {
-                  System.out.println(msg);
-               }
-            } catch (Exception var5) {
-            }
-
-            xmlVersion = "1.0";
-         }
-      } else {
-         xmlVersion = "1.0";
-      }
-
-      return xmlVersion;
+   static {
+      m_xmlcharInfo = CharInfo.getCharInfo(CharInfo.XML_ENTITIES_RESOURCE, "xml");
    }
 }

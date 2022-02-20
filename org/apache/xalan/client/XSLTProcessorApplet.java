@@ -3,7 +3,6 @@ package org.apache.xalan.client;
 import java.applet.Applet;
 import java.awt.Graphics;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -21,7 +20,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.xalan.res.XSLMessages;
 
 public class XSLTProcessorApplet extends Applet {
-   transient TransformerFactory m_tfactory = null;
+   TransformerFactory m_tfactory = null;
    private String m_styleURL;
    private String m_documentURL;
    private final String PARAM_styleURL = "styleURL";
@@ -40,8 +39,8 @@ public class XSLTProcessorApplet extends Applet {
    private transient String m_elemIdToModify = null;
    private transient String m_attrNameToSet = null;
    private transient String m_attrValueToSet = null;
+   private Enumeration m_keys;
    transient Hashtable m_parameters;
-   private static final long serialVersionUID = 4618876841979251422L;
 
    public String getAppletInfo() {
       return "Name: XSLTProcessorApplet\r\nAuthor: Scott Boag";
@@ -231,7 +230,7 @@ public class XSLTProcessorApplet extends Applet {
          }
       } catch (MalformedURLException var11) {
          var11.printStackTrace();
-         throw new RuntimeException(var11.getMessage());
+         System.exit(-1);
       } catch (Exception var12) {
          var12.printStackTrace();
       }
@@ -290,35 +289,27 @@ public class XSLTProcessorApplet extends Applet {
             styleURL = new URL(this.m_codeBase, this.m_styleURL);
             StreamSource xslSource = new StreamSource(styleURL.toString());
             Transformer transformer = this.m_tfactory.newTransformer(xslSource);
-            Enumeration m_keys = this.m_parameters.keys();
+            this.m_keys = this.m_parameters.keys();
 
-            while(true) {
-               if (!m_keys.hasMoreElements()) {
-                  transformer.transform(xmlSource, result);
-                  break;
-               }
-
-               Object key = m_keys.nextElement();
+            while(this.m_keys.hasMoreElements()) {
+               Object key = this.m_keys.nextElement();
                Object expression = this.m_parameters.get(key);
                transformer.setParameter((String)key, expression);
             }
-         } catch (TransformerConfigurationException var15) {
+
+            transformer.transform(xmlSource, result);
+         } catch (TransformerConfigurationException var14) {
+            var14.printStackTrace();
+            System.exit(-1);
+         } catch (MalformedURLException var15) {
             var15.printStackTrace();
-            throw new RuntimeException(var15.getMessage());
-         } catch (MalformedURLException var16) {
-            var16.printStackTrace();
-            throw new RuntimeException(var16.getMessage());
+            System.exit(-1);
          }
 
          this.showStatus("Transformation Done!");
          htmlData = osw.toString();
          return htmlData;
       }
-   }
-
-   private void readObject(ObjectInputStream inStream) throws IOException, ClassNotFoundException {
-      inStream.defaultReadObject();
-      this.m_tfactory = TransformerFactory.newInstance();
    }
 
    class TrustedAgent implements Runnable {

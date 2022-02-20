@@ -126,8 +126,8 @@ public class WMFHeaderProperties extends AbstractWMFReader {
          float var12;
          float var13;
          int var14;
-         int var10000;
          int var16;
+         int var10000;
          int var24;
          int var25;
          short var34;

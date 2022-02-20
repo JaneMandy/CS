@@ -2,11 +2,11 @@ package org.apache.xml.serializer;
 
 import java.io.IOException;
 import java.io.Writer;
-import org.apache.xml.serializer.utils.Utils;
+import org.apache.xml.res.XMLMessages;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-public final class ToTextStream extends ToStream {
+public class ToTextStream extends ToStream {
    protected void startDocumentInternal() throws SAXException {
       super.startDocumentInternal();
       super.m_needToCallStartDocument = false;
@@ -40,12 +40,7 @@ public final class ToTextStream extends ToStream {
       this.flushPending();
 
       try {
-         if (this.inTemporaryOutputState()) {
-            super.m_writer.write(ch, start, length);
-         } else {
-            this.writeNormalizedChars(ch, start, length, super.m_lineSepUse);
-         }
-
+         this.writeNormalizedChars(ch, start, length, false, super.m_lineSepUse);
          if (super.m_tracer != null) {
             super.fireCharEvent(ch, start, length);
          }
@@ -57,44 +52,77 @@ public final class ToTextStream extends ToStream {
 
    public void charactersRaw(char[] ch, int start, int length) throws SAXException {
       try {
-         this.writeNormalizedChars(ch, start, length, super.m_lineSepUse);
+         this.writeNormalizedChars(ch, start, length, false, super.m_lineSepUse);
       } catch (IOException var5) {
          throw new SAXException(var5);
       }
    }
 
-   void writeNormalizedChars(char[] ch, int start, int length, boolean useLineSep) throws IOException, SAXException {
-      String encoding = this.getEncoding();
+   void writeNormalizedChars(char[] ch, int start, int length, boolean isCData, boolean useLineSep) throws IOException, SAXException {
       Writer writer = super.m_writer;
       int end = start + length;
       char S_LINEFEED = true;
-
-      for(int i = start; i < end; ++i) {
-         char c = ch[i];
-         if ('\n' == c && useLineSep) {
-            writer.write(super.m_lineSep, 0, super.m_lineSepLen);
-         } else if (super.m_encodingInfo.isInEncoding(c)) {
-            writer.write(c);
-         } else {
-            String integralValue;
-            if (Encodings.isHighUTF16Surrogate(c)) {
-               int codePoint = this.writeUTF16Surrogate(c, ch, i, end);
-               if (codePoint != 0) {
-                  integralValue = Integer.toString(codePoint);
-                  String msg = Utils.messages.createMessage("ER_ILLEGAL_CHARACTER", new Object[]{integralValue, encoding});
-                  System.err.println(msg);
+      int M_MAXCHARACTER = super.m_maxCharacter;
+      int i;
+      char c;
+      String encoding;
+      String integralValue;
+      if (isCData) {
+         for(i = start; i < end; ++i) {
+            c = ch[i];
+            if ('\n' == c && useLineSep) {
+               writer.write(super.m_lineSep, 0, super.m_lineSepLen);
+            } else if (c > M_MAXCHARACTER) {
+               if (i != 0) {
+                  this.closeCDATA();
                }
 
+               if (ToStream.isUTF16Surrogate(c)) {
+                  this.writeUTF16Surrogate(c, ch, i, end);
+                  ++i;
+               } else {
+                  writer.write(c);
+               }
+
+               if (i != 0 && i < end - 1) {
+                  writer.write("<![CDATA[");
+                  super.m_cdataTagOpen = true;
+               }
+            } else if (i < end - 2 && ']' == c && ']' == ch[i + 1] && '>' == ch[i + 2]) {
+               writer.write("]]]]><![CDATA[>");
+               i += 2;
+            } else if (c <= M_MAXCHARACTER) {
+               writer.write(c);
+            } else if (ToStream.isUTF16Surrogate(c)) {
+               this.writeUTF16Surrogate(c, ch, i, end);
                ++i;
-            } else if (encoding != null) {
-               writer.write(38);
-               writer.write(35);
-               writer.write(Integer.toString(c));
-               writer.write(59);
-               String integralValue = Integer.toString(c);
-               integralValue = Utils.messages.createMessage("ER_ILLEGAL_CHARACTER", new Object[]{integralValue, encoding});
-               System.err.println(integralValue);
             } else {
+               encoding = this.getEncoding();
+               if (encoding != null) {
+                  integralValue = Integer.toString(c);
+                  throw new SAXException(XMLMessages.createXMLMessage("ER_ILLEGAL_CHARACTER", new Object[]{integralValue, encoding}));
+               }
+
+               writer.write(c);
+            }
+         }
+      } else {
+         for(i = start; i < end; ++i) {
+            c = ch[i];
+            if ('\n' == c && useLineSep) {
+               writer.write(super.m_lineSep, 0, super.m_lineSepLen);
+            } else if (c <= M_MAXCHARACTER) {
+               writer.write(c);
+            } else if (ToStream.isUTF16Surrogate(c)) {
+               this.writeUTF16Surrogate(c, ch, i, end);
+               ++i;
+            } else {
+               encoding = this.getEncoding();
+               if (encoding != null) {
+                  integralValue = Integer.toString(c);
+                  throw new SAXException(XMLMessages.createXMLMessage("ER_ILLEGAL_CHARACTER", new Object[]{integralValue, encoding}));
+               }
+
                writer.write(c);
             }
          }
@@ -104,7 +132,7 @@ public final class ToTextStream extends ToStream {
 
    public void cdata(char[] ch, int start, int length) throws SAXException {
       try {
-         this.writeNormalizedChars(ch, start, length, super.m_lineSepUse);
+         this.writeNormalizedChars(ch, start, length, false, super.m_lineSepUse);
          if (super.m_tracer != null) {
             super.fireCDATAEvent(ch, start, length);
          }
@@ -116,7 +144,7 @@ public final class ToTextStream extends ToStream {
 
    public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
       try {
-         this.writeNormalizedChars(ch, start, length, super.m_lineSepUse);
+         this.writeNormalizedChars(ch, start, length, false, super.m_lineSepUse);
       } catch (IOException var5) {
          throw new SAXException(var5);
       }
@@ -155,7 +183,7 @@ public final class ToTextStream extends ToStream {
 
    }
 
-   public void addAttribute(String uri, String localName, String rawName, String type, String value, boolean XSLAttribute) {
+   public void addAttribute(String uri, String localName, String rawName, String type, String value) {
    }
 
    public void endCDATA() throws SAXException {

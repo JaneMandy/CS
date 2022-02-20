@@ -5,11 +5,11 @@ import org.apache.xalan.xsltc.DOM;
 import org.apache.xalan.xsltc.Translet;
 import org.apache.xml.dtm.DTMAxisIterator;
 
-public abstract class NodeCounter {
+public abstract class NodeCounter implements Axis {
    public static final int END = -1;
    protected int _node = -1;
    protected int _nodeType = -1;
-   protected double _value = -2.147483648E9D;
+   protected int _value = Integer.MIN_VALUE;
    public final DOM _document;
    public final DTMAxisIterator _iterator;
    public final Translet _translet;
@@ -18,17 +18,16 @@ public abstract class NodeCounter {
    protected String _letterValue;
    protected String _groupSep;
    protected int _groupSize;
-   private boolean _separFirst = true;
-   private boolean _separLast = false;
-   private Vector _separToks = new Vector();
-   private Vector _formatToks = new Vector();
-   private int _nSepars = 0;
-   private int _nFormats = 0;
-   private static final String[] Thousands = new String[]{"", "m", "mm", "mmm"};
-   private static final String[] Hundreds = new String[]{"", "c", "cc", "ccc", "cd", "d", "dc", "dcc", "dccc", "cm"};
-   private static final String[] Tens = new String[]{"", "x", "xx", "xxx", "xl", "l", "lx", "lxx", "lxxx", "xc"};
-   private static final String[] Ones = new String[]{"", "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix"};
-   private StringBuffer _tempBuffer = new StringBuffer();
+   private boolean separFirst = true;
+   private boolean separLast = false;
+   private Vector separToks = null;
+   private Vector formatToks = null;
+   private int nSepars = 0;
+   private int nFormats = 0;
+   private static String[] Thousands = new String[]{"", "m", "mm", "mmm"};
+   private static String[] Hundreds = new String[]{"", "c", "cc", "ccc", "cd", "d", "dc", "dcc", "dccc", "cm"};
+   private static String[] Tens = new String[]{"", "x", "xx", "xxx", "xl", "l", "lx", "lxx", "lxxx", "xc"};
+   private static String[] Ones = new String[]{"", "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix"};
 
    protected NodeCounter(Translet translet, DOM document, DTMAxisIterator iterator) {
       this._translet = translet;
@@ -38,103 +37,95 @@ public abstract class NodeCounter {
 
    public abstract NodeCounter setStartNode(int var1);
 
-   public NodeCounter setValue(double value) {
+   public NodeCounter setValue(int value) {
       this._value = value;
       return this;
    }
 
    protected void setFormatting(String format, String lang, String letterValue, String groupSep, String groupSize) {
       this._lang = lang;
+      this._format = format;
       this._groupSep = groupSep;
       this._letterValue = letterValue;
 
       try {
          this._groupSize = Integer.parseInt(groupSize);
-      } catch (NumberFormatException var7) {
+      } catch (NumberFormatException var11) {
          this._groupSize = 0;
       }
 
-      this.setTokens(format);
-   }
+      int length = this._format.length();
+      boolean isFirst = true;
+      this.separFirst = true;
+      this.separLast = false;
+      this.separToks = new Vector();
+      this.formatToks = new Vector();
+      int j = false;
+      int i = 0;
 
-   private final void setTokens(String format) {
-      if (this._format == null || !format.equals(this._format)) {
-         this._format = format;
-         int length = this._format.length();
-         boolean isFirst = true;
-         this._separFirst = true;
-         this._separLast = false;
-         this._nSepars = 0;
-         this._nFormats = 0;
-         this._separToks.clear();
-         this._formatToks.clear();
-         int j = false;
-         int i = 0;
+      while(i < length) {
+         char c = this._format.charAt(i);
 
-         while(i < length) {
-            char c = format.charAt(i);
+         int j;
+         for(j = i; Character.isLetterOrDigit(c); c = this._format.charAt(i)) {
+            ++i;
+            if (i == length) {
+               break;
+            }
+         }
 
-            int j;
-            for(j = i; Character.isLetterOrDigit(c); c = format.charAt(i)) {
-               ++i;
-               if (i == length) {
-                  break;
-               }
+         if (i > j) {
+            if (isFirst) {
+               this.separToks.addElement(".");
+               isFirst = this.separFirst = false;
             }
 
-            if (i > j) {
-               if (isFirst) {
-                  this._separToks.addElement(".");
-                  isFirst = this._separFirst = false;
-               }
+            this.formatToks.addElement(this._format.substring(j, i));
+         }
 
-               this._formatToks.addElement(format.substring(j, i));
-            }
+         if (i == length) {
+            break;
+         }
 
+         c = this._format.charAt(i);
+
+         for(j = i; !Character.isLetterOrDigit(c); isFirst = false) {
+            ++i;
             if (i == length) {
                break;
             }
 
-            c = format.charAt(i);
-
-            for(j = i; !Character.isLetterOrDigit(c); isFirst = false) {
-               ++i;
-               if (i == length) {
-                  break;
-               }
-
-               c = format.charAt(i);
-            }
-
-            if (i > j) {
-               this._separToks.addElement(format.substring(j, i));
-            }
+            c = this._format.charAt(i);
          }
 
-         this._nSepars = this._separToks.size();
-         this._nFormats = this._formatToks.size();
-         if (this._nSepars > this._nFormats) {
-            this._separLast = true;
+         if (i > j) {
+            this.separToks.addElement(this._format.substring(j, i));
          }
-
-         if (this._separFirst) {
-            --this._nSepars;
-         }
-
-         if (this._separLast) {
-            --this._nSepars;
-         }
-
-         if (this._nSepars == 0) {
-            this._separToks.insertElementAt(".", 1);
-            ++this._nSepars;
-         }
-
-         if (this._separFirst) {
-            ++this._nSepars;
-         }
-
       }
+
+      this.nSepars = this.separToks.size();
+      this.nFormats = this.formatToks.size();
+      if (this.nSepars > this.nFormats) {
+         this.separLast = true;
+      }
+
+      if (this.separFirst) {
+         --this.nSepars;
+      }
+
+      if (this.separLast) {
+         --this.nSepars;
+      }
+
+      if (this.nSepars == 0) {
+         this.separToks.insertElementAt(".", 1);
+         ++this.nSepars;
+      }
+
+      if (this.separFirst) {
+         ++this.nSepars;
+      }
+
    }
 
    public NodeCounter setDefaultFormatting() {
@@ -179,25 +170,24 @@ public abstract class NodeCounter {
          int t = 0;
          int n = 0;
          int s = 1;
-         this._tempBuffer.setLength(0);
-         StringBuffer buffer = this._tempBuffer;
-         if (this._separFirst) {
-            buffer.append((String)this._separToks.elementAt(0));
+         StringBuffer buffer = new StringBuffer();
+         if (this.separFirst) {
+            buffer.append((String)this.separToks.elementAt(0));
          }
 
          for(; n < nValues; ++n) {
             int value = values[n];
             if (value != Integer.MIN_VALUE) {
                if (!isFirst) {
-                  buffer.append((String)this._separToks.elementAt(s++));
+                  buffer.append((String)this.separToks.elementAt(s++));
                }
 
-               this.formatValue(value, (String)this._formatToks.elementAt(t++), buffer);
-               if (t == this._nFormats) {
+               this.formatValue(value, (String)this.formatToks.elementAt(t++), buffer);
+               if (t == this.nFormats) {
                   --t;
                }
 
-               if (s >= this._nSepars) {
+               if (s >= this.nSepars) {
                   --s;
                }
 
@@ -205,8 +195,8 @@ public abstract class NodeCounter {
             }
          }
 
-         if (this._separLast) {
-            buffer.append((String)this._separToks.lastElement());
+         if (this.separLast) {
+            buffer.append((String)this.separToks.lastElement());
          }
 
          return buffer.toString();

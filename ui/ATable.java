@@ -51,7 +51,6 @@ public class ATable extends JTable {
          if (var1 > 0) {
             this.getSelectionModel().addSelectionInterval(0, 0);
          }
-
       } else {
          this.getSelectionModel().setValueIsAdjusting(true);
          boolean var2 = false;
@@ -69,6 +68,7 @@ public class ATable extends JTable {
 
          this.getSelectionModel().setValueIsAdjusting(false);
       }
+
    }
 
    public void restoreSelections() {
@@ -108,7 +108,8 @@ public class ATable extends JTable {
             JLabel var8 = (JLabel)var7.getTableCellRendererComponent(var1, var2, var3, false, var5, var6);
             Object var9 = var0.getValueAt(var1, var5, "status");
             if (var9 != null && !"".equals(var9) && !"success".equals(var9)) {
-               var8.setText("<html><body><font color=\"#8b0000\"><strong>ERROR!</strong></font> " + var8.getText() + " <font color=\"#8b0000\">" + var9 + "</font></body></html>");
+               String var10001 = var8.getText();
+               var8.setText("<html><body><font color=\"#8b0000\"><strong>ERROR!</strong></font> " + var10001 + " <font color=\"#8b0000\">" + var9 + "</font></body></html>");
             }
 
             return var8;
@@ -150,7 +151,7 @@ public class ATable extends JTable {
             JComponent var8 = (JComponent)var7.getTableCellRendererComponent(var1, "", var3, false, var5, var6);
 
             try {
-               long var9 = Long.parseLong(var2 + "");
+               long var9 = Long.parseLong(((Class)var2).makeConcatWithConstants<invokedynamic>(var2));
                String var11 = "b";
                if (var9 > 1024L) {
                   var9 /= 1024L;
@@ -183,7 +184,7 @@ public class ATable extends JTable {
             JComponent var8 = (JComponent)var7.getTableCellRendererComponent(var1, "", var3, false, var5, var6);
 
             try {
-               long var9 = Long.parseLong(var2 + "");
+               long var9 = Long.parseLong(((Class)var2).makeConcatWithConstants<invokedynamic>(var2));
                String var11 = "ms";
                if (var9 <= 1000L) {
                   ((JLabel)var8).setText(var9 + var11);
@@ -236,7 +237,7 @@ public class ATable extends JTable {
             JComponent var8 = (JComponent)var7.getTableCellRendererComponent(var1, "", var3, false, var5, var6);
 
             try {
-               long var9 = Long.parseLong(var2 + "");
+               long var9 = Long.parseLong(((Class)var2).makeConcatWithConstants<invokedynamic>(var2));
                ((JLabel)var8).setText(CommonUtils.formatDate(var9));
             } catch (Exception var11) {
             }

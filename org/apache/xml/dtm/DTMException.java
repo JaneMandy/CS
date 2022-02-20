@@ -8,11 +8,8 @@ import javax.xml.transform.SourceLocator;
 import org.apache.xml.res.XMLMessages;
 
 public class DTMException extends RuntimeException {
-   static final long serialVersionUID = -775576419181334734L;
    SourceLocator locator;
    Throwable containedException;
-   // $FF: synthetic field
-   static Class class$java$lang$Throwable;
 
    public SourceLocator getLocator() {
       return this.locator;
@@ -148,65 +145,46 @@ public class DTMException extends RuntimeException {
          }
 
          super.printStackTrace(s);
-      } catch (Throwable var10) {
+      } catch (Throwable var8) {
       }
 
-      boolean isJdk14OrHigher = false;
+      Throwable exception = this.getException();
 
-      try {
-         (class$java$lang$Throwable == null ? (class$java$lang$Throwable = class$("java.lang.Throwable")) : class$java$lang$Throwable).getMethod("getCause", (Class[])null);
-         isJdk14OrHigher = true;
-      } catch (NoSuchMethodException var9) {
-      }
+      for(int i = 0; i < 10 && null != exception; ++i) {
+         s.println("---------");
 
-      if (!isJdk14OrHigher) {
-         Throwable exception = this.getException();
-
-         for(int i = 0; i < 10 && null != exception; ++i) {
-            s.println("---------");
-
-            try {
-               if (exception instanceof DTMException) {
-                  String locInfo = ((DTMException)exception).getLocationAsString();
-                  if (null != locInfo) {
-                     s.println(locInfo);
-                  }
+         try {
+            if (exception instanceof DTMException) {
+               String locInfo = ((DTMException)exception).getLocationAsString();
+               if (null != locInfo) {
+                  s.println(locInfo);
                }
-
-               exception.printStackTrace(s);
-            } catch (Throwable var8) {
-               s.println("Could not print stack trace...");
             }
 
-            try {
-               Method meth = exception.getClass().getMethod("getException", (Class[])null);
-               if (null != meth) {
-                  Throwable prev = exception;
-                  exception = (Throwable)meth.invoke(exception, (Object[])null);
-                  if (prev == exception) {
-                     break;
-                  }
-               } else {
-                  exception = null;
+            exception.printStackTrace(s);
+         } catch (Throwable var7) {
+            s.println("Could not print stack trace...");
+         }
+
+         try {
+            Method meth = exception.getClass().getMethod("getException", (Class[])null);
+            if (null != meth) {
+               Throwable prev = exception;
+               exception = (Throwable)meth.invoke(exception, (Object[])null);
+               if (prev == exception) {
+                  break;
                }
-            } catch (InvocationTargetException var11) {
-               exception = null;
-            } catch (IllegalAccessException var12) {
-               exception = null;
-            } catch (NoSuchMethodException var13) {
+            } else {
                exception = null;
             }
+         } catch (InvocationTargetException var9) {
+            exception = null;
+         } catch (IllegalAccessException var10) {
+            exception = null;
+         } catch (NoSuchMethodException var11) {
+            exception = null;
          }
       }
 
-   }
-
-   // $FF: synthetic method
-   static Class class$(String x0) {
-      try {
-         return Class.forName(x0);
-      } catch (ClassNotFoundException var2) {
-         throw new NoClassDefFoundError(var2.getMessage());
-      }
    }
 }

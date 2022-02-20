@@ -54,7 +54,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    protected boolean m_endDocumentOccured;
    protected SuballocatedIntVector m_dataOrQName;
    protected Hashtable m_idAttributes;
-   private static final String[] m_fixednames = new String[]{null, null, null, "#text", "#cdata_section", null, null, null, "#comment", "#document", null, "#document-fragment", null};
+   static final String[] m_fixednames = new String[]{null, null, null, "#text", "#cdata_section", null, null, null, "#comment", "#document", null, "#document-fragment", null};
    private Vector m_entities;
    private static final int ENTITY_FIELD_PUBLICID = 0;
    private static final int ENTITY_FIELD_SYSTEMID = 1;
@@ -63,6 +63,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
    private static final int ENTITY_FIELDS_PER = 4;
    protected int m_textPendingStart;
    protected boolean m_useSourceLocationProperty;
+   protected static boolean m_source_location = false;
    protected StringVector m_sourceSystemId;
    protected IntVector m_sourceLine;
    protected IntVector m_sourceColumn;
@@ -106,14 +107,14 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
       }
 
       this.m_data.addElement(0);
-      this.m_useSourceLocationProperty = mgr.getSource_location();
+      this.m_useSourceLocationProperty = m_source_location;
       this.m_sourceSystemId = this.m_useSourceLocationProperty ? new StringVector() : null;
       this.m_sourceLine = this.m_useSourceLocationProperty ? new IntVector() : null;
       this.m_sourceColumn = this.m_useSourceLocationProperty ? new IntVector() : null;
    }
 
-   public void setUseSourceLocation(boolean useSourceLocation) {
-      this.m_useSourceLocationProperty = useSourceLocation;
+   public static void setUseSourceLocation(boolean useSourceLocation) {
+      m_source_location = useSourceLocation;
    }
 
    protected int _dataOrQName(int identity) {
@@ -433,10 +434,10 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
       this.m_sourceLine.addElement(this.m_locator.getLineNumber());
       this.m_sourceColumn.addElement(this.m_locator.getColumnNumber());
       if (this.m_sourceSystemId.size() != super.m_size) {
-         String msg = "CODING ERROR in Source Location: " + super.m_size + " != " + this.m_sourceSystemId.size();
-         System.err.println(msg);
-         throw new RuntimeException(msg);
+         System.err.println("CODING ERROR in Source Location: " + super.m_size + " != " + this.m_sourceSystemId.size());
+         System.exit(1);
       }
+
    }
 
    public String getNodeValue(int nodeHandle) {
@@ -715,7 +716,7 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
 
          if (doStrip) {
             this.m_chars.setLength(this.m_textPendingStart);
-         } else if (length > 0) {
+         } else {
             int exName = super.m_expandedNameTable.getExpandedTypeID(3);
             int dataIndex = this.m_data.size();
             this.m_previous = this.addNode(this.m_coalescedTextType, exName, this.m_parents.peek(), this.m_previous, dataIndex, false);
@@ -1025,9 +1026,5 @@ public class SAX2DTM extends DTMDefaultBaseIterators implements EntityResolver, 
       } else {
          return this.m_systemId != null ? new NodeLocator((String)null, this.m_systemId, -1, -1) : null;
       }
-   }
-
-   public String getFixedNames(int type) {
-      return m_fixednames[type];
    }
 }

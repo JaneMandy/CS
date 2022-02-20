@@ -17,9 +17,9 @@ public class ReversePortForward implements Mortal {
    public Map toMap() {
       HashMap var1 = new HashMap();
       var1.put("type", "reverse port forward");
-      var1.put("port", this.port + "");
+      var1.put("port", this.port.makeConcatWithConstants<invokedynamic>(this.port));
       var1.put("fhost", this.fhost);
-      var1.put("fport", this.fport + "");
+      var1.put("fport", this.fport.makeConcatWithConstants<invokedynamic>(this.fport));
       return var1;
    }
 
@@ -44,6 +44,7 @@ public class ReversePortForward implements Mortal {
    }
 
    public String toString() {
-      return this.getClass().getName() + ": reverse port forward from: " + this.port + " to " + this.fhost + ":" + this.fport;
+      String var10000 = this.getClass().getName();
+      return var10000 + ": reverse port forward from: " + this.port + " to " + this.fhost + ":" + this.fport;
    }
 }

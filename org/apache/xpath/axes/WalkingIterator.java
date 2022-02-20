@@ -11,7 +11,6 @@ import org.apache.xpath.compiler.Compiler;
 import org.apache.xpath.compiler.OpMap;
 
 public class WalkingIterator extends LocPathIterator implements ExpressionOwner {
-   static final long serialVersionUID = 9110225941815665906L;
    protected AxesWalker m_lastUsedWalker;
    protected AxesWalker m_firstWalker;
 

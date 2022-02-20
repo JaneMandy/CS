@@ -6,7 +6,6 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 public class BitArray implements Externalizable {
-   static final long serialVersionUID = -4876019880708377663L;
    private int[] _bits;
    private int _bitSize;
    private int _intSize;

@@ -23,8 +23,8 @@ public class ResourceUtils extends BaseResourceUtils {
       byte[] var8 = new byte[]{35};
       var1 = CommonUtils.XorString(var1, var8);
       var5 = CommonUtils.strrep(var5, "%%DATA%%", Base64.encode(var1));
-      var5 = CommonUtils.strrep(var5, "%%GMH_OFFSET%%", var6 + "");
-      var5 = CommonUtils.strrep(var5, "%%GPA_OFFSET%%", var7 + "");
+      var5 = CommonUtils.strrep(var5, "%%GMH_OFFSET%%", var6.makeConcatWithConstants<invokedynamic>(var6));
+      var5 = CommonUtils.strrep(var5, "%%GPA_OFFSET%%", var7.makeConcatWithConstants<invokedynamic>(var7));
       return CommonUtils.toBytes(var5);
    }
 

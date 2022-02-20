@@ -95,15 +95,16 @@ public class SleeveSecurity {
          var6.write(var13, 0, 16);
          byte[] var7 = var6.toByteArray();
          return var7;
-      } catch (InvalidKeyException var10) {
-         MudgeSanity.logException("[Sleeve] encrypt failure", var10, false);
+      } catch (InvalidKeyException var12) {
+         MudgeSanity.logException("[Sleeve] encrypt failure", var12, false);
          CommonUtils.print_error_file("resources/crypto.txt");
          MudgeSanity.debugJava();
          if (this.E != null) {
-            CommonUtils.print_info("[Sleeve] Key's algorithm is: '" + this.E.getAlgorithm() + "' ivspec is: " + this.B);
+            String var10000 = this.E.getAlgorithm();
+            CommonUtils.print_info("[Sleeve] Key's algorithm is: '" + var10000 + "' ivspec is: " + this.B);
          }
-      } catch (Exception var11) {
-         MudgeSanity.logException("[Sleeve] encrypt failure", var11, false);
+      } catch (Exception var13) {
+         MudgeSanity.logException("[Sleeve] encrypt failure", var13, false);
       }
 
       return new byte[0];
@@ -143,8 +144,8 @@ public class SleeveSecurity {
                return new byte[0];
             }
          }
-      } catch (Exception var13) {
-         var13.printStackTrace();
+      } catch (Exception var15) {
+         var15.printStackTrace();
          return new byte[0];
       }
    }

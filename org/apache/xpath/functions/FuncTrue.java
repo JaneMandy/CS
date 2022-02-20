@@ -7,8 +7,6 @@ import org.apache.xpath.objects.XBoolean;
 import org.apache.xpath.objects.XObject;
 
 public class FuncTrue extends Function {
-   static final long serialVersionUID = 5663314547346339447L;
-
    public XObject execute(XPathContext xctxt) throws TransformerException {
       return XBoolean.S_TRUE;
    }

@@ -33,7 +33,7 @@ public class ConfigurationException extends CascadingException {
    public String getMessage() {
       StringBuffer message = new StringBuffer(super.getMessage());
       if (null != this.m_config) {
-         message.append("@");
+         message.append(" @");
          message.append(this.m_config.getLocation());
       }
 

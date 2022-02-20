@@ -28,20 +28,22 @@ public class SenderTask implements Runnable {
             if (message != null) {
                message.send(this.writer);
             }
-         } catch (InterruptedException var5) {
-         } catch (TransportException var6) {
-            Logger.getLogger("com.glavsoft.rfb.protocol").severe("Close session: " + var6.getMessage());
+         } catch (InterruptedException var4) {
+         } catch (TransportException var5) {
+            Logger.getLogger("com.glavsoft.rfb.protocol").severe("Close session: " + var5.getMessage());
             if (this.isRunning) {
                this.protocolContext.cleanUpSession("Connection closed");
             }
 
             this.stopTask();
-         } catch (Throwable var7) {
+         } catch (Throwable var6) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
-            var7.printStackTrace(pw);
+            var6.printStackTrace(pw);
             if (this.isRunning) {
-               this.protocolContext.cleanUpSession(var7.getMessage() + "\n" + sw.toString());
+               ProtocolContext var10000 = this.protocolContext;
+               String var10001 = var6.getMessage();
+               var10000.cleanUpSession(var10001 + "\n" + sw.toString());
             }
 
             this.stopTask();

@@ -87,7 +87,8 @@ public class BeaconConsole extends AObject implements ActionListener, ConsolePop
          BeaconOutput var8 = (BeaconOutput)var7.next();
          var9 = this.format(var8);
          if (var9 != null) {
-            var6.append(this.A(var8) + var9 + "\n");
+            String var10001 = this.A(var8);
+            var6.append(var10001 + var9 + "\n");
          }
       }
 
@@ -133,7 +134,9 @@ public class BeaconConsole extends AObject implements ActionListener, ConsolePop
          if (var3.is(this.bid)) {
             var4 = this.format(var3);
             if (var4 != null) {
-               this.console.append(this.A(var3) + var4 + "\n");
+               Console var10000 = this.console;
+               String var10001 = this.A(var3);
+               var10000.append(var10001 + var4 + "\n");
             }
          }
       }
@@ -199,29 +202,57 @@ public class BeaconConsole extends AObject implements ActionListener, ConsolePop
          this.client.getAliases().fireCommand(this.bid, var3.getCommand(), var3.getArguments());
       } else {
          final String var4;
+         Console var10000;
+         String var10001;
+         Stack var10003;
+         Cortana var30;
          if (!var3.is("help") && !var3.is("?")) {
             if (var3.is("downloads")) {
-               this.console.append(this.formatLocal(BeaconOutput.Input(this.bid, var2)) + "\n");
+               var10000 = this.console;
+               var10001 = this.formatLocal(BeaconOutput.Input(this.bid, var2));
+               var10000.append(var10001 + "\n");
                this.conn.call("beacons.downloads", CommonUtils.args(this.bid), new Callback() {
                   public void result(String var1, Object var2) {
                      Stack var3 = new Stack();
                      var3.push(CommonUtils.convertAll(var2));
                      var3.push(SleepUtils.getScalar(BeaconConsole.this.bid));
-                     BeaconConsole.this.console.append(BeaconConsole.this.engine.format("BEACON_OUTPUT_DOWNLOADS", var3) + "\n");
+                     Console var10000 = BeaconConsole.this.console;
+                     String var10001 = BeaconConsole.this.engine.format("BEACON_OUTPUT_DOWNLOADS", var3);
+                     var10000.append(var10001 + "\n");
                   }
                });
             } else if (var3.is("elevate") && var3.empty()) {
-               this.console.append(this.formatLocal(BeaconOutput.Input(this.bid, var2)) + "\n");
-               this.console.append(this.engine.format("BEACON_OUTPUT_EXPLOITS", new Stack()) + "\n");
+               var10000 = this.console;
+               var10001 = this.formatLocal(BeaconOutput.Input(this.bid, var2));
+               var10000.append(var10001 + "\n");
+               var10000 = this.console;
+               var30 = this.engine;
+               var10003 = new Stack();
+               var10000.append(var30.format("BEACON_OUTPUT_EXPLOITS", var10003) + "\n");
             } else if (var3.is("runasadmin") && var3.empty()) {
-               this.console.append(this.formatLocal(BeaconOutput.Input(this.bid, var2)) + "\n");
-               this.console.append(this.engine.format("BEACON_OUTPUT_ELEVATORS", new Stack()) + "\n");
+               var10000 = this.console;
+               var10001 = this.formatLocal(BeaconOutput.Input(this.bid, var2));
+               var10000.append(var10001 + "\n");
+               var10000 = this.console;
+               var30 = this.engine;
+               var10003 = new Stack();
+               var10000.append(var30.format("BEACON_OUTPUT_ELEVATORS", var10003) + "\n");
             } else if (var3.is("remote-exec") && var3.empty()) {
-               this.console.append(this.formatLocal(BeaconOutput.Input(this.bid, var2)) + "\n");
-               this.console.append(this.engine.format("BEACON_OUTPUT_REMOTE_EXEC_METHODS", new Stack()) + "\n");
+               var10000 = this.console;
+               var10001 = this.formatLocal(BeaconOutput.Input(this.bid, var2));
+               var10000.append(var10001 + "\n");
+               var10000 = this.console;
+               var30 = this.engine;
+               var10003 = new Stack();
+               var10000.append(var30.format("BEACON_OUTPUT_REMOTE_EXEC_METHODS", var10003) + "\n");
             } else if (var3.is("jump") && var3.empty()) {
-               this.console.append(this.formatLocal(BeaconOutput.Input(this.bid, var2)) + "\n");
-               this.console.append(this.engine.format("BEACON_OUTPUT_REMOTE_EXPLOITS", new Stack()) + "\n");
+               var10000 = this.console;
+               var10001 = this.formatLocal(BeaconOutput.Input(this.bid, var2));
+               var10000.append(var10001 + "\n");
+               var10000 = this.console;
+               var30 = this.engine;
+               var10003 = new Stack();
+               var10000.append(var30.format("BEACON_OUTPUT_REMOTE_EXPLOITS", var10003) + "\n");
             } else {
                this.master.input(var2);
                final String var10;
@@ -1144,29 +1175,37 @@ public class BeaconConsole extends AObject implements ActionListener, ConsolePop
                if (var3.hasError()) {
                   this.conn.call("beacons.log_write", CommonUtils.args(BeaconOutput.Error(this.bid, var3.error())));
                }
-
             }
          } else {
-            this.console.append(this.formatLocal(BeaconOutput.Input(this.bid, var2)) + "\n");
+            var10000 = this.console;
+            var10001 = this.formatLocal(BeaconOutput.Input(this.bid, var2));
+            var10000.append(var10001 + "\n");
             if (!var3.verify("Z") && !var3.reset()) {
-               this.console.append(this.engine.format("BEACON_OUTPUT_HELP", new Stack()) + "\n");
+               var10000 = this.console;
+               var30 = this.engine;
+               var10003 = new Stack();
+               var10000.append(var30.format("BEACON_OUTPUT_HELP", var10003) + "\n");
             } else {
                var4 = var3.popString();
                BeaconCommands var5 = DataUtils.getBeaconCommands(this.data);
                if (var5.isHelpAvailable(var4)) {
                   Stack var6 = new Stack();
                   var6.push(SleepUtils.getScalar(var4));
-                  this.console.append(this.engine.format("BEACON_OUTPUT_HELP_COMMAND", var6) + "\n");
+                  var10000 = this.console;
+                  var10001 = this.engine.format("BEACON_OUTPUT_HELP_COMMAND", var6);
+                  var10000.append(var10001 + "\n");
                } else {
                   var3.error("no help is available for '" + var4 + "'");
                }
             }
 
             if (var3.hasError()) {
-               this.console.append(this.formatLocal(BeaconOutput.Error(this.bid, var3.error())) + "\n");
+               var10000 = this.console;
+               var10001 = this.formatLocal(BeaconOutput.Error(this.bid, var3.error()));
+               var10000.append(var10001 + "\n");
             }
-
          }
       }
+
    }
 }

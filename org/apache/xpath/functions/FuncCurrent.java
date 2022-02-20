@@ -12,8 +12,6 @@ import org.apache.xpath.objects.XObject;
 import org.apache.xpath.patterns.StepPattern;
 
 public class FuncCurrent extends Function {
-   static final long serialVersionUID = 5715316804877715008L;
-
    public XObject execute(XPathContext xctxt) throws TransformerException {
       SubContextList subContextList = xctxt.getCurrentNodeList();
       int currentNode = -1;

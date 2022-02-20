@@ -6,6 +6,9 @@ import java.lang.reflect.Modifier;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
+import org.apache.bcel.generic.ALOAD;
+import org.apache.bcel.generic.ANEWARRAY;
+import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.BranchInstruction;
 import org.apache.bcel.generic.CompoundInstruction;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -60,6 +63,7 @@ class FunctionCall extends Expression {
    private boolean unresolvedExternal;
    private boolean _isExtConstructor;
    private boolean _isStatic;
+   private boolean resolveDynamic;
    private static final MultiHashtable _internal2Java = new MultiHashtable();
    private static final Hashtable _java2Internal = new Hashtable();
    private static final Hashtable _extensionNamespaceTable = new Hashtable();
@@ -78,6 +82,7 @@ class FunctionCall extends Expression {
       this._thisArgument = null;
       this._isExtConstructor = false;
       this._isStatic = false;
+      this.resolveDynamic = false;
       this._fname = fname;
       this._arguments = arguments;
       super._type = null;
@@ -272,7 +277,8 @@ class FunctionCall extends Expression {
          if (super._type != null) {
             return super._type;
          } else {
-            throw new TypeCheckError("ARGUMENT_CONVERSION_ERR", this.getMethodSignature(argsType));
+            this.resolveDynamic = true;
+            return super._type = this._clazz != null ? Type.newObjectType(this._clazz) : Type.newObjectType(this._className);
          }
       }
    }
@@ -298,6 +304,10 @@ class FunctionCall extends Expression {
             Type firstArgType = extType.typeCheck(stable);
             if (this._namespace_format == 1 && firstArgType instanceof ObjectType && this._clazz != null && this._clazz.isAssignableFrom(((ObjectType)firstArgType).getJavaClass())) {
                hasThisArgument = true;
+            } else if (firstArgType instanceof ReferenceType) {
+               this.resolveDynamic = true;
+               this.typeCheckArgs(stable);
+               return Type.String;
             }
 
             if (hasThisArgument) {
@@ -440,48 +450,37 @@ class FunctionCall extends Expression {
       int n = this.argumentCount();
       ConstantPoolGen cpg = classGen.getConstantPool();
       InstructionList il = methodGen.getInstructionList();
-      boolean isSecureProcessing = classGen.getParser().getXSLTC().isSecureProcessing();
       int index;
+      String methodName;
       if (!this.isStandard() && !this.isExtension()) {
          if (this.unresolvedExternal) {
             index = cpg.addMethodref("org.apache.xalan.xsltc.runtime.BasisLibrary", "unresolved_externalF", "(Ljava/lang/String;)V");
             il.append((CompoundInstruction)(new PUSH(cpg, this._fname.toString())));
             il.append((org.apache.bcel.generic.Instruction)(new INVOKESTATIC(index)));
          } else {
+            Expression exp;
+            int i;
             String clazz;
             Class[] paramTypes;
             int i;
+            StringBuffer buffer;
             if (this._isExtConstructor) {
-               if (isSecureProcessing) {
-                  this.translateUnallowedExtension(cpg, il);
-               }
-
                clazz = this._chosenConstructor.getDeclaringClass().getName();
                paramTypes = this._chosenConstructor.getParameterTypes();
-               LocalVariableGen[] paramTemp = new LocalVariableGen[n];
-
-               for(int i = 0; i < n; ++i) {
-                  Expression exp = this.argument(i);
-                  Type expType = exp.getType();
-                  exp.translate(classGen, methodGen);
-                  exp.startIterator(classGen, methodGen);
-                  expType.translateTo(classGen, methodGen, paramTypes[i]);
-                  paramTemp[i] = methodGen.addLocalVariable("function_call_tmp" + i, expType.toJCType(), il.getEnd(), (InstructionHandle)null);
-                  il.append(expType.STORE(paramTemp[i].getIndex()));
-               }
-
                il.append((org.apache.bcel.generic.Instruction)(new NEW(cpg.addClass(this._className))));
                il.append((org.apache.bcel.generic.Instruction)InstructionConstants.DUP);
 
                for(i = 0; i < n; ++i) {
-                  Expression arg = this.argument(i);
-                  il.append(arg.getType().LOAD(paramTemp[i].getIndex()));
+                  exp = this.argument(i);
+                  exp.translate(classGen, methodGen);
+                  exp.startIterator(classGen, methodGen);
+                  exp.getType().translateTo(classGen, methodGen, paramTypes[i]);
                }
 
-               StringBuffer buffer = new StringBuffer();
+               buffer = new StringBuffer();
                buffer.append('(');
 
-               for(int i = 0; i < paramTypes.length; ++i) {
+               for(i = 0; i < paramTypes.length; ++i) {
                   buffer.append(getSignature(paramTypes[i]));
                }
 
@@ -490,25 +489,59 @@ class FunctionCall extends Expression {
                index = cpg.addMethodref(clazz, "<init>", buffer.toString());
                il.append((org.apache.bcel.generic.Instruction)(new INVOKESPECIAL(index)));
                Type.Object.translateFrom(classGen, methodGen, this._chosenConstructor.getDeclaringClass());
-            } else {
-               if (isSecureProcessing) {
-                  this.translateUnallowedExtension(cpg, il);
+            } else if (this.resolveDynamic) {
+               LocalVariableGen _local = methodGen.addLocalVariable2("objects", org.apache.bcel.generic.Type.OBJECT, il.getEnd());
+               il.append((CompoundInstruction)(new PUSH(cpg, n + 1)));
+               il.append((org.apache.bcel.generic.Instruction)(new ANEWARRAY(cpg.addClass("java.lang.Object"))));
+               il.append((org.apache.bcel.generic.Instruction)InstructionConstants.DUP);
+               if (this._thisArgument != null) {
+                  il.append((CompoundInstruction)(new PUSH(cpg, 0)));
+                  this._thisArgument.translate(classGen, methodGen);
+               } else {
+                  il.append((CompoundInstruction)(new PUSH(cpg, 0)));
+                  il.append(InstructionConstants.ACONST_NULL);
                }
 
+               il.append((org.apache.bcel.generic.Instruction)InstructionConstants.AASTORE);
+
+               for(int i = 0; i < n; ++i) {
+                  il.append((org.apache.bcel.generic.Instruction)InstructionConstants.DUP);
+                  il.append((CompoundInstruction)(new PUSH(cpg, i + 1)));
+                  Expression exp = this.argument(i);
+                  exp.translate(classGen, methodGen);
+                  exp.startIterator(classGen, methodGen);
+                  exp.getType().translateTo(classGen, methodGen, Type.Reference);
+                  il.append((org.apache.bcel.generic.Instruction)InstructionConstants.AASTORE);
+               }
+
+               il.append((org.apache.bcel.generic.Instruction)(new ASTORE(_local.getIndex())));
+               methodName = null;
+               if (this._chosenMethod != null) {
+                  methodName = this._chosenMethod.getName();
+               } else {
+                  methodName = this._fname.getLocalPart();
+               }
+
+               il.append((CompoundInstruction)(new PUSH(cpg, this._className)));
+               il.append((CompoundInstruction)(new PUSH(cpg, methodName)));
+               il.append((org.apache.bcel.generic.Instruction)(new ALOAD(_local.getIndex())));
+               index = cpg.addMethodref("org.apache.xalan.xsltc.runtime.CallFunction", "invokeMethod", "(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;");
+               il.append((org.apache.bcel.generic.Instruction)(new INVOKESTATIC(index)));
+            } else {
                clazz = this._chosenMethod.getDeclaringClass().getName();
                paramTypes = this._chosenMethod.getParameterTypes();
                if (this._thisArgument != null) {
                   this._thisArgument.translate(classGen, methodGen);
                }
 
-               for(int i = 0; i < n; ++i) {
-                  Expression exp = this.argument(i);
+               for(i = 0; i < n; ++i) {
+                  exp = this.argument(i);
                   exp.translate(classGen, methodGen);
                   exp.startIterator(classGen, methodGen);
                   exp.getType().translateTo(classGen, methodGen, paramTypes[i]);
                }
 
-               StringBuffer buffer = new StringBuffer();
+               buffer = new StringBuffer();
                buffer.append('(');
 
                for(i = 0; i < paramTypes.length; ++i) {
@@ -536,17 +569,17 @@ class FunctionCall extends Expression {
          }
 
          String name = this._fname.toString().replace('-', '_') + "F";
-         String args = "";
+         methodName = "";
          if (name.equals("sumF")) {
-            args = "Lorg/apache/xalan/xsltc/DOM;";
+            methodName = "Lorg/apache/xalan/xsltc/DOM;";
             il.append(methodGen.loadDOM());
-         } else if (name.equals("normalize_spaceF") && this._chosenMethodType.toSignature(args).equals("()Ljava/lang/String;")) {
-            args = "ILorg/apache/xalan/xsltc/DOM;";
+         } else if (name.equals("normalize_spaceF") && this._chosenMethodType.toSignature(methodName).equals("()Ljava/lang/String;")) {
+            methodName = "ILorg/apache/xalan/xsltc/DOM;";
             il.append(methodGen.loadContextNode());
             il.append(methodGen.loadDOM());
          }
 
-         index = cpg.addMethodref("org.apache.xalan.xsltc.runtime.BasisLibrary", name, this._chosenMethodType.toSignature(args));
+         index = cpg.addMethodref("org.apache.xalan.xsltc.runtime.BasisLibrary", name, this._chosenMethodType.toSignature(methodName));
          il.append((org.apache.bcel.generic.Instruction)(new INVOKESTATIC(index)));
       }
 
@@ -733,12 +766,6 @@ class FunctionCall extends Expression {
       }
 
       return buff.toString();
-   }
-
-   private void translateUnallowedExtension(ConstantPoolGen cpg, InstructionList il) {
-      int index = cpg.addMethodref("org.apache.xalan.xsltc.runtime.BasisLibrary", "unallowed_extension_functionF", "(Ljava/lang/String;)V");
-      il.append((CompoundInstruction)(new PUSH(cpg, this._fname.toString())));
-      il.append((org.apache.bcel.generic.Instruction)(new INVOKESTATIC(index)));
    }
 
    // $FF: synthetic method

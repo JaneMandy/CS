@@ -24,11 +24,11 @@ public class RedundentExprEliminator extends XSLTVisitor {
    Vector m_absPaths = new Vector();
    boolean m_isSameContext = true;
    AbsPathChecker m_absPathChecker = new AbsPathChecker();
-   private static int m_uniquePseudoVarID = 1;
+   static int m_uniquePsuedoVarID = 1;
    static final String PSUEDOVARNAMESPACE = "http://xml.apache.org/xalan/psuedovar";
-   public static final boolean DEBUG = false;
-   public static final boolean DIAGNOSE_NUM_PATHS_REDUCED = false;
-   public static final boolean DIAGNOSE_MULTISTEPLIST = false;
+   public static boolean DEBUG = false;
+   public static boolean DIAGNOSE_NUM_PATHS_REDUCED = false;
+   public static boolean DIAGNOSE_MULTISTEPLIST = false;
    VarNameCollector m_varNameCollector = new VarNameCollector();
 
    public void eleminateRedundentLocals(ElemTemplateElement psuedoVarRecipient) {
@@ -57,11 +57,19 @@ public class RedundentExprEliminator extends XSLTVisitor {
       }
 
       this.eleminateSharedPartialPaths(psuedoVarRecipient, paths);
+      if (DIAGNOSE_NUM_PATHS_REDUCED) {
+         this.diagnoseNumPaths(paths, numPathsEliminated, numUniquePathsEliminated);
+      }
+
    }
 
    protected void eleminateSharedPartialPaths(ElemTemplateElement psuedoVarRecipient, Vector paths) {
       RedundentExprEliminator.MultistepExprHolder list = this.createMultistepExprList(paths);
       if (null != list) {
+         if (DIAGNOSE_MULTISTEPLIST) {
+            list.diagnose();
+         }
+
          boolean isGlobal = paths == this.m_absPaths;
          int longestStepsCount = list.m_stepCount;
 
@@ -112,18 +120,31 @@ public class RedundentExprEliminator extends XSLTVisitor {
                }
             }
 
-            int matchCount = false;
+            int matchCount = 0;
             if (null != matchedPaths) {
                ElemTemplateElement root = isGlobal ? varScope : this.findCommonAncestor(matchedPaths);
                WalkingIterator sharedIter = (WalkingIterator)matchedPaths.m_exprOwner.getExpression();
                WalkingIterator newIter = this.createIteratorFromSteps(sharedIter, lengthToTest);
+               ElemVariable var = this.createPsuedoVarDecl(root, newIter, isGlobal);
+               if (DIAGNOSE_MULTISTEPLIST) {
+                  System.err.println("Created var: " + var.getName() + (isGlobal ? "(Global)" : ""));
+               }
 
-               for(ElemVariable var = this.createPseudoVarDecl(root, newIter, isGlobal); null != matchedPaths; matchedPaths = matchedPaths.m_next) {
+               while(null != matchedPaths) {
                   ExpressionOwner owner = matchedPaths.m_exprOwner;
                   WalkingIterator iter = (WalkingIterator)owner.getExpression();
+                  if (DIAGNOSE_MULTISTEPLIST) {
+                     this.diagnoseLineNumber(iter);
+                  }
+
                   LocPathIterator newIter2 = this.changePartToRef(var.getName(), iter, lengthToTest, isGlobal);
                   owner.setExpression(newIter2);
+                  matchedPaths = matchedPaths.m_next;
                }
+            }
+
+            if (DIAGNOSE_MULTISTEPLIST) {
+               this.diagnoseMultistepList(matchCount, lengthToTest, isGlobal);
             }
 
             return head;
@@ -191,6 +212,11 @@ public class RedundentExprEliminator extends XSLTVisitor {
          }
 
          if (areEqual && this.isNotSameAsOwner(head, first) && first.canAcceptVariables()) {
+            if (DIAGNOSE_MULTISTEPLIST) {
+               System.err.print(first.getClass().getName());
+               System.err.println(" at   " + first.getSystemId() + " Line " + first.getLineNumber());
+            }
+
             return first;
          }
 
@@ -235,9 +261,9 @@ public class RedundentExprEliminator extends XSLTVisitor {
 
    }
 
-   protected LocPathIterator changePartToRef(QName uniquePseudoVarName, WalkingIterator wi, int numSteps, boolean isGlobal) {
+   protected LocPathIterator changePartToRef(QName uniquePsuedoVarName, WalkingIterator wi, int numSteps, boolean isGlobal) {
       Variable var = new Variable();
-      var.setQName(uniquePseudoVarName);
+      var.setQName(uniquePsuedoVarName);
       var.setIsGlobal(isGlobal);
       if (isGlobal) {
          ElemTemplateElement elem = this.getElemFromExpression(wi);
@@ -343,6 +369,10 @@ public class RedundentExprEliminator extends XSLTVisitor {
       int numPathsFound = 0;
       int n = paths.size();
       Expression expr1 = firstOccuranceOwner.getExpression();
+      if (DEBUG) {
+         this.assertIsLocPathIterator(expr1, firstOccuranceOwner);
+      }
+
       boolean isGlobal = paths == this.m_absPaths;
       LocPathIterator lpi = (LocPathIterator)expr1;
       int stepCount = this.countSteps(lpi);
@@ -376,11 +406,18 @@ public class RedundentExprEliminator extends XSLTVisitor {
       if (null != head) {
          ElemTemplateElement root = isGlobal ? psuedoVarRecipient : this.findCommonAncestor(head);
          LocPathIterator sharedIter = (LocPathIterator)head.m_exprOwner.getExpression();
-         ElemVariable var = this.createPseudoVarDecl(root, sharedIter, isGlobal);
+         ElemVariable var = this.createPsuedoVarDecl(root, sharedIter, isGlobal);
+         if (DIAGNOSE_MULTISTEPLIST) {
+            System.err.println("Created var: " + var.getName() + (isGlobal ? "(Global)" : ""));
+         }
 
-         for(QName uniquePseudoVarName = var.getName(); null != head; head = head.m_next) {
+         for(QName uniquePsuedoVarName = var.getName(); null != head; head = head.m_next) {
             ExpressionOwner owner = head.m_exprOwner;
-            this.changeToVarRef(uniquePseudoVarName, owner, paths, root);
+            if (DIAGNOSE_MULTISTEPLIST) {
+               this.diagnoseLineNumber(owner.getExpression());
+            }
+
+            this.changeToVarRef(uniquePsuedoVarName, owner, paths, root);
          }
 
          paths.setElementAt(var.getSelect(), firstOccuranceIndex);
@@ -390,11 +427,15 @@ public class RedundentExprEliminator extends XSLTVisitor {
    }
 
    protected int oldFindAndEliminateRedundant(int start, int firstOccuranceIndex, ExpressionOwner firstOccuranceOwner, ElemTemplateElement psuedoVarRecipient, Vector paths) throws DOMException {
-      QName uniquePseudoVarName = null;
+      QName uniquePsuedoVarName = null;
       boolean foundFirst = false;
       int numPathsFound = 0;
       int n = paths.size();
       Expression expr1 = firstOccuranceOwner.getExpression();
+      if (DEBUG) {
+         this.assertIsLocPathIterator(expr1, firstOccuranceOwner);
+      }
+
       boolean isGlobal = paths == this.m_absPaths;
       LocPathIterator lpi = (LocPathIterator)expr1;
 
@@ -407,18 +448,18 @@ public class RedundentExprEliminator extends XSLTVisitor {
                LocPathIterator lpi2 = (LocPathIterator)expr2;
                if (!foundFirst) {
                   foundFirst = true;
-                  ElemVariable var = this.createPseudoVarDecl(psuedoVarRecipient, lpi, isGlobal);
+                  ElemVariable var = this.createPsuedoVarDecl(psuedoVarRecipient, lpi, isGlobal);
                   if (null == var) {
                      return 0;
                   }
 
-                  uniquePseudoVarName = var.getName();
-                  this.changeToVarRef(uniquePseudoVarName, firstOccuranceOwner, paths, psuedoVarRecipient);
+                  uniquePsuedoVarName = var.getName();
+                  this.changeToVarRef(uniquePsuedoVarName, firstOccuranceOwner, paths, psuedoVarRecipient);
                   paths.setElementAt(var.getSelect(), firstOccuranceIndex);
                   ++numPathsFound;
                }
 
-               this.changeToVarRef(uniquePseudoVarName, owner2, paths, psuedoVarRecipient);
+               this.changeToVarRef(uniquePsuedoVarName, owner2, paths, psuedoVarRecipient);
                paths.setElementAt((Object)null, j);
                ++numPathsFound;
             }
@@ -426,13 +467,13 @@ public class RedundentExprEliminator extends XSLTVisitor {
       }
 
       if (0 == numPathsFound && paths == this.m_absPaths) {
-         ElemVariable var = this.createPseudoVarDecl(psuedoVarRecipient, lpi, true);
+         ElemVariable var = this.createPsuedoVarDecl(psuedoVarRecipient, lpi, true);
          if (null == var) {
             return 0;
          }
 
-         uniquePseudoVarName = var.getName();
-         this.changeToVarRef(uniquePseudoVarName, firstOccuranceOwner, paths, psuedoVarRecipient);
+         uniquePsuedoVarName = var.getName();
+         this.changeToVarRef(uniquePsuedoVarName, firstOccuranceOwner, paths, psuedoVarRecipient);
          paths.setElementAt(var.getSelect(), firstOccuranceIndex);
          ++numPathsFound;
       }
@@ -469,32 +510,29 @@ public class RedundentExprEliminator extends XSLTVisitor {
       owner.setExpression((Expression)varRef);
    }
 
-   private static synchronized int getPseudoVarID() {
-      return m_uniquePseudoVarID++;
+   protected ElemVariable createPsuedoVarDecl(ElemTemplateElement psuedoVarRecipient, LocPathIterator lpi, boolean isGlobal) throws DOMException {
+      QName uniquePsuedoVarName = new QName("http://xml.apache.org/xalan/psuedovar", "#" + m_uniquePsuedoVarID);
+      ++m_uniquePsuedoVarID;
+      return isGlobal ? this.createGlobalPsuedoVarDecl(uniquePsuedoVarName, (StylesheetRoot)psuedoVarRecipient, lpi) : this.createLocalPsuedoVarDecl(uniquePsuedoVarName, psuedoVarRecipient, lpi);
    }
 
-   protected ElemVariable createPseudoVarDecl(ElemTemplateElement psuedoVarRecipient, LocPathIterator lpi, boolean isGlobal) throws DOMException {
-      QName uniquePseudoVarName = new QName("http://xml.apache.org/xalan/psuedovar", "#" + getPseudoVarID());
-      return isGlobal ? this.createGlobalPseudoVarDecl(uniquePseudoVarName, (StylesheetRoot)psuedoVarRecipient, lpi) : this.createLocalPseudoVarDecl(uniquePseudoVarName, psuedoVarRecipient, lpi);
-   }
-
-   protected ElemVariable createGlobalPseudoVarDecl(QName uniquePseudoVarName, StylesheetRoot stylesheetRoot, LocPathIterator lpi) throws DOMException {
+   protected ElemVariable createGlobalPsuedoVarDecl(QName uniquePsuedoVarName, StylesheetRoot stylesheetRoot, LocPathIterator lpi) throws DOMException {
       ElemVariable psuedoVar = new ElemVariable();
       psuedoVar.setIsTopLevel(true);
       XPath xpath = new XPath(lpi);
       psuedoVar.setSelect(xpath);
-      psuedoVar.setName(uniquePseudoVarName);
+      psuedoVar.setName(uniquePsuedoVarName);
       Vector globalVars = stylesheetRoot.getVariablesAndParamsComposed();
       psuedoVar.setIndex(globalVars.size());
       globalVars.addElement(psuedoVar);
       return psuedoVar;
    }
 
-   protected ElemVariable createLocalPseudoVarDecl(QName uniquePseudoVarName, ElemTemplateElement psuedoVarRecipient, LocPathIterator lpi) throws DOMException {
+   protected ElemVariable createLocalPsuedoVarDecl(QName uniquePsuedoVarName, ElemTemplateElement psuedoVarRecipient, LocPathIterator lpi) throws DOMException {
       ElemVariable psuedoVar = new ElemVariablePsuedo();
       XPath xpath = new XPath(lpi);
       psuedoVar.setSelect(xpath);
-      psuedoVar.setName(uniquePseudoVarName);
+      psuedoVar.setName(uniquePsuedoVarName);
       ElemVariable var = this.addVarDeclToElem(psuedoVarRecipient, lpi, psuedoVar);
       lpi.exprSetParent(var);
       return var;
@@ -624,8 +662,16 @@ public class RedundentExprEliminator extends XSLTVisitor {
          }
 
          if (this.isAbsolute(path) && null != this.m_absPaths) {
+            if (DEBUG) {
+               validateNewAddition(this.m_absPaths, owner, path);
+            }
+
             this.m_absPaths.addElement(owner);
          } else if (this.m_isSameContext && null != this.m_paths) {
+            if (DEBUG) {
+               validateNewAddition(this.m_paths, owner, path);
+            }
+
             this.m_paths.addElement(owner);
          }
 

@@ -12,7 +12,6 @@ import org.apache.xpath.compiler.XPathParser;
 import org.apache.xpath.objects.XObject;
 
 public class AVTPartXPath extends AVTPart {
-   static final long serialVersionUID = -4460373807550527675L;
    private XPath m_xpath;
 
    public void fixupVariables(Vector vars, int globalsSize) {

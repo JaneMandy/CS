@@ -57,7 +57,7 @@ public class BeaconCharsets {
          } catch (Exception var8) {
             MudgeSanity.logException("Could not find charset '" + var3 + "' for Beacon ID " + var2, var8, false);
          }
-
       }
+
    }
 }

@@ -48,9 +48,9 @@ public class InterfaceManager extends AObject implements Callback, ActionListene
             return;
          }
 
-         String var2 = this.model.getSelectedValue(this.table) + "";
-         String var3 = this.model.getSelectedValueFromColumn(this.table, "channel") + "";
-         String var4 = this.model.getSelectedValueFromColumn(this.table, "port") + "";
+         String var2 = ((Class)this.model.getSelectedValue(this.table)).makeConcatWithConstants<invokedynamic>(this.model.getSelectedValue(this.table));
+         String var3 = ((Class)this.model.getSelectedValueFromColumn(this.table, "channel")).makeConcatWithConstants<invokedynamic>(this.model.getSelectedValueFromColumn(this.table, "channel"));
+         String var4 = ((Class)this.model.getSelectedValueFromColumn(this.table, "port")).makeConcatWithConstants<invokedynamic>(this.model.getSelectedValueFromColumn(this.table, "port"));
          this.conn.call("cloudstrike.stop_tap", CommonUtils.args(var2));
          if ("TCP (Bind)".equals(var3)) {
             this.conn.call("beacons.pivot_stop_port", CommonUtils.args(var4));

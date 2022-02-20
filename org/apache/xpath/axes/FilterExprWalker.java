@@ -11,7 +11,6 @@ import org.apache.xpath.objects.XNodeSet;
 import org.apache.xpath.operations.Variable;
 
 public class FilterExprWalker extends AxesWalker {
-   static final long serialVersionUID = 5457182471424488375L;
    private Expression m_expr;
    private transient XNodeSet m_exprObj;
    private boolean m_mustHardReset = false;

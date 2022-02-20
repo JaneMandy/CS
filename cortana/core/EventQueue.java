@@ -76,7 +76,6 @@ public class EventQueue implements Runnable {
          return var1;
       }
 
-      // $FF: synthetic method
       _A(Object var1) {
          this();
       }

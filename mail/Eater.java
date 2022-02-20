@@ -174,34 +174,32 @@ public class Eater {
    }
 
    protected void fixMessageType(Entity ent) {
-      if (ent.getBody() instanceof SingleBody) {
-         if ("text/plain".equals(ent.getMimeType())) {
-            try {
-               SingleBody body = (SingleBody)ent.getBody();
-               InputStream stream = body.getInputStream();
-               Reader r = new InputStreamReader(stream, ent.getCharset());
-               char[] buffer = new char[2097152];
-               int len = r.read(buffer);
-               String changeme = new String(buffer, 0, len);
-               changeme = changeme.replaceAll("(?i:(http[s]{0,1}://[^\\n\\s]*))", "<a href=\"$1\">$1</a>");
-               changeme = changeme.replaceAll("\n", "\n<br />");
-               TextBody hotty = (new BasicBodyFactory()).textBody(changeme, ent.getCharset());
-               AbstractEntity entity = (AbstractEntity)ent;
-               entity.setContentTransferEncoding("7bit");
-               ent.removeBody();
-               ((AbstractEntity)ent).setText(hotty, "html");
-            } catch (IOException var10) {
-               var10.printStackTrace();
-            }
+      if (ent.getBody() instanceof SingleBody && "text/plain".equals(ent.getMimeType())) {
+         try {
+            SingleBody body = (SingleBody)ent.getBody();
+            InputStream stream = body.getInputStream();
+            Reader r = new InputStreamReader(stream, ent.getCharset());
+            char[] buffer = new char[2097152];
+            int len = r.read(buffer);
+            String changeme = new String(buffer, 0, len);
+            changeme = changeme.replaceAll("(?i:(http[s]{0,1}://[^\\n\\s]*))", "<a href=\"$1\">$1</a>");
+            changeme = changeme.replaceAll("\n", "\n<br />");
+            TextBody hotty = (new BasicBodyFactory()).textBody(changeme, ent.getCharset());
+            AbstractEntity entity = (AbstractEntity)ent;
+            entity.setContentTransferEncoding("7bit");
+            ent.removeBody();
+            ((AbstractEntity)ent).setText(hotty, "html");
+         } catch (IOException var10) {
+            var10.printStackTrace();
          }
-
       }
+
    }
 
    protected void fixMessageEncoding(Entity ent, String transferEncoding) {
       String type = ent.getDispositionType();
       if (ent.isMultipart()) {
-         Multipart mbody = (Multipart)((Multipart)ent.getBody());
+         Multipart mbody = (Multipart)ent.getBody();
          Iterator i = mbody.getBodyParts().iterator();
 
          while(i.hasNext()) {

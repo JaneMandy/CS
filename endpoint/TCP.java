@@ -101,8 +101,8 @@ public class TCP extends Base implements Runnable {
             this.stop();
             var3.printStackTrace();
          }
-
       }
+
    }
 
    public void shutdown() {

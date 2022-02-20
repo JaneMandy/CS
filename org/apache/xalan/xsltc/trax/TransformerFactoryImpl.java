@@ -55,20 +55,35 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
    public static final String INDENT_NUMBER = "indent-number";
    private ErrorListener _errorListener = this;
    private URIResolver _uriResolver = null;
-   protected static final String DEFAULT_TRANSLET_NAME = "GregorSamsa";
-   private String _transletName = "GregorSamsa";
-   private String _destinationDirectory = null;
-   private String _packageName = null;
-   private String _jarFileName = null;
-   private Hashtable _piParams = null;
-   private boolean _debug = false;
-   private boolean _enableInlining = false;
-   private boolean _generateTranslet = false;
-   private boolean _autoTranslet = false;
-   private boolean _useClasspath = false;
-   private int _indentNumber = -1;
-   private Class m_DTMManagerClass = XSLTCDTMManager.getDTMManagerClass();
-   private boolean _isSecureProcessing = false;
+   protected static String DEFAULT_TRANSLET_NAME = "GregorSamsa";
+   private String _transletName;
+   private String _destinationDirectory;
+   private String _packageName;
+   private String _jarFileName;
+   private Hashtable _piParams;
+   static ThreadLocal _xmlReader = new ThreadLocal();
+   private boolean _debug;
+   private boolean _enableInlining;
+   private boolean _generateTranslet;
+   private boolean _autoTranslet;
+   private boolean _useClasspath;
+   private int _indentNumber;
+   private Class m_DTMManagerClass;
+
+   public TransformerFactoryImpl() {
+      this._transletName = DEFAULT_TRANSLET_NAME;
+      this._destinationDirectory = null;
+      this._packageName = null;
+      this._jarFileName = null;
+      this._piParams = null;
+      this._debug = false;
+      this._enableInlining = false;
+      this._generateTranslet = false;
+      this._autoTranslet = false;
+      this._useClasspath = false;
+      this._indentNumber = -1;
+      this.m_DTMManagerClass = XSLTCDTMManager.getDTMManagerClass();
+   }
 
    public void setErrorListener(ErrorListener listener) throws IllegalArgumentException {
       if (listener == null) {
@@ -174,33 +189,16 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
       }
    }
 
-   public void setFeature(String name, boolean value) throws TransformerConfigurationException {
-      ErrorMsg err;
-      if (name == null) {
-         err = new ErrorMsg("JAXP_SET_FEATURE_NULL_NAME");
-         throw new NullPointerException(err.toString());
-      } else if (name.equals("http://javax.xml.XMLConstants/feature/secure-processing")) {
-         this._isSecureProcessing = value;
-      } else {
-         err = new ErrorMsg("JAXP_UNSUPPORTED_FEATURE", name);
-         throw new TransformerConfigurationException(err.toString());
-      }
-   }
-
    public boolean getFeature(String name) {
       String[] features = new String[]{"http://javax.xml.transform.dom.DOMSource/feature", "http://javax.xml.transform.dom.DOMResult/feature", "http://javax.xml.transform.sax.SAXSource/feature", "http://javax.xml.transform.sax.SAXResult/feature", "http://javax.xml.transform.stream.StreamSource/feature", "http://javax.xml.transform.stream.StreamResult/feature", "http://javax.xml.transform.sax.SAXTransformerFactory/feature", "http://javax.xml.transform.sax.SAXTransformerFactory/feature/xmlfilter"};
-      if (name == null) {
-         ErrorMsg err = new ErrorMsg("JAXP_GET_FEATURE_NULL_NAME");
-         throw new NullPointerException(err.toString());
-      } else {
-         for(int i = 0; i < features.length; ++i) {
-            if (name.equals(features[i])) {
-               return true;
-            }
-         }
 
-         return name.equals("http://javax.xml.XMLConstants/feature/secure-processing") ? this._isSecureProcessing : false;
+      for(int i = 0; i < features.length; ++i) {
+         if (name.equals(features[i])) {
+            return true;
+         }
       }
+
+      return false;
    }
 
    public URIResolver getURIResolver() {
@@ -231,13 +229,6 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
             baseId = isource.getSystemId();
             SAXParserFactory factory = SAXParserFactory.newInstance();
             factory.setNamespaceAware(true);
-            if (this._isSecureProcessing) {
-               try {
-                  factory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
-               } catch (SAXException var13) {
-               }
-            }
-
             SAXParser jaxpParser = factory.newSAXParser();
             reader = jaxpParser.getXMLReader();
             if (reader == null) {
@@ -252,13 +243,13 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
          if (this._uriResolver != null) {
             _stylesheetPIHandler.setURIResolver(this._uriResolver);
          }
-      } catch (StopParseException var14) {
-      } catch (ParserConfigurationException var15) {
+      } catch (StopParseException var13) {
+      } catch (ParserConfigurationException var14) {
+         throw new TransformerConfigurationException("getAssociatedStylesheets failed", var14);
+      } catch (SAXException var15) {
          throw new TransformerConfigurationException("getAssociatedStylesheets failed", var15);
-      } catch (SAXException var16) {
+      } catch (IOException var16) {
          throw new TransformerConfigurationException("getAssociatedStylesheets failed", var16);
-      } catch (IOException var17) {
-         throw new TransformerConfigurationException("getAssociatedStylesheets failed", var17);
       }
 
       return _stylesheetPIHandler.getAssociatedStylesheet();
@@ -268,10 +259,6 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
       TransformerImpl result = new TransformerImpl(new Properties(), this._indentNumber, this);
       if (this._uriResolver != null) {
          result.setURIResolver(this._uriResolver);
-      }
-
-      if (this._isSecureProcessing) {
-         result.setSecureProcessing(true);
       }
 
       return result;
@@ -292,12 +279,8 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
          int count = messages.size();
 
          for(int pos = 0; pos < count; ++pos) {
-            ErrorMsg msg = (ErrorMsg)messages.elementAt(pos);
-            if (msg.isWarningError()) {
-               this._errorListener.error(new TransformerConfigurationException(msg.toString()));
-            } else {
-               this._errorListener.warning(new TransformerConfigurationException(msg.toString()));
-            }
+            String message = messages.elementAt(pos).toString();
+            this._errorListener.error(new TransformerConfigurationException(message));
          }
 
       }
@@ -375,10 +358,6 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
 
          if (this._enableInlining) {
             xsltc.setTemplateInlining(true);
-         }
-
-         if (this._isSecureProcessing) {
-            xsltc.setSecureProcessing(true);
          }
 
          xsltc.init();
@@ -567,7 +546,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
    }
 
    private void resetTransientAttributes() {
-      this._transletName = "GregorSamsa";
+      this._transletName = DEFAULT_TRANSLET_NAME;
       this._destinationDirectory = null;
       this._packageName = null;
       this._jarFileName = null;
@@ -784,7 +763,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
 
    private String getTransletBaseName(Source source) {
       String transletBaseName = null;
-      if (!this._transletName.equals("GregorSamsa")) {
+      if (!this._transletName.equals(DEFAULT_TRANSLET_NAME)) {
          return this._transletName;
       } else {
          String systemId = source.getSystemId();
@@ -796,7 +775,7 @@ public class TransformerFactoryImpl extends SAXTransformerFactory implements Sou
             }
          }
 
-         return transletBaseName != null ? transletBaseName : "GregorSamsa";
+         return transletBaseName != null ? transletBaseName : DEFAULT_TRANSLET_NAME;
       }
    }
 

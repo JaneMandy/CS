@@ -3,7 +3,6 @@ package org.apache.xalan.templates;
 import java.io.Serializable;
 
 public class XMLNSDecl implements Serializable {
-   static final long serialVersionUID = 6710237366877605097L;
    private String m_prefix;
    private String m_uri;
    private boolean m_isExcluded;

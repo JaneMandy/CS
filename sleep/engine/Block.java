@@ -68,11 +68,12 @@ public class Block implements Serializable {
    public String getApproximateLineRange() {
       int var1 = this.getLowLineNumber();
       int var2 = this.getHighLineNumber();
-      return var1 == var2 ? var1 + "" : var1 + "-" + var2;
+      return var1 == var2 ? var1.makeConcatWithConstants<invokedynamic>(var1) : var1 + "-" + var2;
    }
 
    public String getSourceLocation() {
-      return (new File(this.source)).getName() + ":" + this.getApproximateLineRange();
+      String var10000 = (new File(this.source)).getName();
+      return var10000 + ":" + this.getApproximateLineRange();
    }
 
    public void add(Step var1) {

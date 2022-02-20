@@ -14,6 +14,7 @@ import org.apache.xml.serializer.ToTextStream;
 import org.apache.xml.serializer.ToUnknownStream;
 import org.apache.xml.serializer.ToXMLSAXHandler;
 import org.apache.xml.serializer.ToXMLStream;
+import org.apache.xml.serializer.XSLOutputAttributes;
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ext.LexicalHandler;
@@ -28,7 +29,6 @@ public class TransletOutputHandlerFactory {
    private OutputStream _ostream;
    private Writer _writer;
    private Node _node;
-   private Node _nextSibling;
    private int _indentNumber;
    private ContentHandler _handler;
    private LexicalHandler _lexHandler;
@@ -37,7 +37,6 @@ public class TransletOutputHandlerFactory {
       this._ostream = System.out;
       this._writer = null;
       this._node = null;
-      this._nextSibling = null;
       this._indentNumber = -1;
       this._handler = null;
       this._lexHandler = null;
@@ -86,10 +85,6 @@ public class TransletOutputHandlerFactory {
       return this._handler instanceof SAX2DOM ? ((SAX2DOM)this._handler).getDOM() : null;
    }
 
-   public void setNextSibling(Node nextSibling) {
-      this._nextSibling = nextSibling;
-   }
-
    public void setIndentNumber(int value) {
       this._indentNumber = value;
    }
@@ -112,7 +107,7 @@ public class TransletOutputHandlerFactory {
             ((SerializationHandler)result).setIndentAmount(this._indentNumber);
          }
 
-         ((SerializationHandler)result).setEncoding(this._encoding);
+         ((XSLOutputAttributes)result).setEncoding(this._encoding);
          if (this._writer != null) {
             ((Serializer)result).setWriter(this._writer);
          } else {
@@ -121,7 +116,7 @@ public class TransletOutputHandlerFactory {
 
          return (SerializationHandler)result;
       case 2:
-         this._handler = this._node != null ? new SAX2DOM(this._node, this._nextSibling) : new SAX2DOM();
+         this._handler = this._node != null ? new SAX2DOM(this._node) : new SAX2DOM();
          this._lexHandler = (LexicalHandler)this._handler;
       case 1:
          if (this._method == null) {

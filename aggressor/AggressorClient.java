@@ -97,7 +97,8 @@ public class AggressorClient extends JComponent implements ScriptableApplication
    }
 
    public String getTeamServerAlias() {
-      return this.data.getMapSafe("options").get("alias") + "";
+      Map var10000 = this.data.getMapSafe("options");
+      return ((Class)var10000.get("alias")).makeConcatWithConstants<invokedynamic>(var10000.get("alias"));
    }
 
    public void setTeamServerAlias(String var1) {
@@ -181,6 +182,7 @@ public class AggressorClient extends JComponent implements ScriptableApplication
 
          var1.requestFocusInWindow();
       }
+
    }
 
    public void kill() {

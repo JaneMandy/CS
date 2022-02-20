@@ -13,7 +13,6 @@ import org.apache.xpath.objects.XObject;
 import org.xml.sax.SAXException;
 
 public class ElemCopyOf extends ElemTemplateElement {
-   static final long serialVersionUID = -7433828829497411127L;
    public XPath m_selectExpression = null;
 
    public void setSelect(XPath expr) {
@@ -39,7 +38,7 @@ public class ElemCopyOf extends ElemTemplateElement {
    }
 
    public void execute(TransformerImpl transformer) throws TransformerException {
-      if (transformer.getDebug()) {
+      if (TransformerImpl.S_DEBUG) {
          transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
       }
 
@@ -47,7 +46,7 @@ public class ElemCopyOf extends ElemTemplateElement {
          XPathContext xctxt = transformer.getXPathContext();
          int sourceNode = xctxt.getCurrentNode();
          XObject value = this.m_selectExpression.execute(xctxt, sourceNode, this);
-         if (transformer.getDebug()) {
+         if (TransformerImpl.S_DEBUG) {
             transformer.getTraceManager().fireSelectedEvent(sourceNode, this, "select", this.m_selectExpression, value);
          }
 
@@ -95,7 +94,7 @@ public class ElemCopyOf extends ElemTemplateElement {
       } catch (SAXException var18) {
          throw new TransformerException(var18);
       } finally {
-         if (transformer.getDebug()) {
+         if (TransformerImpl.S_DEBUG) {
             transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);
          }
 

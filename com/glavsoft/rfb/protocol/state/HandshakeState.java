@@ -3,6 +3,7 @@ package com.glavsoft.rfb.protocol.state;
 import com.glavsoft.exceptions.TransportException;
 import com.glavsoft.exceptions.UnsupportedProtocolVersionException;
 import com.glavsoft.rfb.protocol.ProtocolContext;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,7 +30,9 @@ public class HandshakeState extends ProtocolState {
    private void handshake() throws TransportException, UnsupportedProtocolVersionException {
       this.logger.info("Waiting to receive protocol string");
       String protocolString = this.reader.readString(12);
-      this.logger.info("Server sent protocol string: " + protocolString.substring(0, protocolString.length() - 1));
+      Logger var10000 = this.logger;
+      String var10001 = protocolString.substring(0, protocolString.length() - 1);
+      var10000.info("Server sent protocol string: " + var10001);
       Pattern pattern = Pattern.compile("^RFB (\\d\\d\\d).(\\d\\d\\d)\n$");
       Matcher matcher = pattern.matcher(protocolString);
       if (!matcher.matches()) {

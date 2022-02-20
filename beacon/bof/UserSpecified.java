@@ -23,7 +23,7 @@ public class UserSpecified extends PostExInlineObject {
    }
 
    public byte[] getArguments(String var1) {
-      return DataUtils.encodeForBeacon(this.client.getData(), var1, this.args + '\u0000');
+      return DataUtils.encodeForBeacon(this.client.getData(), var1, this.args + "\u0000");
    }
 
    public byte[] getObjectFile(String var1) {

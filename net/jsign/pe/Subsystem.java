@@ -20,11 +20,11 @@ public enum Subsystem {
    }
 
    static Subsystem valueOf(int value) {
-      Subsystem[] arr$ = values();
-      int len$ = arr$.length;
+      Subsystem[] var1 = values();
+      int var2 = var1.length;
 
-      for(int i$ = 0; i$ < len$; ++i$) {
-         Subsystem format = arr$[i$];
+      for(int var3 = 0; var3 < var2; ++var3) {
+         Subsystem format = var1[var3];
          if (format.value == value) {
             return format;
          }

@@ -42,7 +42,7 @@ public class MenuBuilder {
          while(var4.hasNext()) {
             SleepClosure var5 = (SleepClosure)var4.next();
             if (var5.getOwner().isLoaded()) {
-               SleepUtils.runCode((SleepClosure)var5, var2, (ScriptInstance)null, EventManager.shallowCopy(var3));
+               SleepUtils.runCode(var5, var2, (ScriptInstance)null, EventManager.shallowCopy(var3));
             } else {
                var4.remove();
             }
@@ -50,5 +50,6 @@ public class MenuBuilder {
 
          this.bridge.pop();
       }
+
    }
 }

@@ -6,7 +6,7 @@ import org.xml.sax.ext.LexicalHandler;
 
 public class FastStringBuffer {
    static final int DEBUG_FORCE_INIT_BITS = 0;
-   static final boolean DEBUG_FORCE_FIXED_CHUNKSIZE = true;
+   static boolean DEBUG_FORCE_FIXED_CHUNKSIZE = true;
    public static final int SUPPRESS_LEADING_WS = 1;
    public static final int SUPPRESS_TRAILING_WS = 2;
    public static final int SUPPRESS_BOTH = 3;
@@ -29,10 +29,13 @@ public class FastStringBuffer {
       this.m_lastChunk = 0;
       this.m_firstFree = 0;
       this.m_innerFSB = null;
-      maxChunkBits = initChunkBits;
+      if (DEBUG_FORCE_FIXED_CHUNKSIZE) {
+         maxChunkBits = initChunkBits;
+      }
+
       this.m_array = new char[16][];
-      if (initChunkBits > initChunkBits) {
-         initChunkBits = initChunkBits;
+      if (initChunkBits > maxChunkBits) {
+         initChunkBits = maxChunkBits;
       }
 
       this.m_chunkBits = initChunkBits;

@@ -256,6 +256,7 @@ public class BeaconOutput implements Serializable, Transcript, Loggable, Informa
 
          var1.writeBytes("\n");
       }
+
    }
 
    public String getLogFile() {

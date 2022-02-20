@@ -4,7 +4,6 @@ import java.io.Serializable;
 import org.xml.sax.Locator;
 
 public class SerializableLocatorImpl implements Locator, Serializable {
-   static final long serialVersionUID = -2660312888446371460L;
    private String publicId;
    private String systemId;
    private int lineNumber;

@@ -79,7 +79,7 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
       StringBuffer var2 = new StringBuffer();
       String var3 = "";
 
-      label141:
+      label140:
       while(true) {
          while(true) {
             if (!this.interact) {
@@ -91,7 +91,7 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
                if (var1 == null) {
                   this.getProxy().consolePrintln("Good bye!");
                   this.setProxy(this);
-                  break label141;
+                  break label140;
                }
 
                String var4;
@@ -135,35 +135,33 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
                   }
                } else if (var4.equals("load") && var5 != null) {
                   this.load(var5);
-               } else if (!var4.equals("tree") || var5 == null && this.script == null) {
-                  if (var4.equals("unload") && var5 != null) {
-                     this.unload(var5);
+               } else if (var4.equals("tree") && (var5 != null || this.script != null)) {
+                  this.tree(var5);
+               } else if (var4.equals("unload") && var5 != null) {
+                  this.unload(var5);
+               } else {
+                  Scalar var7;
+                  if (var4.equals("x") && var5 != null) {
+                     var7 = this.eval("return " + var5 + ";", var5);
+                     if (var7 != null) {
+                        this.getProxy().consolePrintln(var7.makeConcatWithConstants<invokedynamic>(var7));
+                     }
+                  } else if (var4.equals("?") && var5 != null) {
+                     var7 = this.eval("return iff(" + var5 + ", 'true', 'false');", var5);
+                     if (var7 != null) {
+                        this.getProxy().consolePrintln(var7.makeConcatWithConstants<invokedynamic>(var7));
+                     }
                   } else {
-                     Scalar var7;
-                     if (var4.equals("x") && var5 != null) {
-                        var7 = this.eval("return " + var5 + ";", var5);
-                        if (var7 != null) {
-                           this.getProxy().consolePrintln(var7 + "");
-                        }
-                     } else if (var4.equals("?") && var5 != null) {
-                        var7 = this.eval("return iff(" + var5 + ", 'true', 'false');", var5);
-                        if (var7 != null) {
-                           this.getProxy().consolePrintln(var7 + "");
-                        }
-                     } else {
-                        if (var4.equals("quit") || var4.equals("exit") || var4.equals("done")) {
-                           this.getProxy().consolePrintln("Good bye!");
-                           this.setProxy(this);
-                           break label141;
-                        }
+                     if (var4.equals("quit") || var4.equals("exit") || var4.equals("done")) {
+                        this.getProxy().consolePrintln("Good bye!");
+                        this.setProxy(this);
+                        break label140;
+                     }
 
-                        if (var4.trim().length() > 0) {
-                           this.getProxy().consolePrintln("Command '" + var4 + "' not understood.  Type 'help' if you need it");
-                        }
+                     if (var4.trim().length() > 0) {
+                        this.getProxy().consolePrintln("Command '" + var4 + "' not understood.  Type 'help' if you need it");
                      }
                   }
-               } else {
-                  this.tree(var5);
                }
             } else if (var1 != null && !var1.equals("done")) {
                if (var1.equals(".")) {
@@ -269,17 +267,15 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
       } else {
          Iterator var2 = this.loader.getScripts().iterator();
 
-         File var4;
-         do {
-            if (!var2.hasNext()) {
-               return var1;
-            }
-
+         while(var2.hasNext()) {
             ScriptInstance var3 = (ScriptInstance)var2.next();
-            var4 = new File(var3.getName());
-         } while(!var4.getName().equals(var1));
+            File var4 = new File(var3.getName());
+            if (var4.getName().equals(var1)) {
+               return var4.getAbsolutePath();
+            }
+         }
 
-         return var4.getAbsolutePath();
+         return var1;
       }
    }
 
@@ -317,7 +313,9 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
             } while(var1 != null && (!var1.equals("functions") || var4.toString().charAt(0) != '&') && (!var1.equals("other") || var4.toString().charAt(0) == '&'));
          } while(var2 != null && !Pattern.matches(".*?" + var2 + ".*", this.sharedEnvironment.get(var4).toString()));
 
-         this.getProxy().consolePrintln(this.align(var4.toString(), 20) + " => " + this.sharedEnvironment.get(var4));
+         ConsoleProxy var10000 = this.getProxy();
+         String var10001 = this.align(var4.toString(), 20);
+         var10000.consolePrintln(var10001 + " => " + this.sharedEnvironment.get(var4));
       }
    }
 
@@ -352,7 +350,7 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
 
    private void debug(String var1, int var2) {
       if (var1 == null) {
-         System.setProperty("sleep.debug", "" + var2);
+         System.setProperty("sleep.debug", var2.makeConcatWithConstants<invokedynamic>(var2));
          this.getProxy().consolePrintln("Default debug level set");
       } else {
          Map var3 = this.loader.getScriptsByKey();

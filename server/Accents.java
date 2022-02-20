@@ -20,11 +20,11 @@ public class Accents implements ServerHook {
    public void call(Request var1, ManageUser var2) {
       String var3;
       if (var1.is("accents.update", 2)) {
-         var3 = var1.arg(0) + "";
+         var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
          Map var4 = (Map)var1.arg(1);
          this.resources.broadcast("accents", new Accent(var3, (String)var4.get("_accent")));
       } else if (!var1.is("accents.push", 0) && var1.is("accents.remove", 1)) {
-         var3 = var1.arg(0) + "";
+         var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
          this.resources.broadcast("accents", new Accent(var3, "remove"));
       }
 

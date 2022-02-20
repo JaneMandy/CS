@@ -114,7 +114,8 @@ public abstract class Job {
          this.builder.setCommand(9);
       }
 
-      String var4 = "\\\\.\\pipe\\" + this.tasker.getPostExPipeName(this.getPipeName());
+      TaskBeacon var10000 = this.tasker;
+      String var4 = "\\\\.\\pipe\\" + var10000.getPostExPipeName(this.getPipeName());
       var3 = CommonUtils.patch(var3, "\\\\.\\pipe\\" + this.getPipeName(), var4);
       var3 = this.fix(var3);
       var3 = this.tasker.getThreadFix().apply(var3);
@@ -156,7 +157,8 @@ public abstract class Job {
          }
       }
 
-      String var4 = "\\\\.\\pipe\\" + this.tasker.getPostExPipeName(this.getPipeName());
+      TaskBeacon var10000 = this.tasker;
+      String var4 = "\\\\.\\pipe\\" + var10000.getPostExPipeName(this.getPipeName());
       var3 = CommonUtils.patch(var3, "\\\\.\\pipe\\" + this.getPipeName(), var4);
       var3 = this.fix(var3);
       var3 = this.tasker.getThreadFix().apply(var3);

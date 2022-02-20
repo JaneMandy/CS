@@ -16,7 +16,7 @@ import org.apache.xalan.xsltc.compiler.util.MethodGenerator;
 import org.apache.xalan.xsltc.compiler.util.Type;
 import org.apache.xalan.xsltc.compiler.util.TypeCheckError;
 import org.apache.xalan.xsltc.compiler.util.Util;
-import org.apache.xml.utils.XML11Char;
+import org.apache.xml.utils.XMLChar;
 
 final class ProcessingInstruction extends Instruction {
    private AttributeValue _name;
@@ -26,7 +26,7 @@ final class ProcessingInstruction extends Instruction {
       String name = this.getAttribute("name");
       if (name.length() > 0) {
          this._isLiteral = Util.isLiteral(name);
-         if (this._isLiteral && !XML11Char.isXML11ValidNCName(name)) {
+         if (this._isLiteral && !XMLChar.isValidNCName(name)) {
             ErrorMsg err = new ErrorMsg("INVALID_NCNAME_ERR", name, this);
             parser.reportError(3, err);
          }

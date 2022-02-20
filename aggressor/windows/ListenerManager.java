@@ -63,11 +63,11 @@ public class ListenerManager extends AObject implements AdjustData, Callback, Ac
             return;
          }
 
-         String var2 = this.model.getSelectedValue(this.table) + "";
+         String var2 = ((Class)this.model.getSelectedValue(this.table)).makeConcatWithConstants<invokedynamic>(this.model.getSelectedValue(this.table));
          (new ListenerTasks(this.client, var2)).edit();
       } else {
-         int var3;
          Object[] var4;
+         int var3;
          if ("Remove".equals(var1.getActionCommand())) {
             var4 = this.model.getSelectedValues(this.table);
             if (var4.length == 0) {

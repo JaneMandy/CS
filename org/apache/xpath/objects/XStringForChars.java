@@ -7,7 +7,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 
 public class XStringForChars extends XString {
-   static final long serialVersionUID = -2235248887220850467L;
    int m_start;
    int m_length;
    protected String m_strCache = null;

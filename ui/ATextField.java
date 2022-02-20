@@ -84,5 +84,6 @@ public class ATextField extends JTextField {
             }
          });
       }
+
    }
 }

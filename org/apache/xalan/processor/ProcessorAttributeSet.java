@@ -7,8 +7,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 class ProcessorAttributeSet extends XSLTElementProcessor {
-   static final long serialVersionUID = -6473739251316787552L;
-
    public void startElement(StylesheetHandler handler, String uri, String localName, String rawName, Attributes attributes) throws SAXException {
       ElemAttributeSet eat = new ElemAttributeSet();
       eat.setLocaterInfo(handler.getLocator());

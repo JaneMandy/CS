@@ -6,8 +6,6 @@ import org.apache.xpath.objects.XBoolean;
 import org.apache.xpath.objects.XObject;
 
 public class Equals extends Operation {
-   static final long serialVersionUID = -2658315633903426134L;
-
    public XObject operate(XObject left, XObject right) throws TransformerException {
       return left.equals(right) ? XBoolean.S_TRUE : XBoolean.S_FALSE;
    }

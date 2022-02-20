@@ -16,7 +16,6 @@ import org.apache.xpath.objects.XObject;
 import org.apache.xpath.patterns.NodeTest;
 
 public abstract class PredicatedNodeTest extends NodeTest implements SubContextList {
-   static final long serialVersionUID = -6193530757296377351L;
    protected int m_predCount = -1;
    protected transient boolean m_foundLast = false;
    protected LocPathIterator m_lpi;

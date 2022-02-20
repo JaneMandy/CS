@@ -12,9 +12,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.xpath.XPathException;
 import org.w3c.dom.xpath.XPathExpression;
 
-class XPathExpressionImpl implements XPathExpression {
-   private final XPath m_xpath;
-   private final Document m_doc;
+public class XPathExpressionImpl implements XPathExpression {
+   private PrefixResolver m_resolver;
+   private XPath m_xpath;
+   private Document m_doc = null;
 
    XPathExpressionImpl(XPath xpath, Document doc) {
       this.m_xpath = xpath;
@@ -38,7 +39,7 @@ class XPathExpressionImpl implements XPathExpression {
 
       if (!XPathResultImpl.isValidType(type)) {
          fmsg = XPATHMessages.createXPATHMessage("ER_INVALID_XPATH_TYPE", new Object[]{new Integer(type)});
-         throw new XPathException((short)52, fmsg);
+         throw new XPathException((short)2, fmsg);
       } else {
          XPathContext xpathSupport = new XPathContext();
          if (null != this.m_doc) {
@@ -48,12 +49,12 @@ class XPathExpressionImpl implements XPathExpression {
          XObject xobj = null;
 
          try {
-            xobj = this.m_xpath.execute(xpathSupport, contextNode, (PrefixResolver)null);
+            xobj = this.m_xpath.execute(xpathSupport, contextNode, this.m_resolver);
          } catch (TransformerException var7) {
-            throw new XPathException((short)51, var7.getMessageAndLocation());
+            throw new XPathException((short)1, var7.getMessageAndLocation());
          }
 
-         return new XPathResultImpl(type, xobj, contextNode, this.m_xpath);
+         return new XPathResultImpl(type, xobj, contextNode);
       }
    }
 }

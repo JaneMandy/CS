@@ -21,7 +21,7 @@ public abstract class DTMDefaultBaseTraversers extends DTMDefaultBase {
    public DTMAxisTraverser getAxisTraverser(int axis) {
       DTMAxisTraverser traverser;
       if (null == super.m_traversers) {
-         super.m_traversers = new DTMAxisTraverser[Axis.getNamesLength()];
+         super.m_traversers = new DTMAxisTraverser[Axis.names.length];
          traverser = null;
       } else {
          traverser = super.m_traversers[axis];
@@ -99,7 +99,7 @@ public abstract class DTMDefaultBaseTraversers extends DTMDefaultBase {
       }
 
       if (null == traverser) {
-         throw new DTMException(XMLMessages.createXMLMessage("ER_AXIS_TRAVERSER_NOT_SUPPORTED", new Object[]{Axis.getNames(axis)}));
+         throw new DTMException(XMLMessages.createXMLMessage("ER_AXIS_TRAVERSER_NOT_SUPPORTED", new Object[]{Axis.names[axis]}));
       } else {
          super.m_traversers[axis] = (DTMAxisTraverser)traverser;
          return (DTMAxisTraverser)traverser;

@@ -1,10 +1,9 @@
 package org.apache.xml.serializer;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.Writer;
 
-final class SerializerTraceWriter extends Writer implements WriterChain {
+public class SerializerTraceWriter extends Writer {
    private final Writer m_writer;
    private final SerializerTrace m_tracer;
    private int buf_length;
@@ -141,18 +140,5 @@ final class SerializerTraceWriter extends Writer implements WriterChain {
          }
       }
 
-   }
-
-   public Writer getWriter() {
-      return this.m_writer;
-   }
-
-   public OutputStream getOutputStream() {
-      OutputStream retval = null;
-      if (this.m_writer instanceof WriterChain) {
-         retval = ((WriterChain)this.m_writer).getOutputStream();
-      }
-
-      return retval;
    }
 }

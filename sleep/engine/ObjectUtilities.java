@@ -24,11 +24,11 @@ import sleep.runtime.SleepUtils;
 import sleep.runtime.WatchScalar;
 
 public class ObjectUtilities {
-   private static Class STRING_SCALAR;
-   private static Class INT_SCALAR;
-   private static Class DOUBLE_SCALAR;
-   private static Class LONG_SCALAR;
-   private static Class OBJECT_SCALAR;
+   private static Class STRING_SCALAR = StringValue.class;
+   private static Class INT_SCALAR = IntValue.class;
+   private static Class DOUBLE_SCALAR = DoubleValue.class;
+   private static Class LONG_SCALAR = LongValue.class;
+   private static Class OBJECT_SCALAR = ObjectValue.class;
    public static final int ARG_MATCH_YES = 3;
    public static final int ARG_MATCH_NO = 0;
    public static final int ARG_MATCH_MAYBE = 1;
@@ -130,7 +130,7 @@ public class ObjectUtilities {
             return 0;
          } else {
             var2 = var1.getActualValue().getType();
-            return var2 != STRING_SCALAR || var0.getComponentType() != Character.TYPE && var0.getComponentType() != Byte.TYPE ? 0 : 1;
+            return var2 == STRING_SCALAR && (var0.getComponentType() == Character.TYPE || var0.getComponentType() == Byte.TYPE) ? 1 : 0;
          }
       }
    }
@@ -340,7 +340,8 @@ public class ObjectUtilities {
       }
 
       var7.append(")");
-      return "bad arguments " + var7.toString() + " for " + var4.toString() + " in " + var0;
+      String var10000 = var7.toString();
+      return "bad arguments " + var10000 + " for " + var4.toString() + " in " + var0;
    }
 
    public static Object[] buildArgumentArray(Class[] var0, Stack var1, ScriptInstance var2) {
@@ -378,7 +379,7 @@ public class ObjectUtilities {
                }
 
                if (var2 == Double.class) {
-                  return SleepUtils.getScalar((Double)var1);
+                  return SleepUtils.getScalar((Object)((Double)var1));
                }
 
                if (var2 == Float.class) {
@@ -386,11 +387,11 @@ public class ObjectUtilities {
                }
 
                if (var2 == Integer.class) {
-                  return SleepUtils.getScalar((Integer)var1);
+                  return SleepUtils.getScalar((Object)((Integer)var1));
                }
 
                if (var2 == Long.class) {
-                  return SleepUtils.getScalar((Long)var1);
+                  return SleepUtils.getScalar((Object)((Long)var1));
                }
             }
 
@@ -409,10 +410,10 @@ public class ObjectUtilities {
 
                return var3;
             } else {
-               return SleepUtils.getScalar(new String((char[])((char[])var1)));
+               return SleepUtils.getScalar(new String((char[])var1));
             }
          } else {
-            return SleepUtils.getScalar((byte[])((byte[])var1));
+            return SleepUtils.getScalar((byte[])var1);
          }
       }
    }
@@ -455,13 +456,5 @@ public class ObjectUtilities {
          }
       }
 
-   }
-
-   static {
-      STRING_SCALAR = StringValue.class;
-      INT_SCALAR = IntValue.class;
-      DOUBLE_SCALAR = DoubleValue.class;
-      LONG_SCALAR = LongValue.class;
-      OBJECT_SCALAR = ObjectValue.class;
    }
 }

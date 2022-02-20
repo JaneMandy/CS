@@ -146,7 +146,7 @@ public class Lint {
 
       while(var4.hasNext()) {
          Entry var5 = (Entry)var4.next();
-         String var6 = var5.getValue() + "";
+         String var6 = ((Class)var5.getValue()).makeConcatWithConstants<invokedynamic>(var5.getValue());
          if (var6.length() > 1024) {
             this.logError(var2 + " " + var1 + " '" + var5.getKey() + "' is " + var6.length() + " bytes [should be <1024 bytes]");
          }
@@ -161,8 +161,8 @@ public class Lint {
 
       while(var5.hasNext()) {
          Entry var6 = (Entry)var5.next();
-         String var7 = var6.getKey() + "";
-         String var8 = var6.getValue() + "";
+         String var7 = ((Class)var6.getKey()).makeConcatWithConstants<invokedynamic>(var6.getKey());
+         String var8 = ((Class)var6.getValue()).makeConcatWithConstants<invokedynamic>(var6.getValue());
          var4.append(var7 + "=" + var8);
       }
 
@@ -284,9 +284,9 @@ public class Lint {
          String var14;
          while(var11.hasNext()) {
             var12 = (Entry)var11.next();
-            var13 = var12.getKey() + "";
-            var14 = var12.getValue() + "";
-            var12.setValue(URLEncoder.encode(var12.getValue() + "", "UTF-8"));
+            var13 = ((Class)var12.getKey()).makeConcatWithConstants<invokedynamic>(var12.getKey());
+            var14 = ((Class)var12.getValue()).makeConcatWithConstants<invokedynamic>(var12.getValue());
+            var12.setValue(URLEncoder.encode(((Class)var12.getValue()).makeConcatWithConstants<invokedynamic>(var12.getValue()), "UTF-8"));
          }
 
          var11 = var5.header.entrySet().iterator();
@@ -305,8 +305,8 @@ public class Lint {
             }
 
             var12 = (Entry)var11.next();
-            var13 = var12.getKey() + "";
-            var14 = var12.getValue() + "";
+            var13 = ((Class)var12.getKey()).makeConcatWithConstants<invokedynamic>(var12.getKey());
+            var14 = ((Class)var12.getValue()).makeConcatWithConstants<invokedynamic>(var12.getValue());
             var12.setValue(var14.replaceAll("\\P{Graph}", ""));
             if (".http-get.server".equals(var1)) {
                this.headers.put(var13.toLowerCase(), var14.toLowerCase());
@@ -415,8 +415,8 @@ public class Lint {
             String var5 = (String)var4.next();
             this.logError(var1 + " collission for " + var5);
          }
-
       }
+
    }
 
    public void checkKeystore() {
@@ -493,8 +493,8 @@ public class Lint {
          } catch (Exception var8) {
             this.logError("Failed to sign a dll with the .code-signer configuration. " + var8.getMessage());
          }
-
       }
+
    }
 
    public void checkMZ(String var1) {
@@ -618,6 +618,7 @@ public class Lint {
          this.sleepMaskCodeCaveCheck("resources/pivot.dll");
          this.sleepMaskCodeCaveCheck("resources/pivot.x64.dll");
       }
+
    }
 
    public void checkProcessInject() {
@@ -990,8 +991,8 @@ public class Lint {
             var11.printStackTrace();
             this.logError("Failed to validate profile: " + var1);
          }
-
       }
+
    }
 
    private void A(Lint._A var1, Lint var2, Profile var3) throws Exception {
@@ -1166,7 +1167,7 @@ public class Lint {
    private static String F(String var0, String var1) {
       StringBuffer var2 = new StringBuffer();
       var2.append("\u001b[0m");
-      var2.append("" + var0 + " = '" + var1 + "'");
+      var2.append(var0 + " = '" + var1 + "'");
       var2.append("\u001b[01;30m");
       var2.append("\n--------------------------------------------------------");
       var2.append("\u001b[01;31m");
@@ -1234,8 +1235,8 @@ public class Lint {
          if (var4.length > 0 && var4[var4.length - 1].length() > var3) {
             this.logError(var1 + " last segment value (" + var4[var4.length - 1] + ") is longer than " + var3 + " characters (appending with other data may exceed hostname syntax rules)");
          }
-
       }
+
    }
 
    private void D(String var1, String var2) {
@@ -1276,6 +1277,7 @@ public class Lint {
             this.logError(var3 + " value (" + var4 + ") starts with " + var1 + " value (" + var2 + "). Overlapping values can cause DNS requests to fail.");
          }
       }
+
    }
 
    private static enum _A {

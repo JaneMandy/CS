@@ -16,10 +16,13 @@ public class MudgeSanity {
    private static Map A = new HashMap();
 
    public static void logException(String var0, Throwable var1, boolean var2) {
+      String var10000;
       if (var2) {
-         CommonUtils.print_warn("Trapped " + var1.getClass().getName() + " during " + var0 + " [" + Thread.currentThread().getName() + "]: " + var1.getMessage());
+         var10000 = var1.getClass().getName();
+         CommonUtils.print_warn("Trapped " + var10000 + " during " + var0 + " [" + Thread.currentThread().getName() + "]: " + var1.getMessage());
       } else {
-         CommonUtils.print_error("Trapped " + var1.getClass().getName() + " during " + var0 + " [" + Thread.currentThread().getName() + "]: " + var1.getMessage());
+         var10000 = var1.getClass().getName();
+         CommonUtils.print_error("Trapped " + var10000 + " during " + var0 + " [" + Thread.currentThread().getName() + "]: " + var1.getMessage());
          var1.printStackTrace();
       }
 
@@ -59,10 +62,12 @@ public class MudgeSanity {
       var0.append("\n\n== Environment ==\n\n");
       var2 = System.getenv().entrySet().iterator();
 
+      Object var10001;
       while(var2.hasNext()) {
          Entry var4 = (Entry)var2.next();
          if (!var6.contains(var4.getKey())) {
-            var0.append(var4.getKey() + "=" + var4.getValue() + "\n");
+            var10001 = var4.getKey();
+            var0.append(var10001 + "=" + var4.getValue() + "\n");
          }
       }
 
@@ -79,7 +84,8 @@ public class MudgeSanity {
 
          while(var2.hasNext()) {
             Entry var8 = (Entry)var2.next();
-            var0.append(var8.getKey() + " " + var8.getValue() + "\n");
+            var10001 = var8.getKey();
+            var0.append(var10001 + " " + var8.getValue() + "\n");
          }
       }
 
@@ -99,13 +105,16 @@ public class MudgeSanity {
       if (var3 != null && !"".equals(var3)) {
          short var8 = 10240;
          if (var3.length() > var8) {
-            String var9 = "Posted data length (" + var3.length() + ") is too large to show (max: " + var8 + ")";
+            int var10000 = var3.length();
+            String var9 = "Posted data length (" + var10000 + ") is too large to show (max: " + var8 + ")";
             var7.append("post'd '" + var9 + "'\n");
          } else {
-            var7.append("post'd '" + var3.toString().replaceAll("\\P{Print}", ".") + "'\n");
+            String var10001 = var3.toString();
+            var7.append("post'd '" + var10001.replaceAll("\\P{Print}", ".") + "'\n");
          }
       }
 
+      Object var9;
       Iterator var6;
       Entry var10;
       if (var1 != null && var1.size() > 0) {
@@ -115,7 +124,8 @@ public class MudgeSanity {
 
          while(var6.hasNext()) {
             var10 = (Entry)var6.next();
-            var7.append("'" + var10.getKey() + "' = '" + var10.getValue() + "'\n");
+            var9 = var10.getKey();
+            var7.append("'" + var9 + "' = '" + var10.getValue() + "'\n");
          }
       }
 
@@ -126,7 +136,8 @@ public class MudgeSanity {
 
          while(var6.hasNext()) {
             var10 = (Entry)var6.next();
-            var7.append("'" + var10.getKey() + "' = '" + var10.getValue() + "'\n");
+            var9 = var10.getKey();
+            var7.append("'" + var9 + "' = '" + var10.getValue() + "'\n");
          }
       }
 

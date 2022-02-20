@@ -28,7 +28,7 @@ public enum Manufacturer {
    private final String name;
 
    private Manufacturer(int id, String name) {
-      this.id = (short)((byte)id);
+      this.id = (byte)id;
       this.name = name;
    }
 

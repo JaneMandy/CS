@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.Map;
 
-public class DefaultContext implements Context {
+public class DefaultContext implements Context, Serializable {
    private static final DefaultContext.Hidden HIDDEN_MAKER = new DefaultContext.Hidden();
    private final Map m_contextData;
    private final Context m_parent;
@@ -77,6 +77,41 @@ public class DefaultContext implements Context {
          String message = "Context is read only and can not be modified";
          throw new IllegalStateException("Context is read only and can not be modified");
       }
+   }
+
+   public boolean equals(Object o) {
+      if (this == o) {
+         return true;
+      } else if (!o.getClass().equals(this.getClass())) {
+         return false;
+      } else {
+         DefaultContext other = (DefaultContext)o;
+         if (!this.m_contextData.equals(other.m_contextData)) {
+            return false;
+         } else {
+            if (this.m_parent == null) {
+               if (other.m_parent != null) {
+                  return false;
+               }
+            } else if (!this.m_parent.equals(other.m_parent)) {
+               return false;
+            }
+
+            return this.m_readOnly == other.m_readOnly;
+         }
+      }
+   }
+
+   public int hashCode() {
+      int hash = this.m_contextData.hashCode();
+      if (this.m_parent != null) {
+         hash ^= this.m_parent.hashCode();
+      } else {
+         hash >>>= 3;
+      }
+
+      hash >>>= this.m_readOnly ? 7 : 13;
+      return hash;
    }
 
    private static final class Hidden implements Serializable {

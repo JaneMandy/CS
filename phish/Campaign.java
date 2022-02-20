@@ -66,8 +66,8 @@ public class Campaign extends AObject implements Runnable, SmtpNotify {
 
          while(var10.hasNext() && this.keepgoing) {
             Map var11 = (Map)var10.next();
-            String var12 = var11.get("To") + "";
-            String var13 = var11.get("To_Name") + "";
+            String var12 = ((Class)var11.get("To")).makeConcatWithConstants<invokedynamic>(var11.get("To"));
+            String var13 = ((Class)var11.get("To_Name")).makeConcatWithConstants<invokedynamic>(var11.get("To_Name"));
             String var14 = CommonUtils.ID().substring(24, 36);
             ServerUtils.addToken(this.resources, var14, var12, this.sid);
             SmtpClient var15 = new SmtpClient(this);

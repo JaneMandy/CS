@@ -46,20 +46,13 @@ public final class Util {
                if (reader == null) {
                   try {
                      reader = XMLReaderFactory.createXMLReader();
-                  } catch (Exception var11) {
+                  } catch (Exception var9) {
                      try {
                         SAXParserFactory parserFactory = SAXParserFactory.newInstance();
                         parserFactory.setNamespaceAware(true);
-                        if (xsltc.isSecureProcessing()) {
-                           try {
-                              parserFactory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
-                           } catch (SAXException var9) {
-                           }
-                        }
-
                         reader = parserFactory.newSAXParser().getXMLReader();
-                     } catch (ParserConfigurationException var10) {
-                        throw new TransformerConfigurationException("ParserConfigurationException", var10);
+                     } catch (ParserConfigurationException var8) {
+                        throw new TransformerConfigurationException("ParserConfigurationException", var8);
                      }
                   }
                }
@@ -67,12 +60,12 @@ public final class Util {
                reader.setFeature("http://xml.org/sax/features/namespaces", true);
                reader.setFeature("http://xml.org/sax/features/namespace-prefixes", false);
                xsltc.setXMLReader(reader);
-            } catch (SAXNotRecognizedException var12) {
-               throw new TransformerConfigurationException("SAXNotRecognizedException ", var12);
-            } catch (SAXNotSupportedException var13) {
-               throw new TransformerConfigurationException("SAXNotSupportedException ", var13);
-            } catch (SAXException var14) {
-               throw new TransformerConfigurationException("SAXException ", var14);
+            } catch (SAXNotRecognizedException var10) {
+               throw new TransformerConfigurationException("SAXNotRecognizedException ", var10);
+            } catch (SAXNotSupportedException var11) {
+               throw new TransformerConfigurationException("SAXNotSupportedException ", var11);
+            } catch (SAXException var12) {
+               throw new TransformerConfigurationException("SAXException ", var12);
             }
          } else if (source instanceof DOMSource) {
             DOMSource domsrc = (DOMSource)source;
@@ -92,7 +85,6 @@ public final class Util {
             StreamSource stream = (StreamSource)source;
             InputStream istream = stream.getInputStream();
             Reader reader = stream.getReader();
-            xsltc.setXMLReader((XMLReader)null);
             if (istream != null) {
                input = new InputSource(istream);
             } else if (reader != null) {
@@ -104,10 +96,10 @@ public final class Util {
 
          input.setSystemId(systemId);
          return input;
-      } catch (NullPointerException var15) {
+      } catch (NullPointerException var13) {
          ErrorMsg err = new ErrorMsg("JAXP_NO_SOURCE_ERR", "TransformerFactory.newTemplates()");
          throw new TransformerConfigurationException(err.toString());
-      } catch (SecurityException var16) {
+      } catch (SecurityException var14) {
          ErrorMsg err = new ErrorMsg("FILE_ACCESS_ERR", systemId);
          throw new TransformerConfigurationException(err.toString());
       }

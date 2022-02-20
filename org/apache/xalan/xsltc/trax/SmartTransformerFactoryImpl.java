@@ -10,17 +10,14 @@ import javax.xml.transform.URIResolver;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TemplatesHandler;
 import javax.xml.transform.sax.TransformerHandler;
-import org.apache.xalan.xsltc.compiler.util.ErrorMsg;
 import org.xml.sax.XMLFilter;
 
 public class SmartTransformerFactoryImpl extends SAXTransformerFactory {
-   private static final String CLASS_NAME = "SmartTransformerFactoryImpl";
    private SAXTransformerFactory _xsltcFactory = null;
    private SAXTransformerFactory _xalanFactory = null;
    private SAXTransformerFactory _currFactory = null;
    private ErrorListener _errorlistener = null;
    private URIResolver _uriresolver = null;
-   private boolean featureSecureProcessing = false;
 
    private void createXSLTCTransformerFactory() {
       this._xsltcFactory = new TransformerFactoryImpl();
@@ -85,33 +82,16 @@ public class SmartTransformerFactoryImpl extends SAXTransformerFactory {
 
    }
 
-   public void setFeature(String name, boolean value) throws TransformerConfigurationException {
-      ErrorMsg err;
-      if (name == null) {
-         err = new ErrorMsg("JAXP_SET_FEATURE_NULL_NAME");
-         throw new NullPointerException(err.toString());
-      } else if (name.equals("http://javax.xml.XMLConstants/feature/secure-processing")) {
-         this.featureSecureProcessing = value;
-      } else {
-         err = new ErrorMsg("JAXP_UNSUPPORTED_FEATURE", name);
-         throw new TransformerConfigurationException(err.toString());
-      }
-   }
-
    public boolean getFeature(String name) {
       String[] features = new String[]{"http://javax.xml.transform.dom.DOMSource/feature", "http://javax.xml.transform.dom.DOMResult/feature", "http://javax.xml.transform.sax.SAXSource/feature", "http://javax.xml.transform.sax.SAXResult/feature", "http://javax.xml.transform.stream.StreamSource/feature", "http://javax.xml.transform.stream.StreamResult/feature"};
-      if (name == null) {
-         ErrorMsg err = new ErrorMsg("JAXP_GET_FEATURE_NULL_NAME");
-         throw new NullPointerException(err.toString());
-      } else {
-         for(int i = 0; i < features.length; ++i) {
-            if (name.equals(features[i])) {
-               return true;
-            }
-         }
 
-         return name.equals("http://javax.xml.XMLConstants/feature/secure-processing") ? this.featureSecureProcessing : false;
+      for(int i = 0; i < features.length; ++i) {
+         if (name.equals(features[i])) {
+            return true;
+         }
       }
+
+      return false;
    }
 
    public URIResolver getURIResolver() {

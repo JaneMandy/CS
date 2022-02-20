@@ -1,27 +1,20 @@
 package org.apache.xalan.xsltc.compiler;
 
 import java.util.Vector;
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.CHECKCAST;
 import org.apache.bcel.generic.CompoundInstruction;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.ICONST;
-import org.apache.bcel.generic.ILOAD;
 import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.INVOKESPECIAL;
-import org.apache.bcel.generic.ISTORE;
 import org.apache.bcel.generic.InstructionConstants;
-import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.LocalVariableGen;
 import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.PUSH;
 import org.apache.xalan.xsltc.compiler.util.ClassGenerator;
 import org.apache.xalan.xsltc.compiler.util.MethodGenerator;
 import org.apache.xalan.xsltc.compiler.util.Type;
 import org.apache.xalan.xsltc.compiler.util.TypeCheckError;
-import org.apache.xalan.xsltc.compiler.util.Util;
 import org.apache.xml.dtm.Axis;
 
 final class Step extends RelativeLocationPath {
@@ -140,36 +133,31 @@ final class Step extends RelativeLocationPath {
             star = name.lastIndexOf(42);
          }
 
+         int init;
          if (this._axis == 2 && this._nodeType != 2 && this._nodeType != -1 && !this.hasParentPattern() && star == 0) {
-            int iter = cpg.addInterfaceMethodref("org.apache.xalan.xsltc.DOM", "getTypedAxisIterator", "(II)Lorg/apache/xml/dtm/DTMAxisIterator;");
+            init = cpg.addInterfaceMethodref("org.apache.xalan.xsltc.DOM", "getTypedAxisIterator", "(II)Lorg/apache/xml/dtm/DTMAxisIterator;");
             il.append(methodGen.loadDOM());
             il.append((CompoundInstruction)(new PUSH(cpg, 2)));
             il.append((CompoundInstruction)(new PUSH(cpg, this._nodeType)));
-            il.append((org.apache.bcel.generic.Instruction)(new INVOKEINTERFACE(iter, 3)));
+            il.append((org.apache.bcel.generic.Instruction)(new INVOKEINTERFACE(init, 3)));
             return;
          }
 
-         SyntaxTreeNode parent = this.getParent();
-         int git;
          if (this.isAbbreviatedDot()) {
             if (super._type == Type.Node) {
                il.append(methodGen.loadContextNode());
-            } else if (parent instanceof ParentLocationPath) {
-               git = cpg.addMethodref("org.apache.xalan.xsltc.dom.SingletonIterator", "<init>", "(I)V");
+            } else {
+               init = cpg.addMethodref("org.apache.xalan.xsltc.dom.SingletonIterator", "<init>", "(I)V");
                il.append((org.apache.bcel.generic.Instruction)(new NEW(cpg.addClass("org.apache.xalan.xsltc.dom.SingletonIterator"))));
                il.append((org.apache.bcel.generic.Instruction)InstructionConstants.DUP);
                il.append(methodGen.loadContextNode());
-               il.append((org.apache.bcel.generic.Instruction)(new INVOKESPECIAL(git)));
-            } else {
-               git = cpg.addInterfaceMethodref("org.apache.xalan.xsltc.DOM", "getAxisIterator", "(I)Lorg/apache/xml/dtm/DTMAxisIterator;");
-               il.append(methodGen.loadDOM());
-               il.append((CompoundInstruction)(new PUSH(cpg, this._axis)));
-               il.append((org.apache.bcel.generic.Instruction)(new INVOKEINTERFACE(git, 2)));
+               il.append((org.apache.bcel.generic.Instruction)(new INVOKESPECIAL(init)));
             }
 
             return;
          }
 
+         SyntaxTreeNode parent = this.getParent();
          if (parent instanceof ParentLocationPath && parent.getParent() instanceof ParentLocationPath && this._nodeType == 1 && !this._hadPredicates) {
             this._nodeType = -1;
          }
@@ -203,7 +191,7 @@ final class Step extends RelativeLocationPath {
          case 2:
             this._axis = 2;
          case -1:
-            git = cpg.addInterfaceMethodref("org.apache.xalan.xsltc.DOM", "getAxisIterator", "(I)Lorg/apache/xml/dtm/DTMAxisIterator;");
+            int git = cpg.addInterfaceMethodref("org.apache.xalan.xsltc.DOM", "getAxisIterator", "(I)Lorg/apache/xml/dtm/DTMAxisIterator;");
             il.append(methodGen.loadDOM());
             il.append((CompoundInstruction)(new PUSH(cpg, this._axis)));
             il.append((org.apache.bcel.generic.Instruction)(new INVOKEINTERFACE(git, 2)));
@@ -250,43 +238,27 @@ final class Step extends RelativeLocationPath {
             il.append((org.apache.bcel.generic.Instruction)(new ICONST(0)));
             idx = cpg.addInterfaceMethodref("org.apache.xalan.xsltc.DOM", "getNthDescendant", "(IIZ)Lorg/apache/xml/dtm/DTMAxisIterator;");
             il.append((org.apache.bcel.generic.Instruction)(new INVOKEINTERFACE(idx, 4)));
+         } else if (predicate.isNthPositionFilter()) {
+            idx = cpg.addMethodref("org.apache.xalan.xsltc.dom.NthIterator", "<init>", "(Lorg/apache/xml/dtm/DTMAxisIterator;I)V");
+            il.append((org.apache.bcel.generic.Instruction)(new NEW(cpg.addClass("org.apache.xalan.xsltc.dom.NthIterator"))));
+            il.append((org.apache.bcel.generic.Instruction)InstructionConstants.DUP);
+            this.translatePredicates(classGen, methodGen);
+            predicate.translate(classGen, methodGen);
+            il.append((org.apache.bcel.generic.Instruction)(new INVOKESPECIAL(idx)));
          } else {
-            LocalVariableGen iteratorTemp;
-            LocalVariableGen predicateValueTemp;
-            if (predicate.isNthPositionFilter()) {
-               idx = cpg.addMethodref("org.apache.xalan.xsltc.dom.NthIterator", "<init>", "(Lorg/apache/xml/dtm/DTMAxisIterator;I)V");
-               this.translatePredicates(classGen, methodGen);
-               iteratorTemp = methodGen.addLocalVariable("step_tmp1", Util.getJCRefType("Lorg/apache/xml/dtm/DTMAxisIterator;"), il.getEnd(), (InstructionHandle)null);
-               il.append((org.apache.bcel.generic.Instruction)(new ASTORE(iteratorTemp.getIndex())));
-               predicate.translate(classGen, methodGen);
-               predicateValueTemp = methodGen.addLocalVariable("step_tmp2", Util.getJCRefType("I"), il.getEnd(), (InstructionHandle)null);
-               il.append((org.apache.bcel.generic.Instruction)(new ISTORE(predicateValueTemp.getIndex())));
-               il.append((org.apache.bcel.generic.Instruction)(new NEW(cpg.addClass("org.apache.xalan.xsltc.dom.NthIterator"))));
-               il.append((org.apache.bcel.generic.Instruction)InstructionConstants.DUP);
-               il.append((org.apache.bcel.generic.Instruction)(new ALOAD(iteratorTemp.getIndex())));
-               il.append((org.apache.bcel.generic.Instruction)(new ILOAD(predicateValueTemp.getIndex())));
-               il.append((org.apache.bcel.generic.Instruction)(new INVOKESPECIAL(idx)));
-            } else {
-               idx = cpg.addMethodref("org.apache.xalan.xsltc.dom.CurrentNodeListIterator", "<init>", "(Lorg/apache/xml/dtm/DTMAxisIterator;Lorg/apache/xalan/xsltc/dom/CurrentNodeListFilter;ILorg/apache/xalan/xsltc/runtime/AbstractTranslet;)V");
-               this.translatePredicates(classGen, methodGen);
-               iteratorTemp = methodGen.addLocalVariable("step_tmp1", Util.getJCRefType("Lorg/apache/xml/dtm/DTMAxisIterator;"), il.getEnd(), (InstructionHandle)null);
-               il.append((org.apache.bcel.generic.Instruction)(new ASTORE(iteratorTemp.getIndex())));
-               predicate.translateFilter(classGen, methodGen);
-               predicateValueTemp = methodGen.addLocalVariable("step_tmp2", Util.getJCRefType("Lorg/apache/xalan/xsltc/dom/CurrentNodeListFilter;"), il.getEnd(), (InstructionHandle)null);
-               il.append((org.apache.bcel.generic.Instruction)(new ASTORE(predicateValueTemp.getIndex())));
-               il.append((org.apache.bcel.generic.Instruction)(new NEW(cpg.addClass("org.apache.xalan.xsltc.dom.CurrentNodeListIterator"))));
-               il.append((org.apache.bcel.generic.Instruction)InstructionConstants.DUP);
-               il.append((org.apache.bcel.generic.Instruction)(new ALOAD(iteratorTemp.getIndex())));
-               il.append((org.apache.bcel.generic.Instruction)(new ALOAD(predicateValueTemp.getIndex())));
-               il.append(methodGen.loadCurrentNode());
-               il.append(classGen.loadTranslet());
-               if (classGen.isExternal()) {
-                  String className = classGen.getClassName();
-                  il.append((org.apache.bcel.generic.Instruction)(new CHECKCAST(cpg.addClass(className))));
-               }
-
-               il.append((org.apache.bcel.generic.Instruction)(new INVOKESPECIAL(idx)));
+            idx = cpg.addMethodref("org.apache.xalan.xsltc.dom.CurrentNodeListIterator", "<init>", "(Lorg/apache/xml/dtm/DTMAxisIterator;Lorg/apache/xalan/xsltc/dom/CurrentNodeListFilter;ILorg/apache/xalan/xsltc/runtime/AbstractTranslet;)V");
+            il.append((org.apache.bcel.generic.Instruction)(new NEW(cpg.addClass("org.apache.xalan.xsltc.dom.CurrentNodeListIterator"))));
+            il.append((org.apache.bcel.generic.Instruction)InstructionConstants.DUP);
+            this.translatePredicates(classGen, methodGen);
+            predicate.translateFilter(classGen, methodGen);
+            il.append(methodGen.loadCurrentNode());
+            il.append(classGen.loadTranslet());
+            if (classGen.isExternal()) {
+               String className = classGen.getClassName();
+               il.append((org.apache.bcel.generic.Instruction)(new CHECKCAST(cpg.addClass(className))));
             }
+
+            il.append((org.apache.bcel.generic.Instruction)(new INVOKESPECIAL(idx)));
          }
       }
 
@@ -294,7 +266,7 @@ final class Step extends RelativeLocationPath {
 
    public String toString() {
       StringBuffer buffer = new StringBuffer("step(\"");
-      buffer.append(Axis.getNames(this._axis)).append("\", ").append(this._nodeType);
+      buffer.append(Axis.names[this._axis]).append("\", ").append(this._nodeType);
       if (this._predicates != null) {
          int n = this._predicates.size();
 

@@ -44,7 +44,7 @@ public class ExecuteAssemblyJob extends JobSimple {
       Packer var2 = new Packer();
       var2.addInt(var1.length);
       var2.append(var1);
-      var2.addWideString(this.args + '\u0000');
+      var2.addWideString(this.args + "\u0000");
       return var2.getBytes();
    }
 

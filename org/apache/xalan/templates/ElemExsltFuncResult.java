@@ -6,14 +6,9 @@ import org.apache.xpath.XPathContext;
 import org.apache.xpath.objects.XObject;
 
 public class ElemExsltFuncResult extends ElemVariable {
-   static final long serialVersionUID = -3478311949388304563L;
-   private boolean m_isResultSet = false;
-   private XObject m_result = null;
-   private int m_callerFrameSize = 0;
-
    public void execute(TransformerImpl transformer) throws TransformerException {
       XPathContext context = transformer.getXPathContext();
-      if (transformer.getDebug()) {
+      if (TransformerImpl.S_DEBUG) {
          transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
       }
 
@@ -24,7 +19,7 @@ public class ElemExsltFuncResult extends ElemVariable {
          XObject var = this.getValue(transformer, sourceNode);
          transformer.popCurrentFuncResult();
          transformer.pushCurrentFuncResult(var);
-         if (transformer.getDebug()) {
+         if (TransformerImpl.S_DEBUG) {
             transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);
          }
 

@@ -121,19 +121,24 @@ public class ScListener {
    }
 
    public String getStagerURI(String var1) {
+      String var10000;
       String var2;
       if ("windows/beacon_http/reverse_http".equals(this.getPayload())) {
          var2 = "x86".equals(var1) ? this.getConfig().getURI() : this.getConfig().getURI_X64();
-         return "http://" + this.getStagerHost() + ":" + this.getPort() + var2;
+         var10000 = this.getStagerHost();
+         return "http://" + var10000 + ":" + this.getPort() + var2;
       } else if ("windows/beacon_https/reverse_https".equals(this.getPayload())) {
          var2 = "x86".equals(var1) ? this.getConfig().getURI() : this.getConfig().getURI_X64();
-         return "https://" + this.getStagerHost() + ":" + this.getPort() + var2;
+         var10000 = this.getStagerHost();
+         return "https://" + var10000 + ":" + this.getPort() + var2;
       } else if ("windows/foreign/reverse_http".equals(this.getPayload()) && "x86".equals(var1)) {
          var2 = CommonUtils.MSFURI();
-         return "http://" + this.getStagerHost() + ":" + this.getPort() + var2;
+         var10000 = this.getStagerHost();
+         return "http://" + var10000 + ":" + this.getPort() + var2;
       } else if ("windows/foreign/reverse_https".equals(this.getPayload()) && "x86".equals(var1)) {
          var2 = CommonUtils.MSFURI();
-         return "https://" + this.getStagerHost() + ":" + this.getPort() + var2;
+         var10000 = this.getStagerHost();
+         return "https://" + var10000 + ":" + this.getPort() + var2;
       } else {
          return "";
       }
@@ -155,18 +160,14 @@ public class ScListener {
       HashMap var2 = new HashMap();
       var2.put("bid", var1);
       var2.put("domains", this.getCallbackHosts());
-      var2.put("port", this.getPort() + "");
+      var2.put("port", this.getPort().makeConcatWithConstants<invokedynamic>(this.getPort()));
       Map var3 = CommonUtils.toMap("windows/beacon_dns/reverse_dns_txt", "dns", "windows/beacon_http/reverse_http", "http", "windows/beacon_https/reverse_https", "https");
       var2.put("proto", var3.get(this.getPayload()));
       return var2;
    }
 
    public boolean isForeign() {
-      if ("windows/foreign/reverse_http".equals(this.getPayload())) {
-         return true;
-      } else {
-         return "windows/foreign/reverse_https".equals(this.getPayload());
-      }
+      return "windows/foreign/reverse_http".equals(this.getPayload()) ? true : "windows/foreign/reverse_https".equals(this.getPayload());
    }
 
    public boolean hasStager(String var1) {
@@ -358,12 +359,17 @@ public class ScListener {
    public String toString() {
       if ("windows/beacon_bind_tcp".equals(this.getPayload())) {
          return this.isLocalHostOnly() ? this.getPayload() + " (127.0.0.1:" + this.getPort() + ")" : this.getPayload() + " (0.0.0.0:" + this.getPort() + ")";
-      } else if ("windows/beacon_bind_pipe".equals(this.getPayload())) {
-         return this.getPayload() + " (\\\\.\\pipe\\" + this.getPipeName() + ")";
-      } else if ("windows/beacon_reverse_tcp".equals(this.getPayload())) {
-         return this.getPayload() + " (" + this.getStagerHost() + ":" + this.getPort() + ")";
       } else {
-         return this.isForeign() ? this.getPayload() + " (" + this.getStagerHost() + ":" + this.getPort() + ")" : this.getPayload() + " (" + this.getCallbackHost() + ":" + this.getPort() + ")";
+         String var10000;
+         if ("windows/beacon_bind_pipe".equals(this.getPayload())) {
+            var10000 = this.getPayload();
+            return var10000 + " (\\\\.\\pipe\\" + this.getPipeName() + ")";
+         } else if ("windows/beacon_reverse_tcp".equals(this.getPayload())) {
+            var10000 = this.getPayload();
+            return var10000 + " (" + this.getStagerHost() + ":" + this.getPort() + ")";
+         } else {
+            return this.isForeign() ? this.getPayload() + " (" + this.getStagerHost() + ":" + this.getPort() + ")" : this.getPayload() + " (" + this.getCallbackHost() + ":" + this.getPort() + ")";
+         }
       }
    }
 

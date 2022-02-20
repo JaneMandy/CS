@@ -62,19 +62,7 @@ public class DTMNamedNodeMap implements NamedNodeMap {
    }
 
    public Node getNamedItemNS(String namespaceURI, String localName) {
-      Node retNode = null;
-
-      for(int n = this.dtm.getFirstAttribute(this.element); n != -1; n = this.dtm.getNextAttribute(n)) {
-         if (localName.equals(this.dtm.getLocalName(n))) {
-            String nsURI = this.dtm.getNamespaceURI(n);
-            if (namespaceURI == null && nsURI == null || namespaceURI != null && namespaceURI.equals(nsURI)) {
-               retNode = this.dtm.getNode(n);
-               break;
-            }
-         }
-      }
-
-      return retNode;
+      throw new DTMNamedNodeMap.DTMException((short)9);
    }
 
    public Node setNamedItemNS(Node arg) throws DOMException {
@@ -86,8 +74,6 @@ public class DTMNamedNodeMap implements NamedNodeMap {
    }
 
    public class DTMException extends DOMException {
-      static final long serialVersionUID = -8290238117162437678L;
-
       public DTMException(short code, String message) {
          super(code, message);
       }

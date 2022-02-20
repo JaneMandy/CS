@@ -14,7 +14,6 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 public abstract class Expression implements Serializable, ExpressionNode, XPathVisitable {
-   static final long serialVersionUID = 565665869777906902L;
    private ExpressionNode m_parent;
 
    public boolean canTraverseOutsideSubtree() {

@@ -65,9 +65,9 @@ public class ProfileHandler implements SystemProfiler.ProfileListener {
                var11.put("id", var5);
                var11.put("application", var13.getKey());
                var11.put("version", var13.getValue());
-               var11.put("date", System.currentTimeMillis() + "");
+               var11.put("date", System.currentTimeMillis().makeConcatWithConstants<invokedynamic>(System.currentTimeMillis()));
                var11.put("os", var6);
-               var11.put("osver", var7 + "");
+               var11.put("osver", var7.makeConcatWithConstants<invokedynamic>(var7));
                String var12 = CommonUtils.ApplicationKey(var11);
                this.resources.call("applications.add", CommonUtils.args(var12, var11));
             }

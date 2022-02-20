@@ -54,8 +54,9 @@ public class ConnectionsHistory implements IChangeSettingsListener {
          String[] arr$ = orderNums;
          int len$ = orderNums.length;
 
-         for(int i$ = 0; i$ < len$; ++i$) {
-            String orderNum = arr$[i$];
+         int itemsCount;
+         for(itemsCount = 0; itemsCount < len$; ++itemsCount) {
+            String orderNum = arr$[itemsCount];
             int num = 0;
 
             try {
@@ -86,7 +87,7 @@ public class ConnectionsHistory implements IChangeSettingsListener {
             }
          }
 
-         int itemsCount = 0;
+         itemsCount = 0;
 
          for(Iterator i$ = conns.values().iterator(); i$.hasNext(); ++itemsCount) {
             ConnectionParams cp = (ConnectionParams)i$.next();

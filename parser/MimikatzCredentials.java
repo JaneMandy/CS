@@ -55,5 +55,6 @@ public class MimikatzCredentials extends Parser {
 
          this.resources.call("credentials.push");
       }
+
    }
 }

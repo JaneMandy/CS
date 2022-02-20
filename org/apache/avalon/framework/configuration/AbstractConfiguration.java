@@ -72,6 +72,25 @@ public abstract class AbstractConfiguration implements Configuration {
       }
    }
 
+   public double getValueAsDouble() throws ConfigurationException {
+      String value = this.getValue().trim();
+
+      try {
+         return Double.parseDouble(value);
+      } catch (Exception var4) {
+         String message = "Cannot parse the value \"" + value + "\" as a double in the configuration element \"" + this.getName() + "\" at " + this.getLocation();
+         throw new ConfigurationException(message);
+      }
+   }
+
+   public double getValueAsDouble(double defaultValue) {
+      try {
+         return this.getValueAsDouble();
+      } catch (ConfigurationException var4) {
+         return defaultValue;
+      }
+   }
+
    public boolean getValueAsBoolean() throws ConfigurationException {
       String value = this.getValue().trim();
       if (this.isTrue(value)) {
@@ -169,6 +188,25 @@ public abstract class AbstractConfiguration implements Configuration {
       }
    }
 
+   public double getAttributeAsDouble(String name) throws ConfigurationException {
+      String value = this.getAttribute(name);
+
+      try {
+         return Double.parseDouble(value);
+      } catch (Exception var5) {
+         String message = "Cannot parse the value \"" + value + "\" as a double in the attribute \"" + name + "\" at " + this.getLocation();
+         throw new ConfigurationException(message);
+      }
+   }
+
+   public double getAttributeAsDouble(String name, double defaultValue) {
+      try {
+         return this.getAttributeAsDouble(name);
+      } catch (ConfigurationException var5) {
+         return defaultValue;
+      }
+   }
+
    public boolean getAttributeAsBoolean(String name) throws ConfigurationException {
       String value = this.getAttribute(name);
       if (this.isTrue(value)) {
@@ -221,28 +259,4 @@ public abstract class AbstractConfiguration implements Configuration {
    public String toString() {
       return this.getName() + "::" + this.getValue("<no value>") + ":@" + this.getLocation();
    }
-
-   // $FF: synthetic method
-   public abstract String getValue() throws ConfigurationException;
-
-   // $FF: synthetic method
-   public abstract String getAttribute(String var1) throws ConfigurationException;
-
-   // $FF: synthetic method
-   public abstract String[] getAttributeNames();
-
-   // $FF: synthetic method
-   public abstract Configuration[] getChildren(String var1);
-
-   // $FF: synthetic method
-   public abstract Configuration[] getChildren();
-
-   // $FF: synthetic method
-   public abstract String getNamespace() throws ConfigurationException;
-
-   // $FF: synthetic method
-   public abstract String getLocation();
-
-   // $FF: synthetic method
-   public abstract String getName();
 }

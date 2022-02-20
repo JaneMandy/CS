@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Map.Entry;
 import javax.swing.AbstractAction;
@@ -123,7 +124,7 @@ public class NetworkGraph extends JComponent implements ActionListener {
       mxConstants.EDGE_SELECTION_COLOR = Prefs.getPreferences().getColor("graph.edge.color", "#3c6318");
       this.graph = new mxGraph() {
          public String getToolTipForCell(Object var1) {
-            return NetworkGraph.this.tooltips.get(var1) == null ? "" : NetworkGraph.this.tooltips.get(var1) + "";
+            return NetworkGraph.this.tooltips.get(var1) == null ? "" : ((Class)NetworkGraph.this.tooltips.get(var1)).makeConcatWithConstants<invokedynamic>(NetworkGraph.this.tooltips.get(var1));
          }
       };
       this.graph.setAutoOrigin(true);
@@ -293,7 +294,7 @@ public class NetworkGraph extends JComponent implements ActionListener {
       Iterator var5 = var2.iterator();
 
       for(int var6 = 0; var5.hasNext(); ++var6) {
-         var7[var6] = var5.next() + "";
+         var7[var6] = ((Class)var5.next()).makeConcatWithConstants<invokedynamic>(var5.next());
       }
 
       return var7;
@@ -385,8 +386,8 @@ public class NetworkGraph extends JComponent implements ActionListener {
          if (this.layout.equals("tree-bottom")) {
             this.doTreeBottomLayout();
          }
-
       }
+
    }
 
    public void end() {
@@ -427,7 +428,8 @@ public class NetworkGraph extends JComponent implements ActionListener {
       mxCell var9 = (mxCell)this.nodes.get(var2);
       mxCell var10 = (mxCell)this.graph.insertEdge(this.parent, (String)null, var6, var8, var9);
       StringBuffer var11 = new StringBuffer();
-      var11.append("fontColor=" + Prefs.getPreferences().getString("graph.foreground.color", "#cccccc") + ";");
+      Prefs var10001 = Prefs.getPreferences();
+      var11.append("fontColor=" + var10001.getString("graph.foreground.color", "#cccccc") + ";");
       Font var12 = Prefs.getPreferences().getFont("graph.font.font", "Monospaced BOLD 14");
       var11.append("fontSize=" + var12.getSize() + ";");
       var11.append("fontFamily=" + var12.getFamily() + ";");
@@ -488,7 +490,8 @@ public class NetworkGraph extends JComponent implements ActionListener {
       } else if ("cancel".equals(var6)) {
          var8.append("fontColor=#3d579e;");
       } else {
-         var8.append("fontColor=" + Prefs.getPreferences().getString("graph.foreground.color", "#cccccc") + ";");
+         Prefs var10001 = Prefs.getPreferences();
+         var8.append("fontColor=" + var10001.getString("graph.foreground.color", "#cccccc") + ";");
       }
 
       Font var9 = Prefs.getPreferences().getFont("graph.font.font", "Monospaced BOLD 14");
@@ -504,6 +507,19 @@ public class NetworkGraph extends JComponent implements ActionListener {
       return this.component.requestFocusInWindow();
    }
 
+   private class _A extends mxInteractiveCanvas {
+      private _A() {
+      }
+
+      public Image loadImage(String var1) {
+         return NetworkGraph.this.nodeImages.containsKey(var1) ? (Image)NetworkGraph.this.nodeImages.get(var1) : super.loadImage(var1);
+      }
+
+      _A(Object var2) {
+         this();
+      }
+   }
+
    private class _B extends mxGraphComponent {
       public _B(mxGraph var2) {
          super(var2);
@@ -515,21 +531,9 @@ public class NetworkGraph extends JComponent implements ActionListener {
       }
 
       public mxInteractiveCanvas createCanvas() {
-         return NetworkGraph.this.new _A();
-      }
-   }
-
-   private class _A extends mxInteractiveCanvas {
-      private _A() {
-      }
-
-      public Image loadImage(String var1) {
-         return NetworkGraph.this.nodeImages.containsKey(var1) ? (Image)NetworkGraph.this.nodeImages.get(var1) : super.loadImage(var1);
-      }
-
-      // $FF: synthetic method
-      _A(Object var2) {
-         this();
+         NetworkGraph var10002 = NetworkGraph.this;
+         Objects.requireNonNull(var10002);
+         return var10002.new _A();
       }
    }
 }

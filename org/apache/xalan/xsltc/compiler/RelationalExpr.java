@@ -21,7 +21,7 @@ import org.apache.xalan.xsltc.compiler.util.Type;
 import org.apache.xalan.xsltc.compiler.util.TypeCheckError;
 import org.apache.xalan.xsltc.runtime.Operators;
 
-final class RelationalExpr extends Expression {
+final class RelationalExpr extends Expression implements Operators {
    private int _op;
    private Expression _left;
    private Expression _right;
@@ -142,7 +142,7 @@ final class RelationalExpr extends Expression {
                }
             }
 
-            ptype = this.lookupPrimop(stable, Operators.getOpNames(this._op), new MethodType(Type.Void, tleft, tright));
+            ptype = this.lookupPrimop(stable, Operators.names[this._op], new MethodType(Type.Void, tleft, tright));
             if (ptype != null) {
                arg1 = (Type)ptype.argsType().elementAt(0);
                if (!arg1.identicalTo(tleft)) {
@@ -222,6 +222,6 @@ final class RelationalExpr extends Expression {
    }
 
    public String toString() {
-      return Operators.getOpNames(this._op) + '(' + this._left + ", " + this._right + ')';
+      return Operators.names[this._op] + '(' + this._left + ", " + this._right + ')';
    }
 }

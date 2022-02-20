@@ -94,6 +94,7 @@ public class PostExObfuscator {
          this.editor.mask(var2, var3, var4);
          this.editor.setShort(this.editor.getInfo().getLocation(var1 + ".NumberOfRelocations"), (long)var4);
       }
+
    }
 
    public byte[] getImage() {

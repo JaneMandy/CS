@@ -50,7 +50,7 @@ public class SystemProfilerDialog implements DialogListener, Callback {
    }
 
    public void result(String var1, Object var2) {
-      String var3 = var2 + "";
+      String var3 = ((Class)var2).makeConcatWithConstants<invokedynamic>(var2);
       if ("success".equals(var3)) {
          DialogUtils.startedWebService("system profiler", this.proto + this.host + ":" + this.port + this.uri);
       } else {

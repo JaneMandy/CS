@@ -4,17 +4,18 @@ import java.util.Hashtable;
 import org.apache.xalan.res.XSLMessages;
 
 public class ConnectionPoolManager {
-   private static Hashtable m_poolTable = null;
+   static Hashtable m_poolTable = null;
+   static boolean m_isInit = false;
 
    public ConnectionPoolManager() {
       this.init();
    }
 
-   private synchronized void init() {
-      if (m_poolTable == null) {
+   public synchronized void init() {
+      if (!m_isInit) {
          m_poolTable = new Hashtable();
+         m_isInit = true;
       }
-
    }
 
    public synchronized void registerPool(String name, ConnectionPool pool) {

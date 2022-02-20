@@ -74,13 +74,15 @@ public class Bookmarks implements ReportElement {
             Entry var3 = (Entry)var2.next();
             String var4 = (String)var3.getKey();
             LinkedList var5 = (LinkedList)var3.getValue();
-            var1.append("\t<fo:bookmark internal-destination=\"" + this.references.get(var4) + "\">\n");
+            Object var10001 = this.references.get(var4);
+            var1.append("\t<fo:bookmark internal-destination=\"" + var10001 + "\">\n");
             var1.append("\t\t<fo:bookmark-title>" + Content.fixText(var4) + "</fo:bookmark-title>\n");
             Iterator var6 = var5.iterator();
 
             while(var6.hasNext()) {
                String var7 = (String)var6.next();
-               var1.append("\t\t<fo:bookmark internal-destination=\"" + this.references.get(var7) + "\">\n");
+               var10001 = this.references.get(var7);
+               var1.append("\t\t<fo:bookmark internal-destination=\"" + var10001 + "\">\n");
                var1.append("\t\t\t<fo:bookmark-title>" + Content.fixText(var7) + "</fo:bookmark-title>\n");
                var1.append("\t</fo:bookmark>\n");
             }
@@ -90,5 +92,6 @@ public class Bookmarks implements ReportElement {
 
          var1.append("</fo:bookmark-tree>\n");
       }
+
    }
 }

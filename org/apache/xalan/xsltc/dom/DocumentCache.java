@@ -66,6 +66,7 @@ public final class DocumentCache implements DOMCache {
          this._reader = this._parser.getXMLReader();
       } catch (ParserConfigurationException var6) {
          BasisLibrary.runTimeError("NAMESPACES_SUPPORT_ERR");
+         System.exit(-1);
       }
 
    }

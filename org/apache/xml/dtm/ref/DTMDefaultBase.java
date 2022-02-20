@@ -29,7 +29,7 @@ import org.xml.sax.ext.DeclHandler;
 import org.xml.sax.ext.LexicalHandler;
 
 public abstract class DTMDefaultBase implements DTM {
-   static final boolean JJK_DEBUG = false;
+   static boolean JJK_DEBUG = false;
    public static final int ROOTNODE = 0;
    protected int m_size;
    protected SuballocatedIntVector m_exptype;
@@ -431,11 +431,11 @@ public abstract class DTMDefaultBase implements DTM {
             ps.println("Node Value: " + this.getNodeValue(i));
             ps.println("String Value: " + this.getStringValue(i));
          }
-
       } catch (IOException var13) {
          var13.printStackTrace(System.err);
-         throw new RuntimeException(var13.getMessage());
+         System.exit(-1);
       }
+
    }
 
    public String dumpNode(int nodeHandle) {
@@ -507,7 +507,15 @@ public abstract class DTMDefaultBase implements DTM {
    }
 
    public final int makeNodeHandle(int nodeIdentity) {
-      return -1 == nodeIdentity ? -1 : this.m_dtmIdent.elementAt(nodeIdentity >>> 16) + (nodeIdentity & '\uffff');
+      if (-1 == nodeIdentity) {
+         return -1;
+      } else {
+         if (JJK_DEBUG && nodeIdentity > 65535) {
+            System.err.println("GONK! (only useful in limited situations)");
+         }
+
+         return this.m_dtmIdent.elementAt(nodeIdentity >>> 16) + (nodeIdentity & '\uffff');
+      }
    }
 
    public final int makeNodeIdentity(int nodeHandle) {
@@ -990,7 +998,7 @@ public abstract class DTMDefaultBase implements DTM {
    public boolean isNodeAfter(int nodeHandle1, int nodeHandle2) {
       int index1 = this.makeNodeIdentity(nodeHandle1);
       int index2 = this.makeNodeIdentity(nodeHandle2);
-      return index1 != -1 && index2 != -1 && index1 <= index2;
+      return index1 != -1 & index2 != -1 & index1 <= index2;
    }
 
    public boolean isCharacterElementContentWhitespace(int nodeHandle) {

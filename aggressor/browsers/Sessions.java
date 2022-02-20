@@ -50,7 +50,7 @@ public class Sessions extends AObject implements Callback, TablePopup {
    }
 
    public Object getSelectedValue() {
-      return this.model.getSelectedValue(this.table) + "";
+      return ((Class)this.model.getSelectedValue(this.table)).makeConcatWithConstants<invokedynamic>(this.model.getSelectedValue(this.table));
    }
 
    public void showPopup(MouseEvent var1) {
@@ -90,5 +90,6 @@ public class Sessions extends AObject implements Callback, TablePopup {
       if (this.table.isShowing()) {
          DialogUtils.setTable(this.table, this.model, DataUtils.getBeaconModelFromResult(var2));
       }
+
    }
 }

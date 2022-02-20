@@ -52,6 +52,7 @@ public class AutoCompletionComboEditorDocument extends PlainDocument {
       if (!this.selecting) {
          super.remove(offs, len);
       }
+
    }
 
    public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
@@ -66,8 +67,8 @@ public class AutoCompletionComboEditorDocument extends PlainDocument {
                this.comboBox.setPopupVisible(true);
             }
          }
-
       }
+
    }
 
    private void setText(String text) {

@@ -6,11 +6,8 @@ import javax.xml.transform.TransformerException;
 import org.w3c.dom.Node;
 
 public class XPathException extends TransformerException {
-   static final long serialVersionUID = 4263549717619045963L;
    Object m_styleNode = null;
    protected Exception m_exception;
-   // $FF: synthetic field
-   static Class class$java$lang$Throwable;
 
    public Object getStylesheetNode() {
       return this.m_styleNode;
@@ -120,40 +117,30 @@ public class XPathException extends TransformerException {
 
       try {
          super.printStackTrace(s);
-      } catch (Exception var9) {
+      } catch (Exception var7) {
       }
 
-      boolean isJdk14OrHigher = false;
+      Throwable exception = this.m_exception;
 
-      try {
-         (class$java$lang$Throwable == null ? (class$java$lang$Throwable = class$("java.lang.Throwable")) : class$java$lang$Throwable).getMethod("getCause", (Class[])null);
-         isJdk14OrHigher = true;
-      } catch (NoSuchMethodException var8) {
-      }
+      for(int i = 0; i < 10 && null != exception; ++i) {
+         s.println("---------");
 
-      if (!isJdk14OrHigher) {
-         Throwable exception = this.m_exception;
+         try {
+            ((Throwable)exception).printStackTrace(s);
+         } catch (Exception var6) {
+            s.println("Could not print stack trace...");
+         }
 
-         for(int i = 0; i < 10 && null != exception; ++i) {
-            s.println("---------");
-
-            try {
-               ((Throwable)exception).printStackTrace(s);
-            } catch (Exception var7) {
-               s.println("Could not print stack trace...");
-            }
-
-            if (exception instanceof TransformerException) {
-               TransformerException se = (TransformerException)exception;
-               Throwable prev = exception;
-               exception = se.getException();
-               if (prev == exception) {
-                  exception = null;
-                  break;
-               }
-            } else {
+         if (exception instanceof TransformerException) {
+            TransformerException se = (TransformerException)exception;
+            Throwable prev = exception;
+            exception = se.getException();
+            if (prev == exception) {
                exception = null;
+               break;
             }
+         } else {
+            exception = null;
          }
       }
 
@@ -161,14 +148,5 @@ public class XPathException extends TransformerException {
 
    public Throwable getException() {
       return this.m_exception;
-   }
-
-   // $FF: synthetic method
-   static Class class$(String x0) {
-      try {
-         return Class.forName(x0);
-      } catch (ClassNotFoundException var2) {
-         throw new NoClassDefFoundError(var2.getMessage());
-      }
    }
 }

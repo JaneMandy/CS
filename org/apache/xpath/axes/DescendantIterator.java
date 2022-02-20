@@ -13,7 +13,6 @@ import org.apache.xpath.compiler.OpMap;
 import org.apache.xpath.patterns.NodeTest;
 
 public class DescendantIterator extends LocPathIterator {
-   static final long serialVersionUID = -1190338607743976938L;
    protected transient DTMAxisTraverser m_traverser;
    protected int m_axis;
    protected int m_extendedTypeID;
@@ -147,7 +146,7 @@ public class DescendantIterator extends LocPathIterator {
       String localName = this.getLocalName();
       String namespace = this.getNamespace();
       int what = super.m_whatToShow;
-      if (-1 != what && !"*".equals(localName) && !"*".equals(namespace)) {
+      if (-1 != what && localName != "*" && namespace != "*") {
          int type = NodeTest.getNodeTypeTest(what);
          this.m_extendedTypeID = super.m_cdtm.getExpandedTypeID(namespace, localName, type);
       } else {

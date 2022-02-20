@@ -2,6 +2,7 @@ package org.apache.xalan.templates;
 
 import java.util.Vector;
 import javax.xml.transform.TransformerException;
+import org.apache.xalan.processor.TransformerFactoryImpl;
 import org.apache.xalan.transformer.TransformerImpl;
 import org.apache.xml.utils.QName;
 import org.apache.xpath.XPath;
@@ -11,7 +12,6 @@ import org.apache.xpath.objects.XRTreeFrag;
 import org.apache.xpath.objects.XString;
 
 public class ElemWithParam extends ElemTemplateElement {
-   static final long serialVersionUID = -1070355175864326257L;
    int m_index;
    private XPath m_selectPattern = null;
    private QName m_qname = null;
@@ -42,7 +42,7 @@ public class ElemWithParam extends ElemTemplateElement {
    }
 
    public void compose(StylesheetRoot sroot) throws TransformerException {
-      if (null == this.m_selectPattern && sroot.getOptimizer()) {
+      if (null == this.m_selectPattern && TransformerFactoryImpl.m_optimize) {
          XPath newSelect = ElemVariable.rewriteChildToExpression(this);
          if (null != newSelect) {
             this.m_selectPattern = newSelect;
@@ -72,7 +72,7 @@ public class ElemWithParam extends ElemTemplateElement {
          if (null != this.m_selectPattern) {
             var = this.m_selectPattern.execute(xctxt, sourceNode, this);
             ((XObject)var).allowDetachToRelease(false);
-            if (transformer.getDebug()) {
+            if (TransformerImpl.S_DEBUG) {
                transformer.getTraceManager().fireSelectedEvent(sourceNode, this, "select", this.m_selectPattern, (XObject)var);
             }
          } else if (null == this.getFirstChildElem()) {

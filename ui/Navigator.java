@@ -61,7 +61,7 @@ public class Navigator extends JComponent implements ListSelectionListener {
       var5.add(DialogUtils.description(var3), "North");
       var5.add(DialogUtils.top(var4), "Center");
       this.icons.put(var1, var2);
-      DefaultListModel var6 = (DefaultListModel)((DefaultListModel)this.navigator.getModel());
+      DefaultListModel var6 = (DefaultListModel)this.navigator.getModel();
       var6.addElement(var1);
       this.switcher.add(var5, var1);
    }
@@ -125,7 +125,6 @@ public class Navigator extends JComponent implements ListSelectionListener {
          return this;
       }
 
-      // $FF: synthetic method
       _A(Object var2) {
          this();
       }

@@ -44,8 +44,8 @@ public class CredentialChooser implements DialogListener {
          } else {
             this.callback.dialogResult(var3 + " " + var5);
          }
-
       }
+
    }
 
    public void show() {

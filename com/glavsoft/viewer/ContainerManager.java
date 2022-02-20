@@ -400,6 +400,63 @@ public class ContainerManager {
       this.buttonsBar.setVisible(isVisible);
    }
 
+   public static class ButtonsBar {
+      private static final Insets BUTTONS_MARGIN = new Insets(2, 2, 2, 2);
+      private JPanel bar = new JPanel(new FlowLayout(1, 4, 1));
+      private boolean isVisible;
+
+      public JButton createButton(String iconId, String tooltipText, ActionListener actionListener) {
+         JButton button = new JButton(Utils.getButtonIcon(iconId));
+         button.setToolTipText(tooltipText);
+         button.setMargin(BUTTONS_MARGIN);
+         this.bar.add(button);
+         button.addActionListener(actionListener);
+         return button;
+      }
+
+      public void createStrut() {
+         this.bar.add(Box.createHorizontalStrut(10));
+      }
+
+      public JToggleButton createToggleButton(String iconId, String tooltipText, ItemListener itemListener) {
+         JToggleButton button = new JToggleButton(Utils.getButtonIcon(iconId));
+         button.setToolTipText(tooltipText);
+         button.setMargin(BUTTONS_MARGIN);
+         this.bar.add(button);
+         button.addItemListener(itemListener);
+         return button;
+      }
+
+      public void setVisible(boolean isVisible) {
+         this.isVisible = isVisible;
+      }
+
+      public int getWidth() {
+         return this.bar.getMinimumSize().width;
+      }
+
+      public int getHeight() {
+         return this.bar.getMinimumSize().height;
+      }
+
+      public void borderOn() {
+         this.bar.setBorder(BorderFactory.createBevelBorder(0));
+      }
+
+      public void borderOff() {
+         this.bar.setBorder(BorderFactory.createEmptyBorder());
+      }
+   }
+
+   private static class EmptyButtonsBarMouseAdapter extends MouseAdapter {
+      private EmptyButtonsBarMouseAdapter() {
+      }
+
+      EmptyButtonsBarMouseAdapter(Object x0) {
+         this();
+      }
+   }
+
    private class FullscreenBorderDetectionThread extends Thread {
       public static final int SHOW_HIDE_BUTTONS_BAR_DELAY_IN_MILLS = 700;
       private final JFrame frame;
@@ -595,64 +652,6 @@ public class ContainerManager {
                ContainerManager.this.setButtonsBarVisibleFS(true);
             }
          });
-      }
-   }
-
-   private static class EmptyButtonsBarMouseAdapter extends MouseAdapter {
-      private EmptyButtonsBarMouseAdapter() {
-      }
-
-      // $FF: synthetic method
-      EmptyButtonsBarMouseAdapter(Object x0) {
-         this();
-      }
-   }
-
-   public static class ButtonsBar {
-      private static final Insets BUTTONS_MARGIN = new Insets(2, 2, 2, 2);
-      private JPanel bar = new JPanel(new FlowLayout(1, 4, 1));
-      private boolean isVisible;
-
-      public JButton createButton(String iconId, String tooltipText, ActionListener actionListener) {
-         JButton button = new JButton(Utils.getButtonIcon(iconId));
-         button.setToolTipText(tooltipText);
-         button.setMargin(BUTTONS_MARGIN);
-         this.bar.add(button);
-         button.addActionListener(actionListener);
-         return button;
-      }
-
-      public void createStrut() {
-         this.bar.add(Box.createHorizontalStrut(10));
-      }
-
-      public JToggleButton createToggleButton(String iconId, String tooltipText, ItemListener itemListener) {
-         JToggleButton button = new JToggleButton(Utils.getButtonIcon(iconId));
-         button.setToolTipText(tooltipText);
-         button.setMargin(BUTTONS_MARGIN);
-         this.bar.add(button);
-         button.addItemListener(itemListener);
-         return button;
-      }
-
-      public void setVisible(boolean isVisible) {
-         this.isVisible = isVisible;
-      }
-
-      public int getWidth() {
-         return this.bar.getMinimumSize().width;
-      }
-
-      public int getHeight() {
-         return this.bar.getMinimumSize().height;
-      }
-
-      public void borderOn() {
-         this.bar.setBorder(BorderFactory.createBevelBorder(0));
-      }
-
-      public void borderOff() {
-         this.bar.setBorder(BorderFactory.createEmptyBorder());
       }
    }
 }

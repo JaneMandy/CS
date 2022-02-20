@@ -11,7 +11,6 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.traversal.NodeIterator;
 
 public class NodeSetDTM extends NodeVector implements DTMIterator, Cloneable {
-   static final long serialVersionUID = 7686480133331317070L;
    DTMManager m_manager;
    protected transient int m_next = 0;
    protected transient boolean m_mutable = true;

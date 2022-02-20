@@ -10,8 +10,7 @@ public abstract class DTMManager {
    private static final String defaultPropName = "org.apache.xml.dtm.DTMManager";
    private static String defaultClassName = "org.apache.xml.dtm.ref.DTMManagerDefault";
    protected XMLStringFactory m_xsf = null;
-   public boolean m_incremental = false;
-   public boolean m_source_location = false;
+   public static boolean m_incremental = false;
    private static boolean debug;
    public static final int IDENT_DTM_NODE_BITS = 16;
    public static final int IDENT_NODE_DEFAULT = 65535;
@@ -64,20 +63,12 @@ public abstract class DTMManager {
 
    public abstract DTMIterator createDTMIterator(int var1);
 
-   public boolean getIncremental() {
-      return this.m_incremental;
+   public static synchronized boolean getIncremental() {
+      return m_incremental;
    }
 
-   public void setIncremental(boolean incremental) {
-      this.m_incremental = incremental;
-   }
-
-   public boolean getSource_location() {
-      return this.m_source_location;
-   }
-
-   public void setSource_location(boolean sourceLocation) {
-      this.m_source_location = sourceLocation;
+   public static synchronized void setIncremental(boolean incremental) {
+      m_incremental = incremental;
    }
 
    public abstract int getDTMIdentity(DTM var1);

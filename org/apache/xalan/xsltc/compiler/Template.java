@@ -11,7 +11,7 @@ import org.apache.xalan.xsltc.compiler.util.NamedMethodGenerator;
 import org.apache.xalan.xsltc.compiler.util.Type;
 import org.apache.xalan.xsltc.compiler.util.TypeCheckError;
 import org.apache.xalan.xsltc.compiler.util.Util;
-import org.apache.xml.utils.XML11Char;
+import org.apache.xml.utils.XMLChar;
 
 public final class Template extends TopLevelElement {
    private QName _name;
@@ -153,7 +153,7 @@ public final class Template extends TopLevelElement {
       this._stylesheet = super.getStylesheet();
       ErrorMsg err;
       if (name.length() > 0) {
-         if (!XML11Char.isXML11ValidQName(name)) {
+         if (!XMLChar.isValidQName(name)) {
             err = new ErrorMsg("INVALID_QNAME_ERR", name, this);
             parser.reportError(3, err);
          }
@@ -162,7 +162,7 @@ public final class Template extends TopLevelElement {
       }
 
       if (mode.length() > 0) {
-         if (!XML11Char.isXML11ValidQName(mode)) {
+         if (!XMLChar.isValidQName(mode)) {
             err = new ErrorMsg("INVALID_QNAME_ERR", mode, this);
             parser.reportError(3, err);
          }

@@ -18,387 +18,348 @@ import org.xml.sax.SAXParseException;
 public class EmptySerializer implements SerializationHandler {
    protected static final String ERR = "EmptySerializer method not over-ridden";
 
-   protected void couldThrowIOException() throws IOException {
-   }
-
-   protected void couldThrowSAXException() throws SAXException {
-   }
-
-   protected void couldThrowSAXException(char[] chars, int off, int len) throws SAXException {
-   }
-
-   protected void couldThrowSAXException(String elemQName) throws SAXException {
-   }
-
-   protected void couldThrowException() throws Exception {
-   }
-
-   void aMethodIsCalled() {
+   private static void throwUnimplementedException() {
    }
 
    public ContentHandler asContentHandler() throws IOException {
-      this.couldThrowIOException();
+      throwUnimplementedException();
       return null;
    }
 
    public void setContentHandler(ContentHandler ch) {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
    }
 
    public void close() {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
    }
 
    public Properties getOutputFormat() {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
       return null;
    }
 
    public OutputStream getOutputStream() {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
       return null;
    }
 
    public Writer getWriter() {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
       return null;
    }
 
    public boolean reset() {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
       return false;
    }
 
    public void serialize(Node node) throws IOException {
-      this.couldThrowIOException();
+      throwUnimplementedException();
    }
 
    public void setCdataSectionElements(Vector URI_and_localNames) {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
    }
 
    public boolean setEscaping(boolean escape) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
       return false;
    }
 
    public void setIndent(boolean indent) {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
    }
 
    public void setIndentAmount(int spaces) {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
    }
 
    public void setOutputFormat(Properties format) {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
    }
 
    public void setOutputStream(OutputStream output) {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
    }
 
    public void setVersion(String version) {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
    }
 
    public void setWriter(Writer writer) {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
    }
 
    public void setTransformer(Transformer transformer) {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
    }
 
    public Transformer getTransformer() {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
       return null;
    }
 
    public void flushPending() throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
-   public void addAttribute(String uri, String localName, String rawName, String type, String value, boolean XSLAttribute) throws SAXException {
-      this.couldThrowSAXException();
+   public void addAttribute(String uri, String localName, String rawName, String type, String value) throws SAXException {
+      throwUnimplementedException();
    }
 
    public void addAttributes(Attributes atts) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public void addAttribute(String name, String value) {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
    }
 
    public void characters(String chars) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public void endElement(String elemName) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public void startDocument() throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public void startElement(String uri, String localName, String qName) throws SAXException {
-      this.couldThrowSAXException(qName);
+      throwUnimplementedException();
    }
 
    public void startElement(String qName) throws SAXException {
-      this.couldThrowSAXException(qName);
+      throwUnimplementedException();
    }
 
    public void namespaceAfterStartElement(String uri, String prefix) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public boolean startPrefixMapping(String prefix, String uri, boolean shouldFlush) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
       return false;
    }
 
    public void entityReference(String entityName) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public NamespaceMappings getNamespaceMappings() {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
       return null;
    }
 
    public String getPrefix(String uri) {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
       return null;
    }
 
    public String getNamespaceURI(String name, boolean isElement) {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
       return null;
    }
 
    public String getNamespaceURIFromPrefix(String prefix) {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
       return null;
    }
 
    public void setDocumentLocator(Locator arg0) {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
    }
 
    public void endDocument() throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public void startPrefixMapping(String arg0, String arg1) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public void endPrefixMapping(String arg0) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public void startElement(String arg0, String arg1, String arg2, Attributes arg3) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public void endElement(String arg0, String arg1, String arg2) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public void characters(char[] arg0, int arg1, int arg2) throws SAXException {
-      this.couldThrowSAXException(arg0, arg1, arg2);
+      throwUnimplementedException();
    }
 
    public void ignorableWhitespace(char[] arg0, int arg1, int arg2) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public void processingInstruction(String arg0, String arg1) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public void skippedEntity(String arg0) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public void comment(String comment) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public void startDTD(String arg0, String arg1, String arg2) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public void endDTD() throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public void startEntity(String arg0) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public void endEntity(String arg0) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public void startCDATA() throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public void endCDATA() throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public void comment(char[] arg0, int arg1, int arg2) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public String getDoctypePublic() {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
       return null;
    }
 
    public String getDoctypeSystem() {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
       return null;
    }
 
    public String getEncoding() {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
       return null;
    }
 
    public boolean getIndent() {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
       return false;
    }
 
    public int getIndentAmount() {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
       return 0;
    }
 
    public String getMediaType() {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
       return null;
    }
 
    public boolean getOmitXMLDeclaration() {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
       return false;
    }
 
    public String getStandalone() {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
       return null;
    }
 
    public String getVersion() {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
       return null;
    }
 
    public void setCdataSectionElements(Hashtable h) throws Exception {
-      this.couldThrowException();
+      throwUnimplementedException();
    }
 
    public void setDoctype(String system, String pub) {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
    }
 
    public void setDoctypePublic(String doctype) {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
    }
 
    public void setDoctypeSystem(String doctype) {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
    }
 
    public void setEncoding(String encoding) {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
    }
 
    public void setMediaType(String mediatype) {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
    }
 
    public void setOmitXMLDeclaration(boolean b) {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
    }
 
    public void setStandalone(String standalone) {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
    }
 
    public void elementDecl(String arg0, String arg1) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public void attributeDecl(String arg0, String arg1, String arg2, String arg3, String arg4) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public void internalEntityDecl(String arg0, String arg1) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public void externalEntityDecl(String arg0, String arg1, String arg2) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public void warning(SAXParseException arg0) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public void error(SAXParseException arg0) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public void fatalError(SAXParseException arg0) throws SAXException {
-      this.couldThrowSAXException();
+      throwUnimplementedException();
    }
 
    public DOMSerializer asDOMSerializer() throws IOException {
-      this.couldThrowIOException();
+      throwUnimplementedException();
       return null;
    }
 
    public void setNamespaceMappings(NamespaceMappings mappings) {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
    }
 
    public void setSourceLocator(SourceLocator locator) {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
    }
 
    public void addUniqueAttribute(String name, String value, int flags) throws SAXException {
-      this.couldThrowSAXException();
-   }
-
-   public void characters(Node node) throws SAXException {
-      this.couldThrowSAXException();
-   }
-
-   public void addXSLAttribute(String qName, String value, String uri) {
-      this.aMethodIsCalled();
-   }
-
-   public void addAttribute(String uri, String localName, String rawName, String type, String value) throws SAXException {
-      this.couldThrowSAXException();
-   }
-
-   public void notationDecl(String arg0, String arg1, String arg2) throws SAXException {
-      this.couldThrowSAXException();
-   }
-
-   public void unparsedEntityDecl(String arg0, String arg1, String arg2, String arg3) throws SAXException {
-      this.couldThrowSAXException();
-   }
-
-   public void setDTDEntityExpansion(boolean expand) {
-      this.aMethodIsCalled();
+      throwUnimplementedException();
    }
 }

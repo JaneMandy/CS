@@ -5,208 +5,19 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.Properties;
-import org.apache.xml.serializer.utils.Utils;
+import org.apache.xml.res.XMLMessages;
+import org.apache.xml.utils.Trie;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-public final class ToHTMLStream extends ToStream {
+public class ToHTMLStream extends ToStream {
    protected boolean m_inDTD = false;
    private boolean m_inBlockElem = false;
-   private static final CharInfo m_htmlcharInfo = CharInfo.getCharInfo("org.apache.xml.serializer.HTMLEntities", "html");
-   static final ToHTMLStream.Trie m_elementFlags = new ToHTMLStream.Trie();
+   protected static final CharInfo m_htmlcharInfo;
+   static final Trie m_elementFlags;
    private static final ElemDesc m_dummy;
    private boolean m_specialEscapeURLs = true;
    private boolean m_omitMetaTag = false;
-   private ToHTMLStream.Trie m_htmlInfo;
-
-   static void initTagReference(ToHTMLStream.Trie m_elementFlags) {
-      m_elementFlags.put("BASEFONT", new ElemDesc(2));
-      m_elementFlags.put("FRAME", new ElemDesc(10));
-      m_elementFlags.put("FRAMESET", new ElemDesc(8));
-      m_elementFlags.put("NOFRAMES", new ElemDesc(8));
-      m_elementFlags.put("ISINDEX", new ElemDesc(10));
-      m_elementFlags.put("APPLET", new ElemDesc(2097152));
-      m_elementFlags.put("CENTER", new ElemDesc(8));
-      m_elementFlags.put("DIR", new ElemDesc(8));
-      m_elementFlags.put("MENU", new ElemDesc(8));
-      m_elementFlags.put("TT", new ElemDesc(4096));
-      m_elementFlags.put("I", new ElemDesc(4096));
-      m_elementFlags.put("B", new ElemDesc(4096));
-      m_elementFlags.put("BIG", new ElemDesc(4096));
-      m_elementFlags.put("SMALL", new ElemDesc(4096));
-      m_elementFlags.put("EM", new ElemDesc(8192));
-      m_elementFlags.put("STRONG", new ElemDesc(8192));
-      m_elementFlags.put("DFN", new ElemDesc(8192));
-      m_elementFlags.put("CODE", new ElemDesc(8192));
-      m_elementFlags.put("SAMP", new ElemDesc(8192));
-      m_elementFlags.put("KBD", new ElemDesc(8192));
-      m_elementFlags.put("VAR", new ElemDesc(8192));
-      m_elementFlags.put("CITE", new ElemDesc(8192));
-      m_elementFlags.put("ABBR", new ElemDesc(8192));
-      m_elementFlags.put("ACRONYM", new ElemDesc(8192));
-      m_elementFlags.put("SUP", new ElemDesc(98304));
-      m_elementFlags.put("SUB", new ElemDesc(98304));
-      m_elementFlags.put("SPAN", new ElemDesc(98304));
-      m_elementFlags.put("BDO", new ElemDesc(98304));
-      m_elementFlags.put("BR", new ElemDesc(98314));
-      m_elementFlags.put("BODY", new ElemDesc(8));
-      m_elementFlags.put("ADDRESS", new ElemDesc(56));
-      m_elementFlags.put("DIV", new ElemDesc(56));
-      m_elementFlags.put("A", new ElemDesc(32768));
-      m_elementFlags.put("MAP", new ElemDesc(98312));
-      m_elementFlags.put("AREA", new ElemDesc(10));
-      m_elementFlags.put("LINK", new ElemDesc(131082));
-      m_elementFlags.put("IMG", new ElemDesc(2195458));
-      m_elementFlags.put("OBJECT", new ElemDesc(2326528));
-      m_elementFlags.put("PARAM", new ElemDesc(2));
-      m_elementFlags.put("HR", new ElemDesc(58));
-      m_elementFlags.put("P", new ElemDesc(56));
-      m_elementFlags.put("H1", new ElemDesc(262152));
-      m_elementFlags.put("H2", new ElemDesc(262152));
-      m_elementFlags.put("H3", new ElemDesc(262152));
-      m_elementFlags.put("H4", new ElemDesc(262152));
-      m_elementFlags.put("H5", new ElemDesc(262152));
-      m_elementFlags.put("H6", new ElemDesc(262152));
-      m_elementFlags.put("PRE", new ElemDesc(1048584));
-      m_elementFlags.put("Q", new ElemDesc(98304));
-      m_elementFlags.put("BLOCKQUOTE", new ElemDesc(56));
-      m_elementFlags.put("INS", new ElemDesc(0));
-      m_elementFlags.put("DEL", new ElemDesc(0));
-      m_elementFlags.put("DL", new ElemDesc(56));
-      m_elementFlags.put("DT", new ElemDesc(8));
-      m_elementFlags.put("DD", new ElemDesc(8));
-      m_elementFlags.put("OL", new ElemDesc(524296));
-      m_elementFlags.put("UL", new ElemDesc(524296));
-      m_elementFlags.put("LI", new ElemDesc(8));
-      m_elementFlags.put("FORM", new ElemDesc(8));
-      m_elementFlags.put("LABEL", new ElemDesc(16384));
-      m_elementFlags.put("INPUT", new ElemDesc(18434));
-      m_elementFlags.put("SELECT", new ElemDesc(18432));
-      m_elementFlags.put("OPTGROUP", new ElemDesc(0));
-      m_elementFlags.put("OPTION", new ElemDesc(0));
-      m_elementFlags.put("TEXTAREA", new ElemDesc(18432));
-      m_elementFlags.put("FIELDSET", new ElemDesc(24));
-      m_elementFlags.put("LEGEND", new ElemDesc(0));
-      m_elementFlags.put("BUTTON", new ElemDesc(18432));
-      m_elementFlags.put("TABLE", new ElemDesc(56));
-      m_elementFlags.put("CAPTION", new ElemDesc(8));
-      m_elementFlags.put("THEAD", new ElemDesc(8));
-      m_elementFlags.put("TFOOT", new ElemDesc(8));
-      m_elementFlags.put("TBODY", new ElemDesc(8));
-      m_elementFlags.put("COLGROUP", new ElemDesc(8));
-      m_elementFlags.put("COL", new ElemDesc(10));
-      m_elementFlags.put("TR", new ElemDesc(8));
-      m_elementFlags.put("TH", new ElemDesc(0));
-      m_elementFlags.put("TD", new ElemDesc(0));
-      m_elementFlags.put("HEAD", new ElemDesc(4194312));
-      m_elementFlags.put("TITLE", new ElemDesc(8));
-      m_elementFlags.put("BASE", new ElemDesc(10));
-      m_elementFlags.put("META", new ElemDesc(131082));
-      m_elementFlags.put("STYLE", new ElemDesc(131336));
-      m_elementFlags.put("SCRIPT", new ElemDesc(229632));
-      m_elementFlags.put("NOSCRIPT", new ElemDesc(56));
-      m_elementFlags.put("HTML", new ElemDesc(8));
-      m_elementFlags.put("FONT", new ElemDesc(4096));
-      m_elementFlags.put("S", new ElemDesc(4096));
-      m_elementFlags.put("STRIKE", new ElemDesc(4096));
-      m_elementFlags.put("U", new ElemDesc(4096));
-      m_elementFlags.put("NOBR", new ElemDesc(4096));
-      m_elementFlags.put("IFRAME", new ElemDesc(56));
-      m_elementFlags.put("LAYER", new ElemDesc(56));
-      m_elementFlags.put("ILAYER", new ElemDesc(56));
-      ElemDesc elemDesc = (ElemDesc)m_elementFlags.get("A");
-      elemDesc.setAttr("HREF", 2);
-      elemDesc.setAttr("NAME", 2);
-      elemDesc = (ElemDesc)m_elementFlags.get("AREA");
-      elemDesc.setAttr("HREF", 2);
-      elemDesc.setAttr("NOHREF", 4);
-      elemDesc = (ElemDesc)m_elementFlags.get("BASE");
-      elemDesc.setAttr("HREF", 2);
-      elemDesc = (ElemDesc)m_elementFlags.get("BUTTON");
-      elemDesc.setAttr("DISABLED", 4);
-      elemDesc = (ElemDesc)m_elementFlags.get("BLOCKQUOTE");
-      elemDesc.setAttr("CITE", 2);
-      elemDesc = (ElemDesc)m_elementFlags.get("DEL");
-      elemDesc.setAttr("CITE", 2);
-      elemDesc = (ElemDesc)m_elementFlags.get("DIR");
-      elemDesc.setAttr("COMPACT", 4);
-      elemDesc = (ElemDesc)m_elementFlags.get("DIV");
-      elemDesc.setAttr("SRC", 2);
-      elemDesc.setAttr("NOWRAP", 4);
-      elemDesc = (ElemDesc)m_elementFlags.get("DL");
-      elemDesc.setAttr("COMPACT", 4);
-      elemDesc = (ElemDesc)m_elementFlags.get("FORM");
-      elemDesc.setAttr("ACTION", 2);
-      elemDesc = (ElemDesc)m_elementFlags.get("FRAME");
-      elemDesc.setAttr("SRC", 2);
-      elemDesc.setAttr("LONGDESC", 2);
-      elemDesc.setAttr("NORESIZE", 4);
-      elemDesc = (ElemDesc)m_elementFlags.get("HEAD");
-      elemDesc.setAttr("PROFILE", 2);
-      elemDesc = (ElemDesc)m_elementFlags.get("HR");
-      elemDesc.setAttr("NOSHADE", 4);
-      elemDesc = (ElemDesc)m_elementFlags.get("IFRAME");
-      elemDesc.setAttr("SRC", 2);
-      elemDesc.setAttr("LONGDESC", 2);
-      elemDesc = (ElemDesc)m_elementFlags.get("ILAYER");
-      elemDesc.setAttr("SRC", 2);
-      elemDesc = (ElemDesc)m_elementFlags.get("IMG");
-      elemDesc.setAttr("SRC", 2);
-      elemDesc.setAttr("LONGDESC", 2);
-      elemDesc.setAttr("USEMAP", 2);
-      elemDesc.setAttr("ISMAP", 4);
-      elemDesc = (ElemDesc)m_elementFlags.get("INPUT");
-      elemDesc.setAttr("SRC", 2);
-      elemDesc.setAttr("USEMAP", 2);
-      elemDesc.setAttr("CHECKED", 4);
-      elemDesc.setAttr("DISABLED", 4);
-      elemDesc.setAttr("ISMAP", 4);
-      elemDesc.setAttr("READONLY", 4);
-      elemDesc = (ElemDesc)m_elementFlags.get("INS");
-      elemDesc.setAttr("CITE", 2);
-      elemDesc = (ElemDesc)m_elementFlags.get("LAYER");
-      elemDesc.setAttr("SRC", 2);
-      elemDesc = (ElemDesc)m_elementFlags.get("LINK");
-      elemDesc.setAttr("HREF", 2);
-      elemDesc = (ElemDesc)m_elementFlags.get("MENU");
-      elemDesc.setAttr("COMPACT", 4);
-      elemDesc = (ElemDesc)m_elementFlags.get("OBJECT");
-      elemDesc.setAttr("CLASSID", 2);
-      elemDesc.setAttr("CODEBASE", 2);
-      elemDesc.setAttr("DATA", 2);
-      elemDesc.setAttr("ARCHIVE", 2);
-      elemDesc.setAttr("USEMAP", 2);
-      elemDesc.setAttr("DECLARE", 4);
-      elemDesc = (ElemDesc)m_elementFlags.get("OL");
-      elemDesc.setAttr("COMPACT", 4);
-      elemDesc = (ElemDesc)m_elementFlags.get("OPTGROUP");
-      elemDesc.setAttr("DISABLED", 4);
-      elemDesc = (ElemDesc)m_elementFlags.get("OPTION");
-      elemDesc.setAttr("SELECTED", 4);
-      elemDesc.setAttr("DISABLED", 4);
-      elemDesc = (ElemDesc)m_elementFlags.get("Q");
-      elemDesc.setAttr("CITE", 2);
-      elemDesc = (ElemDesc)m_elementFlags.get("SCRIPT");
-      elemDesc.setAttr("SRC", 2);
-      elemDesc.setAttr("FOR", 2);
-      elemDesc.setAttr("DEFER", 4);
-      elemDesc = (ElemDesc)m_elementFlags.get("SELECT");
-      elemDesc.setAttr("DISABLED", 4);
-      elemDesc.setAttr("MULTIPLE", 4);
-      elemDesc = (ElemDesc)m_elementFlags.get("TABLE");
-      elemDesc.setAttr("NOWRAP", 4);
-      elemDesc = (ElemDesc)m_elementFlags.get("TD");
-      elemDesc.setAttr("NOWRAP", 4);
-      elemDesc = (ElemDesc)m_elementFlags.get("TEXTAREA");
-      elemDesc.setAttr("DISABLED", 4);
-      elemDesc.setAttr("READONLY", 4);
-      elemDesc = (ElemDesc)m_elementFlags.get("TH");
-      elemDesc.setAttr("NOWRAP", 4);
-      elemDesc = (ElemDesc)m_elementFlags.get("TR");
-      elemDesc.setAttr("NOWRAP", 4);
-      elemDesc = (ElemDesc)m_elementFlags.get("UL");
-      elemDesc.setAttr("COMPACT", 4);
-   }
 
    public void setSpecialEscapeURLs(boolean bool) {
       this.m_specialEscapeURLs = bool;
@@ -235,13 +46,7 @@ public final class ToHTMLStream extends ToStream {
       return null != obj ? (ElemDesc)obj : m_dummy;
    }
 
-   private ElemDesc getElemDesc2(String name) {
-      Object obj = this.m_htmlInfo.get2(name);
-      return null != obj ? (ElemDesc)obj : m_dummy;
-   }
-
    public ToHTMLStream() {
-      this.m_htmlInfo = new ToHTMLStream.Trie(m_elementFlags);
       super.m_charInfo = m_htmlcharInfo;
       super.m_prefixMap = new NamespaceMappings();
    }
@@ -259,7 +64,7 @@ public final class ToHTMLStream extends ToStream {
             Writer writer = super.m_writer;
 
             try {
-               writer.write("<!DOCTYPE html");
+               writer.write("<!DOCTYPE HTML");
                if (null != doctypePublic) {
                   writer.write(" PUBLIC \"");
                   writer.write(doctypePublic);
@@ -270,7 +75,7 @@ public final class ToHTMLStream extends ToStream {
                   if (null == doctypePublic) {
                      writer.write(" SYSTEM \"");
                   } else {
-                     writer.write(" \"");
+                     writer.write(34);
                   }
 
                   writer.write(doctypeSystem);
@@ -322,7 +127,7 @@ public final class ToHTMLStream extends ToStream {
          super.startElement(namespaceURI, localName, name, atts);
       } else {
          try {
-            ElemDesc elemDesc = this.getElemDesc2(name);
+            ElemDesc elemDesc = getElemDesc(name);
             int elemFlags = elemDesc.getFlags();
             if (super.m_doIndent) {
                boolean isBlockElement = (elemFlags & 8) != 0;
@@ -555,7 +360,7 @@ public final class ToHTMLStream extends ToStream {
                      writer.write(makeHHString(wwww));
                   } else {
                      int uuuuu;
-                     if (Encodings.isHighUTF16Surrogate(ch)) {
+                     if (ToStream.isUTF16Surrogate(ch)) {
                         highSurrogate = ch & 1023;
                         wwww = (highSurrogate & 960) >> 6;
                         uuuuu = wwww + 1;
@@ -640,18 +445,20 @@ public final class ToHTMLStream extends ToStream {
                   cleanLength = 0;
                }
 
-               int pos = this.accumDefaultEntity(writer, ch, i, chars, end, false, true);
+               int pos = this.accumDefaultEntity(writer, ch, i, chars, end, false, false);
                if (i != pos) {
                   i = pos - 1;
                } else {
-                  if (Encodings.isHighUTF16Surrogate(ch)) {
+                  if (ToStream.isUTF16Surrogate(ch)) {
                      this.writeUTF16Surrogate(ch, chars, i, end);
                      ++i;
                   }
 
-                  String outputStringForChar = super.m_charInfo.getOutputStringForChar(ch);
-                  if (null != outputStringForChar) {
-                     writer.write(outputStringForChar);
+                  String entityName = super.m_charInfo.getEntityNameForChar(ch);
+                  if (null != entityName) {
+                     writer.write(38);
+                     writer.write(entityName);
+                     writer.write(59);
                   } else if (this.escapingNotNeeded(ch)) {
                      writer.write(ch);
                   } else {
@@ -695,7 +502,7 @@ public final class ToHTMLStream extends ToStream {
             }
 
          } catch (IOException var5) {
-            throw new SAXException(Utils.messages.createMessage("ER_OIERROR", (Object[])null), var5);
+            throw new SAXException(XMLMessages.createXMLMessage("ER_OIERROR", (Object[])null), var5);
          }
       } else {
          super.characters(chars, start, length);
@@ -719,7 +526,7 @@ public final class ToHTMLStream extends ToStream {
 
             this.writeNormalizedChars(ch, start, length, true, super.m_lineSepUse);
          } catch (IOException var5) {
-            throw new SAXException(Utils.messages.createMessage("ER_OIERROR", (Object[])null), var5);
+            throw new SAXException(XMLMessages.createXMLMessage("ER_OIERROR", (Object[])null), var5);
          }
       }
 
@@ -927,157 +734,172 @@ public final class ToHTMLStream extends ToStream {
    }
 
    static {
-      initTagReference(m_elementFlags);
+      m_htmlcharInfo = CharInfo.getCharInfo(CharInfo.HTML_ENTITIES_RESOURCE, "html");
+      m_elementFlags = new Trie();
+      m_elementFlags.put("BASEFONT", new ElemDesc(2));
+      m_elementFlags.put("FRAME", new ElemDesc(10));
+      m_elementFlags.put("FRAMESET", new ElemDesc(8));
+      m_elementFlags.put("NOFRAMES", new ElemDesc(8));
+      m_elementFlags.put("ISINDEX", new ElemDesc(10));
+      m_elementFlags.put("APPLET", new ElemDesc(2097152));
+      m_elementFlags.put("CENTER", new ElemDesc(8));
+      m_elementFlags.put("DIR", new ElemDesc(8));
+      m_elementFlags.put("MENU", new ElemDesc(8));
+      m_elementFlags.put("TT", new ElemDesc(4096));
+      m_elementFlags.put("I", new ElemDesc(4096));
+      m_elementFlags.put("B", new ElemDesc(4096));
+      m_elementFlags.put("BIG", new ElemDesc(4096));
+      m_elementFlags.put("SMALL", new ElemDesc(4096));
+      m_elementFlags.put("EM", new ElemDesc(8192));
+      m_elementFlags.put("STRONG", new ElemDesc(8192));
+      m_elementFlags.put("DFN", new ElemDesc(8192));
+      m_elementFlags.put("CODE", new ElemDesc(8192));
+      m_elementFlags.put("SAMP", new ElemDesc(8192));
+      m_elementFlags.put("KBD", new ElemDesc(8192));
+      m_elementFlags.put("VAR", new ElemDesc(8192));
+      m_elementFlags.put("CITE", new ElemDesc(8192));
+      m_elementFlags.put("ABBR", new ElemDesc(8192));
+      m_elementFlags.put("ACRONYM", new ElemDesc(8192));
+      m_elementFlags.put("SUP", new ElemDesc(98304));
+      m_elementFlags.put("SUB", new ElemDesc(98304));
+      m_elementFlags.put("SPAN", new ElemDesc(98304));
+      m_elementFlags.put("BDO", new ElemDesc(98304));
+      m_elementFlags.put("BR", new ElemDesc(98314));
+      m_elementFlags.put("BODY", new ElemDesc(8));
+      m_elementFlags.put("ADDRESS", new ElemDesc(56));
+      m_elementFlags.put("DIV", new ElemDesc(56));
+      m_elementFlags.put("A", new ElemDesc(32768));
+      m_elementFlags.put("MAP", new ElemDesc(98312));
+      m_elementFlags.put("AREA", new ElemDesc(10));
+      m_elementFlags.put("LINK", new ElemDesc(131082));
+      m_elementFlags.put("IMG", new ElemDesc(2195458));
+      m_elementFlags.put("OBJECT", new ElemDesc(2326528));
+      m_elementFlags.put("PARAM", new ElemDesc(2));
+      m_elementFlags.put("HR", new ElemDesc(58));
+      m_elementFlags.put("P", new ElemDesc(56));
+      m_elementFlags.put("H1", new ElemDesc(262152));
+      m_elementFlags.put("H2", new ElemDesc(262152));
+      m_elementFlags.put("H3", new ElemDesc(262152));
+      m_elementFlags.put("H4", new ElemDesc(262152));
+      m_elementFlags.put("H5", new ElemDesc(262152));
+      m_elementFlags.put("H6", new ElemDesc(262152));
+      m_elementFlags.put("PRE", new ElemDesc(1048584));
+      m_elementFlags.put("Q", new ElemDesc(98304));
+      m_elementFlags.put("BLOCKQUOTE", new ElemDesc(56));
+      m_elementFlags.put("INS", new ElemDesc(0));
+      m_elementFlags.put("DEL", new ElemDesc(0));
+      m_elementFlags.put("DL", new ElemDesc(56));
+      m_elementFlags.put("DT", new ElemDesc(8));
+      m_elementFlags.put("DD", new ElemDesc(8));
+      m_elementFlags.put("OL", new ElemDesc(524296));
+      m_elementFlags.put("UL", new ElemDesc(524296));
+      m_elementFlags.put("LI", new ElemDesc(8));
+      m_elementFlags.put("FORM", new ElemDesc(8));
+      m_elementFlags.put("LABEL", new ElemDesc(16384));
+      m_elementFlags.put("INPUT", new ElemDesc(18434));
+      m_elementFlags.put("SELECT", new ElemDesc(18432));
+      m_elementFlags.put("OPTGROUP", new ElemDesc(0));
+      m_elementFlags.put("OPTION", new ElemDesc(0));
+      m_elementFlags.put("TEXTAREA", new ElemDesc(18432));
+      m_elementFlags.put("FIELDSET", new ElemDesc(24));
+      m_elementFlags.put("LEGEND", new ElemDesc(0));
+      m_elementFlags.put("BUTTON", new ElemDesc(18432));
+      m_elementFlags.put("TABLE", new ElemDesc(56));
+      m_elementFlags.put("CAPTION", new ElemDesc(8));
+      m_elementFlags.put("THEAD", new ElemDesc(8));
+      m_elementFlags.put("TFOOT", new ElemDesc(8));
+      m_elementFlags.put("TBODY", new ElemDesc(8));
+      m_elementFlags.put("COLGROUP", new ElemDesc(8));
+      m_elementFlags.put("COL", new ElemDesc(10));
+      m_elementFlags.put("TR", new ElemDesc(8));
+      m_elementFlags.put("TH", new ElemDesc(0));
+      m_elementFlags.put("TD", new ElemDesc(0));
+      m_elementFlags.put("HEAD", new ElemDesc(4194312));
+      m_elementFlags.put("TITLE", new ElemDesc(8));
+      m_elementFlags.put("BASE", new ElemDesc(10));
+      m_elementFlags.put("META", new ElemDesc(131082));
+      m_elementFlags.put("STYLE", new ElemDesc(131336));
+      m_elementFlags.put("SCRIPT", new ElemDesc(229632));
+      m_elementFlags.put("NOSCRIPT", new ElemDesc(56));
+      m_elementFlags.put("HTML", new ElemDesc(8));
+      m_elementFlags.put("FONT", new ElemDesc(4096));
+      m_elementFlags.put("S", new ElemDesc(4096));
+      m_elementFlags.put("STRIKE", new ElemDesc(4096));
+      m_elementFlags.put("U", new ElemDesc(4096));
+      m_elementFlags.put("NOBR", new ElemDesc(4096));
+      m_elementFlags.put("IFRAME", new ElemDesc(56));
+      m_elementFlags.put("LAYER", new ElemDesc(56));
+      m_elementFlags.put("ILAYER", new ElemDesc(56));
+      ElemDesc elemDesc = (ElemDesc)m_elementFlags.get("AREA");
+      elemDesc.setAttr("HREF", 2);
+      elemDesc.setAttr("NOHREF", 4);
+      elemDesc = (ElemDesc)m_elementFlags.get("BASE");
+      elemDesc.setAttr("HREF", 2);
+      elemDesc = (ElemDesc)m_elementFlags.get("BLOCKQUOTE");
+      elemDesc.setAttr("CITE", 2);
+      elemDesc = (ElemDesc)m_elementFlags.get("Q");
+      elemDesc.setAttr("CITE", 2);
+      elemDesc = (ElemDesc)m_elementFlags.get("INS");
+      elemDesc.setAttr("CITE", 2);
+      elemDesc = (ElemDesc)m_elementFlags.get("DEL");
+      elemDesc.setAttr("CITE", 2);
+      elemDesc = (ElemDesc)m_elementFlags.get("A");
+      elemDesc.setAttr("HREF", 2);
+      elemDesc.setAttr("NAME", 2);
+      elemDesc = (ElemDesc)m_elementFlags.get("LINK");
+      elemDesc.setAttr("HREF", 2);
+      elemDesc = (ElemDesc)m_elementFlags.get("INPUT");
+      elemDesc.setAttr("SRC", 2);
+      elemDesc.setAttr("USEMAP", 2);
+      elemDesc.setAttr("CHECKED", 4);
+      elemDesc.setAttr("DISABLED", 4);
+      elemDesc.setAttr("ISMAP", 4);
+      elemDesc.setAttr("READONLY", 4);
+      elemDesc = (ElemDesc)m_elementFlags.get("SELECT");
+      elemDesc.setAttr("DISABLED", 4);
+      elemDesc.setAttr("MULTIPLE", 4);
+      elemDesc = (ElemDesc)m_elementFlags.get("OPTGROUP");
+      elemDesc.setAttr("DISABLED", 4);
+      elemDesc = (ElemDesc)m_elementFlags.get("OPTION");
+      elemDesc.setAttr("SELECTED", 4);
+      elemDesc.setAttr("DISABLED", 4);
+      elemDesc = (ElemDesc)m_elementFlags.get("TEXTAREA");
+      elemDesc.setAttr("DISABLED", 4);
+      elemDesc.setAttr("READONLY", 4);
+      elemDesc = (ElemDesc)m_elementFlags.get("BUTTON");
+      elemDesc.setAttr("DISABLED", 4);
+      elemDesc = (ElemDesc)m_elementFlags.get("SCRIPT");
+      elemDesc.setAttr("SRC", 2);
+      elemDesc.setAttr("FOR", 2);
+      elemDesc.setAttr("DEFER", 4);
+      elemDesc = (ElemDesc)m_elementFlags.get("IMG");
+      elemDesc.setAttr("SRC", 2);
+      elemDesc.setAttr("LONGDESC", 2);
+      elemDesc.setAttr("USEMAP", 2);
+      elemDesc.setAttr("ISMAP", 4);
+      elemDesc = (ElemDesc)m_elementFlags.get("OBJECT");
+      elemDesc.setAttr("CLASSID", 2);
+      elemDesc.setAttr("CODEBASE", 2);
+      elemDesc.setAttr("DATA", 2);
+      elemDesc.setAttr("ARCHIVE", 2);
+      elemDesc.setAttr("USEMAP", 2);
+      elemDesc.setAttr("DECLARE", 4);
+      elemDesc = (ElemDesc)m_elementFlags.get("FORM");
+      elemDesc.setAttr("ACTION", 2);
+      elemDesc = (ElemDesc)m_elementFlags.get("HEAD");
+      elemDesc.setAttr("PROFILE", 2);
+      elemDesc = (ElemDesc)m_elementFlags.get("FRAME");
+      elemDesc.setAttr("SRC", 2);
+      elemDesc.setAttr("LONGDESC", 2);
+      elemDesc = (ElemDesc)m_elementFlags.get("IFRAME");
+      elemDesc.setAttr("SRC", 2);
+      elemDesc.setAttr("LONGDESC", 2);
+      elemDesc = (ElemDesc)m_elementFlags.get("LAYER");
+      elemDesc.setAttr("SRC", 2);
+      elemDesc = (ElemDesc)m_elementFlags.get("ILAYER");
+      elemDesc.setAttr("SRC", 2);
+      elemDesc = (ElemDesc)m_elementFlags.get("DIV");
+      elemDesc.setAttr("SRC", 2);
       m_dummy = new ElemDesc(8);
-   }
-
-   static class Trie {
-      public static final int ALPHA_SIZE = 128;
-      final ToHTMLStream.Trie.Node m_Root;
-      private char[] m_charBuffer = new char[0];
-      private final boolean m_lowerCaseOnly;
-
-      public Trie() {
-         this.m_Root = new ToHTMLStream.Trie.Node();
-         this.m_lowerCaseOnly = false;
-      }
-
-      public Trie(boolean lowerCaseOnly) {
-         this.m_Root = new ToHTMLStream.Trie.Node();
-         this.m_lowerCaseOnly = lowerCaseOnly;
-      }
-
-      public Object put(String key, Object value) {
-         int len = key.length();
-         if (len > this.m_charBuffer.length) {
-            this.m_charBuffer = new char[len];
-         }
-
-         ToHTMLStream.Trie.Node node = this.m_Root;
-
-         label30:
-         for(int i = 0; i < len; ++i) {
-            ToHTMLStream.Trie.Node nextNode = node.m_nextChar[Character.toLowerCase(key.charAt(i))];
-            if (nextNode == null) {
-               while(true) {
-                  if (i >= len) {
-                     break label30;
-                  }
-
-                  ToHTMLStream.Trie.Node newNode = new ToHTMLStream.Trie.Node();
-                  if (this.m_lowerCaseOnly) {
-                     node.m_nextChar[Character.toLowerCase(key.charAt(i))] = newNode;
-                  } else {
-                     node.m_nextChar[Character.toUpperCase(key.charAt(i))] = newNode;
-                     node.m_nextChar[Character.toLowerCase(key.charAt(i))] = newNode;
-                  }
-
-                  node = newNode;
-                  ++i;
-               }
-            }
-
-            node = nextNode;
-         }
-
-         Object ret = node.m_Value;
-         node.m_Value = value;
-         return ret;
-      }
-
-      public Object get(String key) {
-         int len = key.length();
-         if (this.m_charBuffer.length < len) {
-            return null;
-         } else {
-            ToHTMLStream.Trie.Node node = this.m_Root;
-            switch(len) {
-            case 0:
-               return null;
-            case 1:
-               char ch = key.charAt(0);
-               if (ch < 128) {
-                  node = node.m_nextChar[ch];
-                  if (node != null) {
-                     return node.m_Value;
-                  }
-               }
-
-               return null;
-            default:
-               for(int i = 0; i < len; ++i) {
-                  char ch = key.charAt(i);
-                  if (128 <= ch) {
-                     return null;
-                  }
-
-                  node = node.m_nextChar[ch];
-                  if (node == null) {
-                     return null;
-                  }
-               }
-
-               return node.m_Value;
-            }
-         }
-      }
-
-      public Trie(ToHTMLStream.Trie existingTrie) {
-         this.m_Root = existingTrie.m_Root;
-         this.m_lowerCaseOnly = existingTrie.m_lowerCaseOnly;
-         int max = existingTrie.getLongestKeyLength();
-         this.m_charBuffer = new char[max];
-      }
-
-      public Object get2(String key) {
-         int len = key.length();
-         if (this.m_charBuffer.length < len) {
-            return null;
-         } else {
-            ToHTMLStream.Trie.Node node = this.m_Root;
-            switch(len) {
-            case 0:
-               return null;
-            case 1:
-               char ch = key.charAt(0);
-               if (ch < 128) {
-                  node = node.m_nextChar[ch];
-                  if (node != null) {
-                     return node.m_Value;
-                  }
-               }
-
-               return null;
-            default:
-               key.getChars(0, len, this.m_charBuffer, 0);
-
-               for(int i = 0; i < len; ++i) {
-                  char ch = this.m_charBuffer[i];
-                  if (128 <= ch) {
-                     return null;
-                  }
-
-                  node = node.m_nextChar[ch];
-                  if (node == null) {
-                     return null;
-                  }
-               }
-
-               return node.m_Value;
-            }
-         }
-      }
-
-      public int getLongestKeyLength() {
-         return this.m_charBuffer.length;
-      }
-
-      private class Node {
-         final ToHTMLStream.Trie.Node[] m_nextChar = new ToHTMLStream.Trie.Node[128];
-         Object m_Value = null;
-
-         Node() {
-         }
-      }
    }
 }

@@ -130,10 +130,10 @@ public class SecureServerSocket {
       try {
          FileInputStream var1 = new FileInputStream(System.getProperty("javax.net.ssl.keyStore"));
          KeyStore var2 = KeyStore.getInstance(KeyStore.getDefaultType());
-         var2.load(var1, (System.getProperty("javax.net.ssl.keyStorePassword") + "").toCharArray());
+         var2.load(var1, System.getProperty("javax.net.ssl.keyStorePassword").makeConcatWithConstants<invokedynamic>(System.getProperty("javax.net.ssl.keyStorePassword")).toCharArray());
          Enumeration var3 = var2.aliases();
          if (var3.hasMoreElements()) {
-            String var4 = var3.nextElement() + "";
+            String var4 = ((Class)var3.nextElement()).makeConcatWithConstants<invokedynamic>(var3.nextElement());
             Certificate var5 = var2.getCertificate(var4);
             byte[] var6 = var5.getEncoded();
             MessageDigest var7 = MessageDigest.getInstance("SHA-256");

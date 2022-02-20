@@ -20,7 +20,9 @@ public class SyncMonitor implements Callback {
       } else if (var3.isDone() && this.monitor != null) {
          this.monitor.close();
       } else if (this.monitor != null) {
-         this.monitor.setNote("[" + var3.getSent() + "/" + var3.getTotal() + "] " + var3.getMessage());
+         ProgressMonitor var10000 = this.monitor;
+         int var10001 = var3.getSent();
+         var10000.setNote("[" + var10001 + "/" + var3.getTotal() + "] " + var3.getMessage());
          this.monitor.setProgress(var3.percentage());
       }
 

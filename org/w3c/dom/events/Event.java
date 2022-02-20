@@ -24,4 +24,12 @@ public interface Event {
    void preventDefault();
 
    void initEvent(String var1, boolean var2, boolean var3);
+
+   String getNamespaceURI();
+
+   void stopImmediatePropagation();
+
+   boolean getDefaultPrevented();
+
+   void initEventNS(String var1, String var2, boolean var3, boolean var4);
 }

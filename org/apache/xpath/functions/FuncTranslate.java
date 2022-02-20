@@ -6,8 +6,6 @@ import org.apache.xpath.objects.XObject;
 import org.apache.xpath.objects.XString;
 
 public class FuncTranslate extends Function3Args {
-   static final long serialVersionUID = -1672834340026116482L;
-
    public XObject execute(XPathContext xctxt) throws TransformerException {
       String theFirstString = super.m_arg0.execute(xctxt).str();
       String theSecondString = super.m_arg1.execute(xctxt).str();

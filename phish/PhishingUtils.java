@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 public class PhishingUtils {
    public static String updateMessage(String var0, Map var1, String var2, String var3) {
       Entry var5;
-      for(Iterator var4 = var1.entrySet().iterator(); var4.hasNext(); var0 = CommonUtils.strrep(var0, "%" + var5.getKey() + "%", var5.getValue() + "")) {
+      for(Iterator var4 = var1.entrySet().iterator(); var4.hasNext(); var0 = CommonUtils.strrep(var0, "%" + var5.getKey() + "%", ((Class)var5.getValue()).makeConcatWithConstants<invokedynamic>(var5.getValue()))) {
          var5 = (Entry)var4.next();
       }
 

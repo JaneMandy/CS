@@ -80,7 +80,7 @@ public class SafeDialogs {
                      SafeDialogs.lastSaveDirectory = var2x.getParentFile();
                   }
 
-                  SafeDialogs.B(var2, var2x + "");
+                  SafeDialogs.B(var2, var2x.makeConcatWithConstants<invokedynamic>(var2x));
                   return;
                }
             }
@@ -148,10 +148,10 @@ public class SafeDialogs {
                      }
                   }
 
-                  SafeDialogs.B(var5, var1x.getSelectedFile() + "");
+                  SafeDialogs.B(var5, var1x.getSelectedFile().makeConcatWithConstants<invokedynamic>(var1x.getSelectedFile()));
                }
-
             }
+
          }
       });
    }

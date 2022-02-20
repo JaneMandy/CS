@@ -6,19 +6,19 @@ import java.util.Properties;
 import javax.xml.transform.TransformerException;
 import org.apache.xml.utils.WrappedRuntimeException;
 import org.apache.xpath.XPathContext;
+import org.apache.xpath.objects.XNumber;
 import org.apache.xpath.objects.XObject;
 import org.apache.xpath.objects.XString;
 
 public class FuncSystemProperty extends FunctionOneArg {
-   static final long serialVersionUID = 3694874980992204867L;
-   static final String XSLT_PROPERTIES = "org/apache/xalan/res/XSLTInfo.properties";
+   static String XSLT_PROPERTIES = "org/apache/xalan/res/XSLTInfo.properties";
 
    public XObject execute(XPathContext xctxt) throws TransformerException {
       String fullName = super.m_arg0.execute(xctxt).str();
       int indexOfNSSep = fullName.indexOf(58);
       String propName = "";
       Properties xsltInfo = new Properties();
-      this.loadPropertyFile("org/apache/xalan/res/XSLTInfo.properties", xsltInfo);
+      this.loadPropertyFile(XSLT_PROPERTIES, xsltInfo);
       String result;
       if (indexOfNSSep > 0) {
          String prefix = indexOfNSSep >= 0 ? fullName.substring(0, indexOfNSSep) : "";
@@ -57,7 +57,7 @@ public class FuncSystemProperty extends FunctionOneArg {
 
       if (propName.equals("version") && result.length() > 0) {
          try {
-            return new XString("1.0");
+            return new XNumber(1.0D);
          } catch (Exception var10) {
             return new XString(result);
          }

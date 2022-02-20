@@ -19,7 +19,8 @@ public class MimikatzJob extends Job {
    }
 
    public String getShortDescription() {
-      return "mimikatz " + this.commandz.split(" ")[0];
+      String[] var10000 = this.commandz.split(" ");
+      return "mimikatz " + var10000[0];
    }
 
    public String getDLLName() {

@@ -121,6 +121,7 @@ public class PixelFormat {
    }
 
    public String toString() {
-      return "PixelFormat: [bits-per-pixel: " + String.valueOf(255 & this.bitsPerPixel) + ", depth: " + (255 & this.depth) + ", big-endian-flag: " + (255 & this.bigEndianFlag) + ", true-color-flag: " + (255 & this.trueColourFlag) + ", red-max: " + ('\uffff' & this.redMax) + ", green-max: " + ('\uffff' & this.greenMax) + ", blue-max: " + ('\uffff' & this.blueMax) + ", red-shift: " + (255 & this.redShift) + ", green-shift: " + (255 & this.greenShift) + ", blue-shift: " + (255 & this.blueShift) + "]";
+      String var10000 = String.valueOf(255 & this.bitsPerPixel);
+      return "PixelFormat: [bits-per-pixel: " + var10000 + ", depth: " + (255 & this.depth) + ", big-endian-flag: " + (255 & this.bigEndianFlag) + ", true-color-flag: " + (255 & this.trueColourFlag) + ", red-max: " + ('\uffff' & this.redMax) + ", green-max: " + ('\uffff' & this.greenMax) + ", blue-max: " + ('\uffff' & this.blueMax) + ", red-shift: " + (255 & this.redShift) + ", green-shift: " + (255 & this.greenShift) + ", blue-shift: " + (255 & this.blueShift) + "]";
    }
 }

@@ -90,15 +90,13 @@ public class ScreenshotBrowser extends AObject implements AdjustData, DataSelect
    }
 
    public void result(String var1, Object var2) {
-      if (!this.editor.processTranscriptResult(var1, var2)) {
-         if (this.browser != null) {
-            Map var3 = this.format(var1, var2);
-            if (var3 != null) {
-               this.browser.addEntry(var3);
-            }
-
+      if (!this.editor.processTranscriptResult(var1, var2) && this.browser != null) {
+         Map var3 = this.format(var1, var2);
+         if (var3 != null) {
+            this.browser.addEntry(var3);
          }
       }
+
    }
 
    public void showPopup(MouseEvent var1) {

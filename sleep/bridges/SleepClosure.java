@@ -44,7 +44,8 @@ public class SleepClosure implements Function, Runnable {
          var1.push(var2);
          this.context.push(var1);
       } else if (var2.size() != 1) {
-         throw new RuntimeException(var2.size() - 1 + " unaccounted local stack frame(s) in " + this.toString() + " (perhaps you forgot to &popl?)");
+         int var10002 = var2.size() - 1;
+         throw new RuntimeException(var10002 + " unaccounted local stack frame(s) in " + this.toString() + " (perhaps you forgot to &popl?)");
       }
 
    }
@@ -58,7 +59,8 @@ public class SleepClosure implements Function, Runnable {
    }
 
    public String toString() {
-      return this.toStringGeneric() + "#" + this.id;
+      String var10000 = this.toStringGeneric();
+      return var10000 + "#" + this.id;
    }
 
    private SleepClosure() {
@@ -201,7 +203,6 @@ public class SleepClosure implements Function, Runnable {
       public void remove() {
       }
 
-      // $FF: synthetic method
       ClosureIterator(Object var2) {
          this();
       }

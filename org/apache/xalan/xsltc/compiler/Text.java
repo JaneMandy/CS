@@ -65,35 +65,11 @@ final class Text extends Instruction {
       } else if (this.getParent() instanceof LiteralElement) {
          LiteralElement element = (LiteralElement)this.getParent();
          String space = element.getAttribute("xml:space");
-         if (space == null || !space.equals("preserve")) {
-            int textLength = this._text.length();
-
-            int i;
-            for(i = 0; i < textLength; ++i) {
-               char c = this._text.charAt(i);
-               if (!isWhitespace(c)) {
-                  break;
-               }
-            }
-
-            if (i == textLength) {
-               this._ignore = true;
-            }
-         }
-      } else {
-         int textLength = this._text.length();
-
-         int i;
-         for(i = 0; i < textLength; ++i) {
-            char c = this._text.charAt(i);
-            if (!isWhitespace(c)) {
-               break;
-            }
-         }
-
-         if (i == textLength) {
+         if ((space == null || !space.equals("preserve")) && this._text.trim().length() == 0) {
             this._ignore = true;
          }
+      } else if (this._text.trim().length() == 0) {
+         this._ignore = true;
       }
 
    }
@@ -112,10 +88,6 @@ final class Text extends Instruction {
 
    protected boolean contextDependent() {
       return false;
-   }
-
-   private static boolean isWhitespace(char c) {
-      return c == ' ' || c == '\t' || c == '\n' || c == '\r';
    }
 
    public void translate(ClassGenerator classGen, MethodGenerator methodGen) {

@@ -6,8 +6,6 @@ import org.apache.xpath.objects.XBoolean;
 import org.apache.xpath.objects.XObject;
 
 public class Or extends Operation {
-   static final long serialVersionUID = -644107191353853079L;
-
    public XObject execute(XPathContext xctxt) throws TransformerException {
       XObject expr1 = super.m_left.execute(xctxt);
       if (!expr1.bool()) {

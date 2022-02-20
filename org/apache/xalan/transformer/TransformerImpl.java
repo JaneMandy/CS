@@ -27,6 +27,7 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.apache.xalan.extensions.ExtensionsTable;
+import org.apache.xalan.processor.TransformerFactoryImpl;
 import org.apache.xalan.res.XSLMessages;
 import org.apache.xalan.templates.AVT;
 import org.apache.xalan.templates.ElemAttributeSet;
@@ -48,6 +49,7 @@ import org.apache.xml.dtm.DTM;
 import org.apache.xml.dtm.DTMIterator;
 import org.apache.xml.dtm.DTMManager;
 import org.apache.xml.dtm.DTMWSFilter;
+import org.apache.xml.serializer.ExtendedContentHandler;
 import org.apache.xml.serializer.SerializationHandler;
 import org.apache.xml.serializer.Serializer;
 import org.apache.xml.serializer.SerializerFactory;
@@ -57,6 +59,7 @@ import org.apache.xml.serializer.ToSAXHandler;
 import org.apache.xml.serializer.ToTextSAXHandler;
 import org.apache.xml.serializer.ToTextStream;
 import org.apache.xml.serializer.ToXMLSAXHandler;
+import org.apache.xml.serializer.XSLOutputAttributes;
 import org.apache.xml.utils.BoolStack;
 import org.apache.xml.utils.DOMBuilder;
 import org.apache.xml.utils.DOMHelper;
@@ -116,10 +119,7 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
    BoolStack m_currentTemplateRuleIsNull;
    ObjectStack m_currentFuncResult;
    private MsgMgr m_msgMgr;
-   private boolean m_optimizer;
-   private boolean m_incremental;
-   private boolean m_source_location;
-   private boolean m_debug;
+   public static boolean S_DEBUG = false;
    private ErrorListener m_errorHandler;
    private TraceManager m_traceManager;
    private Exception m_exceptionThrown;
@@ -155,11 +155,7 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
       this.m_countersTable = null;
       this.m_currentTemplateRuleIsNull = new BoolStack();
       this.m_currentFuncResult = new ObjectStack();
-      this.m_optimizer = true;
-      this.m_incremental = false;
-      this.m_source_location = false;
-      this.m_debug = false;
-      this.m_errorHandler = new DefaultErrorHandler(false);
+      this.m_errorHandler = new DefaultErrorHandler();
       this.m_traceManager = new TraceManager(this);
       this.m_exceptionThrown = null;
       this.m_isTransformDone = false;
@@ -168,20 +164,8 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
       this.m_modes = new Stack();
       this.m_extensionsTable = null;
       this.m_hasTransformThreadErrorCatcher = false;
-      this.m_optimizer = stylesheet.getOptimizer();
-      this.m_incremental = stylesheet.getIncremental();
-      this.m_source_location = stylesheet.getSource_location();
       this.setStylesheet(stylesheet);
-      XPathContext xPath = new XPathContext(this);
-      xPath.setIncremental(this.m_incremental);
-      xPath.getDTMManager().setIncremental(this.m_incremental);
-      xPath.setSource_location(this.m_source_location);
-      xPath.getDTMManager().setSource_location(this.m_source_location);
-      if (stylesheet.isSecureProcessing()) {
-         xPath.setSecureProcessing(true);
-      }
-
-      this.setXPathContext(xPath);
+      this.setXPathContext(new XPathContext(this));
       this.getXPathContext().setNamespaceContext(stylesheet);
       this.m_stackGuard = new StackGuard(this);
    }
@@ -459,120 +443,105 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
    public SerializationHandler createSerializationHandler(Result outputTarget, OutputProperties format) throws TransformerException {
       Node outputNode = null;
       Object xoh;
-      String publicID;
+      String fileURL;
       if (outputTarget instanceof DOMResult) {
          outputNode = ((DOMResult)outputTarget).getNode();
-         Node nextSibling = ((DOMResult)outputTarget).getNextSibling();
          Document doc;
          short type;
          if (null != outputNode) {
             type = ((Node)outputNode).getNodeType();
             doc = 9 == type ? (Document)outputNode : ((Node)outputNode).getOwnerDocument();
          } else {
-            boolean isSecureProcessing = this.m_stylesheetRoot.isSecureProcessing();
-            doc = DOMHelper.createDocument(isSecureProcessing);
+            doc = DOMHelper.createDocument();
             outputNode = doc;
             type = doc.getNodeType();
             ((DOMResult)outputTarget).setNode(doc);
          }
 
-         DOMBuilder handler = 11 == type ? new DOMBuilder(doc, (DocumentFragment)outputNode) : new DOMBuilder(doc, (Node)outputNode);
-         if (nextSibling != null) {
-            handler.setNextSibling(nextSibling);
+         ContentHandler handler = 11 == type ? new DOMBuilder(doc, (DocumentFragment)outputNode) : new DOMBuilder(doc, (Node)outputNode);
+         fileURL = format.getProperty("encoding");
+         xoh = new ToXMLSAXHandler(handler, (LexicalHandler)handler, fileURL);
+      } else if (outputTarget instanceof SAXResult) {
+         ContentHandler handler = ((SAXResult)outputTarget).getHandler();
+         if (null == handler) {
+            throw new IllegalArgumentException("handler can not be null for a SAXResult");
          }
 
-         publicID = format.getProperty("encoding");
-         xoh = new ToXMLSAXHandler(handler, handler, publicID);
-      } else {
-         String fileURL;
-         if (outputTarget instanceof SAXResult) {
-            ContentHandler handler = ((SAXResult)outputTarget).getHandler();
-            if (null == handler) {
-               throw new IllegalArgumentException("handler can not be null for a SAXResult");
-            }
-
-            LexicalHandler lexHandler;
-            if (handler instanceof LexicalHandler) {
-               lexHandler = (LexicalHandler)handler;
-            } else {
-               lexHandler = null;
-            }
-
-            String encoding = format.getProperty("encoding");
-            fileURL = format.getProperty("method");
-            if ("html".equals(fileURL)) {
-               xoh = new ToHTMLSAXHandler(handler, lexHandler, encoding);
-            } else if ("text".equals(fileURL)) {
-               xoh = new ToTextSAXHandler(handler, lexHandler, encoding);
-            } else {
-               ToXMLSAXHandler toXMLSAXHandler = new ToXMLSAXHandler(handler, lexHandler, encoding);
-               toXMLSAXHandler.setShouldOutputNSAttr(false);
-               xoh = toXMLSAXHandler;
-            }
-
-            publicID = format.getProperty("doctype-public");
-            String systemID = format.getProperty("doctype-system");
-            if (systemID != null) {
-               ((SerializationHandler)xoh).setDoctypeSystem(systemID);
-            }
-
-            if (publicID != null) {
-               ((SerializationHandler)xoh).setDoctypePublic(publicID);
-            }
-
-            if (handler instanceof TransformerClient) {
-               XalanTransformState state = new XalanTransformState();
-               ((TransformerClient)handler).setTransformState(state);
-               ((ToSAXHandler)xoh).setTransformState(state);
-            }
+         LexicalHandler lexHandler;
+         if (handler instanceof LexicalHandler) {
+            lexHandler = (LexicalHandler)handler;
          } else {
-            if (!(outputTarget instanceof StreamResult)) {
-               throw new TransformerException(XSLMessages.createMessage("ER_CANNOT_TRANSFORM_TO_RESULT_TYPE", new Object[]{outputTarget.getClass().getName()}));
-            }
+            lexHandler = null;
+         }
 
-            StreamResult sresult = (StreamResult)outputTarget;
-            String var21 = format.getProperty("method");
+         String encoding = format.getProperty("encoding");
+         fileURL = format.getProperty("method");
+         if ("html".equals(fileURL)) {
+            xoh = new ToHTMLSAXHandler(handler, lexHandler, encoding);
+         } else if ("text".equals(fileURL)) {
+            xoh = new ToTextSAXHandler(handler, lexHandler, encoding);
+         } else {
+            ToXMLSAXHandler toXMLSAXHandler = new ToXMLSAXHandler(handler, lexHandler, encoding);
+            toXMLSAXHandler.setShouldOutputNSAttr(false);
+            xoh = toXMLSAXHandler;
+         }
 
-            try {
-               SerializationHandler serializer = (SerializationHandler)SerializerFactory.getSerializer(format.getProperties());
-               if (null != sresult.getWriter()) {
-                  serializer.setWriter(sresult.getWriter());
-               } else if (null != sresult.getOutputStream()) {
-                  serializer.setOutputStream(sresult.getOutputStream());
-               } else {
-                  if (null == sresult.getSystemId()) {
-                     throw new TransformerException(XSLMessages.createMessage("ER_NO_OUTPUT_SPECIFIED", (Object[])null));
-                  }
+         String publicID = format.getProperty("doctype-public");
+         String systemID = format.getProperty("doctype-system");
+         if (systemID != null) {
+            ((XSLOutputAttributes)xoh).setDoctypeSystem(systemID);
+         }
 
-                  fileURL = sresult.getSystemId();
-                  if (fileURL.startsWith("file:///")) {
-                     if (fileURL.substring(8).indexOf(":") > 0) {
-                        fileURL = fileURL.substring(8);
-                     } else {
-                        fileURL = fileURL.substring(7);
-                     }
-                  } else if (fileURL.startsWith("file:/")) {
-                     if (fileURL.substring(6).indexOf(":") > 0) {
-                        fileURL = fileURL.substring(6);
-                     } else {
-                        fileURL = fileURL.substring(5);
-                     }
-                  }
+         if (publicID != null) {
+            ((XSLOutputAttributes)xoh).setDoctypePublic(publicID);
+         }
 
-                  this.m_outputStream = new FileOutputStream(fileURL);
-                  serializer.setOutputStream(this.m_outputStream);
+         if (handler instanceof TransformerClient) {
+            XalanTransformState state = new XalanTransformState();
+            ((TransformerClient)handler).setTransformState(state);
+            ((ToSAXHandler)xoh).setTransformState(state);
+         }
+      } else {
+         if (!(outputTarget instanceof StreamResult)) {
+            throw new TransformerException(XSLMessages.createMessage("ER_CANNOT_TRANSFORM_TO_RESULT_TYPE", new Object[]{outputTarget.getClass().getName()}));
+         }
+
+         StreamResult sresult = (StreamResult)outputTarget;
+         String var19 = format.getProperty("method");
+
+         try {
+            SerializationHandler serializer = (SerializationHandler)SerializerFactory.getSerializer(format.getProperties());
+            if (null != sresult.getWriter()) {
+               serializer.setWriter(sresult.getWriter());
+            } else if (null != sresult.getOutputStream()) {
+               serializer.setOutputStream(sresult.getOutputStream());
+            } else {
+               if (null == sresult.getSystemId()) {
+                  throw new TransformerException(XSLMessages.createMessage("ER_NO_OUTPUT_SPECIFIED", (Object[])null));
                }
 
-               xoh = serializer;
-            } catch (IOException var12) {
-               throw new TransformerException(var12);
+               fileURL = sresult.getSystemId();
+               if (fileURL.startsWith("file:///")) {
+                  if (fileURL.substring(8).indexOf(":") > 0) {
+                     fileURL = fileURL.substring(8);
+                  } else {
+                     fileURL = fileURL.substring(7);
+                  }
+               }
+
+               this.m_outputStream = new FileOutputStream(fileURL);
+               serializer.setOutputStream(this.m_outputStream);
             }
+
+            xoh = serializer;
+         } catch (IOException var12) {
+            throw new TransformerException(var12);
          }
       }
 
       ((SerializationHandler)xoh).setTransformer(this);
       SourceLocator srcLocator = this.getStylesheet();
-      ((SerializationHandler)xoh).setSourceLocator(srcLocator);
+      ((ExtendedContentHandler)xoh).setSourceLocator(srcLocator);
       return (SerializationHandler)xoh;
    }
 
@@ -942,7 +911,7 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
       ElemTemplateElement firstChild = elem.getFirstChildElem();
       if (null == firstChild) {
          return "";
-      } else if (elem.hasTextLitOnly() && this.m_optimizer) {
+      } else if (elem.hasTextLitOnly() && TransformerFactoryImpl.m_optimize) {
          return ((ElemTextLiteral)firstChild).getNodeValue();
       } else {
          SerializationHandler savedRTreeHandler = this.m_serializationHandler;
@@ -986,13 +955,13 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
       short nodeType = dtm.getNodeType(child);
       boolean isDefaultTextRule = false;
       boolean isApplyImports = false;
-      isApplyImports = xslInstruction == null ? false : xslInstruction.getXSLToken() == 72;
-      if (null == template || isApplyImports) {
+      if (null == template) {
          int endImportLevel = 0;
+         isApplyImports = xslInstruction == null ? false : xslInstruction.getXSLToken() == 72;
          int maxImportLevel;
          if (isApplyImports) {
-            maxImportLevel = template.getStylesheetComposed().getImportCountComposed() - 1;
-            endImportLevel = template.getStylesheetComposed().getEndImportCountComposed();
+            maxImportLevel = xslInstruction.getStylesheetComposed().getImportCountComposed() - 1;
+            endImportLevel = xslInstruction.getStylesheetComposed().getEndImportCountComposed();
          } else {
             maxImportLevel = -1;
          }
@@ -1059,14 +1028,14 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
                ClonerToResultTree.cloneToResultTree(child, nodeType, dtm, this.getResultTreeHandler(), false);
             }
          } else {
-            if (this.m_debug) {
+            if (S_DEBUG) {
                this.getTraceManager().fireTraceEvent((ElemTemplateElement)template);
             }
 
             this.m_xcontext.setSAXLocator(template);
             this.m_xcontext.getVarStack().link(template.m_frameSize);
             this.executeChildTemplates(template, true);
-            if (this.m_debug) {
+            if (S_DEBUG) {
                this.getTraceManager().fireTraceEndEvent((ElemTemplateElement)template);
             }
          }
@@ -1080,9 +1049,9 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
          this.m_xcontext.popCurrentNode();
          if (!isApplyImports) {
             this.m_xcontext.popContextNodeList();
+            this.popCurrentMatched();
          }
 
-         this.popCurrentMatched();
          this.popElemTemplateElement();
       }
 
@@ -1112,7 +1081,7 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
    public void executeChildTemplates(ElemTemplateElement elem, boolean shouldAddAttrs) throws TransformerException {
       ElemTemplateElement t = elem.getFirstChildElem();
       if (null != t) {
-         if (elem.hasTextLitOnly() && this.m_optimizer) {
+         if (elem.hasTextLitOnly() && TransformerFactoryImpl.m_optimize) {
             char[] chars = ((ElemTextLiteral)t).getChars();
 
             try {
@@ -1185,7 +1154,7 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
 
       for(int i = 0; i < nElems; ++i) {
          ElemSort sort = foreach.getSortElem(i);
-         if (this.m_debug) {
+         if (S_DEBUG) {
             this.getTraceManager().fireTraceEvent((ElemTemplateElement)sort);
          }
 
@@ -1218,7 +1187,7 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
          }
 
          keys.addElement(new NodeSortKey(this, sort.getSelect(), treatAsNumbers, descending, langString, caseOrderUpper, foreach));
-         if (this.m_debug) {
+         if (S_DEBUG) {
             this.getTraceManager().fireTraceEndEvent((ElemTemplateElement)sort);
          }
       }
@@ -1644,26 +1613,6 @@ public class TransformerImpl extends Transformer implements Runnable, DTMWSFilte
 
    public boolean hasTraceListeners() {
       return this.m_traceManager.hasTraceListeners();
-   }
-
-   public boolean getDebug() {
-      return this.m_debug;
-   }
-
-   public void setDebug(boolean b) {
-      this.m_debug = b;
-   }
-
-   public boolean getIncremental() {
-      return this.m_incremental;
-   }
-
-   public boolean getOptimize() {
-      return this.m_optimizer;
-   }
-
-   public boolean getSource_location() {
-      return this.m_source_location;
    }
 
    // $FF: synthetic method

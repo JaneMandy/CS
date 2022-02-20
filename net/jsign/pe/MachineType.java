@@ -31,11 +31,11 @@ public enum MachineType {
    }
 
    static MachineType valueOf(int value) {
-      MachineType[] arr$ = values();
-      int len$ = arr$.length;
+      MachineType[] var1 = values();
+      int var2 = var1.length;
 
-      for(int i$ = 0; i$ < len$; ++i$) {
-         MachineType format = arr$[i$];
+      for(int var3 = 0; var3 < var2; ++var3) {
+         MachineType format = var1[var3];
          if (format.value == value) {
             return format;
          }

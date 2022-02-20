@@ -31,8 +31,8 @@ public class IncrementalSAXSource_Xerces implements IncrementalSAXSource {
    Method fReset = null;
    SAXParser fIncrementalParser;
    private boolean fParseInProgress = false;
-   private static final Object[] noparms = new Object[0];
-   private static final Object[] parmsfalse;
+   static final Object[] noparms = new Object[0];
+   static final Object[] parmsfalse;
    // $FF: synthetic field
    static Class class$org$apache$xerces$parsers$SAXParser;
    // $FF: synthetic field

@@ -52,7 +52,7 @@ public class StringType extends Type {
          this.translateTo(classGen, methodGen, (RealType)type);
       } else if (type == Type.Reference) {
          this.translateTo(classGen, methodGen, (ReferenceType)type);
-      } else {
+      } else if (type != Type.ObjectString) {
          ErrorMsg err = new ErrorMsg("DATA_CONVERSION_ERR", this.toString(), type.toString());
          classGen.getParser().reportError(2, err);
       }

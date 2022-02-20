@@ -16,38 +16,42 @@ import org.apache.xpath.axes.RTFIterator;
 import org.w3c.dom.NodeList;
 
 public class XRTreeFrag extends XObject implements Cloneable {
-   static final long serialVersionUID = -3201553822254911567L;
-   private DTMXRTreeFrag m_DTMXRTreeFrag;
-   private int m_dtmRoot = -1;
-   protected boolean m_allowRelease = false;
+   DTM m_dtm;
+   int m_dtmRoot;
+   XPathContext m_xctxt;
+   boolean m_allowRelease = false;
    private XMLString m_xmlStr = null;
 
    public XRTreeFrag(int root, XPathContext xctxt, ExpressionNode parent) {
       super((Object)null);
       this.exprSetParent(parent);
-      this.initDTM(root, xctxt);
+      this.m_dtmRoot = root;
+      this.m_xctxt = xctxt;
+      this.m_dtm = xctxt.getDTM(root);
    }
 
    public XRTreeFrag(int root, XPathContext xctxt) {
       super((Object)null);
-      this.initDTM(root, xctxt);
-   }
-
-   private final void initDTM(int root, XPathContext xctxt) {
       this.m_dtmRoot = root;
-      DTM dtm = xctxt.getDTM(root);
-      if (dtm != null) {
-         this.m_DTMXRTreeFrag = xctxt.getDTMXRTreeFrag(xctxt.getDTMIdentity(dtm));
-      }
-
+      this.m_xctxt = xctxt;
+      this.m_dtm = xctxt.getDTM(root);
    }
 
    public Object object() {
-      return this.m_DTMXRTreeFrag.getXPathContext() != null ? new DTMNodeIterator(new NodeSetDTM(this.m_dtmRoot, this.m_DTMXRTreeFrag.getXPathContext().getDTMManager())) : super.object();
+      return this.m_xctxt != null ? new DTMNodeIterator(new NodeSetDTM(this.m_dtmRoot, this.m_xctxt.getDTMManager())) : super.object();
    }
 
    public XRTreeFrag(Expression expr) {
       super(expr);
+   }
+
+   protected void finalize() throws Throwable {
+      try {
+         this.destruct();
+      } finally {
+         super.finalize();
+      }
+
    }
 
    public void allowDetachToRelease(boolean allowRelease) {
@@ -56,10 +60,31 @@ public class XRTreeFrag extends XObject implements Cloneable {
 
    public void detach() {
       if (this.m_allowRelease) {
-         this.m_DTMXRTreeFrag.destruct();
+         int ident = this.m_xctxt.getDTMIdentity(this.m_dtm);
+         DTM foundDTM = this.m_xctxt.getDTM(ident);
+         if (foundDTM == this.m_dtm) {
+            this.m_xctxt.release(this.m_dtm, true);
+            this.m_dtm = null;
+            this.m_xctxt = null;
+         }
+
          super.m_obj = null;
       }
 
+   }
+
+   public void destruct() {
+      if (null != this.m_dtm) {
+         int ident = this.m_xctxt.getDTMIdentity(this.m_dtm);
+         DTM foundDTM = this.m_xctxt.getDTM(ident);
+         if (foundDTM == this.m_dtm) {
+            this.m_xctxt.release(this.m_dtm, true);
+            this.m_dtm = null;
+            this.m_xctxt = null;
+         }
+      }
+
+      super.m_obj = null;
    }
 
    public int getType() {
@@ -81,7 +106,7 @@ public class XRTreeFrag extends XObject implements Cloneable {
 
    public XMLString xstr() {
       if (null == this.m_xmlStr) {
-         this.m_xmlStr = this.m_DTMXRTreeFrag.getDTM().getStringValue(this.m_dtmRoot);
+         this.m_xmlStr = this.m_dtm.getStringValue(this.m_dtmRoot);
       }
 
       return this.m_xmlStr;
@@ -93,7 +118,7 @@ public class XRTreeFrag extends XObject implements Cloneable {
    }
 
    public String str() {
-      String str = this.m_DTMXRTreeFrag.getDTM().getStringValue(this.m_dtmRoot).toString();
+      String str = this.m_dtm.getStringValue(this.m_dtmRoot).toString();
       return null == str ? "" : str;
    }
 
@@ -102,7 +127,7 @@ public class XRTreeFrag extends XObject implements Cloneable {
    }
 
    public DTMIterator asNodeIterator() {
-      return new RTFIterator(this.m_dtmRoot, this.m_DTMXRTreeFrag.getXPathContext().getDTMManager());
+      return new RTFIterator(this.m_dtmRoot, this.m_xctxt.getDTMManager());
    }
 
    public NodeList convertToNodeset() {

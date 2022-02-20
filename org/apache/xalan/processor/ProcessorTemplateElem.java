@@ -6,8 +6,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 public class ProcessorTemplateElem extends XSLTElementProcessor {
-   static final long serialVersionUID = 8344994001943407235L;
-
    public void startElement(StylesheetHandler handler, String uri, String localName, String rawName, Attributes attributes) throws SAXException {
       super.startElement(handler, uri, localName, rawName, attributes);
 

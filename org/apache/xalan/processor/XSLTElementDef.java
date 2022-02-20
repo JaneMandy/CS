@@ -168,7 +168,7 @@ public class XSLTElementDef {
       return this.m_nameAlias;
    }
 
-   public XSLTElementDef[] getElements() {
+   XSLTElementDef[] getElements() {
       return this.m_elements;
    }
 
@@ -276,11 +276,11 @@ public class XSLTElementDef {
       }
    }
 
-   public XSLTElementProcessor getElementProcessor() {
+   XSLTElementProcessor getElementProcessor() {
       return this.m_elementProcessor;
    }
 
-   public void setElementProcessor(XSLTElementProcessor handler) {
+   void setElementProcessor(XSLTElementProcessor handler) {
       if (handler != null) {
          this.m_elementProcessor = handler;
          this.m_elementProcessor.setElemDef(this);

@@ -50,6 +50,7 @@ public class SiteChooser extends AObject implements AdjustData, ActionListener {
          this.dialog.dispose();
          this.callback.dialogResult(var6);
       }
+
    }
 
    public void show() {

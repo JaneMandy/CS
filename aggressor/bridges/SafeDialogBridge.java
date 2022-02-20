@@ -39,8 +39,9 @@ public class SafeDialogBridge implements Function, Loadable {
             if (var1 != null) {
                Stack var2 = new Stack();
                var2.push(SleepUtils.getScalar(var1));
-               SleepUtils.runCode((SleepClosure)var3, "dialogResult", (ScriptInstance)null, var2);
+               SleepUtils.runCode(var3, "dialogResult", (ScriptInstance)null, var2);
             }
+
          }
       };
    }

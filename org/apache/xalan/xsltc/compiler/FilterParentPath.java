@@ -1,15 +1,11 @@
 package org.apache.xalan.xsltc.compiler;
 
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.InstructionConstants;
-import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.LocalVariableGen;
 import org.apache.bcel.generic.NEW;
 import org.apache.xalan.xsltc.compiler.util.ClassGenerator;
 import org.apache.xalan.xsltc.compiler.util.MethodGenerator;
@@ -18,7 +14,6 @@ import org.apache.xalan.xsltc.compiler.util.NodeType;
 import org.apache.xalan.xsltc.compiler.util.ReferenceType;
 import org.apache.xalan.xsltc.compiler.util.Type;
 import org.apache.xalan.xsltc.compiler.util.TypeCheckError;
-import org.apache.xalan.xsltc.compiler.util.Util;
 
 final class FilterParentPath extends Expression {
    private Expression _filterExpr;
@@ -70,16 +65,10 @@ final class FilterParentPath extends Expression {
       ConstantPoolGen cpg = classGen.getConstantPool();
       InstructionList il = methodGen.getInstructionList();
       int initSI = cpg.addMethodref("org.apache.xalan.xsltc.dom.StepIterator", "<init>", "(Lorg/apache/xml/dtm/DTMAxisIterator;Lorg/apache/xml/dtm/DTMAxisIterator;)V");
-      this._filterExpr.translate(classGen, methodGen);
-      LocalVariableGen filterTemp = methodGen.addLocalVariable("filter_parent_path_tmp1", Util.getJCRefType("Lorg/apache/xml/dtm/DTMAxisIterator;"), il.getEnd(), (InstructionHandle)null);
-      il.append((org.apache.bcel.generic.Instruction)(new ASTORE(filterTemp.getIndex())));
-      this._path.translate(classGen, methodGen);
-      LocalVariableGen pathTemp = methodGen.addLocalVariable("filter_parent_path_tmp2", Util.getJCRefType("Lorg/apache/xml/dtm/DTMAxisIterator;"), il.getEnd(), (InstructionHandle)null);
-      il.append((org.apache.bcel.generic.Instruction)(new ASTORE(pathTemp.getIndex())));
       il.append((org.apache.bcel.generic.Instruction)(new NEW(cpg.addClass("org.apache.xalan.xsltc.dom.StepIterator"))));
       il.append((org.apache.bcel.generic.Instruction)InstructionConstants.DUP);
-      il.append((org.apache.bcel.generic.Instruction)(new ALOAD(filterTemp.getIndex())));
-      il.append((org.apache.bcel.generic.Instruction)(new ALOAD(pathTemp.getIndex())));
+      this._filterExpr.translate(classGen, methodGen);
+      this._path.translate(classGen, methodGen);
       il.append((org.apache.bcel.generic.Instruction)(new INVOKESPECIAL(initSI)));
       int order;
       if (this._hasDescendantAxis) {

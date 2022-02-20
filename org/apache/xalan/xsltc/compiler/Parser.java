@@ -92,7 +92,7 @@ public class Parser implements Constants, ContentHandler {
       if (this._output != null) {
          if (this._output.getImportPrecedence() <= output.getImportPrecedence()) {
             String cdata = this._output.getCdata();
-            output.mergeOutput(this._output);
+            output.mergeCdata(cdata);
             this._output.disable();
             this._output = output;
          } else {
@@ -238,7 +238,7 @@ public class Parser implements Constants, ContentHandler {
          if (!prefix.equals("xmlns")) {
             namespace = this._symbolTable.lookupNamespace(prefix);
             if (namespace == null && reportError) {
-               int line = this.getLineNumber();
+               int line = this._locator.getLineNumber();
                ErrorMsg err = new ErrorMsg("NAMESPACE_UNDEF_ERR", line, prefix);
                this.reportError(3, err);
             }
@@ -314,7 +314,7 @@ public class Parser implements Constants, ContentHandler {
             stylesheet = new Stylesheet();
             stylesheet.setSimplified();
             stylesheet.addElement(element);
-            stylesheet.setAttributes((AttributeList)element.getAttributes());
+            stylesheet.setAttributes(element.getAttributes());
             if (element.lookupNamespace("") == null) {
                element.addPrefixMapping("", "");
             }
@@ -338,7 +338,7 @@ public class Parser implements Constants, ContentHandler {
             while(elements.hasMoreElements()) {
                Object child = elements.nextElement();
                if (child instanceof Text) {
-                  int l = this.getLineNumber();
+                  int l = this._locator.getLineNumber();
                   ErrorMsg err = new ErrorMsg("ILLEGAL_TEXT_NODE_ERR", l, (Object)null);
                   this.reportError(3, err);
                }
@@ -395,12 +395,6 @@ public class Parser implements Constants, ContentHandler {
    public SyntaxTreeNode parse(InputSource input) {
       try {
          SAXParserFactory factory = SAXParserFactory.newInstance();
-         if (this._xsltc.isSecureProcessing()) {
-            try {
-               factory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
-            } catch (SAXException var6) {
-            }
-         }
 
          try {
             factory.setFeature("http://xml.org/sax/features/namespaces", true);
@@ -411,13 +405,13 @@ public class Parser implements Constants, ContentHandler {
          SAXParser parser = factory.newSAXParser();
          XMLReader reader = parser.getXMLReader();
          return this.parse(reader, input);
-      } catch (ParserConfigurationException var7) {
+      } catch (ParserConfigurationException var6) {
          ErrorMsg err = new ErrorMsg("SAX_PARSER_CONFIG_ERR");
          this.reportError(3, err);
-      } catch (SAXParseException var8) {
-         this.reportError(3, new ErrorMsg(var8.getMessage(), var8.getLineNumber()));
-      } catch (SAXException var9) {
-         this.reportError(3, new ErrorMsg(var9.getMessage()));
+      } catch (SAXParseException var7) {
+         this.reportError(3, new ErrorMsg(var7.getMessage(), var7.getLineNumber()));
+      } catch (SAXException var8) {
+         this.reportError(3, new ErrorMsg(var8.getMessage()));
       }
 
       return null;
@@ -747,7 +741,7 @@ public class Parser implements Constants, ContentHandler {
             ((SyntaxTreeNode)node).setQName(qname);
             ((SyntaxTreeNode)node).setParser(this);
             if (this._locator != null) {
-               ((SyntaxTreeNode)node).setLineNumber(this.getLineNumber());
+               ((SyntaxTreeNode)node).setLineNumber(this._locator.getLineNumber());
             }
 
             if (node instanceof Stylesheet) {
@@ -768,7 +762,7 @@ public class Parser implements Constants, ContentHandler {
             if (uri.equals("http://www.w3.org/1999/XSL/Transform")) {
                node = new UnsupportedElement(uri, prefix, local, false);
                element = (UnsupportedElement)node;
-               msg = new ErrorMsg("UNSUPPORTED_XSL_ERR", this.getLineNumber(), local);
+               msg = new ErrorMsg("UNSUPPORTED_XSL_ERR", this._locator.getLineNumber(), local);
                element.setErrorMessage(msg);
                if (this.versionIsOne) {
                   this.reportError(1, msg);
@@ -776,14 +770,14 @@ public class Parser implements Constants, ContentHandler {
             } else if (uri.equals("http://xml.apache.org/xalan/xsltc")) {
                node = new UnsupportedElement(uri, prefix, local, true);
                element = (UnsupportedElement)node;
-               msg = new ErrorMsg("UNSUPPORTED_EXT_ERR", this.getLineNumber(), local);
+               msg = new ErrorMsg("UNSUPPORTED_EXT_ERR", this._locator.getLineNumber(), local);
                element.setErrorMessage(msg);
             } else {
                Stylesheet sheet = this._xsltc.getStylesheet();
                if (sheet != null && sheet.isExtension(uri) && sheet != (SyntaxTreeNode)this._parentStack.peek()) {
                   node = new UnsupportedElement(uri, prefix, local, true);
                   UnsupportedElement elem = (UnsupportedElement)node;
-                  msg = new ErrorMsg("UNSUPPORTED_EXT_ERR", this.getLineNumber(), prefix + ":" + local);
+                  msg = new ErrorMsg("UNSUPPORTED_EXT_ERR", this._locator.getLineNumber(), prefix + ":" + local);
                   elem.setErrorMessage(msg);
                }
             }
@@ -791,7 +785,6 @@ public class Parser implements Constants, ContentHandler {
 
          if (node == null) {
             node = new LiteralElement();
-            ((SyntaxTreeNode)node).setLineNumber(this.getLineNumber());
          }
       }
 
@@ -822,7 +815,6 @@ public class Parser implements Constants, ContentHandler {
 
                if (j == legal.length) {
                   ErrorMsg err = new ErrorMsg("ILLEGAL_ATTRIBUTE_ERR", attrQName, node);
-                  err.setWarningError(true);
                   this.reportError(4, err);
                }
             }
@@ -858,7 +850,10 @@ public class Parser implements Constants, ContentHandler {
    }
 
    private SyntaxTreeNode parseTopLevel(SyntaxTreeNode parent, String text, String expression) {
-      int line = this.getLineNumber();
+      int line = 0;
+      if (this._locator != null) {
+         line = this._locator.getLineNumber();
+      }
 
       try {
          this._xpathParser.setScanner(new XPathLexer(new StringReader(text)));
@@ -1064,14 +1059,5 @@ public class Parser implements Constants, ContentHandler {
 
    public void setDocumentLocator(Locator locator) {
       this._locator = locator;
-   }
-
-   private int getLineNumber() {
-      int line = 0;
-      if (this._locator != null) {
-         line = this._locator.getLineNumber();
-      }
-
-      return line;
    }
 }

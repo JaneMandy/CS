@@ -15,7 +15,7 @@ import org.apache.xalan.xsltc.compiler.util.MethodGenerator;
 import org.apache.xalan.xsltc.compiler.util.NodeSetType;
 import org.apache.xalan.xsltc.compiler.util.Type;
 import org.apache.xalan.xsltc.compiler.util.Util;
-import org.apache.xml.utils.XML11Char;
+import org.apache.xml.utils.XMLChar;
 
 class VariableBase extends TopLevelElement {
    protected QName _name;
@@ -140,7 +140,7 @@ class VariableBase extends TopLevelElement {
    public void parseContents(Parser parser) {
       String name = this.getAttribute("name");
       if (name.length() > 0) {
-         if (!XML11Char.isXML11ValidQName(name)) {
+         if (!XMLChar.isValidQName(name)) {
             ErrorMsg err = new ErrorMsg("INVALID_QNAME_ERR", name, this);
             parser.reportError(3, err);
          }

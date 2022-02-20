@@ -4,7 +4,6 @@ import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.TransformerHandler;
 import org.apache.xalan.xsltc.StripFilter;
 import org.apache.xalan.xsltc.compiler.util.ErrorMsg;
@@ -141,10 +140,6 @@ public class TransformerHandlerImpl implements TransformerHandler, DeclHandler {
 
          this._done = true;
          this._transformer.setDOM(this._dom);
-      }
-
-      if (this._isIdentity && this._result instanceof DOMResult) {
-         ((DOMResult)this._result).setNode(this._transformer.getTransletOutputHandlerFactory().getNode());
       }
 
    }

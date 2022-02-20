@@ -18,6 +18,7 @@ public class KeyBlock {
    }
 
    public String toString() {
-      return "KeyBlock: " + this.keytype + "/" + this.etype + " " + CommonUtils.toHexString(this.keyvalue);
+      int var10000 = this.keytype;
+      return "KeyBlock: " + var10000 + "/" + this.etype + " " + CommonUtils.toHexString(this.keyvalue);
    }
 }

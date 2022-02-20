@@ -78,8 +78,8 @@ public class Surface extends JPanel implements IRepaintController, IChangeSettin
             this.removeMouseWheelListener(this.mouseEventListener);
             this.removeKeyListener(this.keyEventListener);
          }
-
       }
+
    }
 
    public Renderer createRenderer(Reader reader, int width, int height, PixelFormat pixelFormat) {
@@ -122,9 +122,9 @@ public class Surface extends JPanel implements IRepaintController, IChangeSettin
             if (this.showCursor && cursorImage != null && (this.scaleFactor != 1.0D || g.getClipBounds().intersects((double)this.cursor.rX, (double)this.cursor.rY, (double)this.cursor.width, (double)this.cursor.height))) {
                g.drawImage(cursorImage, this.cursor.rX, this.cursor.rY, (ImageObserver)null);
             }
-
          }
       }
+
    }
 
    public Dimension getPreferredSize() {

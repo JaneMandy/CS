@@ -7,14 +7,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.UserDataHandler;
 import org.w3c.dom.xpath.XPathNamespace;
 
-class XPathNamespaceImpl implements XPathNamespace {
-   private final Node m_attributeNode;
-   private String textContent;
+public class XPathNamespaceImpl implements XPathNamespace {
+   Node m_attributeNode = null;
 
-   XPathNamespaceImpl(Node node) {
+   public XPathNamespaceImpl(Node node) {
       this.m_attributeNode = node;
    }
 
@@ -118,53 +116,5 @@ class XPathNamespaceImpl implements XPathNamespace {
 
    public boolean hasAttributes() {
       return this.m_attributeNode.hasAttributes();
-   }
-
-   public String getBaseURI() {
-      return null;
-   }
-
-   public short compareDocumentPosition(Node other) throws DOMException {
-      return 0;
-   }
-
-   public String getTextContent() throws DOMException {
-      return this.textContent;
-   }
-
-   public void setTextContent(String textContent) throws DOMException {
-      this.textContent = textContent;
-   }
-
-   public boolean isSameNode(Node other) {
-      return false;
-   }
-
-   public String lookupPrefix(String namespaceURI) {
-      return "";
-   }
-
-   public boolean isDefaultNamespace(String namespaceURI) {
-      return false;
-   }
-
-   public String lookupNamespaceURI(String prefix) {
-      return null;
-   }
-
-   public boolean isEqualNode(Node arg) {
-      return false;
-   }
-
-   public Object getFeature(String feature, String version) {
-      return null;
-   }
-
-   public Object setUserData(String key, Object data, UserDataHandler handler) {
-      return null;
-   }
-
-   public Object getUserData(String key) {
-      return null;
    }
 }

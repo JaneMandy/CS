@@ -55,6 +55,7 @@ public class Request implements Serializable {
    }
 
    public String toString() {
-      return "Request '" + this.getCall() + "' with " + this.size() + " args";
+      String var10000 = this.getCall();
+      return "Request '" + var10000 + "' with " + this.size() + " args";
    }
 }

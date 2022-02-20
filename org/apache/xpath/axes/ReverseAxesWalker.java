@@ -4,7 +4,6 @@ import org.apache.xml.dtm.DTMAxisIterator;
 import org.apache.xpath.XPathContext;
 
 public class ReverseAxesWalker extends AxesWalker {
-   static final long serialVersionUID = 2847007647832768941L;
    protected DTMAxisIterator m_iterator;
 
    ReverseAxesWalker(LocPathIterator locPathIterator, int axis) {

@@ -41,7 +41,7 @@ public class CommandManager {
             }
 
             Entry var4 = (Entry)var2.next();
-            var5 = var4.getKey() + "";
+            var5 = ((Class)var4.getKey()).makeConcatWithConstants<invokedynamic>(var4.getKey());
             var6 = (SleepClosure)var4.getValue();
          } while(var1 != null && !var5.startsWith(var1));
 
@@ -101,7 +101,7 @@ public class CommandManager {
       if (var4 == null) {
          return false;
       } else {
-         SleepUtils.runCode((SleepClosure)var4, var2, (ScriptInstance)null, EventManager.shallowCopy(var3));
+         SleepUtils.runCode(var4, var2, (ScriptInstance)null, EventManager.shallowCopy(var3));
          return true;
       }
    }

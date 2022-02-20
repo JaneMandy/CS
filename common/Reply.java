@@ -30,6 +30,7 @@ public class Reply implements Serializable {
    }
 
    public String toString() {
-      return "Reply '" + this.getCall() + "': " + this.getContent();
+      String var10000 = this.getCall();
+      return "Reply '" + var10000 + "': " + this.getContent();
    }
 }

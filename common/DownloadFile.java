@@ -48,7 +48,9 @@ public class DownloadFile extends AObject implements Callback {
          this.time = (double)(System.currentTimeMillis() - this.start) / 1000.0D;
          this.sofar += (long)var3.getData().length;
          this.progress.setProgress((int)this.sofar);
-         this.progress.setNote("Speed: " + Math.round((double)(this.sofar / 1024L) / this.time) + " KB/s");
+         ProgressMonitor var10000 = this.progress;
+         long var10001 = Math.round((double)(this.sofar / 1024L) / this.time);
+         var10000.setNote("Speed: " + var10001 + " KB/s");
          if (this.progress.isCanceled()) {
             this.progress.close();
             this.out.close();

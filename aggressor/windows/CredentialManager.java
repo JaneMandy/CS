@@ -108,8 +108,8 @@ public class CredentialManager extends AObject implements ActionListener {
                      var7.append("\\");
                   }
 
-                  String var5 = var10.get("user") + "";
-                  String var6 = var10.get("password") + "";
+                  String var5 = ((Class)var10.get("user")).makeConcatWithConstants<invokedynamic>(var10.get("user"));
+                  String var6 = ((Class)var10.get("password")).makeConcatWithConstants<invokedynamic>(var10.get("password"));
                   if (var6.length() == 32) {
                      var7.append(var5);
                      var7.append(":::");

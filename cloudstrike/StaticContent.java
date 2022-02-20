@@ -20,7 +20,7 @@ public class StaticContent implements WebService {
    }
 
    public Response serve(String uri, String method, Properties header, Properties param) {
-      return new Response("200 OK", this.type, this.content.replace("%TOKEN%", param.get("id") + ""));
+      return new Response("200 OK", this.type, this.content.replace("%TOKEN%", ((Class)param.get("id")).makeConcatWithConstants<invokedynamic>(param.get("id"))));
    }
 
    public String toString() {

@@ -3,7 +3,6 @@ package org.apache.xml.utils;
 import java.io.Serializable;
 
 public class StringVector implements Serializable {
-   static final long serialVersionUID = 4995234972032919748L;
    protected int m_blocksize;
    protected String[] m_map;
    protected int m_firstFree = 0;

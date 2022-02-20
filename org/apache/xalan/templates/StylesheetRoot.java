@@ -22,13 +22,8 @@ import org.apache.xpath.XPath;
 import org.apache.xpath.XPathContext;
 
 public class StylesheetRoot extends StylesheetComposed implements Serializable, Templates {
-   static final long serialVersionUID = 3875353123529147855L;
-   private boolean m_optimizer;
-   private boolean m_incremental;
-   private boolean m_source_location;
-   private boolean m_isSecureProcessing;
    private Hashtable m_availElems;
-   private transient ExtensionNamespacesManager m_extNsMgr;
+   private ExtensionNamespacesManager m_extNsMgr;
    private StylesheetComposed[] m_globalImportList;
    private OutputProperties m_outputProperties;
    private boolean m_outputMethodSet;
@@ -44,18 +39,12 @@ public class StylesheetRoot extends StylesheetComposed implements Serializable, 
    private ElemTemplate m_defaultRootRule;
    private ElemTemplate m_startRule;
    XPath m_selectDefault;
-   private transient StylesheetRoot.ComposeState m_composeState;
-   private String m_extensionHandlerClass;
+   private StylesheetRoot.ComposeState m_composeState;
 
    public StylesheetRoot(ErrorListener errorListener) throws TransformerConfigurationException {
       super((Stylesheet)null);
-      this.m_optimizer = true;
-      this.m_incremental = false;
-      this.m_source_location = false;
-      this.m_isSecureProcessing = false;
       this.m_extNsMgr = null;
       this.m_outputMethodSet = false;
-      this.m_extensionHandlerClass = "org.apache.xalan.extensions.ExtensionHandlerExsltFunction";
       this.setStylesheetRoot(this);
 
       try {
@@ -73,14 +62,6 @@ public class StylesheetRoot extends StylesheetComposed implements Serializable, 
 
    public boolean isRoot() {
       return true;
-   }
-
-   public void setSecureProcessing(boolean flag) {
-      this.m_isSecureProcessing = flag;
-   }
-
-   public boolean isSecureProcessing() {
-      return this.m_isSecureProcessing;
    }
 
    public Hashtable getAvailableElements() {
@@ -474,40 +455,6 @@ public class StylesheetRoot extends StylesheetComposed implements Serializable, 
 
    private void clearComposeState() {
       this.m_composeState = null;
-   }
-
-   public String setExtensionHandlerClass(String handlerClassName) {
-      String oldvalue = this.m_extensionHandlerClass;
-      this.m_extensionHandlerClass = handlerClassName;
-      return oldvalue;
-   }
-
-   public String getExtensionHandlerClass() {
-      return this.m_extensionHandlerClass;
-   }
-
-   public boolean getOptimizer() {
-      return this.m_optimizer;
-   }
-
-   public void setOptimizer(boolean b) {
-      this.m_optimizer = b;
-   }
-
-   public boolean getIncremental() {
-      return this.m_incremental;
-   }
-
-   public boolean getSource_location() {
-      return this.m_source_location;
-   }
-
-   public void setIncremental(boolean b) {
-      this.m_incremental = b;
-   }
-
-   public void setSource_location(boolean b) {
-      this.m_source_location = b;
    }
 
    class ComposeState {

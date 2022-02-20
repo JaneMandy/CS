@@ -10,7 +10,6 @@ import org.apache.xpath.XPathContext;
 import org.apache.xpath.objects.XObject;
 
 public class ElemCallTemplate extends ElemForEach {
-   static final long serialVersionUID = 5009634612916030591L;
    public QName m_templateName = null;
    private ElemTemplate m_template = null;
    protected ElemWithParam[] m_paramElems = null;
@@ -79,7 +78,7 @@ public class ElemCallTemplate extends ElemForEach {
    }
 
    public void execute(TransformerImpl transformer) throws TransformerException {
-      if (transformer.getDebug()) {
+      if (TransformerImpl.S_DEBUG) {
          transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
       }
 
@@ -98,12 +97,12 @@ public class ElemCallTemplate extends ElemForEach {
                for(int i = 0; i < size; ++i) {
                   ElemWithParam ewp = this.m_paramElems[i];
                   if (ewp.m_index >= 0) {
-                     if (transformer.getDebug()) {
+                     if (TransformerImpl.S_DEBUG) {
                         transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)ewp);
                      }
 
                      XObject obj = ewp.getValue(transformer, currentNode);
-                     if (transformer.getDebug()) {
+                     if (TransformerImpl.S_DEBUG) {
                         transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)ewp);
                      }
 
@@ -130,7 +129,7 @@ public class ElemCallTemplate extends ElemForEach {
          transformer.getMsgMgr().error(this, "ER_TEMPLATE_NOT_FOUND", (Object[])(new Object[]{this.m_templateName}));
       }
 
-      if (transformer.getDebug()) {
+      if (TransformerImpl.S_DEBUG) {
          transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);
       }
 

@@ -2,31 +2,25 @@ package org.apache.xml.serializer;
 
 import java.util.Hashtable;
 import java.util.Properties;
-import org.apache.xml.serializer.utils.Utils;
-import org.apache.xml.serializer.utils.WrappedRuntimeException;
+import org.apache.xml.res.XMLMessages;
+import org.apache.xml.utils.WrappedRuntimeException;
 import org.xml.sax.ContentHandler;
 
-public final class SerializerFactory {
+public abstract class SerializerFactory {
    private static Hashtable m_formats = new Hashtable();
-
-   private SerializerFactory() {
-   }
 
    public static Serializer getSerializer(Properties format) {
       try {
          String method = format.getProperty("method");
-         String className;
          if (method == null) {
-            className = Utils.messages.createMessage("ER_FACTORY_PROPERTY_MISSING", new Object[]{"method"});
-            throw new IllegalArgumentException(className);
+            throw new IllegalArgumentException("The output format has a null method name");
          } else {
-            className = format.getProperty("{http://xml.apache.org/xalan}content-handler");
+            String className = format.getProperty("{http://xml.apache.org/xalan}content-handler");
             if (null == className) {
                Properties methodDefaults = OutputPropertiesFactory.getDefaultMethodProperties(method);
                className = methodDefaults.getProperty("{http://xml.apache.org/xalan}content-handler");
                if (null == className) {
-                  String msg = Utils.messages.createMessage("ER_FACTORY_PROPERTY_MISSING", new Object[]{"{http://xml.apache.org/xalan}content-handler"});
-                  throw new IllegalArgumentException(msg);
+                  throw new IllegalArgumentException("The output format must have a '{http://xml.apache.org/xalan}content-handler' property!");
                }
             }
 
@@ -39,7 +33,7 @@ public final class SerializerFactory {
                ((Serializer)ser).setOutputFormat(format);
             } else {
                if (!(obj instanceof ContentHandler)) {
-                  throw new Exception(Utils.messages.createMessage("ER_SERIALIZER_NOT_CONTENTHANDLER", new Object[]{className}));
+                  throw new Exception(XMLMessages.createXMLMessage("ER_SERIALIZER_NOT_CONTENTHANDLER", new Object[]{className}));
                }
 
                className = "org.apache.xml.serializer.ToXMLSAXHandler";

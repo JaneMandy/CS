@@ -12,6 +12,7 @@ public class Statement extends TokenList {
    }
 
    public String toString() {
-      return "[" + this.type + "] " + super.toString();
+      int var10000 = this.type;
+      return "[" + var10000 + "] " + super.toString();
    }
 }

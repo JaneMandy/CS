@@ -23,7 +23,8 @@ public class PEEditor {
       this.getInfo();
       short var1 = -8483;
       if ((this.origch & var1) != 0) {
-         CommonUtils.print_error("Beacon DLL has a Characteristic that's unexpected\n\tFlags: " + Integer.toBinaryString(var1) + "\n\tOrigc: " + Integer.toBinaryString(this.origch));
+         String var10000 = Integer.toBinaryString(var1);
+         CommonUtils.print_error("Beacon DLL has a Characteristic that's unexpected\n\tFlags: " + var10000 + "\n\tOrigc: " + Integer.toBinaryString(this.origch));
       }
 
    }
@@ -101,6 +102,7 @@ public class PEEditor {
          this.info = PEParser.load(this.data);
          this.A("Inserted Rich Header:");
       }
+
    }
 
    public void removeRichHeader() {
@@ -116,12 +118,13 @@ public class PEEditor {
          this.info = PEParser.load(this.data);
          this.A("Removed Rich Header:");
       }
+
    }
 
    public void setExportName(String var1) {
       this.A("Setting Export Name: Value=" + var1);
       if (!var1.equals(this.getInfo().getString("Export.Name"))) {
-         int var2 = CommonUtils.bString(this.data).indexOf(var1 + '\u0000');
+         int var2 = CommonUtils.bString(this.data).indexOf(var1 + "\u0000");
          if (var2 > 0) {
             int var3 = this.getInfo().getLocation("Export.Name");
             int var4 = this.getInfo().getPointerForLocation(0, var2);
@@ -132,6 +135,7 @@ public class PEEditor {
 
          this.A("Set Export Name:");
       }
+
    }
 
    public void setChecksum(long var1) {
@@ -280,7 +284,7 @@ public class PEEditor {
       this.A("Masking Memory: start=" + var1 + " length=" + var2);
 
       for(int var5 = var1; var5 < var1 + var2; ++var5) {
-         var10000 = this.data;
+         byte[] var10000 = this.data;
          var10000[var5] ^= var3;
       }
 
@@ -290,6 +294,7 @@ public class PEEditor {
       byte[] var10000 = new byte[]{var2};
       this.A("Masking String: location=" + var1);
 
+      byte[] var10000;
       StringBuffer var4;
       for(var4 = new StringBuffer(); this.data[var1] != 0; ++var1) {
          var4.append((char)this.data[var1]);
@@ -341,6 +346,7 @@ public class PEEditor {
          this.A("Masking Section: start=" + var5 + " size=" + var6);
          this.mask(var5, var6, var2);
       }
+
    }
 
    protected void _obfuscate() {

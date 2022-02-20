@@ -26,7 +26,7 @@ public class DoubleValue implements ScalarType {
    }
 
    public String toString() {
-      return this.value + "";
+      return this.value.makeConcatWithConstants<invokedynamic>(this.value);
    }
 
    public Object objectValue() {

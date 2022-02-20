@@ -62,7 +62,7 @@ public class AliasManager {
       } else {
          Stack var5 = ScriptUtils.StringToArguments(var2 + " " + var3);
          var5.push(SleepUtils.getScalar(var1));
-         SleepUtils.runCode((SleepClosure)var4, var2 + " " + var3, (ScriptInstance)null, var5);
+         SleepUtils.runCode(var4, var2 + " " + var3, (ScriptInstance)null, var5);
          return true;
       }
    }

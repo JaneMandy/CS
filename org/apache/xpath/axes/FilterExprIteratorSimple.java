@@ -12,7 +12,6 @@ import org.apache.xpath.XPathVisitor;
 import org.apache.xpath.objects.XNodeSet;
 
 public class FilterExprIteratorSimple extends LocPathIterator {
-   static final long serialVersionUID = -6978977187025375579L;
    private Expression m_expr;
    private transient XNodeSet m_exprObj;
    private boolean m_mustHardReset = false;

@@ -50,7 +50,7 @@ public class ScriptManager extends AObject implements ActionListener, SafeDialog
                return;
             }
 
-            var2 = this.model.getSelectedValue(this.table) + "";
+            var2 = ((Class)this.model.getSelectedValue(this.table)).makeConcatWithConstants<invokedynamic>(this.model.getSelectedValue(this.table));
             var3 = Aggressor.getFrame().getScriptEngines().iterator();
 
             while(var3.hasNext()) {
@@ -69,18 +69,18 @@ public class ScriptManager extends AObject implements ActionListener, SafeDialog
                return;
             }
 
-            var2 = this.model.getSelectedValue(this.table) + "";
+            var2 = ((Class)this.model.getSelectedValue(this.table)).makeConcatWithConstants<invokedynamic>(this.model.getSelectedValue(this.table));
 
             try {
                this.client.getScriptEngine().unloadScript(var2);
                this.client.getScriptEngine().loadScript(var2);
                DialogUtils.showInfo("Reloaded " + var2);
-            } catch (YourCodeSucksException var5) {
-               MudgeSanity.logException("Load " + var2, var5, true);
-               DialogUtils.showError("Could not load " + var2 + ":\n\n" + var5.formatErrors());
-            } catch (Exception var6) {
-               MudgeSanity.logException("Load " + var2, var6, false);
-               DialogUtils.showError("Could not load " + var2 + "\n" + var6.getMessage());
+            } catch (YourCodeSucksException var6) {
+               MudgeSanity.logException("Load " + var2, var6, true);
+               DialogUtils.showError("Could not load " + var2 + ":\n\n" + var6.formatErrors());
+            } catch (Exception var7) {
+               MudgeSanity.logException("Load " + var2, var7, false);
+               DialogUtils.showError("Could not load " + var2 + "\n" + var7.getMessage());
             }
 
             try {
@@ -91,8 +91,8 @@ public class ScriptManager extends AObject implements ActionListener, SafeDialog
                   var4.unloadScript(var2);
                   var4.loadScript(var2);
                }
-            } catch (Exception var7) {
-               MudgeSanity.logException("Load " + var2, var7, false);
+            } catch (Exception var8) {
+               MudgeSanity.logException("Load " + var2, var8, false);
             }
 
             this.refresh();

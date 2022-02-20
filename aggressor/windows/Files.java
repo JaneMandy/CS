@@ -134,7 +134,7 @@ public class Files extends AObject implements Callback, ActionListener, TablePop
          this.clearSelection();
          this.client.getConnection().call("beacons.task_drives", CommonUtils.args(this.bid), new Callback() {
             public void result(String var1, Object var2) {
-               String[] var3 = CommonUtils.toArray(CommonUtils.drives(var2 + ""));
+               String[] var3 = CommonUtils.toArray(CommonUtils.drives(((Class)var2).makeConcatWithConstants<invokedynamic>(var2)));
                LinkedList var4 = new LinkedList();
 
                for(int var5 = 0; var5 < var3.length; ++var5) {
@@ -176,6 +176,7 @@ public class Files extends AObject implements Callback, ActionListener, TablePop
          var2.push(SleepUtils.getScalar(this.bid));
          this.client.getScriptEngine().getMenuBuilder().installMenu(var1, "filebrowser", var2);
       }
+
    }
 
    public JComponent getButtons() {

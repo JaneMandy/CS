@@ -7,7 +7,6 @@ import org.apache.xml.res.XMLMessages;
 import org.w3c.dom.Element;
 
 public class QName implements Serializable {
-   static final long serialVersionUID = 467434581652829920L;
    protected String _localName;
    protected String _namespaceURI;
    protected String _prefix;
@@ -24,7 +23,7 @@ public class QName implements Serializable {
    public QName(String namespaceURI, String localName, boolean validate) {
       if (localName == null) {
          throw new IllegalArgumentException(XMLMessages.createXMLMessage("ER_ARG_LOCALNAME_NULL", (Object[])null));
-      } else if (validate && !XML11Char.isXML11ValidNCName(localName)) {
+      } else if (validate && !XMLChar.isValidNCName(localName)) {
          throw new IllegalArgumentException(XMLMessages.createXMLMessage("ER_ARG_LOCALNAME_INVALID", (Object[])null));
       } else {
          this._namespaceURI = namespaceURI;
@@ -42,11 +41,11 @@ public class QName implements Serializable {
          throw new IllegalArgumentException(XMLMessages.createXMLMessage("ER_ARG_LOCALNAME_NULL", (Object[])null));
       } else {
          if (validate) {
-            if (!XML11Char.isXML11ValidNCName(localName)) {
+            if (!XMLChar.isValidNCName(localName)) {
                throw new IllegalArgumentException(XMLMessages.createXMLMessage("ER_ARG_LOCALNAME_INVALID", (Object[])null));
             }
 
-            if (null != prefix && !XML11Char.isXML11ValidNCName(prefix)) {
+            if (null != prefix && !XMLChar.isValidNCName(prefix)) {
                throw new IllegalArgumentException(XMLMessages.createXMLMessage("ER_ARG_PREFIX_INVALID", (Object[])null));
             }
          }
@@ -65,7 +64,7 @@ public class QName implements Serializable {
    public QName(String localName, boolean validate) {
       if (localName == null) {
          throw new IllegalArgumentException(XMLMessages.createXMLMessage("ER_ARG_LOCALNAME_NULL", (Object[])null));
-      } else if (validate && !XML11Char.isXML11ValidNCName(localName)) {
+      } else if (validate && !XMLChar.isValidNCName(localName)) {
          throw new IllegalArgumentException(XMLMessages.createXMLMessage("ER_ARG_LOCALNAME_INVALID", (Object[])null));
       } else {
          this._namespaceURI = null;
@@ -110,7 +109,7 @@ public class QName implements Serializable {
       }
 
       this._localName = indexOfNSSep < 0 ? qname : qname.substring(indexOfNSSep + 1);
-      if (!validate || this._localName != null && XML11Char.isXML11ValidNCName(this._localName)) {
+      if (!validate || this._localName != null && XMLChar.isValidNCName(this._localName)) {
          this._namespaceURI = namespace;
          this._prefix = prefix;
          this.m_hashCode = this.toString().hashCode();
@@ -145,7 +144,7 @@ public class QName implements Serializable {
       }
 
       this._localName = indexOfNSSep < 0 ? qname : qname.substring(indexOfNSSep + 1);
-      if (!validate || this._localName != null && XML11Char.isXML11ValidNCName(this._localName)) {
+      if (!validate || this._localName != null && XMLChar.isValidNCName(this._localName)) {
          this.m_hashCode = this.toString().hashCode();
       } else {
          throw new IllegalArgumentException(XMLMessages.createXMLMessage("ER_ARG_LOCALNAME_INVALID", (Object[])null));
@@ -181,7 +180,7 @@ public class QName implements Serializable {
          this._localName = qname;
       }
 
-      if (!validate || this._localName != null && XML11Char.isXML11ValidNCName(this._localName)) {
+      if (!validate || this._localName != null && XMLChar.isValidNCName(this._localName)) {
          this.m_hashCode = this.toString().hashCode();
          this._prefix = prefix;
       } else {

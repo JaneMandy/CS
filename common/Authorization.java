@@ -1,6 +1,5 @@
 package common;
 
-import java.io.File;
 import java.util.Calendar;
 
 public class Authorization {
@@ -10,72 +9,35 @@ public class Authorization {
    protected boolean valid = false;
 
    public Authorization() {
-      String var1 = CommonUtils.canonicalize("cobaltstrike.auth");
-      if (!(new File(var1)).exists()) {
-         try {
-            File var2 = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI());
-            if (var2.getName().toLowerCase().endsWith(".jar")) {
-               var2 = var2.getParentFile();
-            }
-
-            var1 = (new File(var2, "cobaltstrike.auth")).getAbsolutePath();
-         } catch (Exception var19) {
-            MudgeSanity.logException("trouble locating auth file", var19, false);
+      try {
+         byte[] decrypt = new byte[]{1, -55, -61, 127, 0, 0, 0, 0, 100, 1, 0, 27, -27, -66, 82, -58, 37, 92, 51, 85, -114, -118, 28, -74, 103, -53, 6};
+         DataParser dataParser = new DataParser(decrypt);
+         dataParser.big();
+         int int1 = dataParser.readInt();
+         this.watermark = dataParser.readInt();
+         if (dataParser.readByte() < 41) {
+            this.error = "Authorization file is not for CSer 4.1+";
+            return;
          }
-      }
 
-      byte[] var20 = CommonUtils.readFile(var1);
-      if (var20.length == 0) {
-         this.error = "Could not read " + var1;
-      } else {
-         AuthCrypto var3 = new AuthCrypto();
-         byte[] var4 = var3.decrypt(var20);
-         if (var4.length == 0) {
-            this.error = var3.error();
+         int i1 = dataParser.readByte();
+         dataParser.readBytes(i1);
+         byte[] bytes = dataParser.readBytes(dataParser.readByte());
+         if (29999999 == int1) {
+            this.validto = "forever";
+            MudgeSanity.systemDetail("valid to", "perpetual");
          } else {
-            try {
-               DataParser var5 = new DataParser(var4);
-               var5.big();
-               int var6 = var5.readInt();
-               this.watermark = var5.readInt();
-               byte var7 = var5.readByte();
-               if (var7 < 44) {
-                  this.error = "Authorization file is not for Cobalt Strike 4.4+";
-                  return;
-               }
-
-               byte var8 = var5.readByte();
-               var5.readBytes(var8);
-               byte var10 = var5.readByte();
-               var5.readBytes(var10);
-               byte var12 = var5.readByte();
-               var5.readBytes(var12);
-               byte var14 = var5.readByte();
-               var5.readBytes(var14);
-               byte var16 = var5.readByte();
-               byte[] var17 = var5.readBytes(var16);
-               if (29999999 == var6) {
-                  this.validto = "forever";
-                  MudgeSanity.systemDetail("valid to", "perpetual");
-               } else {
-                  if (!this.A(var6)) {
-                     this.error = "Valid to date (" + var6 + ") is invalid";
-                     return;
-                  }
-
-                  this.validto = "20" + var6;
-                  MudgeSanity.systemDetail("valid to", CommonUtils.formatDateAny("MMMMM d, YYYY", this.getExpirationDate()));
-               }
-
-               this.valid = true;
-               MudgeSanity.systemDetail("id", this.watermark + "");
-               SleevedResource.Setup(var17);
-            } catch (Exception var18) {
-               MudgeSanity.logException("auth file parsing", var18, false);
-            }
-
+            this.validto = "20" + int1;
+            MudgeSanity.systemDetail("valid to", CommonUtils.formatDateAny("MMMMM d, YYYY", this.getExpirationDate()));
          }
+
+         this.valid = true;
+         MudgeSanity.systemDetail("id", this.watermark.makeConcatWithConstants<invokedynamic>(this.watermark));
+         SleevedResource.Setup(bytes);
+      } catch (Exception var6) {
+         MudgeSanity.logException("auth file parsing", var6, false);
       }
+
    }
 
    private final boolean A(int var1) {
@@ -118,7 +80,7 @@ public class Authorization {
    }
 
    public String getWatermark() {
-      return this.watermark + "";
+      return this.watermark.makeConcatWithConstants<invokedynamic>(this.watermark);
    }
 
    public long getExpirationDate() {

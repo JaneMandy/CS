@@ -6,7 +6,6 @@ import org.apache.xml.utils.PrefixResolver;
 import org.apache.xpath.XPathContext;
 
 public class AVTPartSimple extends AVTPart {
-   static final long serialVersionUID = -3744957690598727913L;
    private String m_val;
 
    public AVTPartSimple(String val) {

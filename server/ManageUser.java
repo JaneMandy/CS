@@ -1,6 +1,5 @@
 package server;
 
-import aggressor.Aggressor;
 import beacon.BeaconSetup;
 import common.CommonUtils;
 import common.LoggedEvent;
@@ -56,12 +55,10 @@ public class ManageUser implements Runnable {
    public void process(Request var1) throws Exception {
       String var7;
       if (!this.authenticated && "aggressor.authenticate".equals(var1.getCall()) && var1.size() == 3) {
-         var7 = var1.arg(0) + "";
-         String var11 = var1.arg(1) + "";
-         String var13 = var1.arg(2) + "";
-         if (!Aggressor.VERSION.equals(var13)) {
-            this.client.writeObject(var1.reply("Your client software does not match this server\nClient: " + var13 + "\nServer: " + Aggressor.VERSION));
-         } else if (ServerUtils.getServerPassword(this.resources, var7).equals(var11)) {
+         var7 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
+         String var11 = ((Class)var1.arg(1)).makeConcatWithConstants<invokedynamic>(var1.arg(1));
+         String var13 = ((Class)var1.arg(2)).makeConcatWithConstants<invokedynamic>(var1.arg(2));
+         if (ServerUtils.getServerPassword(this.resources, var7).equals(var11)) {
             if (this.resources.isRegistered(var7)) {
                this.client.writeObject(var1.reply("User is already connected."));
             } else {
@@ -81,7 +78,9 @@ public class ManageUser implements Runnable {
          HashMap var14 = new HashMap();
          var14.put("nick", this.nickname);
          ServerUtils.getProfile(this.resources).getPreview().summarize(var14);
-         long var10 = System.currentTimeMillis() - Long.parseLong(var1.arg(0) + "");
+         long var10000 = System.currentTimeMillis();
+         Object var10001 = var1.arg(0);
+         long var10 = var10000 - Long.parseLong(((Class)var10001).makeConcatWithConstants<invokedynamic>(var10001));
          var14.put("clockskew", var10);
          var14.put("signer", ServerUtils.getProfile(this.resources).getCodeSigner());
          var14.put("validssl", ServerUtils.getProfile(this.resources).hasValidSSL() ? "true" : "false");
@@ -118,7 +117,7 @@ public class ManageUser implements Runnable {
       } else {
          File var8;
          if ("armitage.upload".equals(var1.getCall()) && var1.size() == 1) {
-            var8 = CommonUtils.SafeFile("uploads", var1.arg(0) + "");
+            var8 = CommonUtils.SafeFile("uploads", ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0)));
             var8.mkdirs();
             var8.delete();
             this.client.writeObject(var1.reply(var8.getAbsolutePath()));
@@ -136,17 +135,17 @@ public class ManageUser implements Runnable {
             var2.touch(this.nickname);
             this.resources.process(var2);
          } else if ("armitage.append".equals(var1.getCall()) && var1.size() == 2) {
-            var8 = CommonUtils.SafeFile("uploads", var1.arg(0) + "");
-            byte[] var9 = (byte[])((byte[])var1.arg(1));
+            var8 = CommonUtils.SafeFile("uploads", ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0)));
+            byte[] var9 = (byte[])var1.arg(1);
 
             try {
                FileOutputStream var4 = new FileOutputStream(var8, true);
                var4.write(var9);
                var4.close();
                this.client.writeObject(var1.reply(var8.getAbsolutePath()));
-            } catch (IOException var5) {
-               this.client.writeObject(var1.reply("ERROR: " + var5.getMessage()));
-               MudgeSanity.logException(var1.getCall() + " " + var8, var5, true);
+            } catch (IOException var6) {
+               this.client.writeObject(var1.reply("ERROR: " + var6.getMessage()));
+               MudgeSanity.logException(var1.getCall() + " " + var8, var6, true);
             }
          } else if ("armitage.broadcast".equals(var1.getCall()) && var1.size() == 2) {
             var7 = (String)var1.arg(0);
@@ -212,23 +211,25 @@ public class ManageUser implements Runnable {
 
       public void run() {
          while(true) {
-            try {
-               if (ManageUser.this.client.isConnected()) {
-                  Reply var1 = this.A();
-                  if (var1 != null) {
-                     ManageUser.this.client.writeObject(var1);
-                     Thread.yield();
+            while(true) {
+               try {
+                  if (ManageUser.this.client.isConnected()) {
+                     Reply var1 = this.A();
+                     if (var1 != null) {
+                        ManageUser.this.client.writeObject(var1);
+                        Thread.yield();
+                        continue;
+                     }
+
+                     Thread.sleep(25L);
                      continue;
                   }
-
-                  Thread.sleep(25L);
-                  continue;
+               } catch (Exception var2) {
+                  MudgeSanity.logException("bwriter", var2, false);
                }
-            } catch (Exception var2) {
-               MudgeSanity.logException("bwriter", var2, false);
-            }
 
-            return;
+               return;
+            }
          }
       }
    }

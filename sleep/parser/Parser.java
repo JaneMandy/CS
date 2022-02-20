@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.LinkedList;
 import sleep.engine.Block;
@@ -168,7 +169,9 @@ public class Parser {
 
          while(var3.hasNext()) {
             SyntaxError var4 = (SyntaxError)var3.next();
-            System.out.println("Error: " + var4.getDescription() + " at line " + var4.getLineNumber());
+            PrintStream var10000 = System.out;
+            String var10001 = var4.getDescription();
+            var10000.println("Error: " + var10001 + " at line " + var4.getLineNumber());
             System.out.println("       " + var4.getCodeSnippet());
             if (var4.getMarker() != null) {
                System.out.println("       " + var4.getMarker());

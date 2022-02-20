@@ -42,15 +42,17 @@ public class BrowserPivotCalls implements ServerHook {
 
                }
             });
-            this.resources.broadcast("beaconlog", BeaconOutput.Output(var3, "Browser Pivot HTTP proxy is at: " + ServerUtils.getMyIP(this.resources) + ":" + var4));
+            Resources var10000 = this.resources;
+            String var10003 = ServerUtils.getMyIP(this.resources);
+            var10000.broadcast("beaconlog", BeaconOutput.Output(var3, "Browser Pivot HTTP proxy is at: " + var10003 + ":" + var4));
             var6.start();
             ServerUtils.getSocks(this.resources).track(var3, var6);
          } catch (IOException var7) {
             this.resources.broadcast("beaconlog", BeaconOutput.Error(var3, "Could not start Browser Pivot on port " + var4 + ": " + var7.getMessage()));
             MudgeSanity.logException("browser pivot start", var7, true);
          }
-
       }
+
    }
 
    public void stop(Request var1, ManageUser var2) {

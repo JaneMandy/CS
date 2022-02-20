@@ -89,22 +89,19 @@ public class MultiFrame extends JFrame implements KeyEventDispatcher {
       synchronized(this.buttons) {
          Iterator var3 = this.buttons.iterator();
 
-         MultiFrame._A var4;
-         Map var5;
-         do {
-            if (!var3.hasNext()) {
-               if (this.buttons.size() == 0) {
-                  System.exit(0);
-               }
-
+         while(var3.hasNext()) {
+            MultiFrame._A var4 = (MultiFrame._A)var3.next();
+            Map var5 = var4.C.data.getMapSafe("options");
+            if (var5.equals(var1)) {
+               this.quit(var4.C, false);
                return;
             }
+         }
 
-            var4 = (MultiFrame._A)var3.next();
-            var5 = var4.C.data.getMapSafe("options");
-         } while(!var5.equals(var1));
+         if (this.buttons.size() == 0) {
+            System.exit(0);
+         }
 
-         this.quit(var4.C, false);
       }
    }
 
@@ -201,16 +198,14 @@ public class MultiFrame extends JFrame implements KeyEventDispatcher {
       synchronized(this.buttons) {
          Iterator var3 = this.buttons.iterator();
 
-         MultiFrame._A var4;
-         do {
-            if (!var3.hasNext()) {
-               return false;
+         while(var3.hasNext()) {
+            MultiFrame._A var4 = (MultiFrame._A)var3.next();
+            if (var1.equals(var4.A.getText())) {
+               return true;
             }
+         }
 
-            var4 = (MultiFrame._A)var3.next();
-         } while(!var1.equals(var4.A.getText()));
-
-         return true;
+         return false;
       }
    }
 
@@ -218,17 +213,15 @@ public class MultiFrame extends JFrame implements KeyEventDispatcher {
       synchronized(this.buttons) {
          Iterator var3 = this.buttons.iterator();
 
-         String var5;
-         do {
-            if (!var3.hasNext()) {
-               return false;
-            }
-
+         while(var3.hasNext()) {
             MultiFrame._A var4 = (MultiFrame._A)var3.next();
-            var5 = DataUtils.getTeamServerIP(var4.C.data);
-         } while(!var1.equals(var5));
+            String var5 = DataUtils.getTeamServerIP(var4.C.data);
+            if (var1.equals(var5)) {
+               return true;
+            }
+         }
 
-         return true;
+         return false;
       }
    }
 
@@ -273,8 +266,8 @@ public class MultiFrame extends JFrame implements KeyEventDispatcher {
                                  var2x.setToolTipText(var2xx);
                                  MultiFrame.this.set(var2x);
                               }
-
                            }
+
                         }
                      });
                      var3.add(var4);
@@ -316,6 +309,7 @@ public class MultiFrame extends JFrame implements KeyEventDispatcher {
             this.validate();
          }
       }
+
    }
 
    private static class _A {
@@ -327,7 +321,6 @@ public class MultiFrame extends JFrame implements KeyEventDispatcher {
          this.B = false;
       }
 
-      // $FF: synthetic method
       _A(Object var1) {
          this();
       }

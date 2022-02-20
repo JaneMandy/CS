@@ -127,10 +127,7 @@ public class ChangeLog implements Serializable {
          }
          break;
       case 3:
-         if (!var2.containsKey(var1.key())) {
-            var2.put(var1.key(), var1.entry());
-            break;
-         } else {
+         if (var2.containsKey(var1.key())) {
             Map var3 = (Map)var2.get(var1.key());
             Iterator var4 = var1.entry().entrySet().iterator();
 
@@ -141,6 +138,9 @@ public class ChangeLog implements Serializable {
 
             return;
          }
+
+         var2.put(var1.key(), var1.entry());
+         break;
       case 4:
          var2.remove(var1.key());
       }
@@ -170,10 +170,7 @@ public class ChangeLog implements Serializable {
          }
          break;
       case 3:
-         if (!var2.containsKey(var1.key())) {
-            var2.put(var1.key(), var1.entry());
-            break;
-         } else {
+         if (var2.containsKey(var1.key())) {
             var3 = (Map)var2.get(var1.key());
             boolean var4 = false;
             Iterator var5 = var1.entry().entrySet().iterator();
@@ -210,6 +207,9 @@ public class ChangeLog implements Serializable {
                }
             }
          }
+
+         var2.put(var1.key(), var1.entry());
+         break;
       case 4:
          if (var2.containsKey(var1.key())) {
             var2.remove(var1.key());

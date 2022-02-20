@@ -4,8 +4,6 @@ import javax.xml.transform.TransformerException;
 import org.apache.xalan.transformer.TransformerImpl;
 
 public class ElemApplyImport extends ElemTemplateElement {
-   static final long serialVersionUID = 3764728663373024038L;
-
    public int getXSLToken() {
       return 72;
    }
@@ -19,19 +17,18 @@ public class ElemApplyImport extends ElemTemplateElement {
          transformer.getMsgMgr().error(this, "ER_NO_APPLY_IMPORT_IN_FOR_EACH");
       }
 
-      if (transformer.getDebug()) {
+      if (TransformerImpl.S_DEBUG) {
          transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
       }
 
       int sourceNode = transformer.getXPathContext().getCurrentNode();
       if (-1 != sourceNode) {
-         ElemTemplate matchTemplate = transformer.getMatchedTemplate();
-         transformer.applyTemplateToNode(this, matchTemplate, sourceNode);
+         transformer.applyTemplateToNode(this, (ElemTemplate)null, sourceNode);
       } else {
          transformer.getMsgMgr().error(this, "ER_NULL_SOURCENODE_APPLYIMPORTS");
       }
 
-      if (transformer.getDebug()) {
+      if (TransformerImpl.S_DEBUG) {
          transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);
       }
 

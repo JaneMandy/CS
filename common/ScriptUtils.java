@@ -22,7 +22,7 @@ public class ScriptUtils {
       String[] var2 = new String[var0.size()];
 
       for(Iterator var3 = var0.scalarIterator(); var3.hasNext(); ++var1) {
-         var2[var1] = var3.next() + "";
+         var2[var1] = ((Class)var3.next()).makeConcatWithConstants<invokedynamic>(var3.next());
       }
 
       return var2;
@@ -46,44 +46,47 @@ public class ScriptUtils {
          }
 
          return var7;
-      } else if (var0 instanceof Map) {
-         var7 = SleepUtils.getHashScalar();
-         var9 = ((Map)var0).entrySet().iterator();
-
-         while(var9.hasNext()) {
-            Entry var11 = (Entry)var9.next();
-            Scalar var4 = SleepUtils.getScalar(var11.getKey() + "");
-            Scalar var5 = var7.getHash().getAt(var4);
-            var5.setValue(convertAll(var11.getValue()));
-         }
-
-         return var7;
-      } else if (var0 instanceof BeaconEntry) {
-         return convertAll(((BeaconEntry)var0).toMap());
-      } else if (var0 instanceof Scriptable) {
-         Scriptable var6 = (Scriptable)var0;
-         Scalar var8 = SleepUtils.getArrayScalar();
-         var8.getArray().push(SleepUtils.getScalar(var6.eventName()));
-         Stack var10 = var6.eventArguments();
-
-         while(!var10.isEmpty()) {
-            var8.getArray().push((Scalar)var10.pop());
-         }
-
-         return var8;
-      } else if (var0 instanceof ToScalar) {
-         return ((ToScalar)var0).toScalar();
-      } else if (!(var0 instanceof Object[])) {
-         return ObjectUtilities.BuildScalar(true, var0);
       } else {
-         Object[] var1 = (Object[])((Object[])var0);
-         LinkedList var2 = new LinkedList();
+         Scalar var8;
+         if (var0 instanceof Map) {
+            var7 = SleepUtils.getHashScalar();
+            var9 = ((Map)var0).entrySet().iterator();
 
-         for(int var3 = 0; var3 < var1.length; ++var3) {
-            var2.add(var1[var3]);
+            while(var9.hasNext()) {
+               Entry var11 = (Entry)var9.next();
+               var8 = SleepUtils.getScalar(((Class)var11.getKey()).makeConcatWithConstants<invokedynamic>(var11.getKey()));
+               Scalar var5 = var7.getHash().getAt(var8);
+               var5.setValue(convertAll(var11.getValue()));
+            }
+
+            return var7;
+         } else if (var0 instanceof BeaconEntry) {
+            return convertAll(((BeaconEntry)var0).toMap());
+         } else if (var0 instanceof Scriptable) {
+            Scriptable var6 = (Scriptable)var0;
+            var8 = SleepUtils.getArrayScalar();
+            var8.getArray().push(SleepUtils.getScalar(var6.eventName()));
+            Stack var10 = var6.eventArguments();
+
+            while(!var10.isEmpty()) {
+               var8.getArray().push((Scalar)var10.pop());
+            }
+
+            return var8;
+         } else if (var0 instanceof ToScalar) {
+            return ((ToScalar)var0).toScalar();
+         } else if (!(var0 instanceof Object[])) {
+            return ObjectUtilities.BuildScalar(true, var0);
+         } else {
+            Object[] var1 = (Object[])var0;
+            LinkedList var2 = new LinkedList();
+
+            for(int var3 = 0; var3 < var1.length; ++var3) {
+               var2.add(var1[var3]);
+            }
+
+            return convertAll(var2);
          }
-
-         return convertAll(var2);
       }
    }
 

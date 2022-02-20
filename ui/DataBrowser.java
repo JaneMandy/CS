@@ -76,8 +76,8 @@ public class DataBrowser extends JComponent implements ListSelectionListener, Ac
             DataSelectionListener var3 = (DataSelectionListener)var2.next();
             var3.selected(this.getSelectedValue());
          }
-
       }
+
    }
 
    public void addDataSelectionListener(DataSelectionListener var1) {

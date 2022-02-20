@@ -93,7 +93,8 @@ public class TokenParser implements ParserConstants {
                var0.reportError("Object Access: parameter separator is :", new Token(var1.toString(), var2[0].getHint()));
                return null;
             } else if (var10 + 1 >= var2.length) {
-               var0.reportError("Object Access: can not specify empty arg list after :", new Token("[" + var1.toString().substring(0, var1.toString().length() - 4) + ":<null>]", var2[0].getHint()));
+               String var10004 = var1.toString();
+               var0.reportError("Object Access: can not specify empty arg list after :", new Token("[" + var10004.substring(0, var1.toString().length() - 4) + ":<null>]", var2[0].getHint()));
                return null;
             } else {
                int var11 = var10 + 1;

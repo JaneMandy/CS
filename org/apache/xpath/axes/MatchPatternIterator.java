@@ -11,7 +11,6 @@ import org.apache.xpath.patterns.NodeTest;
 import org.apache.xpath.patterns.StepPattern;
 
 public class MatchPatternIterator extends LocPathIterator {
-   static final long serialVersionUID = -5201153767396296474L;
    protected StepPattern m_pattern;
    protected int m_superAxis = -1;
    protected DTMAxisTraverser m_traverser;
@@ -92,21 +91,21 @@ public class MatchPatternIterator extends LocPathIterator {
             savedStart = 0;
          }
 
-         byte var4;
+         int var4;
          try {
             int next;
             do {
                next = this.getNextNode();
             } while(-1 != next && 1 != this.acceptNode(next, super.m_execContext) && next != -1);
 
-            if (-1 != next) {
-               this.incrementCurrentPos();
-               int var9 = next;
+            if (-1 == next) {
+               super.m_foundLast = true;
+               byte var9 = -1;
                return var9;
             }
 
-            super.m_foundLast = true;
-            var4 = -1;
+            this.incrementCurrentPos();
+            var4 = next;
          } finally {
             if (-1 != super.m_stackFrame) {
                vars.setStackFrame(savedStart);

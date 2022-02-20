@@ -108,7 +108,7 @@ public class EventManager {
 
          while(var4.hasNext()) {
             SleepClosure var5 = (SleepClosure)var4.next();
-            SleepUtils.runCode((SleepClosure)var5, var1, (ScriptInstance)null, shallowCopy(var2));
+            SleepUtils.runCode(var5, var1, (ScriptInstance)null, shallowCopy(var2));
          }
       }
 

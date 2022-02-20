@@ -88,8 +88,8 @@ public class ICMP extends Base implements Server.IcmpListener {
                System.err.println("INVALID ICMP COMMAND: " + var5 + " len: " + var2.length);
                return new byte[0];
             }
-         } catch (IOException var6) {
-            var6.printStackTrace();
+         } catch (IOException var7) {
+            var7.printStackTrace();
             return null;
          }
       }

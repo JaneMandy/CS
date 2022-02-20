@@ -43,7 +43,7 @@ public abstract class GenericTabCompletion {
          String var6;
          String var7;
          for(Iterator var4 = var3.iterator(); var4.hasNext(); var2.add(var6 + var7)) {
-            String var5 = var4.next() + "";
+            String var5 = ((Class)var4.next()).makeConcatWithConstants<invokedynamic>(var4.next());
             if (var1.length() > var5.length()) {
                var6 = var5;
                var7 = "";
@@ -91,5 +91,6 @@ public abstract class GenericTabCompletion {
             }
          }
       }
+
    }
 }

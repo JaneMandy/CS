@@ -45,7 +45,8 @@ public class AggregateBridge implements Function, Loadable {
 
       while(var2.hasNext()) {
          String var3 = (String)var2.next();
-         var3 = var3.substring(0, 1).toUpperCase() + var3.substring(1);
+         String var10000 = var3.substring(0, 1).toUpperCase();
+         var3 = var10000 + var3.substring(1);
          final String var4 = var3.toLowerCase();
          Cortana.put(var1, "&ag" + var3, new Function() {
             public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
@@ -200,16 +201,19 @@ public class AggregateBridge implements Function, Loadable {
       HashMap var5 = new HashMap();
       Iterator var6 = var0.iterator();
 
+      Object var10000;
       while(var6.hasNext()) {
          Map var7 = (Map)var6.next();
-         String var8 = var7.get(var2) + "";
+         var10000 = var7.get(var2);
+         String var8 = ((Class)var10000).makeConcatWithConstants<invokedynamic>(var10000);
          var5.put(var8, var7);
       }
 
       HashMap var10;
       for(Iterator var11 = var1.iterator(); var11.hasNext(); var4.add(var10)) {
          Map var12 = (Map)var11.next();
-         String var9 = var12.get(var3) + "";
+         var10000 = var12.get(var3);
+         String var9 = ((Class)var10000).makeConcatWithConstants<invokedynamic>(var10000);
          var10 = new HashMap();
          var10.putAll(var12);
          if (var5.containsKey(var9)) {
@@ -252,8 +256,9 @@ public class AggregateBridge implements Function, Loadable {
             } else {
                String var11;
                Iterator var28;
-               Set var38;
+               Set var39;
                String var42;
+               Iterator var9;
                if ("&agTacticsUsed".equals(var1)) {
                   var4 = (Map)BridgeUtilities.getObject(var3);
                   HashSet var57 = new HashSet();
@@ -271,11 +276,11 @@ public class AggregateBridge implements Function, Loadable {
                         } while(var42 == null);
                      } while("".equals(var42));
 
-                     var38 = CommonUtils.toSet(var42);
-                     Iterator var49 = var38.iterator();
+                     var39 = CommonUtils.toSet(var42);
+                     var9 = var39.iterator();
 
-                     while(var49.hasNext()) {
-                        var11 = (String)var49.next();
+                     while(var9.hasNext()) {
+                        var11 = (String)var9.next();
                         if (var11.startsWith("T")) {
                            var57.add(var11);
                         }
@@ -292,17 +297,15 @@ public class AggregateBridge implements Function, Loadable {
                      var18 = (List)var4.get("tokens");
                      var28 = var18.iterator();
 
-                     do {
-                        if (!var28.hasNext()) {
-                           return SleepUtils.getEmptyScalar();
-                        }
-
+                     while(var28.hasNext()) {
                         var31 = (Map)var28.next();
-                     } while(!var5.equals(var31.get("token")));
+                        if (var5.equals(var31.get("token"))) {
+                           return SleepUtils.getScalar((String)var31.get("email"));
+                        }
+                     }
 
-                     return SleepUtils.getScalar((String)var31.get("email"));
+                     return SleepUtils.getEmptyScalar();
                   } else {
-                     Iterator var9;
                      String var10;
                      List var17;
                      Iterator var23;
@@ -310,7 +313,7 @@ public class AggregateBridge implements Function, Loadable {
                      if ("&agCampaigns".equals(var1)) {
                         var4 = (Map)BridgeUtilities.getObject(var3);
                         var17 = (List)var4.get("archives");
-                        HashMap var45 = new HashMap();
+                        HashMap var44 = new HashMap();
                         HashMap var41 = new HashMap();
                         var23 = var17.iterator();
 
@@ -318,7 +321,7 @@ public class AggregateBridge implements Function, Loadable {
                            var24 = (Map)var23.next();
                            if ("sendmail_start".equals(var24.get("type"))) {
                               var10 = var24.get("cid").toString();
-                              var45.put(var10, var24);
+                              var44.put(var10, var24);
                            } else if ("sendmail_post".equals(var24.get("type"))) {
                               var10 = DialogUtils.string(var24, "cid");
                               var11 = DialogUtils.string(var24, "status");
@@ -328,7 +331,7 @@ public class AggregateBridge implements Function, Loadable {
                            }
                         }
 
-                        var9 = var45.entrySet().iterator();
+                        var9 = var44.entrySet().iterator();
 
                         while(var9.hasNext()) {
                            Entry var48 = (Entry)var9.next();
@@ -338,7 +341,7 @@ public class AggregateBridge implements Function, Loadable {
                            }
                         }
 
-                        return CommonUtils.convertAll(var45);
+                        return CommonUtils.convertAll(var44);
                      } else if ("&agC2Samples".equals(var1)) {
                         var4 = (Map)BridgeUtilities.getObject(var3);
                         var17 = (List)var4.get("c2samples");
@@ -365,28 +368,29 @@ public class AggregateBridge implements Function, Loadable {
                            if ("&agPEForSample".equals(var1)) {
                               var4 = SleepUtils.getMapFromHash((ScalarHash)BridgeUtilities.getObject(var3));
                               var51 = (Map)var4.get("pe");
-                              LinkedHashMap var36 = new LinkedHashMap();
-                              var36.put("Checksum", var51.get("Checksum") + "");
+                              LinkedHashMap var37 = new LinkedHashMap();
+                              var37.put("Checksum", ((Class)var51.get("Checksum")).makeConcatWithConstants<invokedynamic>(var51.get("Checksum")));
                               SimpleDateFormat var33 = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
-                              Date var37 = (Date)var51.get("Compilation Timestamp");
-                              var36.put("Compilation Timestamp", var33.format(var37));
-                              var36.put("Entry Point", var51.get("Entry Point") + "");
+                              Date var38 = (Date)var51.get("Compilation Timestamp");
+                              var37.put("Compilation Timestamp", var33.format(var38));
+                              var37.put("Entry Point", ((Class)var51.get("Entry Point")).makeConcatWithConstants<invokedynamic>(var51.get("Entry Point")));
                               if (var51.containsKey("Name")) {
-                                 var36.put("Name", var51.get("Name"));
+                                 var37.put("Name", var51.get("Name"));
                               }
 
-                              long var43 = CommonUtils.toLongNumber(var51.get("Size") + "", 0L);
-                              var11 = CommonUtils.formatSize(var43) + " (" + var43 + " bytes)";
-                              var36.put("Size", var11);
-                              var36.put("Target Machine", var51.get("Target Machine"));
+                              long var43 = CommonUtils.toLongNumber(((Class)var51.get("Size")).makeConcatWithConstants<invokedynamic>(var51.get("Size")), 0L);
+                              String var10000 = CommonUtils.formatSize(var43);
+                              var11 = var10000 + " (" + var43 + " bytes)";
+                              var37.put("Size", var11);
+                              var37.put("Target Machine", var51.get("Target Machine"));
                               Scalar var50 = SleepUtils.getOrderedHashScalar();
-                              Iterator var54 = var36.entrySet().iterator();
+                              Iterator var54 = var37.entrySet().iterator();
 
                               while(var54.hasNext()) {
                                  Entry var55 = (Entry)var54.next();
                                  Scalar var56 = SleepUtils.getScalar((String)var55.getKey());
                                  Scalar var16 = var50.getHash().getAt(var56);
-                                 var16.setValue(SleepUtils.getScalar(var55.getValue() + ""));
+                                 var16.setValue(SleepUtils.getScalar(((Class)var55.getValue()).makeConcatWithConstants<invokedynamic>(var55.getValue())));
                               }
 
                               return var50;
@@ -397,7 +401,7 @@ public class AggregateBridge implements Function, Loadable {
                               return var51.containsKey("Notes") ? SleepUtils.getScalar((String)var51.get("Notes")) : SleepUtils.getEmptyScalar();
                            } else {
                               LinkedList var6;
-                              String var44;
+                              String var46;
                               HashMap var52;
                               if ("&agC2ForSample".equals(var1)) {
                                  var4 = SleepUtils.getMapFromHash((ScalarHash)BridgeUtilities.getObject(var3));
@@ -407,14 +411,14 @@ public class AggregateBridge implements Function, Loadable {
 
                                  while(var28.hasNext()) {
                                     var31 = (Map)var28.next();
-                                    var38 = CommonUtils.toSet((String)var31.get("domains"));
+                                    var39 = CommonUtils.toSet((String)var31.get("domains"));
                                     var10 = DialogUtils.string(var31, "proto");
-                                    Iterator var46 = var38.iterator();
+                                    Iterator var45 = var39.iterator();
 
-                                    while(var46.hasNext()) {
-                                       var44 = (String)var46.next();
+                                    while(var45.hasNext()) {
+                                       var46 = (String)var45.next();
                                        var52 = new HashMap();
-                                       var52.put("Host", var44);
+                                       var52.put("Host", var46);
                                        var52.put("Port", var31.get("port"));
                                        var52.put("Protocols", var10);
                                        var6.add(var52);
@@ -437,9 +441,9 @@ public class AggregateBridge implements Function, Loadable {
                                        if (!"".equals(var24.get("pbid"))) {
                                           var27 = new HashMap();
                                           if ("beacon".equals(var24.get("session"))) {
-                                             PivotHint var40 = new PivotHint(var24.get("phint") + "");
-                                             var27.put("protocol", var40.getProtocol());
-                                             var27.put("port", var40.getPort());
+                                             PivotHint var36 = new PivotHint(((Class)var24.get("phint")).makeConcatWithConstants<invokedynamic>(var24.get("phint")));
+                                             var27.put("protocol", var36.getProtocol());
+                                             var27.put("port", var36.getPort());
                                           } else {
                                              var27.put("protocol", "SSH");
                                              var27.put("port", var24.get("port"));
@@ -456,12 +460,12 @@ public class AggregateBridge implements Function, Loadable {
                                           }
                                        } else {
                                           var24 = null;
-                                          Map var39 = (Map)var29.get(var5);
-                                          if (var39 != null) {
-                                             var11 = DialogUtils.string(var39, "domains");
-                                             int var47 = DialogUtils.number(var39, "port");
+                                          Map var40 = (Map)var29.get(var5);
+                                          if (var40 != null) {
+                                             var11 = DialogUtils.string(var40, "domains");
+                                             int var47 = DialogUtils.number(var40, "port");
                                              var52 = new HashMap();
-                                             var52.put("protocol", DialogUtils.string(var39, "proto"));
+                                             var52.put("protocol", DialogUtils.string(var40, "proto"));
                                              var52.put("port", var47);
                                              var52.put("hosts", var11);
                                              var21.add(var52);
@@ -585,16 +589,16 @@ public class AggregateBridge implements Function, Loadable {
                                                          var10 = (String)var24.get("data");
                                                          RegexParser var35 = new RegexParser(var10);
                                                          if (var35.matches("file: (.*?) (.*?) bytes (.*)")) {
-                                                            var44 = var35.group(1);
+                                                            var46 = var35.group(1);
                                                             var13 = var35.group(2);
                                                             var14 = var35.group(3);
-                                                            if (var20.contains(var44)) {
+                                                            if (var20.contains(var46)) {
                                                                var23.remove();
                                                             } else {
-                                                               var24.put("hash", var44);
+                                                               var24.put("hash", var46);
                                                                var24.put("name", var14);
                                                                var24.put("size", var13);
-                                                               var20.add(var44);
+                                                               var20.add(var46);
                                                             }
                                                          } else {
                                                             var23.remove();

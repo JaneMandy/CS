@@ -21,6 +21,7 @@ public class KeyEventMessage implements ClientToServerMessage {
    }
 
    public String toString() {
-      return "[KeyEventMessage: [down-flag: " + this.downFlag + ", key: " + this.key + "(" + Integer.toHexString(this.key) + ")]";
+      boolean var10000 = this.downFlag;
+      return "[KeyEventMessage: [down-flag: " + var10000 + ", key: " + this.key + "(" + Integer.toHexString(this.key) + ")]";
    }
 }

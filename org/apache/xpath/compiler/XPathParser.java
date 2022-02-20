@@ -5,7 +5,6 @@ import javax.xml.transform.SourceLocator;
 import javax.xml.transform.TransformerException;
 import org.apache.xml.utils.PrefixResolver;
 import org.apache.xpath.XPathProcessorException;
-import org.apache.xpath.domapi.XPathStylesheetDOM3Exception;
 import org.apache.xpath.objects.XNumber;
 import org.apache.xpath.objects.XString;
 import org.apache.xpath.res.XPATHMessages;
@@ -22,7 +21,6 @@ public class XPathParser {
    PrefixResolver m_namespaceContext;
    private ErrorListener m_errorListener;
    SourceLocator m_sourceLocator;
-   private FunctionTable m_functionTable;
 
    public XPathParser(ErrorListener errorListener, SourceLocator sourceLocator) {
       this.m_errorListener = errorListener;
@@ -32,7 +30,6 @@ public class XPathParser {
    public void initXPath(Compiler compiler, String expression, PrefixResolver namespaceContext) throws TransformerException {
       this.m_ops = compiler;
       this.m_namespaceContext = namespaceContext;
-      this.m_functionTable = compiler.getFunctionTable();
       Lexer lexer = new Lexer(compiler, namespaceContext, this);
       lexer.tokenize(expression);
       this.m_ops.setOp(0, 1);
@@ -68,7 +65,6 @@ public class XPathParser {
    public void initMatchPattern(Compiler compiler, String expression, PrefixResolver namespaceContext) throws TransformerException {
       this.m_ops = compiler;
       this.m_namespaceContext = namespaceContext;
-      this.m_functionTable = compiler.getFunctionTable();
       Lexer lexer = new Lexer(compiler, namespaceContext, this);
       lexer.tokenize(expression);
       this.m_ops.setOp(0, 30);
@@ -248,17 +244,6 @@ public class XPathParser {
       }
    }
 
-   void errorForDOM3(String msg, Object[] args) throws TransformerException {
-      String fmsg = XPATHMessages.createXPATHMessage(msg, args);
-      ErrorListener ehandler = this.getErrorListener();
-      TransformerException te = new XPathStylesheetDOM3Exception(fmsg, this.m_sourceLocator);
-      if (null != ehandler) {
-         ehandler.fatalError(te);
-      } else {
-         throw te;
-      }
-   }
-
    protected String dumpRemainingTokenQueue() {
       int q = this.m_queueMark;
       String returnMsg;
@@ -280,15 +265,10 @@ public class XPathParser {
    final int getFunctionToken(String key) {
       int tok;
       try {
-         Object id = Keywords.lookupNodeTest(key);
-         if (null == id) {
-            id = this.m_functionTable.getFunctionID(key);
-         }
-
-         tok = (Integer)id;
-      } catch (NullPointerException var6) {
+         tok = (Integer)Keywords.m_functions.get(key);
+      } catch (NullPointerException var5) {
          tok = -1;
-      } catch (ClassCastException var7) {
+      } catch (ClassCastException var6) {
          tok = -1;
       }
 
@@ -704,8 +684,6 @@ public class XPathParser {
          this.m_ops.setOp(this.m_ops.getOp(1) - 2, 4);
          this.m_ops.setOp(this.m_ops.getOp(1) - 1, 35);
          this.nextToken();
-      } else if (this.m_token == null) {
-         this.error("ER_EXPECTED_LOC_PATH_AT_END_EXPR", (Object[])null);
       }
 
       if (this.m_token != null && !this.RelativeLocationPath() && !seenSlash) {
@@ -803,7 +781,7 @@ public class XPathParser {
    }
 
    protected int AxisName() throws TransformerException {
-      Object val = Keywords.getAxisName(this.m_token);
+      Object val = Keywords.m_axisnames.get(this.m_token);
       if (null == val) {
          this.error("ER_ILLEGAL_AXIS_NAME", new Object[]{this.m_token});
       }
@@ -815,7 +793,7 @@ public class XPathParser {
 
    protected void NodeTest(int axesType) throws TransformerException {
       if (this.lookahead('(', 1)) {
-         Object nodeTestOp = Keywords.getNodeType(this.m_token);
+         Object nodeTestOp = Keywords.m_nodetypes.get(this.m_token);
          if (null == nodeTestOp) {
             this.error("ER_UNKNOWN_NODETYPE", new Object[]{this.m_token});
          } else {
@@ -853,6 +831,12 @@ public class XPathParser {
          if (this.tokenIs('*')) {
             this.m_ops.setOp(this.m_ops.getOp(1), -3);
          } else {
+            if (49 == axesType) {
+               String prefix = (String)this.m_ops.m_tokenQueue.elementAt(this.m_queueMark - 1);
+               String namespace = this.m_namespaceContext.getNamespaceForPrefix(prefix);
+               this.m_ops.m_tokenQueue.setElementAt(namespace, this.m_queueMark - 1);
+            }
+
             this.m_ops.setOp(this.m_ops.getOp(1), this.m_queueMark - 1);
             if (!Character.isLetter(this.m_tokenChar) && !this.tokenIs('_')) {
                this.error("ER_EXPECTED_NODE_TEST", (Object[])null);

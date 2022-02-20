@@ -55,16 +55,14 @@ public class BeaconDownloads {
       synchronized(this) {
          Iterator var4 = this.downloads.iterator();
 
-         BeaconDownloads.BeaconDownload var5;
-         do {
-            if (!var4.hasNext()) {
-               return null;
+         while(var4.hasNext()) {
+            BeaconDownloads.BeaconDownload var5 = (BeaconDownloads.BeaconDownload)var4.next();
+            if (var5.is(var1, var2)) {
+               return var5;
             }
+         }
 
-            var5 = (BeaconDownloads.BeaconDownload)var4.next();
-         } while(!var5.is(var1, var2));
-
-         return var5;
+         return null;
       }
    }
 
@@ -96,16 +94,14 @@ public class BeaconDownloads {
       synchronized(this) {
          Iterator var3 = this.downloads.iterator();
 
-         BeaconDownloads.BeaconDownload var4;
-         do {
-            if (!var3.hasNext()) {
-               return false;
+         while(var3.hasNext()) {
+            BeaconDownloads.BeaconDownload var4 = (BeaconDownloads.BeaconDownload)var3.next();
+            if (var4.bid.equals(var1)) {
+               return true;
             }
+         }
 
-            var4 = (BeaconDownloads.BeaconDownload)var3.next();
-         } while(!var4.bid.equals(var1));
-
-         return true;
+         return false;
       }
    }
 

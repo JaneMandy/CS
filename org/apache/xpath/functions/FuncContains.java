@@ -6,8 +6,6 @@ import org.apache.xpath.objects.XBoolean;
 import org.apache.xpath.objects.XObject;
 
 public class FuncContains extends Function2Args {
-   static final long serialVersionUID = 5084753781887919723L;
-
    public XObject execute(XPathContext xctxt) throws TransformerException {
       String s1 = super.m_arg0.execute(xctxt).str();
       String s2 = super.m_arg1.execute(xctxt).str();

@@ -1,7 +1,11 @@
 package org.apache.xml.utils;
 
 public class ThreadControllerWrapper {
-   private static ThreadControllerWrapper.ThreadController m_tpool = new ThreadControllerWrapper.ThreadController();
+   static ThreadControllerWrapper.ThreadController m_tpool = new ThreadControllerWrapper.ThreadController();
+
+   public static void setThreadController(ThreadControllerWrapper.ThreadController tpool) {
+      m_tpool = tpool;
+   }
 
    public static Thread runThread(Runnable runnable, int priority) {
       return m_tpool.run(runnable, priority);

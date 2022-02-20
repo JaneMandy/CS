@@ -10,8 +10,8 @@ public class XMLMessages {
    protected Locale fLocale = Locale.getDefault();
    private static ListResourceBundle XMLBundle = null;
    private static final String XML_ERROR_RESOURCES = "org.apache.xml.res.XMLErrorResources";
-   protected static final String BAD_CODE = "BAD_CODE";
-   protected static final String FORMAT_FAILED = "FORMAT_FAILED";
+   protected static String BAD_CODE = "BAD_CODE";
+   protected static String FORMAT_FAILED = "FORMAT_FAILED";
 
    public void setLocale(Locale locale) {
       this.fLocale = locale;
@@ -38,7 +38,7 @@ public class XMLMessages {
       }
 
       if (msg == null) {
-         msg = fResourceBundle.getString("BAD_CODE");
+         msg = fResourceBundle.getString(BAD_CODE);
          throwex = true;
       }
 
@@ -54,7 +54,7 @@ public class XMLMessages {
 
             fmsg = MessageFormat.format(msg, args);
          } catch (Exception var8) {
-            fmsg = fResourceBundle.getString("FORMAT_FAILED");
+            fmsg = fResourceBundle.getString(FORMAT_FAILED);
             fmsg = fmsg + " " + msg;
          }
       } else {

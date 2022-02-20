@@ -18,7 +18,7 @@ import org.apache.xalan.xsltc.compiler.util.Type;
 import org.apache.xalan.xsltc.compiler.util.TypeCheckError;
 import org.apache.xalan.xsltc.compiler.util.Util;
 import org.apache.xml.serializer.ElemDesc;
-import org.apache.xml.utils.XML11Char;
+import org.apache.xml.utils.XMLChar;
 
 final class XslAttribute extends Instruction {
    private String _prefix;
@@ -46,7 +46,7 @@ final class XslAttribute extends Instruction {
       String prefix = qname.getPrefix();
       if ((prefix == null || !prefix.equals("xmlns")) && !name.equals("xmlns")) {
          this._isLiteral = Util.isLiteral(name);
-         if (this._isLiteral && !XML11Char.isXML11ValidQName(name)) {
+         if (this._isLiteral && !XMLChar.isValidQName(name)) {
             this.reportError(this, parser, "ILLEGAL_ATTR_NAME_ERR", name);
          } else {
             SyntaxTreeNode parent = this.getParent();

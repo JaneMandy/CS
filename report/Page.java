@@ -83,5 +83,6 @@ public class Page extends Content {
          super.publish(var1);
          var1.append("\t</fo:flow>\n</fo:page-sequence>");
       }
+
    }
 }

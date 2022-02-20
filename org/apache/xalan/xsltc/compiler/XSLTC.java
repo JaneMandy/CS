@@ -63,15 +63,6 @@ public final class XSLTC {
    private boolean _multiDocument = false;
    private boolean _hasIdCall = false;
    private boolean _templateInlining = false;
-   private boolean _isSecureProcessing = false;
-
-   public void setSecureProcessing(boolean flag) {
-      this._isSecureProcessing = flag;
-   }
-
-   public boolean isSecureProcessing() {
-      return this._isSecureProcessing;
-   }
 
    public Parser getParser() {
       return this._parser;

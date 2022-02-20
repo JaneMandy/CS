@@ -192,22 +192,7 @@ public class BeaconBridge implements Function, Loadable, Predicate {
                      }
 
                      int var18;
-                     if (var1.equals("&beacon_execute_job")) {
-                        var11 = bids(var3);
-                        var12 = BridgeUtilities.getString(var3, "");
-                        var6 = BridgeUtilities.getString(var3, "");
-                        var18 = BridgeUtilities.getInt(var3, 0);
-
-                        for(int var28 = 0; var28 < var11.length; ++var28) {
-                           EncodedCommandBuilder var29 = new EncodedCommandBuilder(this.client);
-                           var29.setCommand(78);
-                           var29.addLengthAndEncodedString(var11[var28], var12);
-                           var29.addLengthAndEncodedString(var11[var28], var6);
-                           var29.addShort(var18);
-                           byte[] var32 = var29.build();
-                           this.conn.call("beacons.task", CommonUtils.args(var11[var28], var32));
-                        }
-                     } else {
+                     if (!var1.equals("&beacon_execute_job")) {
                         if (var1.equals("&beacon_host_imported_script")) {
                            var4 = BridgeUtilities.getString(var3, "");
                            return SleepUtils.getScalar((new PowerShellTasks(this.client, var4)).getImportCradle());
@@ -232,8 +217,8 @@ public class BeaconBridge implements Function, Loadable, Predicate {
 
                         if (!var1.equals("&beacon_info") && !var1.equals("&binfo")) {
                            if (!var1.equals("&beacon_data") && !var1.equals("&bdata")) {
-                              final String var7;
                               final SleepClosure var13;
+                              final String var7;
                               if (var1.equals("&bipconfig")) {
                                  var11 = bids(var3);
                                  var13 = BridgeUtilities.getFunction(var3, var2);
@@ -245,159 +230,165 @@ public class BeaconBridge implements Function, Loadable, Predicate {
                                           Stack var3 = new Stack();
                                           var3.push(CommonUtils.convertAll(var2));
                                           var3.push(SleepUtils.getScalar(var7));
-                                          SleepUtils.runCode((SleepClosure)var13, var1, (ScriptInstance)null, var3);
+                                          SleepUtils.runCode(var13, var1, (ScriptInstance)null, var3);
                                        }
                                     });
                                  }
 
                                  return SleepUtils.getEmptyScalar();
-                              } else {
-                                 final String var8;
-                                 if (var1.equals("&bls")) {
-                                    var11 = bids(var3);
-                                    var12 = BridgeUtilities.getString(var3, ".");
-                                    if (!var3.isEmpty()) {
-                                       final SleepClosure var17 = BridgeUtilities.getFunction(var3, var2);
+                              }
 
-                                       for(var18 = 0; var18 < var11.length; ++var18) {
-                                          var8 = var11[var18];
-                                          this.conn.call("beacons.task_ls", CommonUtils.args(var11[var18], var12), new Callback() {
-                                             public void result(String var1, Object var2) {
-                                                Stack var3 = new Stack();
-                                                var3.push(CommonUtils.convertAll(var2));
-                                                var3.push(SleepUtils.getScalar(var12));
-                                                var3.push(SleepUtils.getScalar(var8));
-                                                SleepUtils.runCode((SleepClosure)var17, var1, (ScriptInstance)null, var3);
-                                             }
-                                          });
+                              TaskBeacon var10;
+                              final String var7;
+                              if (var1.equals("&bls")) {
+                                 var11 = bids(var3);
+                                 var12 = BridgeUtilities.getString(var3, ".");
+                                 if (var3.isEmpty()) {
+                                    var10 = new TaskBeacon(this.client, this.client.getData(), this.conn, var11);
+                                    var10.Ls(var12);
+                                    return SleepUtils.getEmptyScalar();
+                                 }
+
+                                 final SleepClosure var17 = BridgeUtilities.getFunction(var3, var2);
+
+                                 for(var18 = 0; var18 < var11.length; ++var18) {
+                                    var7 = var11[var18];
+                                    this.conn.call("beacons.task_ls", CommonUtils.args(var11[var18], var12), new Callback() {
+                                       public void result(String var1, Object var2) {
+                                          Stack var3 = new Stack();
+                                          var3.push(CommonUtils.convertAll(var2));
+                                          var3.push(SleepUtils.getScalar(var12));
+                                          var3.push(SleepUtils.getScalar(var7));
+                                          SleepUtils.runCode(var17, var1, (ScriptInstance)null, var3);
                                        }
+                                    });
+                                 }
 
-                                       return SleepUtils.getEmptyScalar();
-                                    } else {
-                                       TaskBeacon var19 = new TaskBeacon(this.client, this.client.getData(), this.conn, var11);
-                                       var19.Ls(var12);
+                                 return SleepUtils.getEmptyScalar();
+                              }
+
+                              if (!var1.equals("&bps")) {
+                                 if (var1.equals("&beacon_stage_tcp")) {
+                                    var4 = BridgeUtilities.getString(var3, "");
+                                    var12 = BridgeUtilities.getString(var3, "127.0.0.1");
+                                    var16 = BridgeUtilities.getInt(var3, 0);
+                                    var7 = BridgeUtilities.getString(var3, "");
+                                    String var8 = BridgeUtilities.getString(var3, "x86");
+                                    ScListener var9 = ListenerUtils.getListener(this.client, var7);
+                                    var10 = new TaskBeacon(this.client, this.client.getData(), this.conn, new String[]{var4});
+                                    var10.StageTCP(var4, var12, var16, var8, var9);
+                                    return SleepUtils.getEmptyScalar();
+                                 }
+
+                                 if (var1.equals("&beacon_stage_pipe")) {
+                                    var4 = BridgeUtilities.getString(var3, "");
+                                    var12 = BridgeUtilities.getString(var3, "127.0.0.1");
+                                    var6 = BridgeUtilities.getString(var3, "");
+                                    var7 = BridgeUtilities.getString(var3, "x86");
+                                    ScListener var21 = ListenerUtils.getListener(this.client, var6);
+                                    String var26 = var21.getConfig().getStagerPipe();
+                                    var10 = new TaskBeacon(this.client, this.client.getData(), this.conn, new String[]{var4});
+                                    var10.StagePipe(var4, var12, var26, var7, var21);
+                                    return SleepUtils.getEmptyScalar();
+                                 }
+
+                                 if (var1.equals("&openOrActivate")) {
+                                    var11 = bids(var3);
+                                    if (var11.length == 1) {
+                                       DialogUtils.openOrActivate(this.client, var11[0]);
                                        return SleepUtils.getEmptyScalar();
                                     }
-                                 } else if (var1.equals("&bps")) {
+
+                                    return SleepUtils.getEmptyScalar();
+                                 }
+
+                                 if (var1.equals("&openBypassUACDialog")) {
+                                    throw new RuntimeException(var1 + " was removed in Cobalt Strike 4.1");
+                                 }
+
+                                 if (var1.equals("&openElevateDialog")) {
                                     var11 = bids(var3);
-                                    if (var3.isEmpty()) {
-                                       TaskBeacon var15 = new TaskBeacon(this.client, this.client.getData(), this.conn, var11);
-                                       var15.Ps();
-                                       return SleepUtils.getEmptyScalar();
-                                    } else {
-                                       var13 = BridgeUtilities.getFunction(var3, var2);
+                                    (new ElevateDialog(this.client, var11)).show();
+                                    return SleepUtils.getEmptyScalar();
+                                 }
 
-                                       for(var16 = 0; var16 < var11.length; ++var16) {
-                                          var7 = var11[var16];
-                                          this.conn.call("beacons.task_ps", CommonUtils.args(var11[var16]), new Callback() {
-                                             public void result(String var1, Object var2) {
-                                                Stack var3 = new Stack();
-                                                var3.push(CommonUtils.convertAll(var2));
-                                                var3.push(SleepUtils.getScalar(var7));
-                                                SleepUtils.runCode((SleepClosure)var13, var1, (ScriptInstance)null, var3);
-                                             }
-                                          });
-                                       }
-
-                                       return SleepUtils.getEmptyScalar();
-                                    }
+                                 if (var1.equals("&openOneLinerDialog")) {
+                                    var11 = bids(var3);
+                                    (new OneLinerDialog(this.client, var11)).show();
                                  } else {
-                                    TaskBeacon var10;
-                                    if (var1.equals("&beacon_stage_tcp")) {
+                                    if (var1.equals("&bof_pack")) {
                                        var4 = BridgeUtilities.getString(var3, "");
-                                       var12 = BridgeUtilities.getString(var3, "127.0.0.1");
-                                       var16 = BridgeUtilities.getInt(var3, 0);
-                                       var7 = BridgeUtilities.getString(var3, "");
-                                       var8 = BridgeUtilities.getString(var3, "x86");
-                                       ScListener var9 = ListenerUtils.getListener(this.client, var7);
-                                       var10 = new TaskBeacon(this.client, this.client.getData(), this.conn, new String[]{var4});
-                                       var10.StageTCP(var4, var12, var16, var8, var9);
-                                       return SleepUtils.getEmptyScalar();
-                                    } else if (var1.equals("&beacon_stage_pipe")) {
-                                       var4 = BridgeUtilities.getString(var3, "");
-                                       var12 = BridgeUtilities.getString(var3, "127.0.0.1");
-                                       var6 = BridgeUtilities.getString(var3, "");
-                                       var7 = BridgeUtilities.getString(var3, "x86");
-                                       ScListener var21 = ListenerUtils.getListener(this.client, var6);
-                                       String var26 = var21.getConfig().getStagerPipe();
-                                       var10 = new TaskBeacon(this.client, this.client.getData(), this.conn, new String[]{var4});
-                                       var10.StagePipe(var4, var12, var26, var7, var21);
-                                       return SleepUtils.getEmptyScalar();
-                                    } else if (var1.equals("&openOrActivate")) {
-                                       var11 = bids(var3);
-                                       if (var11.length == 1) {
-                                          DialogUtils.openOrActivate(this.client, var11[0]);
-                                          return SleepUtils.getEmptyScalar();
-                                       }
+                                       var12 = BridgeUtilities.getString(var3, "");
+                                       Packer var30 = new Packer();
 
-                                       return SleepUtils.getEmptyScalar();
-                                    } else {
-                                       if (var1.equals("&openBypassUACDialog")) {
-                                          throw new RuntimeException(var1 + " was removed in Cobalt Strike 4.1");
-                                       }
-
-                                       if (var1.equals("&openElevateDialog")) {
-                                          var11 = bids(var3);
-                                          (new ElevateDialog(this.client, var11)).show();
-                                          return SleepUtils.getEmptyScalar();
-                                       } else {
-                                          if (var1.equals("&openOneLinerDialog")) {
-                                             var11 = bids(var3);
-                                             (new OneLinerDialog(this.client, var11)).show();
-                                          } else {
-                                             if (var1.equals("&bof_pack")) {
-                                                var4 = BridgeUtilities.getString(var3, "");
-                                                var12 = BridgeUtilities.getString(var3, "");
-                                                Packer var30 = new Packer();
-
-                                                for(var18 = 0; var18 < var12.length(); ++var18) {
-                                                   char var27 = var12.charAt(var18);
-                                                   if (var27 != ' ') {
-                                                      if (var3.isEmpty()) {
-                                                         throw new RuntimeException("No argument corresponds to '" + var27 + "'");
-                                                      }
-
-                                                      if (var27 == 'b') {
-                                                         var30.addLengthAndString(BridgeUtilities.getString(var3, ""));
-                                                      } else if (var27 == 'i') {
-                                                         var30.addInt(BridgeUtilities.getInt(var3, 0));
-                                                      } else if (var27 == 's') {
-                                                         var30.addShort((short)BridgeUtilities.getInt(var3, 0));
-                                                      } else if (var27 == 'z') {
-                                                         var30.addLengthAndEncodedStringASCIIZ(this.client, var4, BridgeUtilities.getString(var3, ""));
-                                                      } else {
-                                                         if (var27 != 'Z') {
-                                                            throw new RuntimeException("Invalid character in BOF: '" + var27 + "'");
-                                                         }
-
-                                                         var30.addLengthAndWideStringASCIIZ(BridgeUtilities.getString(var3, ""));
-                                                      }
-                                                   }
-                                                }
-
-                                                return SleepUtils.getScalar(var30.getBytes());
+                                       for(var18 = 0; var18 < var12.length(); ++var18) {
+                                          char var27 = var12.charAt(var18);
+                                          if (var27 != ' ') {
+                                             if (var3.isEmpty()) {
+                                                throw new RuntimeException("No argument corresponds to '" + var27 + "'");
                                              }
 
-                                             if (var1.equals("&beacon_inline_execute")) {
-                                                var4 = BridgeUtilities.getString(var3, "");
-                                                byte[] var20 = CommonUtils.toBytes(BridgeUtilities.getString(var3, ""));
-                                                var6 = BridgeUtilities.getString(var3, "");
-                                                byte[] var22 = CommonUtils.toBytes(BridgeUtilities.getString(var3, ""));
-                                                if (var20.length == 0) {
-                                                   throw new RuntimeException("The BOF content (arg 2) is empty. Did you read the right file?");
+                                             if (var27 == 'b') {
+                                                var30.addLengthAndString(BridgeUtilities.getString(var3, ""));
+                                             } else if (var27 == 'i') {
+                                                var30.addInt(BridgeUtilities.getInt(var3, 0));
+                                             } else if (var27 == 's') {
+                                                var30.addShort((short)BridgeUtilities.getInt(var3, 0));
+                                             } else if (var27 == 'z') {
+                                                var30.addLengthAndEncodedStringASCIIZ(this.client, var4, BridgeUtilities.getString(var3, ""));
+                                             } else {
+                                                if (var27 != 'Z') {
+                                                   throw new RuntimeException("Invalid character in BOF: '" + var27 + "'");
                                                 }
 
-                                                UserSpecifiedFull var23 = new UserSpecifiedFull(this.client, var20, var6, var22);
-                                                var23.go(var4);
-                                                return SleepUtils.getEmptyScalar();
+                                                var30.addLengthAndWideStringASCIIZ(BridgeUtilities.getString(var3, ""));
                                              }
                                           }
-
-                                          return SleepUtils.getEmptyScalar();
                                        }
+
+                                       return SleepUtils.getScalar(var30.getBytes());
+                                    }
+
+                                    if (var1.equals("&beacon_inline_execute")) {
+                                       var4 = BridgeUtilities.getString(var3, "");
+                                       byte[] var20 = CommonUtils.toBytes(BridgeUtilities.getString(var3, ""));
+                                       var6 = BridgeUtilities.getString(var3, "");
+                                       byte[] var22 = CommonUtils.toBytes(BridgeUtilities.getString(var3, ""));
+                                       if (var20.length == 0) {
+                                          throw new RuntimeException("The BOF content (arg 2) is empty. Did you read the right file?");
+                                       }
+
+                                       UserSpecifiedFull var23 = new UserSpecifiedFull(this.client, var20, var6, var22);
+                                       var23.go(var4);
+                                       return SleepUtils.getEmptyScalar();
                                     }
                                  }
+
+                                 return SleepUtils.getEmptyScalar();
                               }
+
+                              var11 = bids(var3);
+                              if (var3.isEmpty()) {
+                                 var10 = new TaskBeacon(this.client, this.client.getData(), this.conn, var11);
+                                 var10.Ps();
+                                 return SleepUtils.getEmptyScalar();
+                              }
+
+                              var13 = BridgeUtilities.getFunction(var3, var2);
+
+                              for(var16 = 0; var16 < var11.length; ++var16) {
+                                 var7 = var11[var16];
+                                 this.conn.call("beacons.task_ps", CommonUtils.args(var11[var16]), new Callback() {
+                                    public void result(String var1, Object var2) {
+                                       Stack var3 = new Stack();
+                                       var3.push(CommonUtils.convertAll(var2));
+                                       var3.push(SleepUtils.getScalar(var7));
+                                       SleepUtils.runCode(var13, var1, (ScriptInstance)null, var3);
+                                    }
+                                 });
+                              }
+
+                              return SleepUtils.getEmptyScalar();
                            }
 
                            var4 = BridgeUtilities.getString(var3, "");
@@ -422,6 +413,21 @@ public class BeaconBridge implements Function, Loadable, Predicate {
                         }
 
                         return CommonUtils.convertAll(var5.toMap());
+                     }
+
+                     var11 = bids(var3);
+                     var12 = BridgeUtilities.getString(var3, "");
+                     var6 = BridgeUtilities.getString(var3, "");
+                     var18 = BridgeUtilities.getInt(var3, 0);
+
+                     for(int var28 = 0; var28 < var11.length; ++var28) {
+                        EncodedCommandBuilder var29 = new EncodedCommandBuilder(this.client);
+                        var29.setCommand(78);
+                        var29.addLengthAndEncodedString(var11[var28], var12);
+                        var29.addLengthAndEncodedString(var11[var28], var6);
+                        var29.addShort(var18);
+                        byte[] var32 = var29.build();
+                        this.conn.call("beacons.task", CommonUtils.args(var11[var28], var32));
                      }
                   }
                }

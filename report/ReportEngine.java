@@ -55,12 +55,12 @@ public class ReportEngine {
          ScriptInstance var5 = var4.loadScript(var1, var2);
          var5.addWarningWatcher(this.client.getScriptEngine());
          var5.runScript();
-      } catch (YourCodeSucksException var6) {
+      } catch (YourCodeSucksException var5) {
          CommonUtils.print_error("Could not load: " + var1 + " (syntax errors; go to View -> Script Console)");
-         this.client.getScriptEngine().perror("Could not load " + var1 + ":\n" + var6.formatErrors());
-      } catch (Exception var7) {
-         this.client.getScriptEngine().perror("Could not load " + var1 + ": " + var7.getMessage());
-         MudgeSanity.logException("Could not load:" + var1, var7, false);
+         this.client.getScriptEngine().perror("Could not load " + var1 + ":\n" + var5.formatErrors());
+      } catch (Exception var6) {
+         this.client.getScriptEngine().perror("Could not load " + var1 + ": " + var6.getMessage());
+         MudgeSanity.logException("Could not load:" + var1, var6, false);
       }
 
    }

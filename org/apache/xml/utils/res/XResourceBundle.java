@@ -24,6 +24,7 @@ public class XResourceBundle extends ListResourceBundle {
    public static final String LANG_NUM_TABLES = "tables";
    public static final String LANG_ALPHABET = "alphabet";
    public static final String LANG_TRAD_ALPHABET = "tradAlphabet";
+   static final Object[][] contents = new Object[][]{{"ui_language", "en"}, {"help_language", "en"}, {"language", "en"}, {"alphabet", new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'}}, {"tradAlphabet", new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'}}, {"orientation", "LeftToRight"}, {"numbering", "additive"}};
 
    public static final XResourceBundle loadResourceBundle(String className, Locale locale) throws MissingResourceException {
       String suffix = getResourceSuffix(locale);
@@ -57,6 +58,6 @@ public class XResourceBundle extends ListResourceBundle {
    }
 
    public Object[][] getContents() {
-      return new Object[][]{{"ui_language", "en"}, {"help_language", "en"}, {"language", "en"}, {"alphabet", new CharArrayWrapper(new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'})}, {"tradAlphabet", new CharArrayWrapper(new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'})}, {"orientation", "LeftToRight"}, {"numbering", "additive"}};
+      return contents;
    }
 }

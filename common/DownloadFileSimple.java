@@ -47,7 +47,8 @@ public class DownloadFileSimple extends AObject implements Callback {
                this.listener.cancel();
             }
          } else {
-            CommonUtils.print_error("download sync " + this.rpath + " failed: " + var3.getError());
+            String var10000 = this.rpath;
+            CommonUtils.print_error("download sync " + var10000 + " failed: " + var3.getError());
          }
       }
 

@@ -8,8 +8,6 @@ import org.apache.xpath.objects.XString;
 import org.apache.xpath.res.XPATHMessages;
 
 public class FuncSubstring extends Function3Args {
-   static final long serialVersionUID = -5996676095024715502L;
-
    public XObject execute(XPathContext xctxt) throws TransformerException {
       XMLString s1 = super.m_arg0.execute(xctxt).xstr();
       double start = super.m_arg1.execute(xctxt).num();

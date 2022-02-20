@@ -43,13 +43,13 @@ public class Commands implements Function, Environment, Loadable {
          Iterator var7 = var6.iterator();
 
          while(var7.hasNext()) {
-            var8.append(var7.next() + "");
+            var8.append(((Class)var7.next()).makeConcatWithConstants<invokedynamic>(var7.next()));
             if (var7.hasNext()) {
                var8.append(" ");
             }
          }
 
-         this.manager.fireCommand(var4, var8 + "", var3);
+         this.manager.fireCommand(var4, var8.makeConcatWithConstants<invokedynamic>(var8), var3);
          return SleepUtils.getEmptyScalar();
       } else {
          SleepClosure var5 = BridgeUtilities.getFunction(var3, var2);

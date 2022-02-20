@@ -16,7 +16,6 @@ import org.apache.xml.utils.SystemIDResolver;
 import org.apache.xml.utils.WrappedRuntimeException;
 
 public class Stylesheet extends ElemTemplateElement implements Serializable {
-   static final long serialVersionUID = 2085337282743043776L;
    public static final String STYLESHEET_EXT = ".lxc";
    private String m_XmlnsXsl;
    private StringVector m_ExtensionElementURIs;

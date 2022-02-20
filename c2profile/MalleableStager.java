@@ -59,7 +59,7 @@ public class MalleableStager implements WebService {
          var5.data = new ByteArrayInputStream(this.resource);
          var5.size = (long)this.resource.length;
          var5.offset = 0L;
-         var5.addHeader("Content-Length", this.resource.length + "");
+         var5.addHeader("Content-Length", this.resource.length.makeConcatWithConstants<invokedynamic>(this.resource.length));
       }
 
       this.checkKillDate();

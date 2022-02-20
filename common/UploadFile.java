@@ -27,13 +27,17 @@ public class UploadFile implements Callback {
    }
 
    public void result(String var1, Object var2) {
-      String var3 = var2 + "";
+      String var3 = ((Class)var2).makeConcatWithConstants<invokedynamic>(var2);
 
       try {
+         ProgressMonitor var10000;
+         long var10001;
          if (this.sofar < this.total) {
             this.time = (double)(System.currentTimeMillis() - this.start) / 1000.0D;
             this.progress.setProgress((int)this.sofar);
-            this.progress.setNote("Speed: " + Math.round((double)(this.sofar / 1024L) / this.time) + " KB/s");
+            var10000 = this.progress;
+            var10001 = Math.round((double)(this.sofar / 1024L) / this.time);
+            var10000.setNote("Speed: " + var10001 + " KB/s");
             if (this.progress.isCanceled()) {
                this.progress.close();
                this.in.close();
@@ -53,10 +57,12 @@ public class UploadFile implements Callback {
          } else {
             this.time = (double)(System.currentTimeMillis() - this.start) / 1000.0D;
             this.progress.setProgress((int)this.sofar);
-            this.progress.setNote("Speed: " + Math.round((double)(this.sofar / 1024L) / this.time) + " KB/s");
+            var10000 = this.progress;
+            var10001 = Math.round((double)(this.sofar / 1024L) / this.time);
+            var10000.setNote("Speed: " + var10001 + " KB/s");
             this.progress.close();
             this.in.close();
-            this.listener.complete(var2 + "");
+            this.listener.complete(((Class)var2).makeConcatWithConstants<invokedynamic>(var2));
          }
       } catch (Exception var5) {
          MudgeSanity.logException("upload" + this.sofar + "/" + this.total + " of " + this.file, var5, false);

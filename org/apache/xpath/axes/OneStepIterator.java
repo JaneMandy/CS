@@ -10,7 +10,6 @@ import org.apache.xpath.compiler.Compiler;
 import org.apache.xpath.compiler.OpMap;
 
 public class OneStepIterator extends ChildTestIterator {
-   static final long serialVersionUID = 4623710779664998283L;
    protected int m_axis = -1;
    protected DTMAxisIterator m_iterator;
 

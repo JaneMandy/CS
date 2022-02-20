@@ -12,14 +12,13 @@ import org.apache.xml.utils.WrappedRuntimeException;
 import org.apache.xpath.compiler.Compiler;
 import org.apache.xpath.compiler.FunctionTable;
 import org.apache.xpath.compiler.XPathParser;
+import org.apache.xpath.functions.Function;
 import org.apache.xpath.objects.XObject;
 import org.apache.xpath.res.XPATHMessages;
 import org.w3c.dom.Node;
 
 public class XPath implements Serializable, ExpressionOwner {
-   static final long serialVersionUID = 3976493477939110553L;
    private Expression m_mainExp;
-   private transient FunctionTable m_funcTable;
    String m_patternString;
    public static final int SELECT = 0;
    public static final int MATCH = 1;
@@ -29,10 +28,6 @@ public class XPath implements Serializable, ExpressionOwner {
    public static final double MATCH_SCORE_NSWILD = -0.25D;
    public static final double MATCH_SCORE_NODETEST = -0.5D;
    public static final double MATCH_SCORE_OTHER = 0.5D;
-
-   private void initFunctionTable() {
-      this.m_funcTable = new FunctionTable();
-   }
 
    public Expression getExpression() {
       return this.m_mainExp;
@@ -59,43 +54,13 @@ public class XPath implements Serializable, ExpressionOwner {
    }
 
    public XPath(String exprString, SourceLocator locator, PrefixResolver prefixResolver, int type, ErrorListener errorListener) throws TransformerException {
-      this.m_funcTable = null;
-      this.initFunctionTable();
       if (null == errorListener) {
          errorListener = new DefaultErrorHandler();
       }
 
       this.m_patternString = exprString;
       XPathParser parser = new XPathParser((ErrorListener)errorListener, locator);
-      Compiler compiler = new Compiler((ErrorListener)errorListener, locator, this.m_funcTable);
-      if (0 == type) {
-         parser.initXPath(compiler, exprString, prefixResolver);
-      } else {
-         if (1 != type) {
-            throw new RuntimeException(XPATHMessages.createXPATHMessage("ER_CANNOT_DEAL_XPATH_TYPE", new Object[]{Integer.toString(type)}));
-         }
-
-         parser.initMatchPattern(compiler, exprString, prefixResolver);
-      }
-
-      Expression expr = compiler.compile(0);
-      this.setExpression(expr);
-      if (null != locator && locator instanceof ExpressionNode) {
-         expr.exprSetParent((ExpressionNode)locator);
-      }
-
-   }
-
-   public XPath(String exprString, SourceLocator locator, PrefixResolver prefixResolver, int type, ErrorListener errorListener, FunctionTable aTable) throws TransformerException {
-      this.m_funcTable = null;
-      this.m_funcTable = aTable;
-      if (null == errorListener) {
-         errorListener = new DefaultErrorHandler();
-      }
-
-      this.m_patternString = exprString;
-      XPathParser parser = new XPathParser((ErrorListener)errorListener, locator);
-      Compiler compiler = new Compiler((ErrorListener)errorListener, locator, this.m_funcTable);
+      Compiler compiler = new Compiler((ErrorListener)errorListener, locator);
       if (0 == type) {
          parser.initXPath(compiler, exprString, prefixResolver);
       } else {
@@ -119,9 +84,7 @@ public class XPath implements Serializable, ExpressionOwner {
    }
 
    public XPath(Expression expr) {
-      this.m_funcTable = null;
       this.setExpression(expr);
-      this.initFunctionTable();
    }
 
    public XObject execute(XPathContext xctxt, Node contextNode, PrefixResolver namespaceContext) throws TransformerException {
@@ -222,6 +185,10 @@ public class XPath implements Serializable, ExpressionOwner {
       }
 
       return var4;
+   }
+
+   public void installFunction(String name, int funcIndex, Function func) {
+      FunctionTable.installFunction(func, funcIndex);
    }
 
    public void warn(XPathContext xctxt, int sourceNode, String msg, Object[] args) throws TransformerException {

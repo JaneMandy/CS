@@ -23,7 +23,6 @@ import org.apache.xalan.xsltc.compiler.util.ErrorMsg;
 import org.apache.xalan.xsltc.compiler.util.MethodGenerator;
 import org.apache.xalan.xsltc.compiler.util.Type;
 import org.apache.xalan.xsltc.compiler.util.TypeCheckError;
-import org.apache.xalan.xsltc.runtime.AttributeList;
 import org.xml.sax.Attributes;
 
 public abstract class SyntaxTreeNode implements Constants {
@@ -34,9 +33,9 @@ public abstract class SyntaxTreeNode implements Constants {
    private final Vector _contents = new Vector(2);
    protected QName _qname;
    private int _line;
-   protected AttributeList _attributes = null;
+   protected Attributes _attributes = null;
    private Hashtable _prefixMapping = null;
-   static final SyntaxTreeNode Dummy = new AbsolutePathPattern((RelativePathPattern)null);
+   protected static final SyntaxTreeNode Dummy = new AbsolutePathPattern((RelativePathPattern)null);
    protected static final int IndentIncrement = 4;
    private static final char[] _spaces = "                                                       ".toCharArray();
 
@@ -60,12 +59,7 @@ public abstract class SyntaxTreeNode implements Constants {
    }
 
    public final int getLineNumber() {
-      if (this._line > 0) {
-         return this._line;
-      } else {
-         SyntaxTreeNode parent = this.getParent();
-         return parent != null ? parent.getLineNumber() : 0;
-      }
+      return this._line;
    }
 
    protected void setQName(QName qname) {
@@ -80,7 +74,7 @@ public abstract class SyntaxTreeNode implements Constants {
       return this._qname;
    }
 
-   protected void setAttributes(AttributeList attributes) {
+   protected void setAttributes(Attributes attributes) {
       this._attributes = attributes;
    }
 
@@ -93,16 +87,8 @@ public abstract class SyntaxTreeNode implements Constants {
       }
    }
 
-   protected String getAttribute(String prefix, String localName) {
-      return this.getAttribute(prefix + ':' + localName);
-   }
-
    protected boolean hasAttribute(String qname) {
       return this._attributes != null && this._attributes.getValue(qname) != null;
-   }
-
-   protected void addAttribute(String qname, String value) {
-      this._attributes.add(qname, value);
    }
 
    protected Attributes getAttributes() {

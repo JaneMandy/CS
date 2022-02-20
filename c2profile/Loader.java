@@ -422,7 +422,7 @@ public class Loader {
 
       String var3;
       while(var2.hasNext()) {
-         var3 = var2.next() + "";
+         var3 = ((Class)var2.next()).makeConcatWithConstants<invokedynamic>(var2.next());
          if (this.result.getProgram(var3) == null && !this.freepass.contains(var3)) {
             this.parser.reportError(new SyntaxError("Profile is missing a mandatory program spec", var3, 1));
          }
@@ -431,7 +431,7 @@ public class Loader {
       var2 = this.options.iterator();
 
       while(var2.hasNext()) {
-         var3 = var2.next() + "";
+         var3 = ((Class)var2.next()).makeConcatWithConstants<invokedynamic>(var2.next());
          if (!this.result.hasString(var3)) {
             this.parser.reportError(new SyntaxError("Profile is missing a mandatory option", var3, 1));
          }
@@ -476,7 +476,7 @@ public class Loader {
                      try {
                         var7 = Integer.parseInt(var4, 16);
                         var3.append((char)var7);
-                     } catch (NumberFormatException var9) {
+                     } catch (NumberFormatException var10) {
                         this.parser.reportErrorWithMarker("invalid unicode escape \\u" + var4 + " - must be hex digits", var5.getErrorToken());
                      }
                   }
@@ -489,7 +489,7 @@ public class Loader {
                      try {
                         var7 = Integer.parseInt(var4, 16);
                         var3.append((char)var7);
-                     } catch (NumberFormatException var8) {
+                     } catch (NumberFormatException var9) {
                         this.parser.reportErrorWithMarker("invalid unicode escape \\x" + var4 + " - must be hex digits", var5.getErrorToken());
                      }
                   }
@@ -527,8 +527,8 @@ public class Loader {
          var5 = var1[var2 + 1].toString();
          var6 = var1[var2 + 2].toString();
          var7 = var1[var2 + 3].toString();
-         String var9;
          String var10;
+         String var9;
          if (Checkers.isSetStatement(var4, var5, var6, var7)) {
             if (!this.options.contains(var3 + "." + var5)) {
                this.parser.reportError("invalid option for " + A(var3), var1[var2 + 1]);
@@ -574,7 +574,7 @@ public class Loader {
                      this.parser.reportError("could not find file in " + A(var3 + "." + var5), var1[var2 + 2]);
                   }
                } else if (this.strings.contains(var3 + "." + var5)) {
-                  this.result.addToString(var3, CommonUtils.toBytes(var11 + '\u0000'));
+                  this.result.addToString(var3, CommonUtils.toBytes(var11 + "\u0000"));
                   this.result.addToString(var3, CommonUtils.randomDataNoZeros(5));
                   this.result.addParameter(var3 + "." + var5, var11);
                } else if (this.functionh.contains(var3 + "." + var5)) {
@@ -613,7 +613,7 @@ public class Loader {
                   this.parser.reportError("strrep length(original) < length(replacement value). I can't do this.", var1[var2 + 2]);
                } else {
                   while(var10.length() < var9.length()) {
-                     var10 = var10 + '\u0000';
+                     var10 = var10 + "\u0000";
                   }
 
                   this.result.addCommand(var3, var4, var9 + var10);
@@ -651,34 +651,39 @@ public class Loader {
                this.parser.reportError("Statement with argument is not valid for " + A(var3), var1[var2]);
             } else if (this.result.isSealed(var3)) {
                this.parser.reportError("Program is terminated. Can't add transform statements to " + A(var3), var1[var2]);
-            } else if (var4.equals("string")) {
-               var7 = this.convert(var5, var1[var2 + 1]) + '\u0000';
-               this.result.addToString(var3, CommonUtils.toBytes(var7));
-               this.result.logToString(var3, var7);
-            } else if (var4.equals("stringw")) {
-               var7 = this.convert(var5, var1[var2 + 1]) + '\u0000';
-               this.result.addToString(var3, CommonUtils.toBytes(var7, "UTF-16LE"));
-               this.result.logToString(var3, var7);
-            } else if (var4.equals("data")) {
-               var7 = this.convert(var5, var1[var2 + 1]);
-               this.result.addToString(var3, CommonUtils.toBytes(var7));
-            } else if (var4.equals("disable")) {
-               var7 = this.convert(var5, var1[var2 + 1]);
-               if (!this.disable.contains(var3 + "." + var7)) {
-                  this.parser.reportError("function " + var7 + " is not a recognized disable option", var1[var2 + 1]);
-               } else {
-                  this.result.addParameter(var3 + "." + var7, "false");
-               }
-            } else if (".process-inject.execute".equals(var3)) {
-               var7 = this.convert(var5, var1[var2 + 1]);
-               FunctionHint var8 = new FunctionHint(var7);
-               if (var8.isValid(var4)) {
-                  this.result.addCommand(var3, var4, var8.getDirective());
-               } else {
-                  this.parser.reportError(var8.getError(), var1[var2 + 1]);
-               }
             } else {
-               this.result.addCommand(var3, var4, this.convert(var5, var1[var2 + 1]));
+               String var10000;
+               if (var4.equals("string")) {
+                  var10000 = this.convert(var5, var1[var2 + 1]);
+                  var7 = var10000 + "\u0000";
+                  this.result.addToString(var3, CommonUtils.toBytes(var7));
+                  this.result.logToString(var3, var7);
+               } else if (var4.equals("stringw")) {
+                  var10000 = this.convert(var5, var1[var2 + 1]);
+                  var7 = var10000 + "\u0000";
+                  this.result.addToString(var3, CommonUtils.toBytes(var7, "UTF-16LE"));
+                  this.result.logToString(var3, var7);
+               } else if (var4.equals("data")) {
+                  var7 = this.convert(var5, var1[var2 + 1]);
+                  this.result.addToString(var3, CommonUtils.toBytes(var7));
+               } else if (var4.equals("disable")) {
+                  var7 = this.convert(var5, var1[var2 + 1]);
+                  if (!this.disable.contains(var3 + "." + var7)) {
+                     this.parser.reportError("function " + var7 + " is not a recognized disable option", var1[var2 + 1]);
+                  } else {
+                     this.result.addParameter(var3 + "." + var7, "false");
+                  }
+               } else if (".process-inject.execute".equals(var3)) {
+                  var7 = this.convert(var5, var1[var2 + 1]);
+                  FunctionHint var8 = new FunctionHint(var7);
+                  if (var8.isValid(var4)) {
+                     this.result.addCommand(var3, var4, var8.getDirective());
+                  } else {
+                     this.parser.reportError(var8.getError(), var1[var2 + 1]);
+                  }
+               } else {
+                  this.result.addCommand(var3, var4, this.convert(var5, var1[var2 + 1]));
+               }
             }
 
             return var2 + 3;

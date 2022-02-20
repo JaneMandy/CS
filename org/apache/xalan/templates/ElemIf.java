@@ -8,7 +8,6 @@ import org.apache.xpath.XPathContext;
 import org.apache.xpath.objects.XObject;
 
 public class ElemIf extends ElemTemplateElement {
-   static final long serialVersionUID = 2158774632427453022L;
    private XPath m_test = null;
 
    public void setTest(XPath v) {
@@ -39,13 +38,13 @@ public class ElemIf extends ElemTemplateElement {
    public void execute(TransformerImpl transformer) throws TransformerException {
       XPathContext xctxt = transformer.getXPathContext();
       int sourceNode = xctxt.getCurrentNode();
-      if (transformer.getDebug()) {
+      if (TransformerImpl.S_DEBUG) {
          XObject test = this.m_test.execute(xctxt, sourceNode, this);
-         if (transformer.getDebug()) {
+         if (TransformerImpl.S_DEBUG) {
             transformer.getTraceManager().fireSelectedEvent(sourceNode, this, "test", this.m_test, test);
          }
 
-         if (transformer.getDebug()) {
+         if (TransformerImpl.S_DEBUG) {
             transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
          }
 
@@ -53,7 +52,7 @@ public class ElemIf extends ElemTemplateElement {
             transformer.executeChildTemplates(this, true);
          }
 
-         if (transformer.getDebug()) {
+         if (TransformerImpl.S_DEBUG) {
             transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);
          }
       } else if (this.m_test.bool(xctxt, sourceNode, this)) {

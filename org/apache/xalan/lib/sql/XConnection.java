@@ -10,14 +10,10 @@ import javax.xml.transform.ErrorListener;
 import javax.xml.transform.TransformerException;
 import org.apache.xalan.extensions.ExpressionContext;
 import org.apache.xml.dtm.DTM;
-import org.apache.xml.dtm.DTMIterator;
 import org.apache.xml.dtm.DTMManager;
 import org.apache.xml.dtm.ref.DTMManagerDefault;
-import org.apache.xml.dtm.ref.DTMNodeIterator;
-import org.apache.xml.dtm.ref.DTMNodeProxy;
 import org.apache.xpath.XPathContext;
 import org.apache.xpath.objects.XBooleanStatic;
-import org.apache.xpath.objects.XNodeSet;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -44,8 +40,8 @@ public class XConnection {
    public XConnection() {
    }
 
-   public XConnection(ExpressionContext exprContext, String connPoolName) {
-      this.connect(exprContext, connPoolName);
+   public XConnection(ExpressionContext exprContext, String ConnPoolName) {
+      this.connect(exprContext, ConnPoolName);
    }
 
    public XConnection(ExpressionContext exprContext, String driver, String dbURL) {
@@ -64,19 +60,11 @@ public class XConnection {
       this.connect(exprContext, driver, dbURL, protocolElem);
    }
 
-   public XBooleanStatic connect(ExpressionContext exprContext, String name) {
+   public XBooleanStatic connect(ExpressionContext exprContext, String ConnPoolName) {
       try {
-         this.m_ConnectionPool = this.m_PoolMgr.getPool(name);
+         this.m_ConnectionPool = this.m_PoolMgr.getPool(ConnPoolName);
          if (this.m_ConnectionPool == null) {
-            ConnectionPool pool = new JNDIConnectionPool(name);
-            if (pool.testConnection()) {
-               this.m_PoolMgr.registerPool(name, pool);
-               this.m_ConnectionPool = pool;
-               this.m_IsDefaultPool = false;
-               return new XBooleanStatic(true);
-            } else {
-               throw new IllegalArgumentException("Invalid ConnectionPool name or JNDI Datasource path: " + name);
-            }
+            throw new IllegalArgumentException("Invalid Pool Name");
          } else {
             this.m_IsDefaultPool = false;
             return new XBooleanStatic(true);
@@ -303,7 +291,7 @@ public class XConnection {
                this.setError(var10, doc, doc.checkWarnings());
             }
 
-            doc.close(this.m_IsDefaultPool);
+            doc.close();
             doc = null;
          }
 
@@ -344,7 +332,7 @@ public class XConnection {
                this.setError(var11, doc, doc.checkWarnings());
             }
 
-            doc.close(this.m_IsDefaultPool);
+            doc.close();
             doc = null;
          }
 
@@ -354,16 +342,6 @@ public class XConnection {
       }
 
       return (DTM)e;
-   }
-
-   public void skipRec(ExpressionContext exprContext, Object o, int value) {
-      SQLDocument sqldoc = null;
-      DTMNodeIterator nodei = null;
-      sqldoc = this.locateSQLDocument(exprContext, o);
-      if (sqldoc != null) {
-         sqldoc.skip(value);
-      }
-
    }
 
    private void addTypeToData(String typeInfo) {
@@ -495,7 +473,7 @@ public class XConnection {
          SQLDocument d = (SQLDocument)this.m_OpenSQLDocuments.elementAt(0);
 
          try {
-            d.close(this.m_IsDefaultPool);
+            d.close();
          } catch (Exception var3) {
          }
       }
@@ -507,37 +485,17 @@ public class XConnection {
 
    }
 
-   public void close(ExpressionContext exprContext, Object doc) throws SQLException {
-      SQLDocument sqlDoc = this.locateSQLDocument(exprContext, doc);
-      if (sqlDoc != null) {
-         sqlDoc.close(this.m_IsDefaultPool);
-         this.m_OpenSQLDocuments.remove(sqlDoc);
-      }
+   public void close(SQLDocument sqldoc) throws SQLException {
+      int size = this.m_OpenSQLDocuments.size();
 
-   }
-
-   private SQLDocument locateSQLDocument(ExpressionContext exprContext, Object doc) {
-      try {
-         if (doc instanceof DTMNodeIterator) {
-            DTMNodeIterator dtmIter = (DTMNodeIterator)doc;
-
-            try {
-               DTMNodeProxy root = (DTMNodeProxy)dtmIter.getRoot();
-               return (SQLDocument)root.getDTM();
-            } catch (Exception var8) {
-               XNodeSet xNS = (XNodeSet)dtmIter.getDTMIterator();
-               DTMIterator iter = xNS.getContainedIter();
-               DTM dtm = iter.getDTM(xNS.nextNode());
-               return (SQLDocument)dtm;
-            }
-         } else {
-            this.setError(new Exception("SQL Extension:close - Can Not Identify SQLDocument"), exprContext);
-            return null;
+      for(int x = 0; x < size; ++x) {
+         SQLDocument d = (SQLDocument)this.m_OpenSQLDocuments.elementAt(x);
+         if (d == sqldoc) {
+            d.close();
+            this.m_OpenSQLDocuments.removeElementAt(x);
          }
-      } catch (Exception var9) {
-         this.setError(var9, exprContext);
-         return null;
       }
+
    }
 
    private SQLErrorDocument buildErrorDocument() {

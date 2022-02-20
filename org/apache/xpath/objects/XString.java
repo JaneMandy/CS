@@ -15,8 +15,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 
 public class XString extends XObject implements XMLString {
-   static final long serialVersionUID = 2020470518395094525L;
-   public static final XString EMPTYSTRING = new XString("");
+   public static XString EMPTYSTRING = new XString("");
 
    protected XString(Object val) {
       super(val);
@@ -43,22 +42,72 @@ public class XString extends XObject implements XMLString {
    }
 
    public double toDouble() {
-      XMLString s = this.trim();
-      double result = Double.NaN;
+      int end = this.length();
+      if (0 == end) {
+         return Double.NaN;
+      } else {
+         double result = 0.0D;
+         int start = 0;
+         int punctPos = end - 1;
 
-      for(int i = 0; i < s.length(); ++i) {
-         char c = s.charAt(i);
-         if (c != '-' && c != '.' && (c < '0' || c > '9')) {
-            return result;
+         for(int i = start; i < end; ++i) {
+            char c = this.charAt(i);
+            if (!XMLCharacterRecognizer.isWhiteSpace(c)) {
+               break;
+            }
+
+            ++start;
          }
-      }
 
-      try {
-         result = Double.parseDouble(s.toString());
-      } catch (NumberFormatException var6) {
-      }
+         double sign = 1.0D;
+         if (start < end && this.charAt(start) == '-') {
+            sign = -1.0D;
+            ++start;
+         }
 
-      return result;
+         int digitsFound = 0;
+
+         for(int i = start; i < end; ++i) {
+            char c = this.charAt(i);
+            if (c == '.') {
+               punctPos = i;
+               break;
+            }
+
+            if (XMLCharacterRecognizer.isWhiteSpace(c)) {
+               break;
+            }
+
+            if (!Character.isDigit(c)) {
+               return Double.NaN;
+            }
+
+            result = result * 10.0D + (double)(c - 48);
+            ++digitsFound;
+         }
+
+         if (this.charAt(punctPos) == '.') {
+            double fractPart = 0.0D;
+
+            for(int i = end - 1; i > punctPos; --i) {
+               char c = this.charAt(i);
+               if (XMLCharacterRecognizer.isWhiteSpace(c)) {
+                  break;
+               }
+
+               if (!Character.isDigit(c)) {
+                  return Double.NaN;
+               }
+
+               fractPart = fractPart / 10.0D + (double)(c - 48);
+               ++digitsFound;
+            }
+
+            result += fractPart / 10.0D;
+         }
+
+         return 0 == digitsFound ? Double.NaN : result * sign;
+      }
    }
 
    public boolean bool() {

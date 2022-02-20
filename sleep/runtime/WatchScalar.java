@@ -16,7 +16,8 @@ public class WatchScalar extends Scalar {
 
    public void flagChange(Scalar var1) {
       if (this.owner != null && (this.value != null || this.array != null || this.hash != null)) {
-         this.owner.showDebugMessage("watch(): " + this.name + " = " + SleepUtils.describe(var1));
+         String var10001 = this.name;
+         this.owner.showDebugMessage("watch(): " + var10001 + " = " + SleepUtils.describe(var1));
       }
 
    }

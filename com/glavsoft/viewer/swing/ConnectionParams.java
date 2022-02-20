@@ -100,6 +100,7 @@ public class ConnectionParams {
 
          this.useSsh |= from.useSsh;
       }
+
    }
 
    public String toString() {

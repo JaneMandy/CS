@@ -64,9 +64,8 @@ public class ExtensionHandlerJavaClass extends ExtensionHandlerJava {
    }
 
    public Object callFunction(String funcName, Vector args, Object methodKey, ExpressionContext exprContext) throws TransformerException {
-      Throwable targetException;
+      Object targetObject;
       try {
-         TransformerImpl trans = exprContext != null ? (TransformerImpl)exprContext.getXPathContext().getOwnerObject() : null;
          Object[] methodArgs;
          Object[][] convertedArgs;
          Class[] paramTypes;
@@ -78,12 +77,8 @@ public class ExtensionHandlerJavaClass extends ExtensionHandlerJava {
                methodArgs[i] = args.elementAt(i);
             }
 
-            Constructor c = null;
-            if (methodKey != null) {
-               c = (Constructor)this.getFromCache(methodKey, (Object)null, methodArgs);
-            }
-
-            if (c != null && !trans.getDebug()) {
+            Constructor c = (Constructor)this.getFromCache(methodKey, (Object)null, methodArgs);
+            if (c != null && !TransformerImpl.S_DEBUG) {
                try {
                   paramTypes = c.getParameterTypes();
                   MethodResolver.convertParams(methodArgs, convertedArgs, paramTypes, exprContext);
@@ -95,11 +90,9 @@ public class ExtensionHandlerJavaClass extends ExtensionHandlerJava {
             }
 
             c = MethodResolver.getConstructor(this.m_classObj, methodArgs, convertedArgs, exprContext);
-            if (methodKey != null) {
-               this.putToCache(methodKey, (Object)null, methodArgs, c);
-            }
-
-            if (trans != null && trans.getDebug()) {
+            this.putToCache(methodKey, (Object)null, methodArgs, c);
+            if (TransformerImpl.S_DEBUG) {
+               TransformerImpl trans = (TransformerImpl)exprContext.getXPathContext().getOwnerObject();
                trans.getTraceManager().fireExtensionEvent(new ExtensionEvent(trans, c, convertedArgs[0]));
 
                Object result;
@@ -116,7 +109,7 @@ public class ExtensionHandlerJavaClass extends ExtensionHandlerJava {
                return c.newInstance(convertedArgs[0]);
             }
          } else {
-            targetException = null;
+            targetObject = null;
             methodArgs = new Object[args.size()];
             convertedArgs = new Object[1][];
 
@@ -124,13 +117,8 @@ public class ExtensionHandlerJavaClass extends ExtensionHandlerJava {
                methodArgs[i] = args.elementAt(i);
             }
 
-            Method m = null;
-            if (methodKey != null) {
-               m = (Method)this.getFromCache(methodKey, (Object)null, methodArgs);
-            }
-
-            Object targetObject;
-            if (m != null && !trans.getDebug()) {
+            Method m = (Method)this.getFromCache(methodKey, (Object)null, methodArgs);
+            if (m != null && !TransformerImpl.S_DEBUG) {
                try {
                   paramTypes = m.getParameterTypes();
                   MethodResolver.convertParams(methodArgs, convertedArgs, paramTypes, exprContext);
@@ -177,13 +165,12 @@ public class ExtensionHandlerJavaClass extends ExtensionHandlerJava {
             }
 
             m = MethodResolver.getMethod(this.m_classObj, funcName, methodArgs, convertedArgs, exprContext, resolveType);
-            if (methodKey != null) {
-               this.putToCache(methodKey, (Object)null, methodArgs, m);
-            }
-
+            this.putToCache(methodKey, (Object)null, methodArgs, m);
+            TransformerImpl trans;
             Object result;
             if (4 == resolveType) {
-               if (trans != null && trans.getDebug()) {
+               if (TransformerImpl.S_DEBUG) {
+                  trans = (TransformerImpl)exprContext.getXPathContext().getOwnerObject();
                   trans.getTraceManager().fireExtensionEvent(m, targetObject, convertedArgs[0]);
 
                   try {
@@ -199,7 +186,8 @@ public class ExtensionHandlerJavaClass extends ExtensionHandlerJava {
                   return m.invoke(targetObject, convertedArgs[0]);
                }
             } else if (Modifier.isStatic(m.getModifiers())) {
-               if (trans != null && trans.getDebug()) {
+               if (TransformerImpl.S_DEBUG) {
+                  trans = (TransformerImpl)exprContext.getXPathContext().getOwnerObject();
                   trans.getTraceManager().fireExtensionEvent(m, (Object)null, convertedArgs[0]);
 
                   try {
@@ -216,7 +204,8 @@ public class ExtensionHandlerJavaClass extends ExtensionHandlerJava {
                }
             } else {
                if (null == this.m_defaultInstance) {
-                  if (trans != null && trans.getDebug()) {
+                  if (TransformerImpl.S_DEBUG) {
+                     trans = (TransformerImpl)exprContext.getXPathContext().getOwnerObject();
                      trans.getTraceManager().fireExtensionEvent(new ExtensionEvent(trans, this.m_classObj));
 
                      try {
@@ -231,7 +220,8 @@ public class ExtensionHandlerJavaClass extends ExtensionHandlerJava {
                   }
                }
 
-               if (trans != null && trans.getDebug()) {
+               if (TransformerImpl.S_DEBUG) {
+                  trans = (TransformerImpl)exprContext.getXPathContext().getOwnerObject();
                   trans.getTraceManager().fireExtensionEvent(m, this.m_defaultInstance, convertedArgs[0]);
 
                   try {
@@ -249,16 +239,16 @@ public class ExtensionHandlerJavaClass extends ExtensionHandlerJava {
             }
          }
       } catch (InvocationTargetException var117) {
-         Throwable resultException = var117;
-         targetException = var117.getTargetException();
+         targetObject = var117;
+         Throwable targetException = var117.getTargetException();
          if (targetException instanceof TransformerException) {
             throw (TransformerException)targetException;
          } else {
             if (targetException != null) {
-               resultException = targetException;
+               targetObject = targetException;
             }
 
-            throw new TransformerException((Throwable)resultException);
+            throw new TransformerException((Throwable)targetObject);
          }
       } catch (Exception var118) {
          throw new TransformerException(var118);
@@ -276,7 +266,7 @@ public class ExtensionHandlerJavaClass extends ExtensionHandlerJava {
          try {
             m = MethodResolver.getElementMethod(this.m_classObj, localPart);
             if (null == this.m_defaultInstance && !Modifier.isStatic(m.getModifiers())) {
-               if (transformer.getDebug()) {
+               if (TransformerImpl.S_DEBUG) {
                   transformer.getTraceManager().fireExtensionEvent(new ExtensionEvent(transformer, this.m_classObj));
 
                   try {
@@ -300,7 +290,7 @@ public class ExtensionHandlerJavaClass extends ExtensionHandlerJava {
       XSLProcessorContext xpc = new XSLProcessorContext(transformer, stylesheetTree);
 
       try {
-         if (transformer.getDebug()) {
+         if (TransformerImpl.S_DEBUG) {
             transformer.getTraceManager().fireExtensionEvent(m, this.m_defaultInstance, new Object[]{xpc, element});
 
             try {

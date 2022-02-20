@@ -9,8 +9,6 @@ import org.apache.xpath.objects.XObject;
 import org.w3c.dom.NodeList;
 
 public class ElemExsltFunction extends ElemTemplate {
-   static final long serialVersionUID = 272154954793534771L;
-
    public int getXSLToken() {
       return 88;
    }
@@ -45,14 +43,14 @@ public class ElemExsltFunction extends ElemTemplate {
             }
          }
 
-         if (transformer.getDebug()) {
+         if (TransformerImpl.S_DEBUG) {
             transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
          }
 
          vars.setStackFrame(nextFrame);
          transformer.executeChildTemplates(this, true);
          vars.unlink(thisFrame);
-         if (transformer.getDebug()) {
+         if (TransformerImpl.S_DEBUG) {
             transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);
          }
 
@@ -62,7 +60,7 @@ public class ElemExsltFunction extends ElemTemplate {
    public void compose(StylesheetRoot sroot) throws TransformerException {
       super.compose(sroot);
       String namespace = this.getName().getNamespace();
-      String handlerClass = sroot.getExtensionHandlerClass();
+      String handlerClass = "org.apache.xalan.extensions.ExtensionHandlerExsltFunction";
       Object[] args = new Object[]{namespace, sroot};
       ExtensionNamespaceSupport extNsSpt = new ExtensionNamespaceSupport(namespace, handlerClass, args);
       sroot.getExtensionNamespacesManager().registerExtension(extNsSpt);

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 
-class WriterToASCI extends Writer implements WriterChain {
+public class WriterToASCI extends Writer {
    private final OutputStream m_os;
 
    public WriterToASCI(OutputStream os) {
@@ -43,9 +43,5 @@ class WriterToASCI extends Writer implements WriterChain {
 
    public OutputStream getOutputStream() {
       return this.m_os;
-   }
-
-   public Writer getWriter() {
-      return null;
    }
 }

@@ -155,17 +155,7 @@ public final class DOMAdapter implements DOM {
    }
 
    public int getExpandedTypeID(int node) {
-      short[] mapping = this.getMapping();
-      int type;
-      if (this._enhancedDOM != null) {
-         type = mapping[this._enhancedDOM.getExpandedTypeID2(node)];
-      } else if (null != mapping) {
-         type = mapping[this._dom.getExpandedTypeID(node)];
-      } else {
-         type = this._dom.getExpandedTypeID(node);
-      }
-
-      return type;
+      return this._enhancedDOM != null ? this.getMapping()[this._enhancedDOM.getExpandedTypeID2(node)] : this.getMapping()[this._dom.getExpandedTypeID(node)];
    }
 
    public int getNamespaceType(int node) {

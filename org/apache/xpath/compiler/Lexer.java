@@ -254,7 +254,7 @@ class Lexer {
    final int getKeywordToken(String key) {
       int tok;
       try {
-         Integer itok = (Integer)Keywords.getKeyWord(key);
+         Integer itok = (Integer)Keywords.m_keywords.get(key);
          tok = null != itok ? itok : 0;
       } catch (NullPointerException var5) {
          tok = 0;
@@ -340,7 +340,7 @@ class Lexer {
             this.addToTokenQueue(s);
          }
       } else {
-         this.m_processor.errorForDOM3("ER_PREFIX_MUST_RESOLVE", new String[]{prefix});
+         this.m_processor.error("ER_PREFIX_MUST_RESOLVE", new String[]{prefix});
       }
 
       return -1;

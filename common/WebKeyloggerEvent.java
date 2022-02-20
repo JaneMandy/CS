@@ -16,7 +16,7 @@ public class WebKeyloggerEvent implements Serializable, Transcript, Scriptable, 
    public WebKeyloggerEvent(String var1, String var2, Map var3, String var4) {
       this.from = var1;
       this.who = var2;
-      this.data = var3.get("data") + "";
+      this.data = ((Class)var3.get("data")).makeConcatWithConstants<invokedynamic>(var3.get("data"));
       this.id = var4;
    }
 

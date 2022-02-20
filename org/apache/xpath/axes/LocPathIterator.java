@@ -20,7 +20,6 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 public abstract class LocPathIterator extends PredicatedNodeTest implements Cloneable, DTMIterator, Serializable, PathComponent {
-   static final long serialVersionUID = -4602476357268405754L;
    protected boolean m_allowDetach;
    protected transient IteratorPool m_clones;
    protected transient DTM m_cdtm;

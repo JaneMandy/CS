@@ -154,5 +154,6 @@ public class PivotGraph extends AObject implements Callback, GraphPopup {
             this.graph.end();
          }
       }
+
    }
 }

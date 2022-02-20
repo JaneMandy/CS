@@ -21,24 +21,8 @@ public abstract class SingleNodeCounter extends NodeCounter {
 
    public String getCounter() {
       int result;
-      if (super._value != -2.147483648E9D) {
-         if (super._value == 0.0D) {
-            return "0";
-         }
-
-         if (Double.isNaN(super._value)) {
-            return "NaN";
-         }
-
-         if (super._value < 0.0D && Double.isInfinite(super._value)) {
-            return "-Infinity";
-         }
-
-         if (Double.isInfinite(super._value)) {
-            return "Infinity";
-         }
-
-         result = (int)super._value;
+      if (super._value != Integer.MIN_VALUE) {
+         result = super._value;
       } else {
          int next = super._node;
          result = 0;
@@ -85,24 +69,8 @@ public abstract class SingleNodeCounter extends NodeCounter {
 
       public String getCounter() {
          int result;
-         if (super._value != -2.147483648E9D) {
-            if (super._value == 0.0D) {
-               return "0";
-            }
-
-            if (Double.isNaN(super._value)) {
-               return "NaN";
-            }
-
-            if (super._value < 0.0D && Double.isInfinite(super._value)) {
-               return "-Infinity";
-            }
-
-            if (Double.isInfinite(super._value)) {
-               return "Infinity";
-            }
-
-            result = (int)super._value;
+         if (super._value != Integer.MIN_VALUE) {
+            result = super._value;
          } else {
             result = 1;
             super._countSiblings.setStartNode(super._node);

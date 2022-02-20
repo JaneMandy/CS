@@ -1,6 +1,7 @@
 package encoders;
 
 import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 
 public class NetBIOS {
    public static String encode(char var0, String var1) {
@@ -43,6 +44,8 @@ public class NetBIOS {
    public static void main(String[] var0) throws Exception {
       String var1 = encode('A', "this is a test");
       System.err.println("Encode: " + var1);
-      System.err.println("Decode: '" + new String(decode('A', var1), "UTF-8") + "'");
+      PrintStream var10000 = System.err;
+      String var10001 = new String(decode('A', var1), "UTF-8");
+      var10000.println("Decode: '" + var10001 + "'");
    }
 }

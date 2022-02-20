@@ -1,6 +1,6 @@
 package org.apache.xml.serializer;
 
-final class ElemContext {
+class ElemContext {
    final int m_currentElemDepth;
    ElemDesc m_elementDesc = null;
    String m_elementLocalName = null;

@@ -97,7 +97,7 @@ public class CortanaUtilities implements Function, Loadable {
             final Stack var5 = EventManager.shallowCopy(var3);
             CommonUtils.runSafe(new Runnable() {
                public void run() {
-                  SleepUtils.runCode((SleepClosure)var4, "&dispatch_event", (ScriptInstance)null, var5);
+                  SleepUtils.runCode(var4, "&dispatch_event", (ScriptInstance)null, var5);
                }
             });
          } else if (var1.equals("&apply")) {

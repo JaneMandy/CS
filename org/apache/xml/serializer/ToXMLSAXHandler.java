@@ -11,7 +11,7 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 
-public final class ToXMLSAXHandler extends ToSAXHandler {
+public class ToXMLSAXHandler extends ToSAXHandler {
    protected boolean m_escapeSetting = false;
 
    public ToXMLSAXHandler() {
@@ -165,10 +165,10 @@ public final class ToXMLSAXHandler extends ToSAXHandler {
             String name;
             if ("".equals(prefix)) {
                name = "xmlns";
-               this.addAttributeAlways("http://www.w3.org/2000/xmlns/", name, name, "CDATA", uri, false);
+               this.addAttributeAlways("http://www.w3.org/2000/xmlns/", prefix, name, "CDATA", uri);
             } else if (!"".equals(uri)) {
                name = "xmlns:" + prefix;
-               this.addAttributeAlways("http://www.w3.org/2000/xmlns/", prefix, name, "CDATA", uri, false);
+               this.addAttributeAlways("http://www.w3.org/2000/xmlns/", prefix, name, "CDATA", uri);
             }
          }
       }
@@ -328,14 +328,13 @@ public final class ToXMLSAXHandler extends ToSAXHandler {
    private void ensurePrefixIsDeclared(String ns, String rawName) throws SAXException {
       if (ns != null && ns.length() > 0) {
          int index;
-         boolean no_prefix = (index = rawName.indexOf(":")) < 0;
-         String prefix = no_prefix ? "" : rawName.substring(0, index);
+         String prefix = (index = rawName.indexOf(":")) < 0 ? "" : rawName.substring(0, index);
          if (null != prefix) {
             String foundURI = super.m_prefixMap.lookupNamespace(prefix);
             if (null == foundURI || !foundURI.equals(ns)) {
                this.startPrefixMapping(prefix, ns, false);
                if (this.getShouldOutputNSAttr()) {
-                  this.addAttributeAlways("http://www.w3.org/2000/xmlns/", no_prefix ? "xmlns" : prefix, no_prefix ? "xmlns" : "xmlns:" + prefix, "CDATA", ns, false);
+                  this.addAttributeAlways("http://www.w3.org/2000/xmlns/", prefix, "xmlns" + (prefix.length() == 0 ? "" : ":") + prefix, "CDATA", ns);
                }
             }
          }
@@ -343,10 +342,10 @@ public final class ToXMLSAXHandler extends ToSAXHandler {
 
    }
 
-   public void addAttribute(String uri, String localName, String rawName, String type, String value, boolean XSLAttribute) throws SAXException {
+   public void addAttribute(String uri, String localName, String rawName, String type, String value) throws SAXException {
       if (super.m_elemContext.m_startTagOpen) {
          this.ensurePrefixIsDeclared(uri, rawName);
-         this.addAttributeAlways(uri, localName, rawName, type, value, false);
+         this.addAttributeAlways(uri, localName, rawName, type, value);
       }
 
    }

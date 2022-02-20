@@ -58,7 +58,7 @@ public class PhishLog extends AObject implements ConsolePopup, Callback, ActionL
 
    public void result(String var1, Object var2) {
       if (var1.startsWith("phishstatus")) {
-         this.console.updatePrompt(var2 + "");
+         this.console.updatePrompt(((Class)var2).makeConcatWithConstants<invokedynamic>(var2));
       } else {
          this.console.append(this.format(var1, var2));
       }

@@ -6,6 +6,8 @@ import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.dom.DOMSource;
 import org.apache.xalan.xsltc.DOM;
@@ -21,7 +23,7 @@ import org.apache.xml.dtm.DTMWSFilter;
 import org.apache.xml.dtm.ref.DTMDefaultBase;
 import org.apache.xml.serializer.NamespaceMappings;
 import org.apache.xml.serializer.SerializationHandler;
-import org.apache.xml.utils.XML11Char;
+import org.apache.xml.utils.XMLChar;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -29,7 +31,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public final class BasisLibrary {
+public final class BasisLibrary implements Operators {
    private static final String EMPTYSTRING = "";
    private static final int DOUBLE_FRACTION_DIGITS = 340;
    private static final double lowerBounds = 0.001D;
@@ -61,9 +63,7 @@ public final class BasisLibrary {
    public static final String UNKNOWN_TRANSLET_VERSION_ERR = "UNKNOWN_TRANSLET_VERSION_ERR";
    public static final String INVALID_QNAME_ERR = "INVALID_QNAME_ERR";
    public static final String INVALID_NCNAME_ERR = "INVALID_NCNAME_ERR";
-   public static final String UNALLOWED_EXTENSION_FUNCTION_ERR = "UNALLOWED_EXTENSION_FUNCTION_ERR";
-   public static final String UNALLOWED_EXTENSION_ELEMENT_ERR = "UNALLOWED_EXTENSION_ELEMENT_ERR";
-   private static ResourceBundle m_bundle;
+   protected static ResourceBundle m_bundle;
    public static final String ERROR_MESSAGES_KEY = "error-messages";
    // $FF: synthetic field
    static Class class$java$lang$String;
@@ -172,7 +172,7 @@ public final class BasisLibrary {
                return !className.equals("");
             } else {
                className = obj.getClass().getName();
-               runTimeError("INVALID_ARGUMENT_ERR", className, "boolean()");
+               runTimeError("INVALID_ARGUMENT_ERR", className, "number()");
                return false;
             }
          }
@@ -323,14 +323,6 @@ public final class BasisLibrary {
 
    public static void unresolved_externalF(String name) {
       runTimeError("EXTERNAL_FUNC_ERR", (Object)name);
-   }
-
-   public static void unallowed_extension_functionF(String name) {
-      runTimeError("UNALLOWED_EXTENSION_FUNCTION_ERR", (Object)name);
-   }
-
-   public static void unallowed_extension_elementF(String name) {
-      runTimeError("UNALLOWED_EXTENSION_ELEMENT_ERR", (Object)name);
    }
 
    public static void unsupported_ElementF(String qname, boolean isExtension) {
@@ -622,7 +614,6 @@ public final class BasisLibrary {
             Object temp = right;
             right = left;
             left = temp;
-            op = Operators.swapOp(op);
          }
 
          if (left instanceof DOM) {
@@ -916,16 +907,19 @@ public final class BasisLibrary {
    }
 
    public static DTMAxisIterator nodeList2Iterator(NodeList nodeList, Translet translet, DOM dom) {
-      Document doc = null;
+      DocumentBuilderFactory dfac = DocumentBuilderFactory.newInstance();
+      DocumentBuilder docbldr = null;
 
       try {
-         doc = ((AbstractTranslet)translet).newDocument("", "__top__");
-      } catch (ParserConfigurationException var12) {
-         runTimeError("RUN_TIME_INTERNAL_ERR", (Object)var12.getMessage());
+         docbldr = dfac.newDocumentBuilder();
+      } catch (ParserConfigurationException var15) {
+         runTimeError("RUN_TIME_INTERNAL_ERR", (Object)var15.getMessage());
          return null;
       }
 
-      copyNodes(nodeList, doc, doc.getDocumentElement());
+      Document doc = docbldr.newDocument();
+      org.w3c.dom.Node topElementNode = doc.appendChild(doc.createElementNS("", "__top__"));
+      copyNodes(nodeList, doc, topElementNode);
       if (dom instanceof MultiDOM) {
          MultiDOM multiDOM = (MultiDOM)dom;
          DTMDefaultBase dtm = (DTMDefaultBase)((DOMAdapter)multiDOM.getMain()).getDOMImpl();
@@ -993,31 +987,31 @@ public final class BasisLibrary {
          String newPrefix = name.substring(0, firstOccur);
          if (firstOccur != lastOccur) {
             String oriPrefix = name.substring(firstOccur + 1, lastOccur);
-            if (!XML11Char.isXML11ValidNCName(oriPrefix)) {
+            if (!XMLChar.isValidNCName(oriPrefix)) {
                runTimeError("INVALID_QNAME_ERR", (Object)(oriPrefix + ":" + localName));
             }
          }
 
-         if (!XML11Char.isXML11ValidNCName(newPrefix)) {
+         if (!XMLChar.isValidNCName(newPrefix)) {
             runTimeError("INVALID_QNAME_ERR", (Object)(newPrefix + ":" + localName));
          }
       }
 
-      if (!XML11Char.isXML11ValidNCName(localName) || localName.equals("xmlns")) {
+      if (!XMLChar.isValidNCName(localName) || localName.equals("xmlns")) {
          runTimeError("INVALID_QNAME_ERR", (Object)localName);
       }
 
    }
 
    public static void checkNCName(String name) {
-      if (!XML11Char.isXML11ValidNCName(name)) {
+      if (!XMLChar.isValidNCName(name)) {
          runTimeError("INVALID_NCNAME_ERR", (Object)name);
       }
 
    }
 
    public static void checkQName(String name) {
-      if (!XML11Char.isXML11ValidQName(name)) {
+      if (!XMLChar.isValidQName(name)) {
          runTimeError("INVALID_QNAME_ERR", (Object)name);
       }
 

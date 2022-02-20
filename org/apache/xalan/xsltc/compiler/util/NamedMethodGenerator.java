@@ -7,7 +7,7 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionList;
 
 public final class NamedMethodGenerator extends MethodGenerator {
-   protected static final int CURRENT_INDEX = 4;
+   protected static int CURRENT_INDEX = 4;
    private static final int PARAM_START_INDEX = 5;
 
    public NamedMethodGenerator(int access_flags, org.apache.bcel.generic.Type return_type, org.apache.bcel.generic.Type[] arg_types, String[] arg_names, String method_name, String class_name, InstructionList il, ConstantPoolGen cp) {
@@ -15,7 +15,7 @@ public final class NamedMethodGenerator extends MethodGenerator {
    }
 
    public int getLocalIndex(String name) {
-      return name.equals("current") ? 4 : super.getLocalIndex(name);
+      return name.equals("current") ? CURRENT_INDEX : super.getLocalIndex(name);
    }
 
    public Instruction loadParameter(int index) {

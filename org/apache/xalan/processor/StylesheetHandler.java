@@ -13,6 +13,8 @@ import org.apache.xalan.extensions.ExpressionVisitor;
 import org.apache.xalan.res.XSLMessages;
 import org.apache.xalan.templates.ElemForEach;
 import org.apache.xalan.templates.ElemTemplateElement;
+import org.apache.xalan.templates.FuncDocument;
+import org.apache.xalan.templates.FuncFormatNumb;
 import org.apache.xalan.templates.Stylesheet;
 import org.apache.xalan.templates.StylesheetRoot;
 import org.apache.xml.utils.BoolStack;
@@ -23,6 +25,7 @@ import org.apache.xml.utils.SAXSourceLocator;
 import org.apache.xml.utils.XMLCharacterRecognizer;
 import org.apache.xpath.XPath;
 import org.apache.xpath.compiler.FunctionTable;
+import org.apache.xpath.functions.Function;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -33,10 +36,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.NamespaceSupport;
 
 public class StylesheetHandler extends DefaultHandler implements TemplatesHandler, PrefixResolver, NodeConsumer {
-   private FunctionTable m_funcTable = new FunctionTable();
-   private boolean m_optimize = true;
-   private boolean m_incremental = false;
-   private boolean m_source_location = false;
    private int m_stylesheetLevel = -1;
    private boolean m_parsingComplete = false;
    private Vector m_prefixMappings = new Vector();
@@ -45,9 +44,9 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
    private int m_elementID = 0;
    private int m_fragmentID = 0;
    private TransformerFactoryImpl m_stylesheetProcessor;
-   public static final int STYPE_ROOT = 1;
-   public static final int STYPE_INCLUDE = 2;
-   public static final int STYPE_IMPORT = 3;
+   static final int STYPE_ROOT = 1;
+   static final int STYPE_INCLUDE = 2;
+   static final int STYPE_IMPORT = 3;
    private int m_stylesheetType = 1;
    private Stack m_stylesheets = new Stack();
    StylesheetRoot m_stylesheetRoot;
@@ -63,19 +62,8 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
    Stack m_nsSupportStack = new Stack();
    private Node m_originatingNode;
    private BoolStack m_spacePreserveStack = new BoolStack();
-   // $FF: synthetic field
-   static Class class$org$apache$xalan$templates$FuncDocument;
-   // $FF: synthetic field
-   static Class class$org$apache$xalan$templates$FuncFormatNumb;
 
    public StylesheetHandler(TransformerFactoryImpl processor) throws TransformerConfigurationException {
-      Class func = class$org$apache$xalan$templates$FuncDocument == null ? (class$org$apache$xalan$templates$FuncDocument = class$("org.apache.xalan.templates.FuncDocument")) : class$org$apache$xalan$templates$FuncDocument;
-      this.m_funcTable.installFunction("document", func);
-      func = class$org$apache$xalan$templates$FuncFormatNumb == null ? (class$org$apache$xalan$templates$FuncFormatNumb = class$("org.apache.xalan.templates.FuncFormatNumb")) : class$org$apache$xalan$templates$FuncFormatNumb;
-      this.m_funcTable.installFunction("format-number", func);
-      this.m_optimize = (Boolean)processor.getAttribute("http://xml.apache.org/xalan/features/optimize");
-      this.m_incremental = (Boolean)processor.getAttribute("http://xml.apache.org/xalan/features/incremental");
-      this.m_source_location = (Boolean)processor.getAttribute("http://xml.apache.org/xalan/properties/source-location");
       this.init(processor);
    }
 
@@ -87,14 +75,14 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
 
    public XPath createXPath(String str, ElemTemplateElement owningTemplate) throws TransformerException {
       ErrorListener handler = this.m_stylesheetProcessor.getErrorListener();
-      XPath xpath = new XPath(str, owningTemplate, this, 0, handler, this.m_funcTable);
+      XPath xpath = new XPath(str, owningTemplate, this, 0, handler);
       xpath.callVisitors(xpath, new ExpressionVisitor(this.getStylesheetRoot()));
       return xpath;
    }
 
    XPath createMatchPatternXPath(String str, ElemTemplateElement owningTemplate) throws TransformerException {
       ErrorListener handler = this.m_stylesheetProcessor.getErrorListener();
-      XPath xpath = new XPath(str, owningTemplate, this, 1, handler, this.m_funcTable);
+      XPath xpath = new XPath(str, owningTemplate, this, 1, handler);
       xpath.callVisitors(xpath, new ExpressionVisitor(this.getStylesheetRoot()));
       return xpath;
    }
@@ -419,7 +407,7 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
 
    }
 
-   public TransformerFactoryImpl getStylesheetProcessor() {
+   TransformerFactoryImpl getStylesheetProcessor() {
       return this.m_stylesheetProcessor;
    }
 
@@ -440,12 +428,6 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
    }
 
    public StylesheetRoot getStylesheetRoot() {
-      if (this.m_stylesheetRoot != null) {
-         this.m_stylesheetRoot.setOptimizer(this.m_optimize);
-         this.m_stylesheetRoot.setIncremental(this.m_incremental);
-         this.m_stylesheetRoot.setSource_location(this.m_source_location);
-      }
-
       return this.m_stylesheetRoot;
    }
 
@@ -481,7 +463,7 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
       return (XSLTElementProcessor)this.m_processors.pop();
    }
 
-   public XSLTSchema getSchema() {
+   XSLTSchema getSchema() {
       return this.m_schema;
    }
 
@@ -622,7 +604,7 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
       double version;
       for(version = -1.0D; (version == -1.0D || version == 1.0D) && elem != null; elem = elem.getParentElem()) {
          try {
-            version = Double.valueOf(elem.getXmlVersion());
+            version = Double.valueOf(elem.getVersion());
          } catch (Exception var5) {
             version = -1.0D;
          }
@@ -635,24 +617,10 @@ public class StylesheetHandler extends DefaultHandler implements TemplatesHandle
       return false;
    }
 
-   public boolean getOptimize() {
-      return this.m_optimize;
-   }
-
-   public boolean getIncremental() {
-      return this.m_incremental;
-   }
-
-   public boolean getSource_location() {
-      return this.m_source_location;
-   }
-
-   // $FF: synthetic method
-   static Class class$(String x0) {
-      try {
-         return Class.forName(x0);
-      } catch (ClassNotFoundException var2) {
-         throw new NoClassDefFoundError(var2.getMessage());
-      }
+   static {
+      Function func = new FuncDocument();
+      FunctionTable.installFunction("document", func);
+      Function func = new FuncFormatNumb();
+      FunctionTable.installFunction("format-number", func);
    }
 }

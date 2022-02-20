@@ -39,8 +39,8 @@ public class AttackBridge implements Function, Loadable {
             this.ids.add(var4);
             this.data.put(var4, var3);
          }
-
       }
+
    }
 
    public void scriptUnloaded(ScriptInstance var1) {

@@ -39,14 +39,14 @@ public class Iterate extends Step {
    }
 
    private void iterator_destroy(ScriptEnvironment var1) {
-      Stack var2 = (Stack)((Stack)var1.getContextMetadata("iterators"));
+      Stack var2 = (Stack)var1.getContextMetadata("iterators");
       var2.pop();
    }
 
    private void iterator_create(ScriptEnvironment var1) {
       Stack var2 = var1.getCurrentFrame();
       Iterate.IteratorData var3 = new Iterate.IteratorData();
-      var3.source = (Scalar)((Scalar)var2.pop());
+      var3.source = (Scalar)var2.pop();
       var1.KillFrame();
       var3.value = this.value;
       var3.venv = var1.getScriptVariables().getScalarLevel(this.value, var1.getScriptInstance());
@@ -81,7 +81,7 @@ public class Iterate extends Step {
          var3.iterator = null;
       }
 
-      Stack var4 = (Stack)((Stack)var1.getContextMetadata("iterators"));
+      Stack var4 = (Stack)var1.getContextMetadata("iterators");
       if (var4 == null) {
          var4 = new Stack();
          var1.setContextMetadata("iterators", var4);
@@ -91,8 +91,8 @@ public class Iterate extends Step {
    }
 
    private void iterator_next(ScriptEnvironment var1) {
-      Stack var2 = (Stack)((Stack)var1.getContextMetadata("iterators"));
-      Iterate.IteratorData var3 = (Iterate.IteratorData)((Iterate.IteratorData)var2.peek());
+      Stack var2 = (Stack)var1.getContextMetadata("iterators");
+      Iterate.IteratorData var3 = (Iterate.IteratorData)var2.peek();
       if (var3.iterator != null && var3.iterator.hasNext()) {
          var1.getCurrentFrame().push(SleepUtils.getScalar(true));
          Object var4 = null;
@@ -128,6 +128,7 @@ public class Iterate extends Step {
       } else {
          var1.getCurrentFrame().push(SleepUtils.getScalar(false));
       }
+
    }
 
    public Scalar evaluate(ScriptEnvironment var1) {

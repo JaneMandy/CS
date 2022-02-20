@@ -7,7 +7,6 @@ import org.apache.xpath.compiler.Compiler;
 import org.apache.xpath.compiler.OpMap;
 
 public class OneStepIteratorForward extends ChildTestIterator {
-   static final long serialVersionUID = -1576936606178190566L;
    protected int m_axis = -1;
 
    OneStepIteratorForward(Compiler compiler, int opPos, int analysis) throws TransformerException {

@@ -76,12 +76,12 @@ public class SleepUtils {
       if (var1.getScriptVariables().getLocalVariables() == null) {
          var1.getScriptVariables().pushLocalLevel();
          var2 = new CallRequest.InlineCallRequest(var1, Integer.MIN_VALUE, "eval", var0);
-         Scalar var3 = runCode((CallRequest)var2, (ScriptInstance)var1.getScriptInstance(), (Stack)null);
+         Scalar var3 = runCode((CallRequest)var2, (ScriptInstance)var1.getScriptInstance(), (Stack)((Stack)null));
          var1.getScriptVariables().popLocalLevel();
          return var3;
       } else {
          var2 = new CallRequest.InlineCallRequest(var1, Integer.MIN_VALUE, "eval", var0);
-         return runCode((CallRequest)var2, (ScriptInstance)var1.getScriptInstance(), (Stack)null);
+         return runCode((CallRequest)var2, (ScriptInstance)var1.getScriptInstance(), (Stack)((Stack)null));
       }
    }
 
@@ -105,7 +105,7 @@ public class SleepUtils {
    }
 
    public static Scalar runCode(ScriptInstance var0, Block var1) {
-      return runCode((ScriptInstance)var0, (Block)var1, (HashMap)null);
+      return runCode(var0, var1, (HashMap)null);
    }
 
    public static Scalar getArrayWrapper(Collection var0) {
@@ -272,9 +272,11 @@ public class SleepUtils {
    private static String describeEntries(List var0, Scalar var1) {
       StringBuffer var2;
       Iterator var7;
+      int var10;
       if (var1.getArray() != null) {
          if (var0.contains(var1.getArray())) {
-            return "@" + var0.indexOf(var1.getArray());
+            var10 = var0.indexOf(var1.getArray());
+            return "@" + var10;
          } else {
             var0.add(var1.getArray());
             var2 = new StringBuffer("@(");
@@ -293,7 +295,8 @@ public class SleepUtils {
          }
       } else if (var1.getHash() != null) {
          if (var0.contains(var1.getHash())) {
-            return "%" + var0.indexOf(var1.getHash());
+            var10 = var0.indexOf(var1.getHash());
+            return "%" + var10;
          } else {
             var0.add(var1.getHash());
             var2 = new StringBuffer("%(");
@@ -324,7 +327,8 @@ public class SleepUtils {
          return var1.toString();
       } else if (var1.objectValue() instanceof KeyValuePair) {
          KeyValuePair var6 = (KeyValuePair)var1.objectValue();
-         return var6.getKey().toString() + " => " + describe(var6.getValue());
+         String var10000 = var6.getKey().toString();
+         return var10000 + " => " + describe(var6.getValue());
       } else if (var1.getActualValue().getType() == ObjectValue.class) {
          if (Proxy.isProxyClass(var1.objectValue().getClass())) {
             var2 = new StringBuffer();

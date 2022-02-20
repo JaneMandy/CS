@@ -11,7 +11,7 @@ import org.apache.xalan.templates.ElemTemplateElement;
 import org.apache.xml.utils.QName;
 import org.apache.xml.utils.StringToIntTable;
 import org.apache.xml.utils.StringVector;
-import org.apache.xml.utils.XML11Char;
+import org.apache.xml.utils.XMLChar;
 import org.apache.xpath.XPath;
 import org.xml.sax.SAXException;
 
@@ -39,8 +39,8 @@ public class XSLTAttributeDef {
    static final int T_AVT_QNAME = 18;
    static final int T_QNAMES_RESOLVE_NULL = 19;
    static final int T_PREFIXLIST = 20;
-   static final XSLTAttributeDef m_foreignAttr = new XSLTAttributeDef("*", "*", 1, false, false, 2);
-   static final String S_FOREIGNATTR_SETTER = "setForeignAttr";
+   static XSLTAttributeDef m_foreignAttr = new XSLTAttributeDef("*", "*", 1, false, false, 2);
+   static String S_FOREIGNATTR_SETTER = "setForeignAttr";
    private String m_namespace;
    private String m_name;
    private int m_type;
@@ -170,7 +170,7 @@ public class XSLTAttributeDef {
    public String getSetterMethodName() {
       if (null == this.m_setterString) {
          if (m_foreignAttr == this) {
-            return "setForeignAttr";
+            return S_FOREIGNATTR_SETTER;
          }
 
          if (this.m_name.equals("*")) {
@@ -335,7 +335,7 @@ public class XSLTAttributeDef {
       if (this.getSupportsAVT()) {
          try {
             AVT avt = new AVT(handler, uri, name, rawName, value, owner);
-            if (avt.isSimple() && !XML11Char.isXML11ValidNmtoken(value)) {
+            if (avt.isSimple() && !XMLChar.isValidNmtoken(value)) {
                this.handleError(handler, "INVALID_NMTOKEN", new Object[]{name, value}, (Exception)null);
                return null;
             } else {
@@ -344,7 +344,7 @@ public class XSLTAttributeDef {
          } catch (TransformerException var8) {
             throw new SAXException(var8);
          }
-      } else if (!XML11Char.isXML11ValidNmtoken(value)) {
+      } else if (!XMLChar.isValidNmtoken(value)) {
          this.handleError(handler, "INVALID_NMTOKEN", new Object[]{name, value}, (Exception)null);
          return null;
       } else {
@@ -411,14 +411,14 @@ public class XSLTAttributeDef {
             String localName;
             if (indexOfNSSep >= 0) {
                localName = value.substring(0, indexOfNSSep);
-               if (!XML11Char.isXML11ValidNCName(localName)) {
+               if (!XMLChar.isValidNCName(localName)) {
                   this.handleError(handler, "INVALID_QNAME", new Object[]{name, value}, (Exception)null);
                   return null;
                }
             }
 
             localName = indexOfNSSep < 0 ? value : value.substring(indexOfNSSep + 1);
-            if (localName == null || localName.length() == 0 || !XML11Char.isXML11ValidNCName(localName)) {
+            if (localName == null || localName.length() == 0 || !XMLChar.isValidNCName(localName)) {
                this.handleError(handler, "INVALID_QNAME", new Object[]{name, value}, (Exception)null);
                return null;
             }
@@ -436,7 +436,7 @@ public class XSLTAttributeDef {
 
          try {
             avt = new AVT(handler, uri, name, rawName, value, owner);
-            if (avt.isSimple() && !XML11Char.isXML11ValidNCName(value)) {
+            if (avt.isSimple() && !XMLChar.isValidNCName(value)) {
                this.handleError(handler, "INVALID_NCNAME", new Object[]{name, value}, (Exception)null);
                return null;
             } else {
@@ -445,7 +445,7 @@ public class XSLTAttributeDef {
          } catch (TransformerException var9) {
             throw new SAXException(var9);
          }
-      } else if (!XML11Char.isXML11ValidNCName(value)) {
+      } else if (!XMLChar.isValidNCName(value)) {
          this.handleError(handler, "INVALID_NCNAME", new Object[]{name, value}, (Exception)null);
          return null;
       } else {
@@ -694,7 +694,7 @@ public class XSLTAttributeDef {
                Method meth;
                Object[] args;
                Class[] argTypes;
-               if (setterString.equals("setForeignAttr")) {
+               if (setterString.equals(S_FOREIGNATTR_SETTER)) {
                   if (attrUri == null) {
                      attrUri = "";
                   }
@@ -724,7 +724,7 @@ public class XSLTAttributeDef {
 
                meth.invoke(elem, args);
             } catch (NoSuchMethodException var15) {
-               if (!setterString.equals("setForeignAttr")) {
+               if (!setterString.equals(S_FOREIGNATTR_SETTER)) {
                   handler.error("ER_FAILED_CALLING_METHOD", new Object[]{setterString}, var15);
                   return false;
                }

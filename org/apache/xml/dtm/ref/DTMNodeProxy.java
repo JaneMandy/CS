@@ -1,13 +1,10 @@
 package org.apache.xml.dtm.ref;
 
-import java.util.Vector;
 import org.apache.xml.dtm.DTM;
 import org.apache.xml.dtm.DTMDOMException;
-import org.apache.xpath.NodeSet;
 import org.w3c.dom.Attr;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;
-import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
@@ -20,19 +17,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.Text;
-import org.w3c.dom.TypeInfo;
-import org.w3c.dom.UserDataHandler;
 
 public class DTMNodeProxy implements Node, Document, Text, Element, Attr, ProcessingInstruction, Comment, DocumentFragment {
    public DTM dtm;
    int node;
-   private static final String EMPTYSTRING = "";
    static final DOMImplementation implementation = new DTMNodeProxy.DTMNodeProxyImplementation();
-   protected String fDocumentURI;
-   protected String actualEncoding;
-   private String xmlEncoding;
-   private boolean xmlStandalone;
-   private String xmlVersion;
 
    public DTMNodeProxy(DTM dtm, int node) {
       this.dtm = dtm;
@@ -171,8 +160,8 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
       return -1 != this.dtm.getAttributeNode(this.node, (String)null, name);
    }
 
-   public boolean hasAttributeNS(String namespaceURI, String localName) {
-      return -1 != this.dtm.getAttributeNode(this.node, namespaceURI, localName);
+   public boolean hasAttributeNS(String name, String x) {
+      return -1 != this.dtm.getAttributeNode(this.node, x, name);
    }
 
    public final Document getOwnerDocument() {
@@ -280,47 +269,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    }
 
    public final NodeList getElementsByTagName(String tagname) {
-      Vector listVector = new Vector();
-      Node retNode = this.dtm.getNode(this.node);
-      int i;
-      if (retNode != null) {
-         boolean isTagNameWildCard = "*".equals(tagname);
-         if (1 == retNode.getNodeType()) {
-            NodeList nodeList = retNode.getChildNodes();
-
-            for(i = 0; i < nodeList.getLength(); ++i) {
-               this.traverseChildren(listVector, nodeList.item(i), tagname, isTagNameWildCard);
-            }
-         } else if (9 == retNode.getNodeType()) {
-            this.traverseChildren(listVector, this.dtm.getNode(this.node), tagname, isTagNameWildCard);
-         }
-      }
-
-      int size = listVector.size();
-      NodeSet nodeSet = new NodeSet(size);
-
-      for(i = 0; i < size; ++i) {
-         nodeSet.addNode((Node)listVector.elementAt(i));
-      }
-
-      return nodeSet;
-   }
-
-   private final void traverseChildren(Vector listVector, Node tempNode, String tagname, boolean isTagNameWildCard) {
-      if (tempNode != null) {
-         if (tempNode.getNodeType() == 1 && (isTagNameWildCard || tempNode.getNodeName().equals(tagname))) {
-            listVector.add(tempNode);
-         }
-
-         if (tempNode.hasChildNodes()) {
-            NodeList nodeList = tempNode.getChildNodes();
-
-            for(int i = 0; i < nodeList.getLength(); ++i) {
-               this.traverseChildren(listVector, nodeList.item(i), tagname, isTagNameWildCard);
-            }
-         }
-
-      }
+      throw new DTMDOMException((short)9);
    }
 
    public final Node importNode(Node importedNode, boolean deep) throws DOMException {
@@ -336,54 +285,11 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    }
 
    public final NodeList getElementsByTagNameNS(String namespaceURI, String localName) {
-      Vector listVector = new Vector();
-      Node retNode = this.dtm.getNode(this.node);
-      if (retNode != null) {
-         boolean isNamespaceURIWildCard = "*".equals(namespaceURI);
-         boolean isLocalNameWildCard = "*".equals(localName);
-         if (1 == retNode.getNodeType()) {
-            NodeList nodeList = retNode.getChildNodes();
-
-            for(int i = 0; i < nodeList.getLength(); ++i) {
-               this.traverseChildren(listVector, nodeList.item(i), namespaceURI, localName, isNamespaceURIWildCard, isLocalNameWildCard);
-            }
-         } else if (9 == retNode.getNodeType()) {
-            this.traverseChildren(listVector, this.dtm.getNode(this.node), namespaceURI, localName, isNamespaceURIWildCard, isLocalNameWildCard);
-         }
-      }
-
-      int size = listVector.size();
-      NodeSet nodeSet = new NodeSet(size);
-
-      for(int i = 0; i < size; ++i) {
-         nodeSet.addNode((Node)listVector.elementAt(i));
-      }
-
-      return nodeSet;
-   }
-
-   private final void traverseChildren(Vector listVector, Node tempNode, String namespaceURI, String localname, boolean isNamespaceURIWildCard, boolean isLocalNameWildCard) {
-      if (tempNode != null) {
-         if (tempNode.getNodeType() == 1 && (isLocalNameWildCard || tempNode.getLocalName().equals(localname))) {
-            String nsURI = tempNode.getNamespaceURI();
-            if (namespaceURI == null && nsURI == null || isNamespaceURIWildCard || namespaceURI != null && namespaceURI.equals(nsURI)) {
-               listVector.add(tempNode);
-            }
-         }
-
-         if (tempNode.hasChildNodes()) {
-            NodeList nl = tempNode.getChildNodes();
-
-            for(int i = 0; i < nl.getLength(); ++i) {
-               this.traverseChildren(listVector, nl.item(i), namespaceURI, localname, isNamespaceURIWildCard, isLocalNameWildCard);
-            }
-         }
-
-      }
+      throw new DTMDOMException((short)9);
    }
 
    public final Element getElementById(String elementId) {
-      return (Element)this.dtm.getNode(this.dtm.getElementById(elementId));
+      throw new DTMDOMException((short)9);
    }
 
    public final Text splitText(int offset) throws DOMException {
@@ -429,7 +335,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    public final String getAttribute(String name) {
       DTMNamedNodeMap map = new DTMNamedNodeMap(this.dtm, this.node);
       Node node = map.getNamedItem(name);
-      return null == node ? "" : node.getNodeValue();
+      return null == node ? null : node.getNodeValue();
    }
 
    public final void setAttribute(String name, String value) throws DOMException {
@@ -462,13 +368,9 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    }
 
    public final String getAttributeNS(String namespaceURI, String localName) {
-      Node retNode = null;
-      int n = this.dtm.getAttributeNode(this.node, namespaceURI, localName);
-      if (n != -1) {
-         retNode = this.dtm.getNode(n);
-      }
-
-      return null == retNode ? "" : retNode.getNodeValue();
+      DTMNamedNodeMap map = new DTMNamedNodeMap(this.dtm, this.node);
+      Node node = map.getNamedItemNS(namespaceURI, localName);
+      return null == node ? null : node.getNodeValue();
    }
 
    public final void setAttributeNS(String namespaceURI, String qualifiedName, String value) throws DOMException {
@@ -480,13 +382,7 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
    }
 
    public final Attr getAttributeNodeNS(String namespaceURI, String localName) {
-      Attr retAttr = null;
-      int n = this.dtm.getAttributeNode(this.node, namespaceURI, localName);
-      if (n != -1) {
-         retAttr = (Attr)this.dtm.getNode(n);
-      }
-
-      return retAttr;
+      throw new DTMDOMException((short)9);
    }
 
    public final Attr setAttributeNodeNS(Attr newAttr) throws DOMException {
@@ -522,7 +418,19 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
       throw new DTMDOMException((short)9);
    }
 
-   public String getInputEncoding() {
+   public String getEncoding() {
+      throw new DTMDOMException((short)9);
+   }
+
+   public void setEncoding(String encoding) {
+      throw new DTMDOMException((short)9);
+   }
+
+   public boolean getStandalone() {
+      throw new DTMDOMException((short)9);
+   }
+
+   public void setStandalone(boolean standalone) {
       throw new DTMDOMException((short)9);
    }
 
@@ -534,262 +442,12 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
       throw new DTMDOMException((short)9);
    }
 
-   public Object setUserData(String key, Object data, UserDataHandler handler) {
-      return this.getOwnerDocument().setUserData(key, data, handler);
+   public String getVersion() {
+      throw new DTMDOMException((short)9);
    }
 
-   public Object getUserData(String key) {
-      return this.getOwnerDocument().getUserData(key);
-   }
-
-   public Object getFeature(String feature, String version) {
-      return this.isSupported(feature, version) ? this : null;
-   }
-
-   public boolean isEqualNode(Node arg) {
-      if (arg == this) {
-         return true;
-      } else if (arg.getNodeType() != this.getNodeType()) {
-         return false;
-      } else {
-         if (this.getNodeName() == null) {
-            if (arg.getNodeName() != null) {
-               return false;
-            }
-         } else if (!this.getNodeName().equals(arg.getNodeName())) {
-            return false;
-         }
-
-         if (this.getLocalName() == null) {
-            if (arg.getLocalName() != null) {
-               return false;
-            }
-         } else if (!this.getLocalName().equals(arg.getLocalName())) {
-            return false;
-         }
-
-         if (this.getNamespaceURI() == null) {
-            if (arg.getNamespaceURI() != null) {
-               return false;
-            }
-         } else if (!this.getNamespaceURI().equals(arg.getNamespaceURI())) {
-            return false;
-         }
-
-         if (this.getPrefix() == null) {
-            if (arg.getPrefix() != null) {
-               return false;
-            }
-         } else if (!this.getPrefix().equals(arg.getPrefix())) {
-            return false;
-         }
-
-         if (this.getNodeValue() == null) {
-            if (arg.getNodeValue() != null) {
-               return false;
-            }
-         } else if (!this.getNodeValue().equals(arg.getNodeValue())) {
-            return false;
-         }
-
-         return true;
-      }
-   }
-
-   public String lookupNamespaceURI(String specifiedPrefix) {
-      short type = this.getNodeType();
-      switch(type) {
-      case 1:
-         String namespace = this.getNamespaceURI();
-         String prefix = this.getPrefix();
-         if (namespace != null) {
-            if (specifiedPrefix == null && prefix == specifiedPrefix) {
-               return namespace;
-            }
-
-            if (prefix != null && prefix.equals(specifiedPrefix)) {
-               return namespace;
-            }
-         }
-
-         if (this.hasAttributes()) {
-            NamedNodeMap map = this.getAttributes();
-            int length = map.getLength();
-
-            for(int i = 0; i < length; ++i) {
-               Node attr = map.item(i);
-               String attrPrefix = attr.getPrefix();
-               String value = attr.getNodeValue();
-               namespace = attr.getNamespaceURI();
-               if (namespace != null && namespace.equals("http://www.w3.org/2000/xmlns/")) {
-                  if (specifiedPrefix == null && attr.getNodeName().equals("xmlns")) {
-                     return value;
-                  }
-
-                  if (attrPrefix != null && attrPrefix.equals("xmlns") && attr.getLocalName().equals(specifiedPrefix)) {
-                     return value;
-                  }
-               }
-            }
-         }
-
-         return null;
-      case 2:
-         if (this.getOwnerElement().getNodeType() == 1) {
-            return this.getOwnerElement().lookupNamespaceURI(specifiedPrefix);
-         }
-
-         return null;
-      case 3:
-      case 4:
-      case 5:
-      case 7:
-      case 8:
-      case 9:
-      default:
-         return null;
-      case 6:
-      case 10:
-      case 11:
-      case 12:
-         return null;
-      }
-   }
-
-   public boolean isDefaultNamespace(String namespaceURI) {
-      return false;
-   }
-
-   public String lookupPrefix(String namespaceURI) {
-      if (namespaceURI == null) {
-         return null;
-      } else {
-         short type = this.getNodeType();
-         switch(type) {
-         case 2:
-            if (this.getOwnerElement().getNodeType() == 1) {
-               return this.getOwnerElement().lookupPrefix(namespaceURI);
-            }
-
-            return null;
-         case 3:
-         case 4:
-         case 5:
-         case 7:
-         case 8:
-         case 9:
-         default:
-            return null;
-         case 6:
-         case 10:
-         case 11:
-         case 12:
-            return null;
-         }
-      }
-   }
-
-   public boolean isSameNode(Node other) {
-      return this == other;
-   }
-
-   public void setTextContent(String textContent) throws DOMException {
-      this.setNodeValue(textContent);
-   }
-
-   public String getTextContent() throws DOMException {
-      return this.getNodeValue();
-   }
-
-   public short compareDocumentPosition(Node other) throws DOMException {
-      return 0;
-   }
-
-   public String getBaseURI() {
-      return null;
-   }
-
-   public Node renameNode(Node n, String namespaceURI, String name) throws DOMException {
-      return n;
-   }
-
-   public void normalizeDocument() {
-   }
-
-   public DOMConfiguration getDomConfig() {
-      return null;
-   }
-
-   public void setDocumentURI(String documentURI) {
-      this.fDocumentURI = documentURI;
-   }
-
-   public String getDocumentURI() {
-      return this.fDocumentURI;
-   }
-
-   public String getActualEncoding() {
-      return this.actualEncoding;
-   }
-
-   public void setActualEncoding(String value) {
-      this.actualEncoding = value;
-   }
-
-   public Text replaceWholeText(String content) throws DOMException {
-      return null;
-   }
-
-   public String getWholeText() {
-      return null;
-   }
-
-   public boolean isElementContentWhitespace() {
-      return false;
-   }
-
-   public void setIdAttribute(boolean id) {
-   }
-
-   public void setIdAttribute(String name, boolean makeId) {
-   }
-
-   public void setIdAttributeNode(Attr at, boolean makeId) {
-   }
-
-   public void setIdAttributeNS(String namespaceURI, String localName, boolean makeId) {
-   }
-
-   public TypeInfo getSchemaTypeInfo() {
-      return null;
-   }
-
-   public boolean isId() {
-      return false;
-   }
-
-   public String getXmlEncoding() {
-      return this.xmlEncoding;
-   }
-
-   public void setXmlEncoding(String xmlEncoding) {
-      this.xmlEncoding = xmlEncoding;
-   }
-
-   public boolean getXmlStandalone() {
-      return this.xmlStandalone;
-   }
-
-   public void setXmlStandalone(boolean xmlStandalone) throws DOMException {
-      this.xmlStandalone = xmlStandalone;
-   }
-
-   public String getXmlVersion() {
-      return this.xmlVersion;
-   }
-
-   public void setXmlVersion(String xmlVersion) throws DOMException {
-      this.xmlVersion = xmlVersion;
+   public void setVersion(String version) {
+      throw new DTMDOMException((short)9);
    }
 
    static class DTMNodeProxyImplementation implements DOMImplementation {
@@ -803,10 +461,6 @@ public class DTMNodeProxy implements Node, Document, Text, Element, Attr, Proces
 
       public boolean hasFeature(String feature, String version) {
          return ("CORE".equals(feature.toUpperCase()) || "XML".equals(feature.toUpperCase())) && ("1.0".equals(version) || "2.0".equals(version));
-      }
-
-      public Object getFeature(String feature, String version) {
-         return null;
       }
    }
 }

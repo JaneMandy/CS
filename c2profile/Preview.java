@@ -129,7 +129,7 @@ public class Preview implements Serializable {
       }
 
       if (var1.equals(".http-post")) {
-         var3 = CommonUtils.toBytes(CommonUtils.rand(99999) + "");
+         var3 = CommonUtils.toBytes(CommonUtils.rand(99999).makeConcatWithConstants<invokedynamic>(CommonUtils.rand(99999)));
       }
 
       this.c2profile.apply(var1 + ".client", var2, var3);
@@ -139,11 +139,11 @@ public class Preview implements Serializable {
       String var10;
       while(var7.hasNext()) {
          Entry var8 = (Entry)var7.next();
-         String var9 = var8.getKey() + "";
-         var10 = var8.getValue() + "";
+         String var9 = ((Class)var8.getKey()).makeConcatWithConstants<invokedynamic>(var8.getKey());
+         var10 = ((Class)var8.getValue()).makeConcatWithConstants<invokedynamic>(var8.getValue());
 
          try {
-            var8.setValue(URLEncoder.encode(var8.getValue() + "", "UTF-8"));
+            var8.setValue(URLEncoder.encode(((Class)var8.getValue()).makeConcatWithConstants<invokedynamic>(var8.getValue()), "UTF-8"));
          } catch (Exception var13) {
             MudgeSanity.logException("url encoding: " + var8, var13, false);
          }
@@ -170,8 +170,8 @@ public class Preview implements Serializable {
 
       while(var7.hasNext()) {
          Entry var15 = (Entry)var7.next();
-         var10 = var15.getKey() + "";
-         String var11 = var15.getValue() + "";
+         var10 = ((Class)var15.getKey()).makeConcatWithConstants<invokedynamic>(var15.getKey());
+         String var11 = ((Class)var15.getValue()).makeConcatWithConstants<invokedynamic>(var15.getValue());
          var15.setValue(var11.replaceAll("\\P{Graph}", ""));
          var14.append(var10 + ": " + var11 + "\n");
       }
@@ -181,7 +181,8 @@ public class Preview implements Serializable {
             byte[] var16 = new byte[0];
             var16 = new byte[var2.data.available()];
             var2.data.read(var16, 0, var16.length);
-            var14.append("\n" + CommonUtils.bString(var16).replaceAll("\\P{Print}", "."));
+            String var10001 = CommonUtils.bString(var16);
+            var14.append("\n" + var10001.replaceAll("\\P{Print}", "."));
             var14.append("\n");
          } catch (Exception var12) {
             MudgeSanity.logException("sample generate", var12, false);
@@ -217,8 +218,8 @@ public class Preview implements Serializable {
 
          while(var8.hasNext()) {
             Entry var9 = (Entry)var8.next();
-            String var10 = var9.getKey() + "";
-            String var11 = var9.getValue() + "";
+            String var10 = ((Class)var9.getKey()).makeConcatWithConstants<invokedynamic>(var9.getKey());
+            String var11 = ((Class)var9.getValue()).makeConcatWithConstants<invokedynamic>(var9.getValue());
             var9.setValue(var11.replaceAll("\\P{Graph}", ""));
             var13.append(var10 + ": " + var11 + "\n");
          }
@@ -229,7 +230,8 @@ public class Preview implements Serializable {
             var4.data.read(var14, 0, var14.length);
          }
 
-         var13.append("\n" + CommonUtils.bString(var14).replaceAll("\\P{Print}", "."));
+         String var10001 = CommonUtils.bString(var14);
+         var13.append("\n" + var10001.replaceAll("\\P{Print}", "."));
          return var13.toString().replace(var2, var3);
       } catch (IOException var12) {
          MudgeSanity.logException("getServerSample: " + var1, var12, false);

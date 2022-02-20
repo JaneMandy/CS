@@ -30,7 +30,7 @@ public class BeaconTabCompletion extends GenericTabCompletion {
       Iterator var2 = var0.iterator();
 
       while(var2.hasNext()) {
-         String var3 = var2.next() + "";
+         String var3 = ((Class)var2.next()).makeConcatWithConstants<invokedynamic>(var2.next());
          if (!var3.startsWith(var1)) {
             var2.remove();
          }
@@ -49,7 +49,8 @@ public class BeaconTabCompletion extends GenericTabCompletion {
       Iterator var5 = var2.iterator();
 
       while(var5.hasNext()) {
-         var3.add(var4.toString() + " " + var5.next());
+         String var10001 = var4.toString();
+         var3.add(var10001 + " " + var5.next());
       }
 
       Collections.sort(var3);
@@ -82,6 +83,8 @@ public class BeaconTabCompletion extends GenericTabCompletion {
       int var19;
       int var24;
       Iterator var25;
+      List var10000;
+      String var10001;
       if (var2 != null && ((List)var2).size() == 0 && var1.matches("inject \\d+ x.. .*")) {
          var9 = ListenerUtils.getListenerNames(this.client);
          if (var9.size() == 0) {
@@ -93,7 +96,9 @@ public class BeaconTabCompletion extends GenericTabCompletion {
             var25 = var9.iterator();
 
             while(var25.hasNext()) {
-               ((List)var2).add(var1.substring(0, var1.indexOf(" ", var24 + 1)) + " " + var25.next());
+               var10000 = (List)var2;
+               var10001 = var1.substring(0, var1.indexOf(" ", var24 + 1));
+               var10000.add(var10001 + " " + var25.next());
             }
          }
 
@@ -111,7 +116,9 @@ public class BeaconTabCompletion extends GenericTabCompletion {
                var5 = var9.iterator();
 
                while(var5.hasNext()) {
-                  ((List)var2).add(var1.substring(0, var1.indexOf(" ", var19 + 1)) + " " + var5.next());
+                  var10000 = (List)var2;
+                  var10001 = var1.substring(0, var1.indexOf(" ", var19 + 1));
+                  var10000.add(var10001 + " " + var5.next());
                }
             }
 
@@ -128,7 +135,9 @@ public class BeaconTabCompletion extends GenericTabCompletion {
                var25 = var9.iterator();
 
                while(var25.hasNext()) {
-                  ((List)var2).add(var1.substring(0, var1.indexOf(" ", var24 + 1)) + " " + var25.next());
+                  var10000 = (List)var2;
+                  var10001 = var1.substring(0, var1.indexOf(" ", var24 + 1));
+                  var10000.add(var10001 + " " + var25.next());
                }
             }
 
@@ -145,7 +154,9 @@ public class BeaconTabCompletion extends GenericTabCompletion {
                   var11 = var9.iterator();
 
                   while(var11.hasNext()) {
-                     ((List)var2).add(var1.substring(0, var1.indexOf(" ")) + " " + var11.next());
+                     var10000 = (List)var2;
+                     var10001 = var1.substring(0, var1.indexOf(" "));
+                     var10000.add(var10001 + " " + var11.next());
                   }
                }
 
@@ -179,7 +190,9 @@ public class BeaconTabCompletion extends GenericTabCompletion {
 
                   for(int var21 = 0; var23 != null && var21 < var23.length; ++var21) {
                      if (var23[var21].isDirectory() || !var1.startsWith("powershell-import") || var23[var21].getName().endsWith(".ps1")) {
-                        ((List)var2).add(var1.substring(0, var1.indexOf(" ")) + " " + var23[var21].getAbsolutePath());
+                        var10000 = (List)var2;
+                        var10001 = var1.substring(0, var1.indexOf(" "));
+                        var10000.add(var10001 + " " + var23[var21].getAbsolutePath());
                      }
                   }
 
@@ -202,7 +215,9 @@ public class BeaconTabCompletion extends GenericTabCompletion {
                   File[] var18 = var17.listFiles();
 
                   for(int var7 = 0; var18 != null && var7 < var18.length; ++var7) {
-                     ((List)var2).add(var20.toString() + " " + var18[var7].getAbsolutePath());
+                     var10000 = (List)var2;
+                     var10001 = var20.toString();
+                     var10000.add(var10001 + " " + var18[var7].getAbsolutePath());
                   }
 
                   Collections.sort((LinkedList)var2);
@@ -241,121 +256,127 @@ public class BeaconTabCompletion extends GenericTabCompletion {
                      return this.getOptionsFromList(var1, var9);
                   }
 
-                  if (var2 != null && ((List)var2).size() == 0 && (var1.startsWith("link ") || var1.startsWith("connect "))) {
-                     var9 = DataUtils.getTargetNames(this.client.getData());
-                     var9.add("127.0.0.1");
-                     return this.getOptionsFromList(var1, var9);
-                  }
+                  if (var2 == null || ((List)var2).size() != 0 || !var1.startsWith("link ") && !var1.startsWith("connect ")) {
+                     if (var2 == null || ((List)var2).size() != 0 || !var1.matches("spunnel .*? .*") && !var1.matches("spunnel_local .*? .*")) {
+                        if (var2 != null && ((List)var2).size() == 0 && var1.startsWith("jump ")) {
+                           var9 = DataUtils.getBeaconRemoteExploits(this.client.getData()).exploits();
+                           return this.getOptionsFromList(var1, var9);
+                        }
 
-                  if (var2 != null && ((List)var2).size() == 0 && (var1.matches("spunnel .*? .*") || var1.matches("spunnel_local .*? .*"))) {
+                        if (var2 != null && ((List)var2).size() == 0 && var1.startsWith("remote-exec ")) {
+                           var9 = DataUtils.getBeaconRemoteExecMethods(this.client.getData()).methods();
+                           return this.getOptionsFromList(var1, var9);
+                        }
+
+                        LinkedList var4;
+                        String var6;
+                        if (var2 != null && ((List)var2).size() == 0 && (var1.startsWith("powershell ") || var1.startsWith("powerpick ") || var1.matches("psinject \\d+ x.. .*"))) {
+                           var3 = new LinkedList(DataUtils.getBeaconPowerShellCommands(this.client.getData(), this.bid));
+                           var4 = new LinkedList();
+                           var5 = var3.iterator();
+
+                           while(var5.hasNext()) {
+                              var6 = ((Class)var5.next()).makeConcatWithConstants<invokedynamic>(var5.next());
+                              if (var6.length() > 0) {
+                                 var4.add(var6);
+                                 var4.add("Get-Help " + var6 + " -full");
+                              }
+                           }
+
+                           return this.getOptionsFromList(var1, var4);
+                        }
+
+                        if (var2 != null && ((List)var2).size() == 0 && var1.matches("reg query.*? x.. .*")) {
+                           return this.getOptionsFromList(var1, CommonUtils.toList("HKCC\\, HKCR\\, HKCU\\, HKLM\\, HKU\\"));
+                        }
+
+                        if (var2 != null && ((List)var2).size() == 0 && (var1.startsWith("reg query ") || var1.startsWith("reg queryv "))) {
+                           return this.getOptionsFromList(var1, CommonUtils.toList("x64, x86"));
+                        }
+
+                        if (var2 != null && ((List)var2).size() == 0 && var1.startsWith("reg ")) {
+                           return this.getOptionsFromList(var1, CommonUtils.toList("query, queryv"));
+                        }
+
+                        if (var2 != null && ((List)var2).size() == 0 && var1.startsWith("net ")) {
+                           return this.getOptionsFromList(var1, CommonUtils.getNetCommands());
+                        }
+
+                        BeaconEntry var10;
+                        if (var2 != null && ((List)var2).size() == 0 && var1.startsWith("note ")) {
+                           var10 = DataUtils.getBeacon(this.client.getData(), this.bid);
+                           if (var10 != null) {
+                              var4 = new LinkedList();
+                              var4.add(var10.getNote());
+                              return this.getOptionsFromList(var1, var4);
+                           }
+
+                           return this.getOptionsFromList(var1, new LinkedList());
+                        }
+
+                        if (var2 != null && ((List)var2).size() == 0 && var1.startsWith("covertvpn ")) {
+                           return this.getOptionsFromList(var1, DataUtils.getInterfaceList(this.client.getData()));
+                        }
+
+                        if (var2 != null && ((List)var2).size() == 0 && var1.startsWith("desktop ")) {
+                           return this.getOptionsFromList(var1, CommonUtils.toList("high, low"));
+                        }
+
+                        if (var2 != null && ((List)var2).size() == 0 && var1.startsWith("blockdlls ")) {
+                           return this.getOptionsFromList(var1, CommonUtils.toList("start, stop"));
+                        }
+
+                        if (var2 != null && ((List)var2).size() == 0 && var1.startsWith("unlink ")) {
+                           var3 = new LinkedList();
+                           var10 = DataUtils.getBeacon(this.client.getData(), this.bid);
+                           BeaconEntry var16;
+                           if (var10 != null && var10.getParentId() != null && !var10.getPivotHint().isReverse()) {
+                              var16 = DataUtils.getBeacon(this.client.getData(), var10.getParentId());
+                              if (var16 != null) {
+                                 var10001 = var16.getInternal();
+                                 var3.add(var10001 + " " + var16.getPid());
+                              }
+                           }
+
+                           var5 = DataUtils.getBeaconChildren(this.client.getData(), this.bid).iterator();
+
+                           while(var5.hasNext()) {
+                              var16 = (BeaconEntry)var5.next();
+                              if (!var16.isSSH() && !var16.getPivotHint().isReverse() && var16.isActive()) {
+                                 var10001 = var16.getInternal();
+                                 var3.add(var10001 + " " + var16.getPid());
+                              }
+                           }
+
+                           return this.getOptionsFromList(var1, var3);
+                        }
+
+                        if (var2 != null && ((List)var2).size() == 0 && var1.startsWith("mimikatz ")) {
+                           var3 = new LinkedList(CommonUtils.toList((Object[])CommonUtils.readResourceAsString("resources/mimikatz.txt").trim().split("\n")));
+                           var4 = new LinkedList();
+                           var5 = var3.iterator();
+
+                           while(var5.hasNext()) {
+                              var6 = ((Class)var5.next()).makeConcatWithConstants<invokedynamic>(var5.next()).trim();
+                              var4.add(var6);
+                              var4.add("!" + var6);
+                              var4.add("@" + var6);
+                           }
+
+                           return this.getOptionsFromList(var1, var4);
+                        }
+
+                        return (Collection)var2;
+                     }
+
                      var3 = new LinkedList();
                      var3.add("127.0.0.1");
                      return this.getOptionsFromList(var1, var3);
                   }
 
-                  if (var2 != null && ((List)var2).size() == 0 && var1.startsWith("jump ")) {
-                     var9 = DataUtils.getBeaconRemoteExploits(this.client.getData()).exploits();
-                     return this.getOptionsFromList(var1, var9);
-                  }
-
-                  if (var2 != null && ((List)var2).size() == 0 && var1.startsWith("remote-exec ")) {
-                     var9 = DataUtils.getBeaconRemoteExecMethods(this.client.getData()).methods();
-                     return this.getOptionsFromList(var1, var9);
-                  }
-
-                  LinkedList var4;
-                  String var6;
-                  if (var2 != null && ((List)var2).size() == 0 && (var1.startsWith("powershell ") || var1.startsWith("powerpick ") || var1.matches("psinject \\d+ x.. .*"))) {
-                     var3 = new LinkedList(DataUtils.getBeaconPowerShellCommands(this.client.getData(), this.bid));
-                     var4 = new LinkedList();
-                     var5 = var3.iterator();
-
-                     while(var5.hasNext()) {
-                        var6 = var5.next() + "";
-                        if (var6.length() > 0) {
-                           var4.add(var6);
-                           var4.add("Get-Help " + var6 + " -full");
-                        }
-                     }
-
-                     return this.getOptionsFromList(var1, var4);
-                  }
-
-                  if (var2 != null && ((List)var2).size() == 0 && var1.matches("reg query.*? x.. .*")) {
-                     return this.getOptionsFromList(var1, CommonUtils.toList("HKCC\\, HKCR\\, HKCU\\, HKLM\\, HKU\\"));
-                  }
-
-                  if (var2 != null && ((List)var2).size() == 0 && (var1.startsWith("reg query ") || var1.startsWith("reg queryv "))) {
-                     return this.getOptionsFromList(var1, CommonUtils.toList("x64, x86"));
-                  }
-
-                  if (var2 != null && ((List)var2).size() == 0 && var1.startsWith("reg ")) {
-                     return this.getOptionsFromList(var1, CommonUtils.toList("query, queryv"));
-                  }
-
-                  if (var2 != null && ((List)var2).size() == 0 && var1.startsWith("net ")) {
-                     return this.getOptionsFromList(var1, CommonUtils.getNetCommands());
-                  }
-
-                  if (var2 != null && ((List)var2).size() == 0 && var1.startsWith("note ")) {
-                     BeaconEntry var8 = DataUtils.getBeacon(this.client.getData(), this.bid);
-                     if (var8 != null) {
-                        var4 = new LinkedList();
-                        var4.add(var8.getNote());
-                        return this.getOptionsFromList(var1, var4);
-                     }
-
-                     return this.getOptionsFromList(var1, new LinkedList());
-                  }
-
-                  if (var2 != null && ((List)var2).size() == 0 && var1.startsWith("covertvpn ")) {
-                     return this.getOptionsFromList(var1, DataUtils.getInterfaceList(this.client.getData()));
-                  }
-
-                  if (var2 != null && ((List)var2).size() == 0 && var1.startsWith("desktop ")) {
-                     return this.getOptionsFromList(var1, CommonUtils.toList("high, low"));
-                  }
-
-                  if (var2 != null && ((List)var2).size() == 0 && var1.startsWith("blockdlls ")) {
-                     return this.getOptionsFromList(var1, CommonUtils.toList("start, stop"));
-                  }
-
-                  if (var2 != null && ((List)var2).size() == 0 && var1.startsWith("unlink ")) {
-                     var3 = new LinkedList();
-                     BeaconEntry var10 = DataUtils.getBeacon(this.client.getData(), this.bid);
-                     if (var10 != null && var10.getParentId() != null && !var10.getPivotHint().isReverse()) {
-                        BeaconEntry var12 = DataUtils.getBeacon(this.client.getData(), var10.getParentId());
-                        if (var12 != null) {
-                           var3.add(var12.getInternal() + " " + var12.getPid());
-                        }
-                     }
-
-                     var5 = DataUtils.getBeaconChildren(this.client.getData(), this.bid).iterator();
-
-                     while(var5.hasNext()) {
-                        BeaconEntry var16 = (BeaconEntry)var5.next();
-                        if (!var16.isSSH() && !var16.getPivotHint().isReverse() && var16.isActive()) {
-                           var3.add(var16.getInternal() + " " + var16.getPid());
-                        }
-                     }
-
-                     return this.getOptionsFromList(var1, var3);
-                  }
-
-                  if (var2 != null && ((List)var2).size() == 0 && var1.startsWith("mimikatz ")) {
-                     var3 = new LinkedList(CommonUtils.toList((Object[])CommonUtils.readResourceAsString("resources/mimikatz.txt").trim().split("\n")));
-                     var4 = new LinkedList();
-                     var5 = var3.iterator();
-
-                     while(var5.hasNext()) {
-                        var6 = (var5.next() + "").trim();
-                        var4.add(var6);
-                        var4.add("!" + var6);
-                        var4.add("@" + var6);
-                     }
-
-                     return this.getOptionsFromList(var1, var4);
-                  }
+                  var9 = DataUtils.getTargetNames(this.client.getData());
+                  var9.add("127.0.0.1");
+                  return this.getOptionsFromList(var1, var9);
                }
             }
          }

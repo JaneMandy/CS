@@ -15,7 +15,6 @@ import org.apache.xpath.objects.XNodeSet;
 import org.apache.xpath.objects.XObject;
 
 public class FuncKey extends Function2Args {
-   static final long serialVersionUID = 9089293100115347340L;
    private static Boolean ISTRUE = new Boolean(true);
 
    public XObject execute(XPathContext xctxt) throws TransformerException {

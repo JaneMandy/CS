@@ -42,6 +42,7 @@ public class Loader implements Loadable {
          ScriptInstance var3 = (ScriptInstance)var2.next();
          var3.printProfileStatistics(var1);
       }
+
    }
 
    public void setDebugLevel(int var1) {

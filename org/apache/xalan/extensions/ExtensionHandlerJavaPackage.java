@@ -76,14 +76,14 @@ public class ExtensionHandlerJavaPackage extends ExtensionHandlerJava {
       int lastDot = funcName.lastIndexOf(".");
 
       try {
-         TransformerImpl trans = exprContext != null ? (TransformerImpl)exprContext.getXPathContext().getOwnerObject() : null;
          String className;
          Class classObj;
          Object[] methodArgs;
          Object[][] convertedArgs;
          Class[] paramTypes;
-         Object result;
          int i;
+         Object result;
+         TransformerImpl trans;
          if (funcName.endsWith(".new")) {
             methodArgs = new Object[args.size()];
             convertedArgs = new Object[1][];
@@ -92,7 +92,7 @@ public class ExtensionHandlerJavaPackage extends ExtensionHandlerJava {
                methodArgs[i] = args.elementAt(i);
             }
 
-            Constructor c = methodKey != null ? (Constructor)this.getFromCache(methodKey, (Object)null, methodArgs) : null;
+            Constructor c = (Constructor)this.getFromCache(methodKey, (Object)null, methodArgs);
             if (c != null) {
                try {
                   paramTypes = c.getParameterTypes();
@@ -113,11 +113,9 @@ public class ExtensionHandlerJavaPackage extends ExtensionHandlerJava {
             }
 
             c = MethodResolver.getConstructor(classObj, methodArgs, convertedArgs, exprContext);
-            if (methodKey != null) {
-               this.putToCache(methodKey, (Object)null, methodArgs, c);
-            }
-
-            if (trans != null && trans.getDebug()) {
+            this.putToCache(methodKey, (Object)null, methodArgs, c);
+            if (TransformerImpl.S_DEBUG) {
+               trans = (TransformerImpl)exprContext.getXPathContext().getOwnerObject();
                trans.getTraceManager().fireExtensionEvent(new ExtensionEvent(trans, c, convertedArgs[0]));
 
                try {
@@ -142,8 +140,8 @@ public class ExtensionHandlerJavaPackage extends ExtensionHandlerJava {
                   methodArgs[i] = args.elementAt(i);
                }
 
-               m = methodKey != null ? (Method)this.getFromCache(methodKey, (Object)null, methodArgs) : null;
-               if (m != null && !trans.getDebug()) {
+               m = (Method)this.getFromCache(methodKey, (Object)null, methodArgs);
+               if (m != null && !TransformerImpl.S_DEBUG) {
                   try {
                      paramTypes = m.getParameterTypes();
                      MethodResolver.convertParams(methodArgs, convertedArgs, paramTypes, exprContext);
@@ -164,11 +162,9 @@ public class ExtensionHandlerJavaPackage extends ExtensionHandlerJava {
                }
 
                m = MethodResolver.getMethod(classObj, methodName, methodArgs, convertedArgs, exprContext, 1);
-               if (methodKey != null) {
-                  this.putToCache(methodKey, (Object)null, methodArgs, m);
-               }
-
-               if (trans != null && trans.getDebug()) {
+               this.putToCache(methodKey, (Object)null, methodArgs, m);
+               if (TransformerImpl.S_DEBUG) {
+                  trans = (TransformerImpl)exprContext.getXPathContext().getOwnerObject();
                   trans.getTraceManager().fireExtensionEvent(m, (Object)null, convertedArgs[0]);
 
                   try {
@@ -198,7 +194,7 @@ public class ExtensionHandlerJavaPackage extends ExtensionHandlerJava {
                   methodArgs[i] = args.elementAt(i + 1);
                }
 
-               m = methodKey != null ? (Method)this.getFromCache(methodKey, targetObject, methodArgs) : null;
+               m = (Method)this.getFromCache(methodKey, targetObject, methodArgs);
                if (m != null) {
                   try {
                      paramTypes = m.getParameterTypes();
@@ -212,11 +208,9 @@ public class ExtensionHandlerJavaPackage extends ExtensionHandlerJava {
 
                classObj = targetObject.getClass();
                m = MethodResolver.getMethod(classObj, funcName, methodArgs, convertedArgs, exprContext, 2);
-               if (methodKey != null) {
-                  this.putToCache(methodKey, targetObject, methodArgs, m);
-               }
-
-               if (trans != null && trans.getDebug()) {
+               this.putToCache(methodKey, targetObject, methodArgs, m);
+               if (TransformerImpl.S_DEBUG) {
+                  trans = (TransformerImpl)exprContext.getXPathContext().getOwnerObject();
                   trans.getTraceManager().fireExtensionEvent(m, targetObject, convertedArgs[0]);
 
                   try {
@@ -287,7 +281,7 @@ public class ExtensionHandlerJavaPackage extends ExtensionHandlerJava {
       XSLProcessorContext xpc = new XSLProcessorContext(transformer, stylesheetTree);
 
       try {
-         if (transformer.getDebug()) {
+         if (TransformerImpl.S_DEBUG) {
             transformer.getTraceManager().fireExtensionEvent(m, (Object)null, new Object[]{xpc, element});
 
             try {

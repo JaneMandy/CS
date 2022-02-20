@@ -146,7 +146,7 @@ public class DataBridge implements Function, Loadable {
                         }
 
                         if (var21 != 0.0D) {
-                           var11.put("version", var21 + "");
+                           var11.put("version", var21.makeConcatWithConstants<invokedynamic>(var21));
                         }
 
                         String var12 = CommonUtils.TargetKey(var11);
@@ -155,10 +155,11 @@ public class DataBridge implements Function, Loadable {
 
                      this.client.getConnection().call("targets.push");
                   } else {
+                     Map var14;
                      if ("&host_info".equals(var1)) {
                         var13 = BridgeUtilities.getString(var3, "");
-                        Map var22 = this.client.getData().getModelDirect("targets", var13);
-                        return ScriptUtils.IndexOrMap(var22, var3);
+                        var14 = this.client.getData().getModelDirect("targets", var13);
+                        return ScriptUtils.IndexOrMap(var14, var3);
                      }
 
                      if ("&hosts".equals(var1)) {
@@ -211,7 +212,7 @@ public class DataBridge implements Function, Loadable {
 
                         (new DownloadFileSimple(this.client.getConnection(), var13, new File(var15), var20)).start();
                      } else {
-                        Map var14 = getKeys();
+                        var14 = getKeys();
                         if (var14.containsKey(var1)) {
                            var15 = (String)var14.get(var1);
                            return ScriptUtils.convertAll(this.client.getData().getDataSafe(var15));

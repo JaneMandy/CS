@@ -9,7 +9,6 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 public class ProcessorCharacters extends XSLTElementProcessor {
-   static final long serialVersionUID = 8632900007814162650L;
    protected Node m_firstBackPointer = null;
    private StringBuffer m_accumulator = new StringBuffer();
    private ElemText m_xslTextElement;

@@ -22,7 +22,8 @@ public class Obfuscator {
    }
 
    public static String garbage(String replaceme) {
-      return replaceme.charAt(0) + _garbage(replaceme.substring(1, replaceme.length()));
+      char var10000 = replaceme.charAt(0);
+      return var10000 + _garbage(replaceme.substring(1, replaceme.length()));
    }
 
    public static String _garbage(String replaceme) {

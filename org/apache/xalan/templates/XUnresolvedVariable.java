@@ -7,7 +7,6 @@ import org.apache.xpath.XPathContext;
 import org.apache.xpath.objects.XObject;
 
 public class XUnresolvedVariable extends XObject {
-   static final long serialVersionUID = -256779804767950188L;
    private transient int m_context;
    private transient TransformerImpl m_transformer;
    private transient int m_varStackPos = -1;

@@ -91,31 +91,31 @@ public class ScriptEnvironment implements Serializable {
    }
 
    public Block getBlock(String var1) {
-      return (Block)((Block)this.getEnvironment().get("^" + var1));
+      return (Block)this.getEnvironment().get("^" + var1);
    }
 
    public Function getFunction(String var1) {
-      return (Function)((Function)this.getEnvironment().get(var1));
+      return (Function)this.getEnvironment().get(var1);
    }
 
    public Environment getFunctionEnvironment(String var1) {
-      return (Environment)((Environment)this.getEnvironment().get(var1));
+      return (Environment)this.getEnvironment().get(var1);
    }
 
    public PredicateEnvironment getPredicateEnvironment(String var1) {
-      return (PredicateEnvironment)((PredicateEnvironment)this.getEnvironment().get(var1));
+      return (PredicateEnvironment)this.getEnvironment().get(var1);
    }
 
    public FilterEnvironment getFilterEnvironment(String var1) {
-      return (FilterEnvironment)((FilterEnvironment)this.getEnvironment().get(var1));
+      return (FilterEnvironment)this.getEnvironment().get(var1);
    }
 
    public Predicate getPredicate(String var1) {
-      return (Predicate)((Predicate)this.getEnvironment().get(var1));
+      return (Predicate)this.getEnvironment().get(var1);
    }
 
    public Operator getOperator(String var1) {
-      return (Operator)((Operator)this.getEnvironment().get(var1));
+      return (Operator)this.getEnvironment().get(var1);
    }
 
    public Hashtable getEnvironment() {
@@ -216,8 +216,8 @@ public class ScriptEnvironment implements Serializable {
 
    public Stack saveContext() {
       Stack var1 = this.context;
-      this.context = (Stack)((Stack)this.contextStack.pop());
-      this.metadata = (HashMap)((HashMap)this.metaStack.pop());
+      this.context = (Stack)this.contextStack.pop();
+      this.metadata = (HashMap)this.metaStack.pop();
       return var1;
    }
 
@@ -348,7 +348,7 @@ public class ScriptEnvironment implements Serializable {
    }
 
    public String getCurrentSource() {
-      return !this.sources.isEmpty() ? this.sources.peek() + "" : "unknown";
+      return !this.sources.isEmpty() ? ((Class)this.sources.peek()).makeConcatWithConstants<invokedynamic>(this.sources.peek()) : "unknown";
    }
 
    public void popSource() {
@@ -428,16 +428,16 @@ public class ScriptEnvironment implements Serializable {
       return SleepUtils.runCode(SleepUtils.ParseCode(var1), this);
    }
 
-   protected static class ExceptionContext implements Serializable {
-      public Block owner;
-      public String varname;
-      public Block handler;
-   }
-
    protected static class Context implements Serializable {
       public Block block;
       public Step last;
       public ScriptEnvironment.ExceptionContext handler;
       public boolean moreHandlers;
+   }
+
+   protected static class ExceptionContext implements Serializable {
+      public Block owner;
+      public String varname;
+      public Block handler;
    }
 }

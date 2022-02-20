@@ -5,12 +5,11 @@ import javax.xml.transform.TransformerException;
 import org.apache.xalan.transformer.TransformerImpl;
 import org.apache.xml.serializer.SerializationHandler;
 import org.apache.xml.utils.QName;
-import org.apache.xml.utils.XML11Char;
+import org.apache.xml.utils.XMLChar;
 import org.apache.xpath.XPathContext;
 import org.xml.sax.SAXException;
 
 public class ElemElement extends ElemUse {
-   static final long serialVersionUID = -324619535592435183L;
    protected AVT m_name_avt = null;
    protected AVT m_namespace_avt = null;
 
@@ -57,7 +56,7 @@ public class ElemElement extends ElemUse {
    }
 
    public void execute(TransformerImpl transformer) throws TransformerException {
-      if (transformer.getDebug()) {
+      if (TransformerImpl.S_DEBUG) {
          transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
       }
 
@@ -67,7 +66,7 @@ public class ElemElement extends ElemUse {
       String nodeName = this.m_name_avt == null ? null : this.m_name_avt.evaluate(xctxt, sourceNode, this);
       String prefix = null;
       String nodeNamespace = "";
-      if (nodeName != null && !this.m_name_avt.isSimple() && !XML11Char.isXML11ValidQName(nodeName)) {
+      if (nodeName != null && !this.m_name_avt.isSimple() && !XMLChar.isValidQName(nodeName)) {
          transformer.getMsgMgr().warn(this, "WG_ILLEGAL_ATTRIBUTE_VALUE", new Object[]{"name", nodeName});
          nodeName = null;
       } else if (nodeName != null) {
@@ -105,7 +104,7 @@ public class ElemElement extends ElemUse {
       }
 
       this.constructNode(nodeName, prefix, nodeNamespace, transformer);
-      if (transformer.getDebug()) {
+      if (TransformerImpl.S_DEBUG) {
          transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);
       }
 

@@ -52,17 +52,15 @@ public class TabManager extends AObject implements Callback {
       CommonUtils.Guard();
       Iterator var2 = this.apptabs.iterator();
 
-      TabManager._A var3;
-      do {
-         if (!var2.hasNext()) {
-            return false;
+      while(var2.hasNext()) {
+         TabManager._A var3 = (TabManager._A)var2.next();
+         if (var1.equals(var3.E)) {
+            this.tabs.setSelectedComponent(var3.C);
+            return true;
          }
+      }
 
-         var3 = (TabManager._A)var2.next();
-      } while(!var1.equals(var3.E));
-
-      this.tabs.setSelectedComponent(var3.C);
-      return true;
+      return false;
    }
 
    public boolean activateConsole(String var1) {
@@ -268,16 +266,14 @@ public class TabManager extends AObject implements Callback {
       JComponent var1 = (JComponent)this.tabs.getSelectedComponent();
       Iterator var2 = this.apptabs.iterator();
 
-      TabManager._A var3;
-      do {
-         if (!var2.hasNext()) {
+      while(var2.hasNext()) {
+         TabManager._A var3 = (TabManager._A)var2.next();
+         if (var3.C == var1) {
+            this.renameAppTab(var3.B);
             return;
          }
+      }
 
-         var3 = (TabManager._A)var2.next();
-      } while(var3.C != var1);
-
-      this.renameAppTab(var3.B);
    }
 
    public void snapActiveTab() {
@@ -380,7 +376,7 @@ public class TabManager extends AObject implements Callback {
    }
 
    public void renameAppTab(JLabel var1) {
-      String var2 = JOptionPane.showInputDialog("Rename tab to:", (var1.getText() + "").trim());
+      String var2 = JOptionPane.showInputDialog("Rename tab to:", var1.getText().makeConcatWithConstants<invokedynamic>(var1.getText()).trim());
       if (var2 != null) {
          var1.setText(var2 + "   ");
       }
@@ -541,6 +537,7 @@ public class TabManager extends AObject implements Callback {
 
          var1.requestFocusInWindow();
       }
+
    }
 
    public void start() {
@@ -600,7 +597,6 @@ public class TabManager extends AObject implements Callback {
          return this.E;
       }
 
-      // $FF: synthetic method
       _A(Object var1) {
          this();
       }

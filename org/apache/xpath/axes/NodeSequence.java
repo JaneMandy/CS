@@ -10,7 +10,6 @@ import org.apache.xpath.XPathContext;
 import org.apache.xpath.objects.XObject;
 
 public class NodeSequence extends XObject implements DTMIterator, Cloneable, PathComponent {
-   static final long serialVersionUID = 3866261934726581044L;
    protected int m_last = -1;
    protected int m_next = 0;
    protected DTMIterator m_iter;
@@ -295,12 +294,7 @@ public class NodeSequence extends XObject implements DTMIterator, Cloneable, Pat
    }
 
    public Object clone() throws CloneNotSupportedException {
-      NodeSequence clone = (NodeSequence)super.clone();
-      if (null != this.m_iter) {
-         clone.m_iter = (DTMIterator)this.m_iter.clone();
-      }
-
-      return clone;
+      return super.clone();
    }
 
    public boolean isDocOrdered() {

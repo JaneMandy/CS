@@ -25,7 +25,7 @@ public class VPNClient {
    public static byte[] exportClient(String var0, String var1, Map var2, Set var3) {
       String var4 = (String)var2.get("channel");
       int var5 = (Integer)var2.get("port");
-      byte[] var6 = (byte[])((byte[])var2.get("secret"));
+      byte[] var6 = (byte[])var2.get("secret");
       String var7 = (String)var2.get("hook");
       String var8 = (String)var2.get("useragent");
       String var9 = A(var3);
@@ -33,7 +33,7 @@ public class VPNClient {
          var4 = "b";
       }
 
-      return exportClient(var0, var1, var4.charAt(0) + "", var5, var6, var7, var8, var9);
+      return exportClient(var0, var1, var4.charAt(0).makeConcatWithConstants<invokedynamic>(var4.charAt(0)), var5, var6, var7, var8, var9);
    }
 
    public static byte[] exportClient(String var0, String var1, String var2, int var3, byte[] var4, String var5, String var6, String var7) {
@@ -46,7 +46,7 @@ public class VPNClient {
          var10.addString((String)var0, 16);
          var10.addString((String)var1, 16);
          var10.addString((String)var2.toLowerCase(), 8);
-         var10.addString((String)(var3 + ""), 8);
+         var10.addString((String)var3.makeConcatWithConstants<invokedynamic>(var3), 8);
          var10.addString((byte[])var4, 32);
          var10.addString((String)var5, 32);
          var10.addString((String)var7, 1024);
@@ -55,7 +55,7 @@ public class VPNClient {
          int var13 = var12.indexOf("AAAABBBBCCCCDDDDEEEEFFFF");
          var12 = CommonUtils.replaceAt(var12, CommonUtils.bString(var11), var13);
          var13 = var12.indexOf("AAABBBCCCDDDEEEFFFGGGHHHIIIJJJKKKLLLMMMNNNOOO");
-         var12 = CommonUtils.replaceAt(var12, var6 + '\u0000', var13);
+         var12 = CommonUtils.replaceAt(var12, var6 + "\u0000", var13);
          return CommonUtils.toBytes(var12);
       } catch (IOException var14) {
          MudgeSanity.logException("export VPN client", var14, false);

@@ -28,7 +28,7 @@ public class FormatManager {
       } else if (!var3.getOwner().isLoaded()) {
          return null;
       } else {
-         Scalar var4 = SleepUtils.runCode((SleepClosure)var3, var1, (ScriptInstance)null, var2);
+         Scalar var4 = SleepUtils.runCode(var3, var1, (ScriptInstance)null, var2);
          return SleepUtils.isEmptyScalar(var4) ? null : var4.toString();
       }
    }

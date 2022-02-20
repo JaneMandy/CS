@@ -53,7 +53,7 @@ public class ScriptLoader {
 
    private Block retrieveCacheEntry(String var1) {
       if (BLOCK_CACHE != null && BLOCK_CACHE.containsKey(var1)) {
-         Object[] var2 = (Object[])((Object[])BLOCK_CACHE.get(var1));
+         Object[] var2 = (Object[])BLOCK_CACHE.get(var1);
          return (Block)var2[0];
       } else {
          return null;
@@ -66,7 +66,7 @@ public class ScriptLoader {
 
    public void touch(String var1, long var2) {
       if (BLOCK_CACHE != null && BLOCK_CACHE.containsKey(var1)) {
-         Object[] var4 = (Object[])((Object[])BLOCK_CACHE.get(var1));
+         Object[] var4 = (Object[])BLOCK_CACHE.get(var1);
          long var5 = (Long)var4[1];
          if (var2 > var5) {
             BLOCK_CACHE.remove(var1);
@@ -154,12 +154,12 @@ public class ScriptLoader {
 
    public ScriptInstance loadSerialized(File var1, Hashtable var2) throws IOException, ClassNotFoundException {
       File var3 = new File(var1.getAbsolutePath() + ".bin");
-      if (!var3.exists() || var1.exists() && var1.lastModified() >= var3.lastModified()) {
+      if (var3.exists() && (!var1.exists() || var1.lastModified() < var3.lastModified())) {
+         return this.loadSerialized(var1.getName(), new FileInputStream(var3), var2);
+      } else {
          ScriptInstance var4 = this.loadScript(var1, var2);
          saveSerialized(var4);
          return var4;
-      } else {
-         return this.loadSerialized(var1.getName(), new FileInputStream(var3), var2);
       }
    }
 
@@ -246,7 +246,7 @@ public class ScriptLoader {
    }
 
    public ScriptInstance loadScript(String var1, InputStream var2) throws YourCodeSucksException, IOException {
-      return this.loadScript(var1, (InputStream)var2, (Hashtable)null);
+      return this.loadScript(var1, var2, (Hashtable)null);
    }
 
    public ScriptInstance loadScript(String var1, InputStream var2, Hashtable var3) throws YourCodeSucksException, IOException {
@@ -254,7 +254,7 @@ public class ScriptLoader {
    }
 
    public ScriptInstance loadScript(String var1) throws IOException, YourCodeSucksException {
-      return this.loadScript((File)(new File(var1)), (Hashtable)null);
+      return this.loadScript(new File(var1), (Hashtable)null);
    }
 
    public ScriptInstance loadScript(String var1, Hashtable var2) throws IOException, YourCodeSucksException {
@@ -268,7 +268,7 @@ public class ScriptLoader {
    }
 
    public ScriptInstance loadScript(File var1) throws IOException, YourCodeSucksException {
-      return this.loadScript((File)var1, (Hashtable)null);
+      return this.loadScript(var1, (Hashtable)null);
    }
 
    public void unloadScript(String var1) {
@@ -362,10 +362,12 @@ public class ScriptLoader {
 
          try {
             CoderResult var9;
+            CoderResult var10;
             for(; var1.hasRemaining(); ++var3) {
                if (!var2.hasRemaining()) {
                   var9 = CoderResult.OVERFLOW;
-                  return var9;
+                  var10 = var9;
+                  return var10;
                }
 
                byte var4 = var1.get();
@@ -378,7 +380,8 @@ public class ScriptLoader {
             }
 
             var9 = CoderResult.UNDERFLOW;
-            return var9;
+            var10 = var9;
+            return var10;
          } finally {
             var1.position(var3);
          }

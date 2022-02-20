@@ -47,7 +47,10 @@ public class Targets extends AObject implements AdjustData, TablePopup, QueryRow
    public Map format(String var1, Object var2) {
       HashMap var3 = new HashMap((Map)var2);
       boolean var4 = this.compromised.contains((String)var3.get("address"));
-      ImageIcon var5 = DialogUtils.TargetVisualizationSmall(var3.get("os") + "", CommonUtils.toDoubleNumber(var3.get("version") + "", 0.0D), var4, false);
+      Object var10000 = var3.get("os");
+      String var6 = ((Class)var10000).makeConcatWithConstants<invokedynamic>(var10000);
+      Object var10001 = var3.get("version");
+      ImageIcon var5 = DialogUtils.TargetVisualizationSmall(var6, CommonUtils.toDoubleNumber(((Class)var10001).makeConcatWithConstants<invokedynamic>(var10001), 0.0D), var4, false);
       var3.put("image", var5);
       var3.put("owned", var4 ? Boolean.TRUE : Boolean.FALSE);
       return var3;

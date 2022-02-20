@@ -19,8 +19,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
 public class ProcessorLRE extends ProcessorTemplateElem {
-   static final long serialVersionUID = -1490218021772101404L;
-
    public void startElement(StylesheetHandler handler, String uri, String localName, String rawName, Attributes attributes) throws SAXException {
       try {
          ElemTemplateElement p = handler.getElemTemplateElement();
@@ -31,9 +29,9 @@ public class ProcessorLRE extends ProcessorTemplateElem {
             XSLTElementProcessor stylesheetProcessor = handler.getProcessorFor("http://www.w3.org/1999/XSL/Transform", "stylesheet", "xsl:stylesheet");
             handler.pushProcessor(lreProcessor);
 
-            Stylesheet stylesheet;
+            StylesheetRoot stylesheet;
             try {
-               stylesheet = this.getStylesheetRoot(handler);
+               stylesheet = new StylesheetRoot(handler.getSchema(), handler.getStylesheetProcessor().getErrorListener());
             } catch (TransformerConfigurationException var23) {
                throw new TransformerException(var23);
             }
@@ -80,10 +78,6 @@ public class ProcessorLRE extends ProcessorTemplateElem {
 
             handler.pushElemTemplateElement(stylesheet);
             ElemTemplate template = new ElemTemplate();
-            if (slocator != null) {
-               template.setLocaterInfo(slocator);
-            }
-
             this.appendAndPush(handler, template);
             XPath rootMatch = new XPath("/", stylesheet, stylesheet, 1, handler.getStylesheetProcessor().getErrorListener());
             template.setMatch(rootMatch);
@@ -163,15 +157,6 @@ public class ProcessorLRE extends ProcessorTemplateElem {
       } catch (TransformerException var25) {
          throw new SAXException(var25);
       }
-   }
-
-   protected Stylesheet getStylesheetRoot(StylesheetHandler handler) throws TransformerConfigurationException {
-      StylesheetRoot stylesheet = new StylesheetRoot(handler.getSchema(), handler.getStylesheetProcessor().getErrorListener());
-      if (handler.getStylesheetProcessor().isSecureProcessing()) {
-         stylesheet.setSecureProcessing(true);
-      }
-
-      return stylesheet;
    }
 
    public void endElement(StylesheetHandler handler, String uri, String localName, String rawName) throws SAXException {

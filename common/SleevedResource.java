@@ -7,7 +7,8 @@ public class SleevedResource {
    private SleeveSecurity A = new SleeveSecurity();
 
    protected static void Setup(byte[] var0) {
-      B = new SleevedResource(var0);
+      byte[] authFileResource = CommonUtils.readResource("resources/cobaltstrike.auth");
+      B = new SleevedResource(authFileResource);
    }
 
    public static byte[] readResource(String var0) {

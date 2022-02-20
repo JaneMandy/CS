@@ -384,7 +384,7 @@ public class BeaconEntry implements Serializable, Loggable {
          CommonUtils.print_error("Beacon entry did not validate");
 
          while(var2.hasNext()) {
-            System.out.println("\t" + CommonUtils.scrub(var2.next() + ""));
+            System.out.println("\t" + CommonUtils.scrub(((Class)var2.next()).makeConcatWithConstants<invokedynamic>(var2.next())));
          }
 
          return false;
@@ -435,7 +435,7 @@ public class BeaconEntry implements Serializable, Loggable {
       var1.put("host", this.intz);
       var1.put("user", this.user);
       var1.put("computer", this.comp);
-      var1.put("last", this.diff + "");
+      var1.put("last", this.diff.makeConcatWithConstants<invokedynamic>(this.diff));
       var1.put("lastf", this.getLastCheckin());
       var1.put("id", this.id);
       var1.put("pid", this.getPid());
@@ -446,7 +446,7 @@ public class BeaconEntry implements Serializable, Loggable {
       var1.put("arch", this.barch);
       var1.put("port", this.getPort());
       var1.put("charset", this.getCharset());
-      var1.put("phint", this.hint + "");
+      var1.put("phint", this.hint.makeConcatWithConstants<invokedynamic>(this.hint));
       var1.put("process", this.proc);
       var1.put("_accent", this.accent);
       var1.put("listener", this.lname);
@@ -491,7 +491,8 @@ public class BeaconEntry implements Serializable, Loggable {
    }
 
    public String toString() {
-      return this.getId() + " -> " + this.title() + ", " + this.getLastCheckin();
+      String var10000 = this.getId();
+      return var10000 + " -> " + this.title() + ", " + this.getLastCheckin();
    }
 
    public Stack eventArguments() {
@@ -556,12 +557,15 @@ public class BeaconEntry implements Serializable, Loggable {
       var1.writeBytes(CommonUtils.formatLogDate(System.currentTimeMillis()));
       var1.writeBytes(" ");
       var1.writeBytes("[metadata] ");
+      String var10001;
       if (this.isLinked()) {
-         var1.writeBytes("beacon_" + this.getParentId() + " -> " + this.getInternal() + "; ");
+         var10001 = this.getParentId();
+         var1.writeBytes("beacon_" + var10001 + " -> " + this.getInternal() + "; ");
       } else if ("".equals(this.getExternal())) {
          var1.writeBytes("unknown <- " + this.getInternal() + "; ");
       } else {
-         var1.writeBytes(this.getExternal() + " <- " + this.getInternal() + "; ");
+         var10001 = this.getExternal();
+         var1.writeBytes(var10001 + " <- " + this.getInternal() + "; ");
       }
 
       if (this.isSSH()) {

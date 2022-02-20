@@ -88,12 +88,12 @@ public class Download implements Serializable, Transcript, ToScalar, Loggable, H
       HashMap var1 = new HashMap();
       var1.put("host", this.host);
       var1.put("name", this.name);
-      var1.put("date", this.date + "");
+      var1.put("date", this.date.makeConcatWithConstants<invokedynamic>(this.date));
       var1.put("path", this.rpath);
       var1.put("lpath", this.lpath);
-      var1.put("size", this.size + "");
-      var1.put("rcvd", this.rcvd + "");
-      var1.put("fid", this.fid + "");
+      var1.put("size", this.size.makeConcatWithConstants<invokedynamic>(this.size));
+      var1.put("rcvd", this.rcvd.makeConcatWithConstants<invokedynamic>(this.rcvd));
+      var1.put("fid", this.fid.makeConcatWithConstants<invokedynamic>(this.fid));
       var1.put("id", this.uuid);
       var1.put("bid", this.bid);
       return var1;

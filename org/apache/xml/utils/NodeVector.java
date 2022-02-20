@@ -3,7 +3,6 @@ package org.apache.xml.utils;
 import java.io.Serializable;
 
 public class NodeVector implements Serializable, Cloneable {
-   static final long serialVersionUID = -713473092200731870L;
    private int m_blocksize;
    private int[] m_map;
    protected int m_firstFree = 0;

@@ -22,8 +22,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-public class ProcessorInclude extends XSLTElementProcessor {
-   static final long serialVersionUID = -4570078731972673481L;
+class ProcessorInclude extends XSLTElementProcessor {
    private String m_href = null;
 
    public String getHref() {
@@ -89,8 +88,8 @@ public class ProcessorInclude extends XSLTElementProcessor {
                try {
                   walker.traverse(node);
                   return;
-               } catch (SAXException var26) {
-                  throw new TransformerException(var26);
+               } catch (SAXException var25) {
+                  throw new TransformerException(var25);
                }
             }
          }
@@ -100,33 +99,25 @@ public class ProcessorInclude extends XSLTElementProcessor {
             source = new StreamSource(absURL);
          }
 
-         Source source = this.processSource(handler, (Source)source);
          XMLReader reader = null;
          if (source instanceof SAXSource) {
             SAXSource saxSource = (SAXSource)source;
             reader = saxSource.getXMLReader();
          }
 
-         InputSource inputSource = SAXSource.sourceToInputSource(source);
+         InputSource inputSource = SAXSource.sourceToInputSource((Source)source);
          if (null == reader) {
             try {
                SAXParserFactory factory = SAXParserFactory.newInstance();
                factory.setNamespaceAware(true);
-               if (handler.getStylesheetProcessor().isSecureProcessing()) {
-                  try {
-                     factory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
-                  } catch (SAXException var28) {
-                  }
-               }
-
                SAXParser jaxpParser = factory.newSAXParser();
                reader = jaxpParser.getXMLReader();
-            } catch (ParserConfigurationException var29) {
-               throw new SAXException(var29);
-            } catch (FactoryConfigurationError var30) {
-               throw new SAXException(var30.toString());
-            } catch (NoSuchMethodError var31) {
-            } catch (AbstractMethodError var32) {
+            } catch (ParserConfigurationException var27) {
+               throw new SAXException(var27);
+            } catch (FactoryConfigurationError var28) {
+               throw new SAXException(var28.toString());
+            } catch (NoSuchMethodError var29) {
+            } catch (AbstractMethodError var30) {
             }
          }
 
@@ -144,15 +135,11 @@ public class ProcessorInclude extends XSLTElementProcessor {
                handler.popBaseIndentifier();
             }
          }
-      } catch (IOException var33) {
-         handler.error("ER_IOEXCEPTION", new Object[]{this.getHref()}, var33);
-      } catch (TransformerException var34) {
-         handler.error(var34.getMessage(), var34);
+      } catch (IOException var31) {
+         handler.error("ER_IOEXCEPTION", new Object[]{this.getHref()}, var31);
+      } catch (TransformerException var32) {
+         handler.error(var32.getMessage(), var32);
       }
 
-   }
-
-   protected Source processSource(StylesheetHandler handler, Source source) {
-      return source;
    }
 }

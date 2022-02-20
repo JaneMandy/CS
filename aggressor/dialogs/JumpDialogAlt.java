@@ -89,8 +89,8 @@ public class JumpDialogAlt implements DialogListener, ListSelectionListener, Cha
             var6.input("jump " + this.exploit + " " + var8 + " " + var5);
             var6.Jump(this.exploit, var8, var5);
          }
-
       }
+
    }
 
    public void valueChanged(ListSelectionEvent var1) {
@@ -99,6 +99,7 @@ public class JumpDialogAlt implements DialogListener, ListSelectionListener, Cha
          this.pass.setText((String)this.browser.getSelectedValueFromColumn("password"));
          this.domain.setText((String)this.browser.getSelectedValueFromColumn("realm"));
       }
+
    }
 
    public void stateChanged(ChangeEvent var1) {

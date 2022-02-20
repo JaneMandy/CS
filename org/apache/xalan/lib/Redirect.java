@@ -58,9 +58,7 @@ public class Redirect {
       }
 
       TransformerImpl transf = context.getTransformer();
-      this.startRedirection(transf, formatter);
       transf.executeChildTemplates(elem, context.getContextNode(), context.getMode(), formatter);
-      this.endRedirection(transf);
       if (!inTable) {
          OutputStream ostream = (OutputStream)this.m_outputStreams.get(fileName);
          if (null != ostream) {
@@ -172,7 +170,7 @@ public class Redirect {
       FileOutputStream ostream = new FileOutputStream(file.getPath(), append);
 
       try {
-         SerializationHandler flistener = this.createSerializationHandler(transformer, ostream, file, format);
+         SerializationHandler flistener = transformer.createSerializationHandler(new StreamResult(ostream), format);
 
          try {
             flistener.startDocument();
@@ -189,16 +187,5 @@ public class Redirect {
       } catch (TransformerException var15) {
          throw new TransformerException(var15);
       }
-   }
-
-   public void startRedirection(TransformerImpl transf, ContentHandler formatter) {
-   }
-
-   public void endRedirection(TransformerImpl transf) {
-   }
-
-   public SerializationHandler createSerializationHandler(TransformerImpl transformer, FileOutputStream ostream, File file, OutputProperties format) throws IOException, TransformerException {
-      SerializationHandler serializer = transformer.createSerializationHandler(new StreamResult(ostream), format);
-      return serializer;
    }
 }

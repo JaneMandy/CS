@@ -701,18 +701,10 @@ public class mxGraphView extends mxEventSource {
    public mxPoint getPoint(mxCellState var1, mxGeometry var2) {
       double var3 = var1.getCenterX();
       double var5 = var1.getCenterY();
-      if (var1.getSegments() == null || var2 != null && !var2.isRelative()) {
-         if (var2 != null) {
-            mxPoint var37 = var2.getOffset();
-            if (var37 != null) {
-               var3 += var37.getX();
-               var5 += var37.getY();
-            }
-         }
-      } else {
-         double var7 = var2 != null ? var2.getX() / 2.0D : 0.0D;
+      if (var1.getSegments() != null && (var2 == null || var2.isRelative())) {
+         double var37 = var2 != null ? var2.getX() / 2.0D : 0.0D;
          int var9 = var1.getAbsolutePointCount();
-         double var10 = (var7 + 0.5D) * var1.getLength();
+         double var10 = (var37 + 0.5D) * var1.getLength();
          double[] var12 = var1.getSegments();
          double var13 = var12[0];
          double var15 = 0.0D;
@@ -746,6 +738,12 @@ public class mxGraphView extends mxEventSource {
                var3 = var20.getX() + var36 * var18 + (var32 * var22 + var24) * this.scale;
                var5 = var20.getY() + var30 * var18 - (var34 * var22 - var26) * this.scale;
             }
+         }
+      } else if (var2 != null) {
+         mxPoint var7 = var2.getOffset();
+         if (var7 != null) {
+            var3 += var7.getX();
+            var5 += var7.getY();
          }
       }
 

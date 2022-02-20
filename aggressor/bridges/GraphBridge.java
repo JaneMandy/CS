@@ -70,62 +70,65 @@ public class GraphBridge implements Function, Loadable {
                Image var8 = (Image)BridgeUtilities.getObject(var3);
                var9 = BridgeUtilities.getString(var3, "");
                var4.addNode(var5, var6, var7, var8, var9, "");
-            } else if (var1.equals("&graph_connect")) {
-               var4 = (NetworkGraph)BridgeUtilities.getObject(var3);
-               var5 = BridgeUtilities.getString(var3, "");
-               var6 = BridgeUtilities.getString(var3, "");
-               var7 = BridgeUtilities.getString(var3, "");
-               String var21 = BridgeUtilities.getString(var3, "");
-               var9 = BridgeUtilities.getString(var3, "");
-               String var10 = BridgeUtilities.getString(var3, "");
-               var4.addEdge(var5, var6, var7, var21, var9, var10, 1);
             } else {
-               if (var1.equals("&image_overlay")) {
-                  String var18 = BridgeUtilities.getString(var3, "");
-                  synchronized(imageCache) {
-                     if (imageCache.containsKey(var18)) {
-                        return SleepUtils.getScalar(imageCache.get(var18));
-                     }
-                  }
-
-                  BufferedImage var19 = new BufferedImage(1000, 776, 2);
-                  Graphics2D var20 = ((BufferedImage)var19).createGraphics();
-
-                  while(!var3.isEmpty()) {
-                     try {
-                        var7 = BridgeUtilities.getString(var3, "");
-                        FileInputStream var22 = new FileInputStream(var7);
-                        BufferedImage var23 = ImageIO.read(new FileInputStream(var7));
-                        var22.close();
-                        var20.drawImage(var23, 0, 0, 1000, 776, (ImageObserver)null);
-                     } catch (Exception var14) {
-                        var14.printStackTrace();
-                     }
-                  }
-
-                  var20.dispose();
-                  synchronized(imageCache) {
-                     imageCache.put(var18, var19);
-                  }
-
-                  return SleepUtils.getScalar((Object)var19);
-               }
-
-               if (var1.equals("&graph_zoom_reset")) {
-                  var4 = (NetworkGraph)BridgeUtilities.getObject(var3);
-                  var4.resetZoom();
-               } else if (var1.equals("&graph_zoom")) {
-                  var4 = (NetworkGraph)BridgeUtilities.getObject(var3);
-                  double var16 = BridgeUtilities.getDouble(var3);
-                  var4.zoom(var16);
-               } else if (var1.equals("&graph_layout")) {
+               String var18;
+               if (var1.equals("&graph_connect")) {
                   var4 = (NetworkGraph)BridgeUtilities.getObject(var3);
                   var5 = BridgeUtilities.getString(var3, "");
-                  var4.setAutoLayout(var5);
-               } else if (var1.equals("&graph_show_disconnected")) {
-                  var4 = (NetworkGraph)BridgeUtilities.getObject(var3);
-                  boolean var17 = SleepUtils.isTrueScalar(BridgeUtilities.getScalar(var3));
-                  var4.setShowDisconnected(var17);
+                  var6 = BridgeUtilities.getString(var3, "");
+                  var7 = BridgeUtilities.getString(var3, "");
+                  var18 = BridgeUtilities.getString(var3, "");
+                  var9 = BridgeUtilities.getString(var3, "");
+                  String var10 = BridgeUtilities.getString(var3, "");
+                  var4.addEdge(var5, var6, var7, var18, var9, var10, 1);
+               } else {
+                  if (var1.equals("&image_overlay")) {
+                     var18 = BridgeUtilities.getString(var3, "");
+                     synchronized(imageCache) {
+                        if (imageCache.containsKey(var18)) {
+                           return SleepUtils.getScalar(imageCache.get(var18));
+                        }
+                     }
+
+                     BufferedImage var19 = new BufferedImage(1000, 776, 2);
+                     Graphics2D var20 = var19.createGraphics();
+
+                     while(!var3.isEmpty()) {
+                        try {
+                           var7 = BridgeUtilities.getString(var3, "");
+                           FileInputStream var22 = new FileInputStream(var7);
+                           BufferedImage var23 = ImageIO.read(new FileInputStream(var7));
+                           var22.close();
+                           var20.drawImage(var23, 0, 0, 1000, 776, (ImageObserver)null);
+                        } catch (Exception var16) {
+                           var16.printStackTrace();
+                        }
+                     }
+
+                     var20.dispose();
+                     synchronized(imageCache) {
+                        imageCache.put(var18, var19);
+                     }
+
+                     return SleepUtils.getScalar((Object)var19);
+                  }
+
+                  if (var1.equals("&graph_zoom_reset")) {
+                     var4 = (NetworkGraph)BridgeUtilities.getObject(var3);
+                     var4.resetZoom();
+                  } else if (var1.equals("&graph_zoom")) {
+                     var4 = (NetworkGraph)BridgeUtilities.getObject(var3);
+                     double var16 = BridgeUtilities.getDouble(var3);
+                     var4.zoom(var16);
+                  } else if (var1.equals("&graph_layout")) {
+                     var4 = (NetworkGraph)BridgeUtilities.getObject(var3);
+                     var5 = BridgeUtilities.getString(var3, "");
+                     var4.setAutoLayout(var5);
+                  } else if (var1.equals("&graph_show_disconnected")) {
+                     var4 = (NetworkGraph)BridgeUtilities.getObject(var3);
+                     boolean var17 = SleepUtils.isTrueScalar(BridgeUtilities.getScalar(var3));
+                     var4.setShowDisconnected(var17);
+                  }
                }
             }
          }

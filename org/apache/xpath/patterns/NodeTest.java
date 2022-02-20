@@ -11,7 +11,6 @@ import org.apache.xpath.objects.XNumber;
 import org.apache.xpath.objects.XObject;
 
 public class NodeTest extends Expression {
-   static final long serialVersionUID = -5736721866747906182L;
    public static final String WILD = "*";
    public static final String SUPPORTS_PRE_STRIPPING = "http://xml.apache.org/xpath/features/whitespace-pre-stripping";
    protected int m_whatToShow;
@@ -267,7 +266,7 @@ public class NodeTest extends Expression {
          case 1024:
             return SCORE_OTHER;
          case 4096:
-            String ns = dtm.getLocalName(context);
+            String ns = dtm.getNodeValue(context);
             return subPartMatch(ns, this.m_name) ? this.m_score : SCORE_NONE;
          default:
             return SCORE_NONE;
@@ -295,7 +294,7 @@ public class NodeTest extends Expression {
          case 1024:
             return SCORE_OTHER;
          case 4096:
-            String ns = dtm.getLocalName(context);
+            String ns = dtm.getNodeValue(context);
             return subPartMatch(ns, this.m_name) ? this.m_score : SCORE_NONE;
          default:
             return SCORE_NONE;

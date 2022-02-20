@@ -455,6 +455,5 @@ public class IncrementalSAXSource_Filter implements IncrementalSAXSource, Conten
    }
 
    class StopException extends RuntimeException {
-      static final long serialVersionUID = -1129245796185754956L;
    }
 }

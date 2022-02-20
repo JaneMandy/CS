@@ -10,7 +10,6 @@ import org.apache.xpath.XPathContext;
 import org.apache.xpath.axes.OneStepIteratorForward;
 
 public class KeyIterator extends OneStepIteratorForward {
-   static final long serialVersionUID = -1349109910100249661L;
    private QName m_name;
    private Vector m_keyDeclarations;
 

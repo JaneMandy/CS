@@ -41,7 +41,7 @@ public class InterfaceDialog implements DialogListener, Callback {
    }
 
    public void result(String var1, Object var2) {
-      DialogUtils.showError(var2 + "");
+      DialogUtils.showError(((Class)var2).makeConcatWithConstants<invokedynamic>(var2));
    }
 
    public void show() {
@@ -51,7 +51,7 @@ public class InterfaceDialog implements DialogListener, Callback {
       var1.set("INTERFACE", "phear" + å);
       ++å;
       var1.set("HWADDRESS", CommonUtils.randomMac());
-      var1.set("PORT", CommonUtils.randomPort() + "");
+      var1.set("PORT", CommonUtils.randomPort().makeConcatWithConstants<invokedynamic>(CommonUtils.randomPort()));
       var1.set("CHANNEL", "UDP");
       var1.text("INTERFACE", "Interface:", 20);
       var1.text("HWADDRESS", "MAC Address:", 20);

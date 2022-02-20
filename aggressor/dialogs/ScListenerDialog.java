@@ -3,6 +3,7 @@ package aggressor.dialogs;
 import aggressor.AggressorClient;
 import aggressor.DataUtils;
 import beacon.BeaconConstants;
+import c2profile.Profile;
 import common.AObject;
 import common.Callback;
 import common.CommonUtils;
@@ -52,7 +53,9 @@ public class ScListenerDialog extends AObject implements DialogListener, Callbac
       this.options.put("http_f_port", "80");
       this.options.put("https_f_port", "443");
       this.options.put("smb_pipe", DataUtils.getDefaultPipeName(var1.getData(), ".").substring(9));
-      this.options.put("tcp_port", DataUtils.getProfile(var1.getData()).getInt(".tcp_port") + "");
+      Map var10000 = this.options;
+      Profile var10002 = DataUtils.getProfile(var1.getData());
+      var10000.put("tcp_port", var10002.getInt(".tcp_port").makeConcatWithConstants<invokedynamic>(var10002.getInt(".tcp_port")));
       this.options.put("extc2_port", "2222");
       this.options.put("http_profile", "default");
       this.options.put("https_profile", "default");
@@ -92,11 +95,12 @@ public class ScListenerDialog extends AObject implements DialogListener, Callbac
          this.client.getConnection().call("listeners.stop", CommonUtils.args(var3));
          this.client.getConnection().call("listeners.create", CommonUtils.args(var3, this.options), this);
       }
+
    }
 
    public void result(String var1, Object var2) {
       String var3 = (String)this.options.get("name");
-      String var4 = var2 + "";
+      String var4 = ((Class)var2).makeConcatWithConstants<invokedynamic>(var2);
       if ("".equals(var4)) {
          if (this.observer != null) {
             this.observer.update((Observable)null, var3);

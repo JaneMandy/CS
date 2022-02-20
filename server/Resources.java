@@ -109,7 +109,7 @@ public class Resources extends Starter2 {
 
          while(var4.hasNext()) {
             Entry var5 = (Entry)var4.next();
-            String var6 = var5.getKey() + "";
+            String var6 = ((Class)var5.getKey()).makeConcatWithConstants<invokedynamic>(var5.getKey());
             LinkedList var7 = (LinkedList)var5.getValue();
             var3.message("syncing " + var6);
             this.send((String)var1, "playback.status", var3.copy());
@@ -130,7 +130,7 @@ public class Resources extends Starter2 {
 
          while(var11.hasNext()) {
             Entry var12 = (Entry)var11.next();
-            String var13 = var12.getKey() + "";
+            String var13 = ((Class)var12.getKey()).makeConcatWithConstants<invokedynamic>(var12.getKey());
             Object var14 = var12.getValue();
             var3.message("syncing " + var13);
             this.send((String)var1, "playback.status", var3.copy());

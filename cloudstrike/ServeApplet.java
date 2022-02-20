@@ -47,7 +47,16 @@ public class ServeApplet implements WebService {
       int bb = Math.abs(r.nextInt());
       int cc = Math.abs(r.nextInt());
       int dd = Math.abs(r.nextInt());
-      String[] begin = new String[]{"applet", "loader", "data", "animation", "chat", "effect", "ticker", "viewer", "toolkit", "gui", "graphics", "support", "supplemental", "optional", "analytics", "live", "user", "profile", "browser", "connection", "crypto", "math", "auxiliary", "aux", "server", "cookie", "libs", "library", "open", "demo", "example", "simple", "game", "manager", "container", "fonts", "images", "content", "native", "canvas", "extra", "session", "web", "tk", "lib", "license", "util", "utils", "choose", "selector", "begin", "office", "documents", "theme", "store", "processor", "merchant", "plugin", "program", "registry", "register", "reputation", "scanner", "source", "enhancements", "macro", "essential", "content", "ml", "markup", "meta", "archive", "report", "info", "help", "helper", "guide", "api", "basic", "interpreter", "scroll", "pipe", "graph", "calculator", "component", "service", "test", "reader", "touch", "gestures", "converter", "list", "advanced", "mobile", "tablet", "os", "cross_platform", "platform", "power", "schedule", "calendar", "secure", "safe", "lock", "key", "cipher", "suite", "highlight", "manual", "automatic", "robot", "require", "internal", "external", "case", alpha.charAt(aa % alpha.length()) + alpha.charAt(bb % alpha.length()) + alpha.charAt(cc % alpha.length()) + alpha.charAt(dd % alpha.length()) + "", "digest", "bean", "ui", "system", "win", "tooltip"};
+      String[] var10000 = new String[]{"applet", "loader", "data", "animation", "chat", "effect", "ticker", "viewer", "toolkit", "gui", "graphics", "support", "supplemental", "optional", "analytics", "live", "user", "profile", "browser", "connection", "crypto", "math", "auxiliary", "aux", "server", "cookie", "libs", "library", "open", "demo", "example", "simple", "game", "manager", "container", "fonts", "images", "content", "native", "canvas", "extra", "session", "web", "tk", "lib", "license", "util", "utils", "choose", "selector", "begin", "office", "documents", "theme", "store", "processor", "merchant", "plugin", "program", "registry", "register", "reputation", "scanner", "source", "enhancements", "macro", "essential", "content", "ml", "markup", "meta", "archive", "report", "info", "help", "helper", "guide", "api", "basic", "interpreter", "scroll", "pipe", "graph", "calculator", "component", "service", "test", "reader", "touch", "gestures", "converter", "list", "advanced", "mobile", "tablet", "os", "cross_platform", "platform", "power", "schedule", "calendar", "secure", "safe", "lock", "key", "cipher", "suite", "highlight", "manual", "automatic", "robot", "require", "internal", "external", "case", null, null, null, null, null, null, null};
+      int var10003 = alpha.charAt(aa % alpha.length()) + alpha.charAt(bb % alpha.length()) + alpha.charAt(cc % alpha.length()) + alpha.charAt(dd % alpha.length());
+      var10000[115] = var10003.makeConcatWithConstants<invokedynamic>(var10003);
+      var10000[116] = "digest";
+      var10000[117] = "bean";
+      var10000[118] = "ui";
+      var10000[119] = "system";
+      var10000[120] = "win";
+      var10000[121] = "tooltip";
+      String[] begin = var10000;
       this.jar_uri = begin[aa % begin.length] + alpha.charAt(bb % alpha.length()) + alpha.charAt(cc % alpha.length()) + ".jar";
       this.lib_uri = begin[dd % begin.length];
       w.register(applet_uri, this);

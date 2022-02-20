@@ -1,6 +1,7 @@
 package common;
 
 import aggressor.TeamServerProps;
+import java.io.PrintStream;
 import java.util.zip.Adler32;
 
 public class DevLog {
@@ -38,7 +39,9 @@ public class DevLog {
    }
 
    private static void A(String var0) {
-      System.out.println("*** " + CommonUtils.formatLogDate(System.currentTimeMillis()) + ": " + var0);
+      PrintStream var10000 = System.out;
+      String var10001 = CommonUtils.formatLogDate(System.currentTimeMillis());
+      var10000.println("*** " + var10001 + ": " + var0);
    }
 
    public static final long checksumByteArray(byte[] var0) {

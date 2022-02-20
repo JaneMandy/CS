@@ -36,9 +36,9 @@ public class HTTPProxy implements Runnable, Mortal {
    public Map toMap() {
       HashMap var1 = new HashMap();
       var1.put("type", "browser pivot http proxy");
-      var1.put("port", this.sport + "");
+      var1.put("port", this.sport.makeConcatWithConstants<invokedynamic>(this.sport));
       var1.put("fhost", "127.0.0.1");
-      var1.put("fport", this.port + "");
+      var1.put("fport", this.port.makeConcatWithConstants<invokedynamic>(this.port));
       return var1;
    }
 
@@ -170,13 +170,16 @@ public class HTTPProxy implements Runnable, Mortal {
          boolean var3 = false;
          String var4 = "";
          boolean var32 = false;
+         boolean var45 = false;
 
-         label445: {
-            String[] var47;
-            label444: {
-               label443: {
-                  label442: {
+         label671: {
+            String[] var47x;
+            label672: {
+               String[] var17xx;
+               label673: {
+                  label674: {
                      try {
+                        var45 = true;
                         var32 = true;
                         this.proxy = new Socket(HTTPProxy.this.server, HTTPProxy.this.port);
                         this.proxy.setSoTimeout(60000);
@@ -189,8 +192,8 @@ public class HTTPProxy implements Runnable, Mortal {
                         byte var8 = 0;
                         String var9 = HTTPProxy.A(var7);
 
-                        int var48;
-                        for(var48 = HTTPProxy.B(var9, var8, var5); var9.length() > 0; var48 = HTTPProxy.B(var9, var48, var5)) {
+                        int var48x;
+                        for(var48x = HTTPProxy.B(var9, var8, var5); var9.length() > 0; var48x = HTTPProxy.B(var9, var48x, var5)) {
                            var9 = HTTPProxy.A(var7);
                         }
 
@@ -216,50 +219,50 @@ public class HTTPProxy implements Runnable, Mortal {
                            var8 = 0;
                            var9 = HTTPProxy.A(var7);
 
-                           for(var48 = HTTPProxy.B(var9, var8, var5); var9.length() > 0; var48 = HTTPProxy.B(var9, var48, var5)) {
+                           for(var48x = HTTPProxy.B(var9, var8, var5); var9.length() > 0; var48x = HTTPProxy.B(var9, var48x, var5)) {
                               var9 = HTTPProxy.A(var7);
                            }
                         }
 
-                        DataOutputStream var49 = new DataOutputStream(new BufferedOutputStream(this.proxy.getOutputStream()));
-                        var49.writeBytes(var5.toString());
-                        var49.flush();
-                        if (var48 > 0) {
-                           byte[] var50 = new byte[var48];
+                        DataOutputStream var49x = new DataOutputStream(new BufferedOutputStream(this.proxy.getOutputStream()));
+                        var49x.writeBytes(var5.toString());
+                        var49x.flush();
+                        if (var48x > 0) {
+                           byte[] var50x = new byte[var48x];
 
-                           int var51;
-                           for(boolean var12 = false; var48 > 0; var48 -= var51) {
-                              var51 = var7.read(var50);
-                              var49.write(var50, 0, var51);
-                              var49.flush();
+                           int var51x;
+                           for(boolean var16 = false; var48x > 0; var48x -= var51x) {
+                              var51x = var7.read(var50x);
+                              var49x.write(var50x, 0, var51x);
+                              var49x.flush();
                            }
                         }
 
-                        DataInputStream var52 = new DataInputStream(this.proxy.getInputStream());
+                        DataInputStream var52x = new DataInputStream(this.proxy.getInputStream());
                         var5 = new StringBuffer(8192);
-                        var9 = HTTPProxy.A(var52);
+                        var9 = HTTPProxy.A(var52x);
                         var8 = 0;
 
-                        for(var48 = HTTPProxy.C(var9, var8, var5); var9.length() > 0; var48 = HTTPProxy.C(var9, var48, var5)) {
-                           var9 = HTTPProxy.A(var52);
+                        for(var48x = HTTPProxy.C(var9, var8, var5); var9.length() > 0; var48x = HTTPProxy.C(var9, var48x, var5)) {
+                           var9 = HTTPProxy.A(var52x);
                         }
 
                         HTTPProxy var10000 = HTTPProxy.this;
-                        var10000.rx += (long)var48;
-                        if (var48 == 0) {
+                        var10000.rx += (long)var48x;
+                        if (var48x == 0) {
                            var2.writeBytes(var5.toString());
                            var2.flush();
                            var3 = true;
                         } else {
-                           byte[] var53 = new byte[var48];
+                           byte[] var53x = new byte[var48x];
                            boolean var13 = false;
                            byte var14 = 0;
 
-                           int var54;
-                           for(int var15 = 0; var48 > 0; var15 += var54) {
-                              var54 = var52.read(var53);
-                              if (var54 <= 0) {
-                                 throw new IOException("incomplete read " + var14 + ", need: " + var48 + " bytes, read: " + var15 + " bytes");
+                           int var54x;
+                           for(int var15 = 0; var48x > 0; var15 += var54x) {
+                              var54x = var52x.read(var53x);
+                              if (var54x <= 0) {
+                                 throw new IOException("incomplete read " + var14 + ", need: " + var48x + " bytes, read: " + var15 + " bytes");
                               }
 
                               if (!var3) {
@@ -268,62 +271,90 @@ public class HTTPProxy implements Runnable, Mortal {
                                  var3 = true;
                               }
 
-                              var2.write(var53, 0, var54);
+                              var2.write(var53x, 0, var54x);
                               var2.flush();
-                              var48 -= var54;
+                              var48x -= var54x;
                            }
                         }
 
                         ++HTTPProxy.this.requests;
                         var32 = false;
-                        break label444;
-                     } catch (SSLHandshakeException var43) {
+                        var45 = false;
+                        break label672;
+                     } catch (SSLHandshakeException var64) {
                         HTTPProxy.this.fireEvent(0, "add to trusted hosts: " + var1);
                         ++HTTPProxy.this.fails;
                         var3 = true;
                         var32 = false;
-                     } catch (SocketException var44) {
+                        var45 = false;
+                     } catch (SocketException var65) {
                         HTTPProxy.this.fireEvent(1, "browser proxy refused connection.");
                         ++HTTPProxy.this.fails;
                         var32 = false;
-                        break label443;
-                     } catch (Exception var45) {
+                        var45 = false;
+                        break label673;
+                     } catch (Exception var66) {
                         ++HTTPProxy.this.fails;
                         var32 = false;
-                        break label442;
+                        var45 = false;
+                        break label674;
                      } finally {
-                        if (var32) {
-                           try {
+                        if (var45) {
+                           if (var32) {
                               try {
-                                 if (!var3 && var2 != null && !var4.startsWith("CONNECT") && (var4.trim() + "").length() > 0) {
-                                    String[] var17 = var4.split(" ");
-                                    var2.writeBytes("HTTP/1.1 302\r\nLocation: " + var17[1] + "\r\n\r\n");
-                                    var2.flush();
+                                 try {
+                                    if (!var3 && var2 != null && !var4.startsWith("CONNECT") && var4.trim().makeConcatWithConstants<invokedynamic>(var4.trim()).length() > 0) {
+                                       String[] var17 = var4.split(" ");
+                                       var2.writeBytes("HTTP/1.1 302\r\nLocation: " + var17[1] + "\r\n\r\n");
+                                       var2.flush();
+                                    }
+                                 } catch (Exception var46) {
                                  }
-                              } catch (Exception var33) {
-                              }
 
-                              if (this.socket != null) {
-                                 this.socket.close();
-                              }
+                                 if (this.socket != null) {
+                                    this.socket.close();
+                                 }
 
-                              if (this.proxy != null) {
-                                 this.proxy.close();
+                                 if (this.proxy != null) {
+                                    this.proxy.close();
+                                 }
+                              } catch (Exception var47) {
                               }
-                           } catch (Exception var34) {
                            }
 
                         }
                      }
 
+                     if (var32) {
+                        try {
+                           try {
+                              if (!var3 && var2 != null && !var4.startsWith("CONNECT") && var4.trim().makeConcatWithConstants<invokedynamic>(var4.trim()).length() > 0) {
+                                 String[] var17x = var4.split(" ");
+                                 var2.writeBytes("HTTP/1.1 302\r\nLocation: " + var17x[1] + "\r\n\r\n");
+                                 var2.flush();
+                              }
+                           } catch (Exception var62) {
+                           }
+
+                           if (this.socket != null) {
+                              this.socket.close();
+                           }
+
+                           if (this.proxy != null) {
+                              this.proxy.close();
+                           }
+                        } catch (Exception var63) {
+                        }
+                     }
+
                      try {
                         try {
-                           if (!var3 && var2 != null && !var4.startsWith("CONNECT") && (var4.trim() + "").length() > 0) {
-                              var47 = var4.split(" ");
-                              var2.writeBytes("HTTP/1.1 302\r\nLocation: " + var47[1] + "\r\n\r\n");
+                           if (!var3 && var2 != null && !var4.startsWith("CONNECT") && var4.trim().makeConcatWithConstants<invokedynamic>(var4.trim()).length() > 0) {
+                              var47x = var4.split(" ");
+                              var2.writeBytes("HTTP/1.1 302\r\nLocation: " + var47x[1] + "\r\n\r\n");
                               var2.flush();
                            }
-                        } catch (Exception var39) {
+                        } catch (Exception var60) {
                         }
 
                         if (this.socket != null) {
@@ -333,19 +364,41 @@ public class HTTPProxy implements Runnable, Mortal {
                         if (this.proxy != null) {
                            this.proxy.close();
                         }
-                     } catch (Exception var40) {
+                     } catch (Exception var61) {
                      }
-                     break label445;
+                     break label671;
+                  }
+
+                  if (var32) {
+                     try {
+                        try {
+                           if (!var3 && var2 != null && !var4.startsWith("CONNECT") && var4.trim().makeConcatWithConstants<invokedynamic>(var4.trim()).length() > 0) {
+                              var17xx = var4.split(" ");
+                              var2.writeBytes("HTTP/1.1 302\r\nLocation: " + var17xx[1] + "\r\n\r\n");
+                              var2.flush();
+                           }
+                        } catch (Exception var58) {
+                        }
+
+                        if (this.socket != null) {
+                           this.socket.close();
+                        }
+
+                        if (this.proxy != null) {
+                           this.proxy.close();
+                        }
+                     } catch (Exception var59) {
+                     }
                   }
 
                   try {
                      try {
-                        if (!var3 && var2 != null && !var4.startsWith("CONNECT") && (var4.trim() + "").length() > 0) {
-                           var47 = var4.split(" ");
-                           var2.writeBytes("HTTP/1.1 302\r\nLocation: " + var47[1] + "\r\n\r\n");
+                        if (!var3 && var2 != null && !var4.startsWith("CONNECT") && var4.trim().makeConcatWithConstants<invokedynamic>(var4.trim()).length() > 0) {
+                           var47x = var4.split(" ");
+                           var2.writeBytes("HTTP/1.1 302\r\nLocation: " + var47x[1] + "\r\n\r\n");
                            var2.flush();
                         }
-                     } catch (Exception var35) {
+                     } catch (Exception var56) {
                      }
 
                      if (this.socket != null) {
@@ -355,19 +408,41 @@ public class HTTPProxy implements Runnable, Mortal {
                      if (this.proxy != null) {
                         this.proxy.close();
                      }
-                  } catch (Exception var36) {
+                  } catch (Exception var57) {
                   }
-                  break label445;
+                  break label671;
+               }
+
+               if (var32) {
+                  try {
+                     try {
+                        if (!var3 && var2 != null && !var4.startsWith("CONNECT") && var4.trim().makeConcatWithConstants<invokedynamic>(var4.trim()).length() > 0) {
+                           var17xx = var4.split(" ");
+                           var2.writeBytes("HTTP/1.1 302\r\nLocation: " + var17xx[1] + "\r\n\r\n");
+                           var2.flush();
+                        }
+                     } catch (Exception var54) {
+                     }
+
+                     if (this.socket != null) {
+                        this.socket.close();
+                     }
+
+                     if (this.proxy != null) {
+                        this.proxy.close();
+                     }
+                  } catch (Exception var55) {
+                  }
                }
 
                try {
                   try {
-                     if (!var3 && var2 != null && !var4.startsWith("CONNECT") && (var4.trim() + "").length() > 0) {
-                        var47 = var4.split(" ");
-                        var2.writeBytes("HTTP/1.1 302\r\nLocation: " + var47[1] + "\r\n\r\n");
+                     if (!var3 && var2 != null && !var4.startsWith("CONNECT") && var4.trim().makeConcatWithConstants<invokedynamic>(var4.trim()).length() > 0) {
+                        var47x = var4.split(" ");
+                        var2.writeBytes("HTTP/1.1 302\r\nLocation: " + var47x[1] + "\r\n\r\n");
                         var2.flush();
                      }
-                  } catch (Exception var37) {
+                  } catch (Exception var52) {
                   }
 
                   if (this.socket != null) {
@@ -377,19 +452,41 @@ public class HTTPProxy implements Runnable, Mortal {
                   if (this.proxy != null) {
                      this.proxy.close();
                   }
-               } catch (Exception var38) {
+               } catch (Exception var53) {
                }
-               break label445;
+               break label671;
+            }
+
+            if (var32) {
+               try {
+                  try {
+                     if (!var3 && var2 != null && !var4.startsWith("CONNECT") && var4.trim().makeConcatWithConstants<invokedynamic>(var4.trim()).length() > 0) {
+                        String[] var17xxx = var4.split(" ");
+                        var2.writeBytes("HTTP/1.1 302\r\nLocation: " + var17xxx[1] + "\r\n\r\n");
+                        var2.flush();
+                     }
+                  } catch (Exception var50) {
+                  }
+
+                  if (this.socket != null) {
+                     this.socket.close();
+                  }
+
+                  if (this.proxy != null) {
+                     this.proxy.close();
+                  }
+               } catch (Exception var51) {
+               }
             }
 
             try {
                try {
-                  if (!var3 && var2 != null && !var4.startsWith("CONNECT") && (var4.trim() + "").length() > 0) {
-                     var47 = var4.split(" ");
-                     var2.writeBytes("HTTP/1.1 302\r\nLocation: " + var47[1] + "\r\n\r\n");
+                  if (!var3 && var2 != null && !var4.startsWith("CONNECT") && var4.trim().makeConcatWithConstants<invokedynamic>(var4.trim()).length() > 0) {
+                     var47x = var4.split(" ");
+                     var2.writeBytes("HTTP/1.1 302\r\nLocation: " + var47x[1] + "\r\n\r\n");
                      var2.flush();
                   }
-               } catch (Exception var41) {
+               } catch (Exception var48) {
                }
 
                if (this.socket != null) {
@@ -399,7 +496,7 @@ public class HTTPProxy implements Runnable, Mortal {
                if (this.proxy != null) {
                   this.proxy.close();
                }
-            } catch (Exception var42) {
+            } catch (Exception var49) {
             }
          }
 

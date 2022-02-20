@@ -3,7 +3,6 @@ package org.apache.xalan.templates;
 import org.apache.xpath.XPath;
 
 public class WhiteSpaceInfo extends ElemTemplate {
-   static final long serialVersionUID = 6389208261999943836L;
    private boolean m_shouldStripSpace;
 
    public boolean getShouldStripSpace() {

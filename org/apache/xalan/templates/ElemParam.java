@@ -6,7 +6,6 @@ import org.apache.xpath.VariableStack;
 import org.apache.xpath.objects.XObject;
 
 public class ElemParam extends ElemVariable {
-   static final long serialVersionUID = -1131781475589006431L;
    int m_qnameID;
 
    public ElemParam() {
@@ -35,7 +34,7 @@ public class ElemParam extends ElemVariable {
    }
 
    public void execute(TransformerImpl transformer) throws TransformerException {
-      if (transformer.getDebug()) {
+      if (TransformerImpl.S_DEBUG) {
          transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
       }
 
@@ -46,7 +45,7 @@ public class ElemParam extends ElemVariable {
          transformer.getXPathContext().getVarStack().setLocalVariable(super.m_index, var);
       }
 
-      if (transformer.getDebug()) {
+      if (TransformerImpl.S_DEBUG) {
          transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);
       }
 

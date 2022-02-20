@@ -9,8 +9,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 public class ProcessorExsltFuncResult extends ProcessorTemplateElem {
-   static final long serialVersionUID = 6451230911473482423L;
-
    public void startElement(StylesheetHandler handler, String uri, String localName, String rawName, Attributes attributes) throws SAXException {
       String msg = "";
       super.startElement(handler, uri, localName, rawName, attributes);

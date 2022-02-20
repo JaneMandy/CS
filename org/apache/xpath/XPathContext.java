@@ -2,8 +2,6 @@ package org.apache.xpath;
 
 import java.lang.reflect.Method;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Stack;
 import java.util.Vector;
 import javax.xml.transform.ErrorListener;
@@ -30,7 +28,6 @@ import org.apache.xml.utils.SAXSourceLocator;
 import org.apache.xml.utils.XMLString;
 import org.apache.xpath.axes.OneStepIteratorForward;
 import org.apache.xpath.axes.SubContextList;
-import org.apache.xpath.objects.DTMXRTreeFrag;
 import org.apache.xpath.objects.XMLStringFactoryImpl;
 import org.apache.xpath.objects.XObject;
 import org.apache.xpath.objects.XString;
@@ -44,8 +41,6 @@ public class XPathContext extends DTMManager {
    private Vector m_rtfdtm_stack = null;
    private int m_which_rtfdtm = -1;
    private SAX2RTFDTM m_global_rtfdtm = null;
-   private HashMap m_DTMXRTreeFrags = null;
-   private boolean m_isSecureProcessing = false;
    protected DTMManager m_dtmManager = DTMManager.newInstance(XMLStringFactoryImpl.getFactory());
    ObjectStack m_saxLocations = new ObjectStack(4096);
    private Object m_owner;
@@ -69,14 +64,6 @@ public class XPathContext extends DTMManager {
 
    public DTMManager getDTMManager() {
       return this.m_dtmManager;
-   }
-
-   public void setSecureProcessing(boolean flag) {
-      this.m_isSecureProcessing = flag;
-   }
-
-   public boolean isSecureProcessing() {
-      return this.m_isSecureProcessing;
    }
 
    public DTM getDTM(Source source, boolean unique, DTMWSFilter wsfilter, boolean incremental, boolean doIndexing) {
@@ -143,7 +130,6 @@ public class XPathContext extends DTMManager {
    }
 
    public void reset() {
-      this.releaseDTMXRTreeFrags();
       if (this.m_rtfdtm_stack != null) {
          Enumeration e = this.m_rtfdtm_stack.elements();
 
@@ -513,34 +499,6 @@ public class XPathContext extends DTMManager {
             }
          }
 
-      }
-   }
-
-   public DTMXRTreeFrag getDTMXRTreeFrag(int dtmIdentity) {
-      if (this.m_DTMXRTreeFrags == null) {
-         this.m_DTMXRTreeFrags = new HashMap();
-      }
-
-      if (this.m_DTMXRTreeFrags.containsKey(new Integer(dtmIdentity))) {
-         return (DTMXRTreeFrag)this.m_DTMXRTreeFrags.get(new Integer(dtmIdentity));
-      } else {
-         DTMXRTreeFrag frag = new DTMXRTreeFrag(dtmIdentity, this);
-         this.m_DTMXRTreeFrags.put(new Integer(dtmIdentity), frag);
-         return frag;
-      }
-   }
-
-   private final void releaseDTMXRTreeFrags() {
-      if (this.m_DTMXRTreeFrags != null) {
-         Iterator iter = this.m_DTMXRTreeFrags.values().iterator();
-
-         while(iter.hasNext()) {
-            DTMXRTreeFrag frag = (DTMXRTreeFrag)iter.next();
-            frag.destruct();
-            iter.remove();
-         }
-
-         this.m_DTMXRTreeFrags = null;
       }
    }
 

@@ -3,12 +3,11 @@ package org.apache.xalan.templates;
 import java.util.Vector;
 import javax.xml.transform.TransformerException;
 import org.apache.xalan.transformer.TransformerImpl;
-import org.apache.xml.utils.XML11Char;
+import org.apache.xml.utils.XMLChar;
 import org.apache.xpath.XPathContext;
 import org.xml.sax.SAXException;
 
 public class ElemPI extends ElemTemplateElement {
-   static final long serialVersionUID = 5621976448020889825L;
    private AVT m_name_atv = null;
 
    public void setName(AVT v) {
@@ -37,7 +36,7 @@ public class ElemPI extends ElemTemplateElement {
    }
 
    public void execute(TransformerImpl transformer) throws TransformerException {
-      if (transformer.getDebug()) {
+      if (TransformerImpl.S_DEBUG) {
          transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
       }
 
@@ -47,7 +46,7 @@ public class ElemPI extends ElemTemplateElement {
       if (piName != null) {
          if (piName.equalsIgnoreCase("xml")) {
             transformer.getMsgMgr().warn(this, "WG_PROCESSINGINSTRUCTION_NAME_CANT_BE_XML", new Object[]{"name", piName});
-         } else if (!this.m_name_atv.isSimple() && !XML11Char.isXML11ValidNCName(piName)) {
+         } else if (!this.m_name_atv.isSimple() && !XMLChar.isValidNCName(piName)) {
             transformer.getMsgMgr().warn(this, "WG_PROCESSINGINSTRUCTION_NOTVALID_NCNAME", new Object[]{"name", piName});
          } else {
             String data = transformer.transformToString(this);
@@ -58,7 +57,7 @@ public class ElemPI extends ElemTemplateElement {
                throw new TransformerException(var7);
             }
 
-            if (transformer.getDebug()) {
+            if (TransformerImpl.S_DEBUG) {
                transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);
             }
 

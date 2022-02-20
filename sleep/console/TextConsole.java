@@ -21,8 +21,8 @@ public class TextConsole implements ConsoleProxy {
       if (var0.length <= 0) {
          try {
             var2.rppl();
-         } catch (Exception var16) {
-            var16.printStackTrace();
+         } catch (Exception var18) {
+            var18.printStackTrace();
          }
       } else {
          boolean var3 = false;
@@ -79,47 +79,20 @@ public class TextConsole implements ConsoleProxy {
                         System.out.println("time: " + (double)var14 / 1000.0D + "s");
                      }
                   }
-               } catch (YourCodeSucksException var17) {
-                  var2.processScriptErrors(var17);
-               } catch (Exception var18) {
-                  var18.printStackTrace();
+               } catch (YourCodeSucksException var16) {
+                  var2.processScriptErrors(var16);
+               } catch (Exception var17) {
+                  var17.printStackTrace();
                }
                break;
             }
 
-            if (!var0[var9].equals("-version") && !var0[var9].equals("--version") && !var0[var9].equals("-v")) {
-               if (!var0[var9].equals("-help") && !var0[var9].equals("--help") && !var0[var9].equals("-h")) {
-                  if (!var0[var9].equals("--check") && !var0[var9].equals("-c")) {
-                     if (!var0[var9].equals("--ast") && !var0[var9].equals("-a")) {
-                        if (!var0[var9].equals("--profile") && !var0[var9].equals("-p")) {
-                           if (!var0[var9].equals("--time") && !var0[var9].equals("-t")) {
-                              if (!var0[var9].equals("--eval") && !var0[var9].equals("-e")) {
-                                 if (!var0[var9].equals("--expr") && !var0[var9].equals("-x")) {
-                                    System.err.println("Unknown argument: " + var0[var9]);
-                                    return;
-                                 }
+            if (var0[var9].equals("-version") || var0[var9].equals("--version") || var0[var9].equals("-v")) {
+               System.out.println("Sleep 2.1 (20090430)");
+               return;
+            }
 
-                                 var6 = true;
-                              } else {
-                                 var5 = true;
-                              }
-                           } else {
-                              var8 = true;
-                           }
-                        } else {
-                           var7 = true;
-                        }
-                     } else {
-                        var4 = true;
-                     }
-                  } else {
-                     var3 = true;
-                  }
-
-                  ++var9;
-                  continue;
-               }
-
+            if (var0[var9].equals("-help") || var0[var9].equals("--help") || var0[var9].equals("-h")) {
                System.out.println("Sleep 2.1 (20090430)");
                System.out.println("Usage: java [properties] -jar sleep.jar [options] [-|file|expression]");
                System.out.println("       properties:");
@@ -141,8 +114,34 @@ public class TextConsole implements ConsoleProxy {
                return;
             }
 
-            System.out.println("Sleep 2.1 (20090430)");
-            return;
+            if (!var0[var9].equals("--check") && !var0[var9].equals("-c")) {
+               if (!var0[var9].equals("--ast") && !var0[var9].equals("-a")) {
+                  if (!var0[var9].equals("--profile") && !var0[var9].equals("-p")) {
+                     if (!var0[var9].equals("--time") && !var0[var9].equals("-t")) {
+                        if (!var0[var9].equals("--eval") && !var0[var9].equals("-e")) {
+                           if (!var0[var9].equals("--expr") && !var0[var9].equals("-x")) {
+                              System.err.println("Unknown argument: " + var0[var9]);
+                              return;
+                           }
+
+                           var6 = true;
+                        } else {
+                           var5 = true;
+                        }
+                     } else {
+                        var8 = true;
+                     }
+                  } else {
+                     var7 = true;
+                  }
+               } else {
+                  var4 = true;
+               }
+            } else {
+               var3 = true;
+            }
+
+            ++var9;
          }
       }
 

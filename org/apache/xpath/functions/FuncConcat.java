@@ -7,8 +7,6 @@ import org.apache.xpath.objects.XString;
 import org.apache.xpath.res.XPATHMessages;
 
 public class FuncConcat extends FunctionMultiArgs {
-   static final long serialVersionUID = 1737228885202314413L;
-
    public XObject execute(XPathContext xctxt) throws TransformerException {
       StringBuffer sb = new StringBuffer();
       sb.append(super.m_arg0.execute(xctxt).str());

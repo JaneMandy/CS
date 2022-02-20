@@ -19,7 +19,7 @@ import org.apache.xml.serializer.ToHTMLStream;
 
 final class LiteralElement extends Instruction {
    private String _name;
-   private LiteralElement _literalElemParent = null;
+   private LiteralElement _literalElemParent;
    private Vector _attributeElements = null;
    private Hashtable _accessedPrefixes = null;
    private boolean _allAttributesUnique = false;
@@ -36,21 +36,19 @@ final class LiteralElement extends Instruction {
    }
 
    private String accessedNamespace(String prefix) {
-      if (this._literalElemParent != null) {
-         String result = this._literalElemParent.accessedNamespace(prefix);
-         if (result != null) {
-            return result;
-         }
-      }
-
-      return this._accessedPrefixes != null ? (String)this._accessedPrefixes.get(prefix) : null;
+      return this._accessedPrefixes == null ? null : (String)this._accessedPrefixes.get(prefix);
    }
 
    public void registerNamespace(String prefix, String uri, SymbolTable stable, boolean declared) {
       String old;
       if (this._literalElemParent != null) {
          old = this._literalElemParent.accessedNamespace(prefix);
-         if (old != null && old.equals(uri)) {
+         if (old == null) {
+            this._literalElemParent.registerNamespace(prefix, uri, stable, declared);
+            return;
+         }
+
+         if (old.equals(uri)) {
             return;
          }
       }
@@ -150,9 +148,13 @@ final class LiteralElement extends Instruction {
    public void parseContents(Parser parser) {
       SymbolTable stable = parser.getSymbolTable();
       stable.setCurrentNode(this);
-      SyntaxTreeNode parent = this.getParent();
-      if (parent != null && parent instanceof LiteralElement) {
-         this._literalElemParent = (LiteralElement)parent;
+
+      SyntaxTreeNode _literalElemParent;
+      for(_literalElemParent = this.getParent(); _literalElemParent != null && !(_literalElemParent instanceof LiteralElement); _literalElemParent = _literalElemParent.getParent()) {
+      }
+
+      if (!(_literalElemParent instanceof LiteralElement)) {
+         _literalElemParent = null;
       }
 
       this._name = this.translateQName(super._qname, stable);
@@ -180,7 +182,7 @@ final class LiteralElement extends Instruction {
             val = qname.getPrefix();
             if ((val == null || !val.equals("xmlns")) && (val != null || !qname.getLocalPart().equals("xmlns")) && (uri == null || !uri.equals("http://www.w3.org/1999/XSL/Transform"))) {
                String name = this.translateQName(qname, stable);
-               LiteralAttribute attr = new LiteralAttribute(name, val, parser, this);
+               LiteralAttribute attr = new LiteralAttribute(name, val, parser);
                this.addAttribute(attr);
                attr.setParent(this);
                attr.parseContents(parser);

@@ -17,21 +17,21 @@ public abstract class Enum {
 
    }
 
-   public final boolean equals(Object o) {
+   public boolean equals(Object o) {
       if (this == o) {
          return true;
       } else if (!(o instanceof Enum)) {
          return false;
       } else {
-         Enum enum = (Enum)o;
-         if (!this.getClass().equals(enum.getClass())) {
+         Enum enumerated = (Enum)o;
+         if (!this.getClass().equals(enumerated.getClass())) {
             return false;
          } else {
             if (this.m_name != null) {
-               if (!this.m_name.equals(enum.m_name)) {
+               if (!this.m_name.equals(enumerated.m_name)) {
                   return false;
                }
-            } else if (enum.m_name != null) {
+            } else if (enumerated.m_name != null) {
                return false;
             }
 

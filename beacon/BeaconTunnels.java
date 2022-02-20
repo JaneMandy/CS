@@ -67,33 +67,29 @@ public class BeaconTunnels {
    public boolean die(String var1, int var2) {
       Iterator var3 = this.tunnels.iterator();
 
-      BeaconTunnelClient var4;
-      do {
-         if (!var3.hasNext()) {
-            return false;
+      while(var3.hasNext()) {
+         BeaconTunnelClient var4 = (BeaconTunnelClient)var3.next();
+         if (var4.is(var1, var2)) {
+            var4.die();
+            var3.remove();
+            return true;
          }
+      }
 
-         var4 = (BeaconTunnelClient)var3.next();
-      } while(!var4.is(var1, var2));
-
-      var4.die();
-      var3.remove();
-      return true;
+      return false;
    }
 
    public boolean write(String var1, int var2, byte[] var3) {
       Iterator var4 = this.tunnels.iterator();
 
-      BeaconTunnelClient var5;
-      do {
-         if (!var4.hasNext()) {
-            return false;
+      while(var4.hasNext()) {
+         BeaconTunnelClient var5 = (BeaconTunnelClient)var4.next();
+         if (var5.is(var1, var2)) {
+            var5.write(var3);
+            return true;
          }
+      }
 
-         var5 = (BeaconTunnelClient)var4.next();
-      } while(!var5.is(var1, var2));
-
-      var5.write(var3);
-      return true;
+      return false;
    }
 }

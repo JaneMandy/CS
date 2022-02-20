@@ -93,10 +93,8 @@ public class Version implements Comparable {
 
          if (versionParts.length > otherVersionParts.length) {
             return 1;
-         } else if (versionParts.length < otherVersionParts.length) {
-            return -1;
          } else {
-            return 0;
+            return versionParts.length < otherVersionParts.length ? -1 : 0;
          }
       }
    }

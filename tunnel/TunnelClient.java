@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.LinkedList;
+import java.util.Objects;
 import socks.BeaconProxyListener;
 
 public class TunnelClient extends AObject {
@@ -97,67 +98,6 @@ public class TunnelClient extends AObject {
 
    }
 
-   private class _A implements Runnable {
-      protected String B;
-      protected int C;
-      protected LinkedList D = new LinkedList();
-
-      protected byte[] A() {
-         synchronized(this) {
-            return (byte[])((byte[])this.D.pollFirst());
-         }
-      }
-
-      protected void A(byte[] var1) {
-         synchronized(this) {
-            if (this.D.size() > 1000) {
-               CommonUtils.print_error("tunnel for " + this.B + ":" + this.C + " has 1,000 accumulated reads. Probably dead. Closing.");
-               TunnelClient.this.die();
-            } else {
-               this.D.add(var1);
-            }
-         }
-      }
-
-      public _A(String var2, int var3) {
-         this.B = var2;
-         this.C = var3;
-      }
-
-      public void run() {
-         try {
-            TunnelClient.this.socket = new Socket(this.B, this.C);
-            TunnelClient.this.socket.setKeepAlive(true);
-            TunnelClient.this.socket.setSoTimeout(0);
-            TunnelClient.this.alive = true;
-            TunnelClient.this.in = TunnelClient.this.socket.getInputStream();
-            TunnelClient.this.out = TunnelClient.this.socket.getOutputStream();
-            TunnelClient.this.reader = TunnelClient.this.new _B();
-            (new Thread(TunnelClient.this.reader, "Tunnel Client Reader " + this.B + ":" + this.C)).start();
-         } catch (IOException var2) {
-            MudgeSanity.logException("Failed to connect to " + this.B + ":" + this.C, var2, false);
-            TunnelClient.this.die();
-            return;
-         }
-
-         try {
-            while(TunnelClient.this.isAlive()) {
-               byte[] var1 = this.A();
-               if (var1 != null) {
-                  TunnelClient.this.out.write(var1, 0, var1.length);
-                  TunnelClient.this.out.flush();
-                  Thread.yield();
-               } else {
-                  CommonUtils.sleep(25L);
-               }
-            }
-         } catch (IOException var3) {
-            TunnelClient.this.die();
-         }
-
-      }
-   }
-
    private class _B implements Runnable {
       public _B() {
       }
@@ -178,6 +118,71 @@ public class TunnelClient extends AObject {
             }
 
             TunnelClient.this.die();
+         } catch (IOException var4x) {
+            TunnelClient.this.die();
+         }
+
+      }
+   }
+
+   private class _A implements Runnable {
+      protected String B;
+      protected int C;
+      protected LinkedList D = new LinkedList();
+
+      protected byte[] A() {
+         synchronized(this) {
+            return (byte[])this.D.pollFirst();
+         }
+      }
+
+      protected void A(byte[] var1) {
+         synchronized(this) {
+            if (this.D.size() > 1000) {
+               CommonUtils.print_error("tunnel for " + this.B + ":" + this.C + " has 1,000 accumulated reads. Probably dead. Closing.");
+               TunnelClient.this.die();
+            } else {
+               this.D.add(var1);
+            }
+
+         }
+      }
+
+      public _A(String var2, int var3) {
+         this.B = var2;
+         this.C = var3;
+      }
+
+      public void run() {
+         try {
+            TunnelClient.this.socket = new Socket(this.B, this.C);
+            TunnelClient.this.socket.setKeepAlive(true);
+            TunnelClient.this.socket.setSoTimeout(0);
+            TunnelClient.this.alive = true;
+            TunnelClient.this.in = TunnelClient.this.socket.getInputStream();
+            TunnelClient.this.out = TunnelClient.this.socket.getOutputStream();
+            TunnelClient var10000 = TunnelClient.this;
+            TunnelClient var10003 = TunnelClient.this;
+            Objects.requireNonNull(var10003);
+            var10000.reader = var10003.new _B();
+            (new Thread(TunnelClient.this.reader, "Tunnel Client Reader " + this.B + ":" + this.C)).start();
+         } catch (IOException var2) {
+            MudgeSanity.logException("Failed to connect to " + this.B + ":" + this.C, var2, false);
+            TunnelClient.this.die();
+            return;
+         }
+
+         try {
+            while(TunnelClient.this.isAlive()) {
+               byte[] var1 = this.A();
+               if (var1 != null) {
+                  TunnelClient.this.out.write(var1, 0, var1.length);
+                  TunnelClient.this.out.flush();
+                  Thread.yield();
+               } else {
+                  CommonUtils.sleep(25L);
+               }
+            }
          } catch (IOException var3) {
             TunnelClient.this.die();
          }

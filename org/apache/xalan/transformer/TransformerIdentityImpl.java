@@ -24,9 +24,10 @@ import org.apache.xalan.res.XSLMessages;
 import org.apache.xalan.templates.OutputProperties;
 import org.apache.xml.serializer.Serializer;
 import org.apache.xml.serializer.SerializerFactory;
-import org.apache.xml.serializer.TreeWalker;
+import org.apache.xml.utils.DOM2Helper;
 import org.apache.xml.utils.DOMBuilder;
 import org.apache.xml.utils.DefaultErrorHandler;
+import org.apache.xml.utils.TreeWalker;
 import org.apache.xml.utils.WrappedRuntimeException;
 import org.apache.xml.utils.XMLReaderManager;
 import org.w3c.dom.Document;
@@ -44,8 +45,8 @@ import org.xml.sax.ext.DeclHandler;
 import org.xml.sax.ext.LexicalHandler;
 
 public class TransformerIdentityImpl extends Transformer implements TransformerHandler, DeclHandler {
-   boolean m_flushedStartDoc;
-   private FileOutputStream m_outputStream;
+   boolean m_flushedStartDoc = false;
+   private FileOutputStream m_outputStream = null;
    private ContentHandler m_resultContentHandler;
    private LexicalHandler m_resultLexicalHandler;
    private DTDHandler m_resultDTDHandler;
@@ -54,24 +55,10 @@ public class TransformerIdentityImpl extends Transformer implements TransformerH
    private Result m_result;
    private String m_systemID;
    private Hashtable m_params;
-   private ErrorListener m_errorListener;
+   private ErrorListener m_errorListener = new DefaultErrorHandler();
    URIResolver m_URIResolver;
-   private OutputProperties m_outputFormat;
+   private OutputProperties m_outputFormat = new OutputProperties("xml");
    boolean m_foundFirstElement;
-   private boolean m_isSecureProcessing;
-
-   public TransformerIdentityImpl(boolean isSecureProcessing) {
-      this.m_flushedStartDoc = false;
-      this.m_outputStream = null;
-      this.m_errorListener = new DefaultErrorHandler(false);
-      this.m_isSecureProcessing = false;
-      this.m_outputFormat = new OutputProperties("xml");
-      this.m_isSecureProcessing = isSecureProcessing;
-   }
-
-   public TransformerIdentityImpl() {
-      this(false);
-   }
 
    public void setResult(Result result) throws IllegalArgumentException {
       if (null == result) {
@@ -93,22 +80,6 @@ public class TransformerIdentityImpl extends Transformer implements TransformerH
       return this;
    }
 
-   public void reset() {
-      this.m_flushedStartDoc = false;
-      this.m_foundFirstElement = false;
-      this.m_outputStream = null;
-      this.m_params.clear();
-      this.m_result = null;
-      this.m_resultContentHandler = null;
-      this.m_resultDeclHandler = null;
-      this.m_resultDTDHandler = null;
-      this.m_resultLexicalHandler = null;
-      this.m_serializer = null;
-      this.m_systemID = null;
-      this.m_URIResolver = null;
-      this.m_outputFormat = new OutputProperties("xml");
-   }
-
    private void createResultContentHandler(Result outputTarget) throws TransformerException {
       if (outputTarget instanceof SAXResult) {
          SAXResult saxResult = (SAXResult)outputTarget;
@@ -120,7 +91,6 @@ public class TransformerIdentityImpl extends Transformer implements TransformerH
       } else if (outputTarget instanceof DOMResult) {
          DOMResult domResult = (DOMResult)outputTarget;
          Node outputNode = domResult.getNode();
-         Node nextSibling = domResult.getNextSibling();
          Document doc;
          short type;
          if (null != outputNode) {
@@ -130,17 +100,10 @@ public class TransformerIdentityImpl extends Transformer implements TransformerH
             try {
                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
                dbf.setNamespaceAware(true);
-               if (this.m_isSecureProcessing) {
-                  try {
-                     dbf.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
-                  } catch (ParserConfigurationException var9) {
-                  }
-               }
-
                DocumentBuilder db = dbf.newDocumentBuilder();
                doc = db.newDocument();
-            } catch (ParserConfigurationException var11) {
-               throw new TransformerException(var11);
+            } catch (ParserConfigurationException var8) {
+               throw new TransformerException(var8);
             }
 
             outputNode = doc;
@@ -148,20 +111,15 @@ public class TransformerIdentityImpl extends Transformer implements TransformerH
             ((DOMResult)outputTarget).setNode(doc);
          }
 
-         DOMBuilder domBuilder = 11 == type ? new DOMBuilder(doc, (DocumentFragment)outputNode) : new DOMBuilder(doc, (Node)outputNode);
-         if (nextSibling != null) {
-            domBuilder.setNextSibling(nextSibling);
-         }
-
-         this.m_resultContentHandler = domBuilder;
-         this.m_resultLexicalHandler = domBuilder;
+         this.m_resultContentHandler = 11 == type ? new DOMBuilder(doc, (DocumentFragment)outputNode) : new DOMBuilder(doc, (Node)outputNode);
+         this.m_resultLexicalHandler = (LexicalHandler)this.m_resultContentHandler;
       } else {
          if (!(outputTarget instanceof StreamResult)) {
             throw new TransformerException(XSLMessages.createMessage("ER_CANNOT_TRANSFORM_TO_RESULT_TYPE", new Object[]{outputTarget.getClass().getName()}));
          }
 
          StreamResult sresult = (StreamResult)outputTarget;
-         String var14 = this.m_outputFormat.getProperty("method");
+         String var12 = this.m_outputFormat.getProperty("method");
 
          try {
             Serializer serializer = SerializerFactory.getSerializer(this.m_outputFormat.getProperties());
@@ -182,12 +140,6 @@ public class TransformerIdentityImpl extends Transformer implements TransformerH
                   } else {
                      fileURL = fileURL.substring(7);
                   }
-               } else if (fileURL.startsWith("file:/")) {
-                  if (fileURL.substring(6).indexOf(":") > 0) {
-                     fileURL = fileURL.substring(6);
-                  } else {
-                     fileURL = fileURL.substring(5);
-                  }
                }
 
                this.m_outputStream = new FileOutputStream(fileURL);
@@ -195,8 +147,8 @@ public class TransformerIdentityImpl extends Transformer implements TransformerH
             }
 
             this.m_resultContentHandler = serializer.asContentHandler();
-         } catch (IOException var10) {
-            throw new TransformerException(var10);
+         } catch (IOException var9) {
+            throw new TransformerException(var9);
          }
       }
 
@@ -232,115 +184,116 @@ public class TransformerIdentityImpl extends Transformer implements TransformerH
       }
 
       try {
-         if (!(source instanceof DOMSource)) {
-            InputSource xmlSource = SAXSource.sourceToInputSource((Source)source);
-            if (null == xmlSource) {
-               throw new TransformerException(XSLMessages.createMessage("ER_CANNOT_TRANSFORM_SOURCE_TYPE", new Object[]{source.getClass().getName()}));
+         if (source instanceof DOMSource) {
+            DOMSource dsource = (DOMSource)source;
+            this.m_systemID = dsource.getSystemId();
+            Node dNode = dsource.getNode();
+            if (null == dNode) {
+               data = XSLMessages.createMessage("ER_ILLEGAL_DOMSOURCE_INPUT", (Object[])null);
+               throw new IllegalArgumentException(data);
             }
-
-            if (null != xmlSource.getSystemId()) {
-               this.m_systemID = xmlSource.getSystemId();
-            }
-
-            XMLReader reader = null;
-            boolean managedReader = false;
 
             try {
-               if (source instanceof SAXSource) {
-                  reader = ((SAXSource)source).getXMLReader();
-               }
-
-               if (null == reader) {
-                  try {
-                     reader = XMLReaderManager.getInstance().getXMLReader();
-                     managedReader = true;
-                  } catch (SAXException var59) {
-                     throw new TransformerException(var59);
-                  }
-               } else {
-                  try {
-                     reader.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
-                  } catch (SAXException var58) {
-                  }
-               }
-
-               ContentHandler inputHandler = this;
-               reader.setContentHandler(this);
-               if (this instanceof DTDHandler) {
-                  reader.setDTDHandler((DTDHandler)this);
+               if (dNode.getNodeType() == 2) {
+                  this.startDocument();
                }
 
                try {
-                  if (inputHandler instanceof LexicalHandler) {
-                     reader.setProperty("http://xml.org/sax/properties/lexical-handler", inputHandler);
+                  if (dNode.getNodeType() == 2) {
+                     data = dNode.getNodeValue();
+                     char[] chars = data.toCharArray();
+                     this.characters(chars, 0, chars.length);
+                  } else {
+                     TreeWalker walker = new TreeWalker(this, new DOM2Helper(), this.m_systemID);
+                     walker.traverse(dNode);
                   }
 
-                  if (inputHandler instanceof DeclHandler) {
-                     reader.setProperty("http://xml.org/sax/properties/declaration-handler", inputHandler);
-                  }
-               } catch (SAXException var57) {
-               }
-
-               try {
-                  if (inputHandler instanceof LexicalHandler) {
-                     reader.setProperty("http://xml.org/sax/handlers/LexicalHandler", inputHandler);
+                  return;
+               } finally {
+                  if (dNode.getNodeType() == 2) {
+                     this.endDocument();
                   }
 
-                  if (inputHandler instanceof DeclHandler) {
-                     reader.setProperty("http://xml.org/sax/handlers/DeclHandler", inputHandler);
-                  }
-               } catch (SAXNotRecognizedException var56) {
                }
-
-               reader.parse(xmlSource);
-               return;
-            } catch (WrappedRuntimeException var62) {
-               for(Exception throwable = var62.getException(); throwable instanceof WrappedRuntimeException; throwable = ((WrappedRuntimeException)throwable).getException()) {
-               }
-
-               throw new TransformerException(var62.getException());
-            } catch (SAXException var63) {
-               throw new TransformerException(var63);
-            } catch (IOException var64) {
-               throw new TransformerException(var64);
-            } finally {
-               if (managedReader) {
-                  XMLReaderManager.getInstance().releaseXMLReader(reader);
-               }
-
+            } catch (SAXException var62) {
+               throw new TransformerException(var62);
             }
          }
 
-         DOMSource dsource = (DOMSource)source;
-         this.m_systemID = dsource.getSystemId();
-         Node dNode = dsource.getNode();
-         if (null == dNode) {
-            data = XSLMessages.createMessage("ER_ILLEGAL_DOMSOURCE_INPUT", (Object[])null);
-            throw new IllegalArgumentException(data);
+         InputSource xmlSource = SAXSource.sourceToInputSource((Source)source);
+         if (null == xmlSource) {
+            throw new TransformerException(XSLMessages.createMessage("ER_CANNOT_TRANSFORM_SOURCE_TYPE", new Object[]{source.getClass().getName()}));
          }
+
+         if (null != xmlSource.getSystemId()) {
+            this.m_systemID = xmlSource.getSystemId();
+         }
+
+         XMLReader reader = null;
+         boolean managedReader = false;
 
          try {
-            if (dNode.getNodeType() == 2) {
-               this.startDocument();
+            if (source instanceof SAXSource) {
+               reader = ((SAXSource)source).getXMLReader();
+            }
+
+            if (null == reader) {
+               try {
+                  reader = XMLReaderManager.getInstance().getXMLReader();
+                  managedReader = true;
+               } catch (SAXException var59) {
+                  throw new TransformerException(var59);
+               }
+            } else {
+               try {
+                  reader.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
+               } catch (SAXException var58) {
+               }
+            }
+
+            ContentHandler inputHandler = this;
+            reader.setContentHandler(this);
+            if (this instanceof DTDHandler) {
+               reader.setDTDHandler((DTDHandler)this);
             }
 
             try {
-               if (dNode.getNodeType() == 2) {
-                  data = dNode.getNodeValue();
-                  char[] chars = data.toCharArray();
-                  this.characters(chars, 0, chars.length);
-               } else {
-                  TreeWalker walker = new TreeWalker(this, this.m_systemID);
-                  walker.traverse(dNode);
-               }
-            } finally {
-               if (dNode.getNodeType() == 2) {
-                  this.endDocument();
+               if (inputHandler instanceof LexicalHandler) {
+                  reader.setProperty("http://xml.org/sax/properties/lexical-handler", inputHandler);
                }
 
+               if (inputHandler instanceof DeclHandler) {
+                  reader.setProperty("http://xml.org/sax/properties/declaration-handler", inputHandler);
+               }
+            } catch (SAXException var57) {
             }
-         } catch (SAXException var66) {
-            throw new TransformerException(var66);
+
+            try {
+               if (inputHandler instanceof LexicalHandler) {
+                  reader.setProperty("http://xml.org/sax/handlers/LexicalHandler", inputHandler);
+               }
+
+               if (inputHandler instanceof DeclHandler) {
+                  reader.setProperty("http://xml.org/sax/handlers/DeclHandler", inputHandler);
+               }
+            } catch (SAXNotRecognizedException var56) {
+            }
+
+            reader.parse(xmlSource);
+         } catch (WrappedRuntimeException var63) {
+            for(Exception throwable = var63.getException(); throwable instanceof WrappedRuntimeException; throwable = ((WrappedRuntimeException)throwable).getException()) {
+            }
+
+            throw new TransformerException(var63.getException());
+         } catch (SAXException var64) {
+            throw new TransformerException(var64);
+         } catch (IOException var65) {
+            throw new TransformerException(var65);
+         } finally {
+            if (managedReader) {
+               XMLReaderManager.getInstance().releaseXMLReader(reader);
+            }
+
          }
       } finally {
          if (null != this.m_outputStream) {

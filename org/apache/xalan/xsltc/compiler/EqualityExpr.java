@@ -30,7 +30,7 @@ import org.apache.xalan.xsltc.compiler.util.Type;
 import org.apache.xalan.xsltc.compiler.util.TypeCheckError;
 import org.apache.xalan.xsltc.runtime.Operators;
 
-final class EqualityExpr extends Expression {
+final class EqualityExpr extends Expression implements Operators {
    private final int _op;
    private Expression _left;
    private Expression _right;
@@ -48,7 +48,7 @@ final class EqualityExpr extends Expression {
    }
 
    public String toString() {
-      return Operators.getOpNames(this._op) + '(' + this._left + ", " + this._right + ')';
+      return Operators.names[this._op] + '(' + this._left + ", " + this._right + ')';
    }
 
    public Expression getLeft() {

@@ -94,7 +94,8 @@ public class ExportReportDialog implements DialogListener, SafeDialogCallback, R
          String var7 = DialogUtils.string(var6, var3);
          if (var7 != null) {
             String[] var8 = var7.split("@");
-            var6.put(var3, CommonUtils.garbage(var8[0]) + "@" + var8[1]);
+            String var10002 = CommonUtils.garbage(var8[0]);
+            var6.put(var3, var10002 + "@" + var8[1]);
          }
       }
 

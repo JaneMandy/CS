@@ -6,8 +6,6 @@ import org.apache.xpath.XPathContext;
 import org.apache.xpath.objects.XObject;
 
 public class ElemChoose extends ElemTemplateElement {
-   static final long serialVersionUID = -3070117361903102033L;
-
    public int getXSLToken() {
       return 37;
    }
@@ -17,7 +15,7 @@ public class ElemChoose extends ElemTemplateElement {
    }
 
    public void execute(TransformerImpl transformer) throws TransformerException {
-      if (transformer.getDebug()) {
+      if (TransformerImpl.S_DEBUG) {
          transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
       }
 
@@ -30,9 +28,9 @@ public class ElemChoose extends ElemTemplateElement {
             ElemWhen when = (ElemWhen)childElem;
             XPathContext xctxt = transformer.getXPathContext();
             int sourceNode = xctxt.getCurrentNode();
-            if (transformer.getDebug()) {
+            if (TransformerImpl.S_DEBUG) {
                XObject test = when.getTest().execute(xctxt, sourceNode, when);
-               if (transformer.getDebug()) {
+               if (TransformerImpl.S_DEBUG) {
                   transformer.getTraceManager().fireSelectedEvent(sourceNode, when, "test", when.getTest(), test);
                }
 
@@ -48,12 +46,12 @@ public class ElemChoose extends ElemTemplateElement {
             }
          } else if (39 == type) {
             found = true;
-            if (transformer.getDebug()) {
+            if (TransformerImpl.S_DEBUG) {
                transformer.getTraceManager().fireTraceEvent(childElem);
             }
 
             transformer.executeChildTemplates(childElem, true);
-            if (transformer.getDebug()) {
+            if (TransformerImpl.S_DEBUG) {
                transformer.getTraceManager().fireTraceEndEvent(childElem);
             }
 
@@ -65,7 +63,7 @@ public class ElemChoose extends ElemTemplateElement {
          transformer.getMsgMgr().error(this, "ER_CHOOSE_REQUIRES_WHEN");
       }
 
-      if (transformer.getDebug()) {
+      if (TransformerImpl.S_DEBUG) {
          transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);
       }
 

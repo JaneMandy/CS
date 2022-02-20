@@ -9,7 +9,7 @@ public class BasicQueue implements Runnable {
 
    protected byte[] grabTask() {
       synchronized(this) {
-         return (byte[])((byte[])this.requests.pollFirst());
+         return (byte[])this.requests.pollFirst();
       }
    }
 
@@ -21,6 +21,7 @@ public class BasicQueue implements Runnable {
          } else {
             this.requests.add(var1);
          }
+
       }
    }
 

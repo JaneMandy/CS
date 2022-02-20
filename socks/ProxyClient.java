@@ -40,13 +40,12 @@ public class ProxyClient extends BasicClient {
          } else {
             this.parent.fireEvent(ProxyEvent.EVENT_LISTEN(this.chid, this.command.getHost(), this.command.getPort()));
          }
-
       } catch (IOException var4) {
          try {
             this.client.close();
          } catch (IOException var3) {
          }
-
       }
+
    }
 }

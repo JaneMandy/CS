@@ -29,7 +29,7 @@ public class BeaconBrowser extends AObject implements ActionListener {
 
    public void actionPerformed(ActionEvent var1) {
       if ("Interact".equals(var1.getActionCommand())) {
-         String var2 = this.browser.getSelectedValue() + "";
+         String var2 = ((Class)this.browser.getSelectedValue()).makeConcatWithConstants<invokedynamic>(this.browser.getSelectedValue());
          BeaconEntry var3 = DataUtils.getBeacon(this.client.getData(), var2);
          BeaconConsole var4 = new BeaconConsole(var2, this.client);
          this.client.getTabManager().addTab(var3.title(), var4.getConsole(), var4.cleanup(), "Beacon console");

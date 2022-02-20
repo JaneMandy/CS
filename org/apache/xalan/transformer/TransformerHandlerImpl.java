@@ -9,6 +9,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.sax.TransformerHandler;
 import org.apache.xalan.res.XSLMessages;
 import org.apache.xml.dtm.DTM;
+import org.apache.xml.dtm.DTMManager;
 import org.apache.xml.dtm.ref.IncrementalSAXSource_Filter;
 import org.apache.xml.dtm.ref.sax2dtm.SAX2DTM;
 import org.apache.xml.serializer.SerializationHandler;
@@ -26,9 +27,6 @@ import org.xml.sax.ext.DeclHandler;
 import org.xml.sax.ext.LexicalHandler;
 
 public class TransformerHandlerImpl implements EntityResolver, DTDHandler, ContentHandler, ErrorHandler, LexicalHandler, TransformerHandler, DeclHandler {
-   private final boolean m_optimizer;
-   private final boolean m_incremental;
-   private final boolean m_source_location;
    private boolean m_insideParse = false;
    private static boolean DEBUG = false;
    private TransformerImpl m_transformer;
@@ -55,9 +53,6 @@ public class TransformerHandlerImpl implements EntityResolver, DTDHandler, Conte
       this.m_entityResolver = dtm.getEntityResolver();
       this.m_errorHandler = dtm.getErrorHandler();
       this.m_lexicalHandler = dtm.getLexicalHandler();
-      this.m_incremental = transformer.getIncremental();
-      this.m_optimizer = transformer.getOptimize();
-      this.m_source_location = transformer.getSource_location();
    }
 
    protected void clearCoRoutine() {
@@ -167,7 +162,7 @@ public class TransformerHandlerImpl implements EntityResolver, DTDHandler, Conte
 
       this.m_insideParse = true;
       if (this.m_contentHandler != null) {
-         if (this.m_incremental) {
+         if (DTMManager.getIncremental()) {
             this.m_transformer.setSourceTreeDocForThread(this.m_dtm.getDocument());
             int cpriority = Thread.currentThread().getPriority();
             this.m_transformer.runTransformThread(cpriority);
@@ -188,7 +183,7 @@ public class TransformerHandlerImpl implements EntityResolver, DTDHandler, Conte
          this.m_contentHandler.endDocument();
       }
 
-      if (this.m_incremental) {
+      if (DTMManager.getIncremental()) {
          this.m_transformer.waitTransformThread();
       } else {
          this.m_transformer.setSourceTreeDocForThread(this.m_dtm.getDocument());

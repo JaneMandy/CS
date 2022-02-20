@@ -12,7 +12,6 @@ import org.apache.xpath.objects.XNumber;
 import org.apache.xpath.objects.XObject;
 
 public class FunctionPattern extends StepPattern {
-   static final long serialVersionUID = -5426793413091209944L;
    Expression m_functionExpr;
 
    public FunctionPattern(Expression expr, int axis, int predaxis) {

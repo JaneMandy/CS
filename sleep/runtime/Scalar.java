@@ -115,6 +115,7 @@ public class Scalar implements Serializable {
             this.setValue(var1.getValue());
          }
       }
+
    }
 
    private void writeObject(ObjectOutputStream var1) throws IOException {

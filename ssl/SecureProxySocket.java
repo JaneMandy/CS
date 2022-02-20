@@ -49,6 +49,7 @@ public class SecureProxySocket {
 
    public static byte[] readbytes(InputStream var0) throws IOException {
       Class var1 = SecureSocket.class;
+      Class var2 = SecureSocket.class;
       synchronized(SecureSocket.class) {
          if (A == null) {
             A = new byte[1048576];

@@ -1,8 +1,6 @@
 package org.apache.xalan.xsltc.compiler;
 
 import java.util.Enumeration;
-import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
 import java.util.Vector;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESPECIAL;
@@ -16,135 +14,62 @@ import org.apache.xalan.xsltc.compiler.util.Type;
 import org.apache.xalan.xsltc.compiler.util.TypeCheckError;
 
 final class AttributeValueTemplate extends AttributeValue {
-   static final int OUT_EXPR = 0;
-   static final int IN_EXPR = 1;
-   static final int IN_EXPR_SQUOTES = 2;
-   static final int IN_EXPR_DQUOTES = 3;
-   static final String DELIMITER = "\ufffe";
-
    public AttributeValueTemplate(String value, Parser parser, SyntaxTreeNode parent) {
       this.setParent(parent);
       this.setParser(parser);
-
-      try {
-         this.parseAVTemplate(value, parser);
-      } catch (NoSuchElementException var5) {
-         this.reportError(parent, parser, "ATTR_VAL_TEMPLATE_ERR", value);
+      if (this.check(value, parser)) {
+         this.parseAVTemplate(0, value, parser);
       }
 
    }
 
-   private void parseAVTemplate(String text, Parser parser) {
-      StringTokenizer tokenizer = new StringTokenizer(text, "{}\"'", true);
-      String t = null;
-      String lookahead = null;
-      StringBuffer buffer = new StringBuffer();
-      byte state = 0;
+   private void parseAVTemplate(int start, String text, Parser parser) {
+      if (text != null) {
+         int open = start - 2;
 
-      while(tokenizer.hasMoreTokens()) {
-         if (lookahead != null) {
-            t = lookahead;
-            lookahead = null;
-         } else {
-            t = tokenizer.nextToken();
-         }
+         do {
+            open = text.indexOf(123, open + 2);
+         } while(open != -1 && open < text.length() - 1 && text.charAt(open + 1) == '{');
 
-         if (t.length() == 1) {
-            switch(t.charAt(0)) {
-            case '"':
-               switch(state) {
-               case 0:
-               case 2:
-               default:
-                  break;
-               case 1:
-                  state = 3;
-                  break;
-               case 3:
-                  state = 1;
-               }
+         String str;
+         if (open != -1) {
+            int close = open - 2;
 
-               buffer.append(t);
-               break;
-            case '\'':
-               switch(state) {
-               case 0:
-               case 3:
-               default:
-                  break;
-               case 1:
-                  state = 2;
-                  break;
-               case 2:
-                  state = 1;
-               }
+            do {
+               close = text.indexOf(125, close + 2);
+            } while(close != -1 && close < text.length() - 1 && text.charAt(close + 1) == '}');
 
-               buffer.append(t);
-               break;
-            case '{':
-               switch(state) {
-               case 0:
-                  lookahead = tokenizer.nextToken();
-                  if (lookahead.equals("{")) {
-                     buffer.append(lookahead);
-                     lookahead = null;
-                  } else {
-                     buffer.append("\ufffe");
-                     state = 1;
-                  }
-                  continue;
-               case 1:
-               case 2:
-               case 3:
-                  this.reportError(this.getParent(), parser, "ATTR_VAL_TEMPLATE_ERR", text);
-               default:
-                  continue;
-               }
-            case '}':
-               switch(state) {
-               case 0:
-                  lookahead = tokenizer.nextToken();
-                  if (lookahead.equals("}")) {
-                     buffer.append(lookahead);
-                     lookahead = null;
-                  } else {
-                     this.reportError(this.getParent(), parser, "ATTR_VAL_TEMPLATE_ERR", text);
-                  }
-                  continue;
-               case 1:
-                  buffer.append("\ufffe");
-                  state = 0;
-                  continue;
-               case 2:
-               case 3:
-                  buffer.append(t);
-               default:
-                  continue;
-               }
-            default:
-               buffer.append(t);
+            if (open > start) {
+               str = this.removeDuplicateBraces(text.substring(start, open));
+               this.addElement(new LiteralExpr(str));
             }
-         } else {
-            buffer.append(t);
+
+            if (close > open + 1) {
+               text.substring(open + 1, close);
+               str = this.removeDuplicateBraces(text.substring(open + 1, close));
+               this.addElement(parser.parseExpression(this, str));
+            }
+
+            this.parseAVTemplate(close + 1, text, parser);
+         } else if (start < text.length()) {
+            str = this.removeDuplicateBraces(text.substring(start));
+            this.addElement(new LiteralExpr(str));
          }
+
+      }
+   }
+
+   public String removeDuplicateBraces(String orig) {
+      String result;
+      int index;
+      for(result = orig; (index = result.indexOf("{{")) != -1; result = result.substring(0, index) + result.substring(index + 1, result.length())) {
       }
 
-      if (state != 0) {
-         this.reportError(this.getParent(), parser, "ATTR_VAL_TEMPLATE_ERR", text);
+      while((index = result.indexOf("}}")) != -1) {
+         result = result.substring(0, index) + result.substring(index + 1, result.length());
       }
 
-      tokenizer = new StringTokenizer(buffer.toString(), "\ufffe", true);
-
-      while(tokenizer.hasMoreTokens()) {
-         t = tokenizer.nextToken();
-         if (t.equals("\ufffe")) {
-            this.addElement(parser.parseExpression(this, tokenizer.nextToken()));
-            tokenizer.nextToken();
-         } else {
-            this.addElement(new LiteralExpr(t));
-         }
-      }
-
+      return result;
    }
 
    public Type typeCheck(SymbolTable stable) throws TypeCheckError {
@@ -199,5 +124,51 @@ final class AttributeValueTemplate extends AttributeValue {
          il.append((org.apache.bcel.generic.Instruction)(new INVOKEVIRTUAL(toString)));
       }
 
+   }
+
+   private boolean check(String value, Parser parser) {
+      if (value == null) {
+         return true;
+      } else {
+         char[] chars = value.toCharArray();
+         int level = 0;
+
+         for(int i = 0; i < chars.length; ++i) {
+            switch(chars[i]) {
+            case '{':
+               if (i + 1 != chars.length && chars[i + 1] == '{') {
+                  ++i;
+               } else {
+                  ++level;
+               }
+               break;
+            case '}':
+               if (i + 1 != chars.length && chars[i + 1] == '}') {
+                  ++i;
+               } else {
+                  --level;
+               }
+               break;
+            default:
+               continue;
+            }
+
+            switch(level) {
+            case 0:
+            case 1:
+               break;
+            default:
+               this.reportError(this.getParent(), parser, "ATTR_VAL_TEMPLATE_ERR", value);
+               return false;
+            }
+         }
+
+         if (level != 0) {
+            this.reportError(this.getParent(), parser, "ATTR_VAL_TEMPLATE_ERR", value);
+            return false;
+         } else {
+            return true;
+         }
+      }
    }
 }

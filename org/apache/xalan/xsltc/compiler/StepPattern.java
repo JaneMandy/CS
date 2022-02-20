@@ -119,7 +119,7 @@ class StepPattern extends RelativePathPattern {
 
    public String toString() {
       StringBuffer buffer = new StringBuffer("stepPattern(\"");
-      buffer.append(Axis.getNames(this._axis)).append("\", ").append(this._isEpsilon ? "epsilon{" + Integer.toString(this._nodeType) + "}" : Integer.toString(this._nodeType));
+      buffer.append(Axis.names[this._axis]).append("\", ").append(this._isEpsilon ? "epsilon{" + Integer.toString(this._nodeType) + "}" : Integer.toString(this._nodeType));
       if (this._predicates != null) {
          buffer.append(", ").append(this._predicates.toString());
       }
@@ -265,13 +265,10 @@ class StepPattern extends RelativePathPattern {
       il.append(methodGen.loadCurrentNode());
       il.append(methodGen.loadIterator());
       int index = cpg.addMethodref("org.apache.xalan.xsltc.dom.MatchingIterator", "<init>", "(ILorg/apache/xml/dtm/DTMAxisIterator;)V");
-      this._step.translate(classGen, methodGen);
-      LocalVariableGen stepIteratorTemp = methodGen.addLocalVariable("step_pattern_tmp2", Util.getJCRefType("Lorg/apache/xml/dtm/DTMAxisIterator;"), il.getEnd(), (InstructionHandle)null);
-      il.append((org.apache.bcel.generic.Instruction)(new ASTORE(stepIteratorTemp.getIndex())));
       il.append((org.apache.bcel.generic.Instruction)(new NEW(cpg.addClass("org.apache.xalan.xsltc.dom.MatchingIterator"))));
       il.append((org.apache.bcel.generic.Instruction)InstructionConstants.DUP);
       il.append((org.apache.bcel.generic.Instruction)(new ILOAD(match.getIndex())));
-      il.append((org.apache.bcel.generic.Instruction)(new ALOAD(stepIteratorTemp.getIndex())));
+      this._step.translate(classGen, methodGen);
       il.append((org.apache.bcel.generic.Instruction)(new INVOKESPECIAL(index)));
       il.append(methodGen.loadDOM());
       il.append((org.apache.bcel.generic.Instruction)(new ILOAD(match.getIndex())));

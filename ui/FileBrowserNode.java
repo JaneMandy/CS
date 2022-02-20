@@ -94,7 +94,8 @@ public class FileBrowserNode implements Comparable {
    }
 
    public String getChild(String var1) {
-      return this.getPath() + var1;
+      String var10000 = this.getPath();
+      return var10000 + var1;
    }
 
    public String getName() {

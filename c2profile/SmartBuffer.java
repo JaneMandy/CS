@@ -39,7 +39,7 @@ public class SmartBuffer implements Serializable {
       this.clear();
 
       while(var3.hasNext()) {
-         byte[] var4 = (byte[])((byte[])var3.next());
+         byte[] var4 = (byte[])var3.next();
          if (var4.length >= var1.length()) {
             this.append(CommonUtils.strrep(var4, var1, var2));
          } else {
@@ -55,7 +55,7 @@ public class SmartBuffer implements Serializable {
 
    public byte[] getBytes() {
       if (this.data.size() == 1) {
-         return (byte[])((byte[])this.data.getFirst());
+         return (byte[])this.data.getFirst();
       } else if (this.data.size() == 0) {
          return new byte[0];
       } else {
@@ -64,7 +64,7 @@ public class SmartBuffer implements Serializable {
 
          byte[] var4;
          for(Iterator var3 = this.data.iterator(); var3.hasNext(); var2 += var4.length) {
-            var4 = (byte[])((byte[])var3.next());
+            var4 = (byte[])var3.next();
             System.arraycopy(var4, 0, var1, var2, var4.length);
          }
 
@@ -74,7 +74,7 @@ public class SmartBuffer implements Serializable {
 
    public int size() {
       if (this.data.size() == 1) {
-         return ((byte[])((byte[])this.data.getFirst())).length;
+         return ((byte[])this.data.getFirst()).length;
       } else if (this.data.size() == 0) {
          return 0;
       } else {
@@ -82,7 +82,7 @@ public class SmartBuffer implements Serializable {
 
          byte[] var3;
          for(Iterator var2 = this.data.iterator(); var2.hasNext(); var1 += var3.length) {
-            var3 = (byte[])((byte[])var2.next());
+            var3 = (byte[])var2.next();
          }
 
          return var1;

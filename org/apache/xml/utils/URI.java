@@ -5,7 +5,6 @@ import java.io.Serializable;
 import org.apache.xml.res.XMLMessages;
 
 public class URI implements Serializable {
-   static final long serialVersionUID = 7096266377907081897L;
    private static final String RESERVED_CHARACTERS = ";/?:@&=+$,";
    private static final String MARK_CHARACTERS = "-_.!~*'() ";
    private static final String SCHEME_CHARACTERS = "+-.";
@@ -144,10 +143,6 @@ public class URI implements Serializable {
             } else {
                this.initializeScheme(uriSpec);
                uriSpec = uriSpec.substring(colonIndex + 1);
-               if (this.m_scheme != null && p_base != null && (uriSpec.startsWith("/") || !this.m_scheme.equals(p_base.m_scheme) || !p_base.getSchemeSpecificPart().startsWith("/"))) {
-                  p_base = null;
-               }
-
                uriSpecLen = uriSpec.length();
             }
 

@@ -44,8 +44,10 @@ public abstract class PostExInlineObject {
       } else {
          OBJExecutable var4 = new OBJExecutable(var3, this.getFunction());
          var4.parse();
+         String var10002;
          if (var4.hasErrors()) {
-            this.error(var1, "object parser errors for " + this.getName() + ":\n\n" + var4.getErrors());
+            var10002 = this.getName();
+            this.error(var1, "object parser errors for " + var10002 + ":\n\n" + var4.getErrors());
          } else if (var4.getInfo().is64() && "x86".equals(var2)) {
             this.error(var1, "Can't run x64 object " + this.getName() + " in x86 session");
          } else if (var4.getInfo().is86() && "x64".equals(var2)) {
@@ -64,11 +66,13 @@ public abstract class PostExInlineObject {
             var9.addLengthAndString(var8);
             var9.addLengthAndString(this.getArguments(var1));
             if (var4.hasErrors()) {
-               this.error(var1, "linker errors for " + this.getName() + ":\n\n" + var4.getErrors());
+               var10002 = this.getName();
+               this.error(var1, "linker errors for " + var10002 + ":\n\n" + var4.getErrors());
             } else {
                this.client.getConnection().call("beacons.task", CommonUtils.args(var1, var9.build()));
             }
          }
       }
+
    }
 }

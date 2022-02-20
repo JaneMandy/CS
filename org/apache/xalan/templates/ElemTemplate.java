@@ -9,7 +9,6 @@ import org.apache.xpath.XPath;
 import org.apache.xpath.XPathContext;
 
 public class ElemTemplate extends ElemTemplateElement {
-   static final long serialVersionUID = -5283056789965384058L;
    private String m_publicId;
    private String m_systemId;
    private Stylesheet m_stylesheet;
@@ -114,12 +113,12 @@ public class ElemTemplate extends ElemTemplateElement {
       XPathContext xctxt = transformer.getXPathContext();
       transformer.getStackGuard().checkForInfinateLoop();
       xctxt.pushRTFContext();
-      if (transformer.getDebug()) {
+      if (TransformerImpl.S_DEBUG) {
          transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
       }
 
       transformer.executeChildTemplates(this, true);
-      if (transformer.getDebug()) {
+      if (TransformerImpl.S_DEBUG) {
          transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);
       }
 

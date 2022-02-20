@@ -146,7 +146,7 @@ public class PEParser {
          String var6 = (String)var4.next();
          Long var7 = (Long)var5.next();
          if (var1.equals(var6)) {
-            return (int)var7;
+            return var7.intValue();
          }
       }
 
@@ -163,7 +163,7 @@ public class PEParser {
       while(var6.hasNext() && var7.hasNext()) {
          Long var8 = (Long)var7.next();
          if (var8 > var2) {
-            return (int)var8;
+            return var8.intValue();
          }
       }
 
@@ -220,16 +220,14 @@ public class PEParser {
    public long fixAddress(long var1) {
       Iterator var3 = this.SectionsTable().iterator();
 
-      String var4;
-      do {
-         if (!var3.hasNext()) {
-            return -1L;
+      while(var3.hasNext()) {
+         String var4 = ((Class)var3.next()).makeConcatWithConstants<invokedynamic>(var3.next());
+         if (this.inSection(var4, var1)) {
+            return var1 - (long)this.sectionAddress(var4) + (long)this.sectionStart(var4);
          }
+      }
 
-         var4 = var3.next() + "";
-      } while(!this.inSection(var4, var1));
-
-      return var1 - (long)this.sectionAddress(var4) + (long)this.sectionStart(var4);
+      return -1L;
    }
 
    public static PEParser load(InputStream var0) {
@@ -396,7 +394,7 @@ public class PEParser {
 
    public int get(String var1) {
       Long var2 = (Long)this.values.get(var1);
-      return var2 == null ? 0 : (int)var2;
+      return var2 == null ? 0 : var2.intValue();
    }
 
    public Date getDate(String var1) {
@@ -778,7 +776,7 @@ public class PEParser {
 
    public static Map dumpToDictionary(PEParser var0) {
       HashMap var1 = new HashMap();
-      var1.put("checksum", "" + var0.checksum());
+      var1.put("checksum", var0.checksum().makeConcatWithConstants<invokedynamic>(var0.checksum()));
       B(var1, var0);
       A(var1, var0);
       return var1;
@@ -808,14 +806,14 @@ public class PEParser {
             Long var5 = (Long)var3.getValue();
             var0.put(var4, var5.toString());
          } else if (var3.getValue() instanceof String) {
-            var0.put(var4, "" + var3.getValue());
+            var0.put(var4, ((Class)var3.getValue()).makeConcatWithConstants<invokedynamic>(var3.getValue()));
          } else if (var3.getValue() instanceof List) {
-            var0.put(var4, "" + var3.getValue());
+            var0.put(var4, ((Class)var3.getValue()).makeConcatWithConstants<invokedynamic>(var3.getValue()));
          } else if (var3.getValue() instanceof Date) {
             long var7 = ((Date)var3.getValue()).getTime() / 1000L;
-            var0.put(var4, "" + CommonUtils.formatDateAny("dd MMM yyyy HH:mm:ss", var7 * 1000L));
+            var0.put(var4, CommonUtils.formatDateAny("dd MMM yyyy HH:mm:ss", var7 * 1000L).makeConcatWithConstants<invokedynamic>(CommonUtils.formatDateAny("dd MMM yyyy HH:mm:ss", var7 * 1000L)));
          } else {
-            var0.put(var4, "" + var3.getValue());
+            var0.put(var4, ((Class)var3.getValue()).makeConcatWithConstants<invokedynamic>(var3.getValue()));
          }
       }
 

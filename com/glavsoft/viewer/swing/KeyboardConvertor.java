@@ -109,7 +109,7 @@ public class KeyboardConvertor {
             }
          }
 
-         return (!isShiftDown || isCapsLock) && (isShiftDown || !isCapsLock) ? codePair.code : codePair.codeShifted;
+         return isShiftDown && !isCapsLock || !isShiftDown && isCapsLock ? codePair.codeShifted : codePair.code;
       }
    }
 

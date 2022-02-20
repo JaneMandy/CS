@@ -88,5 +88,6 @@ public class APasswordField extends JPasswordField {
             }
          });
       }
+
    }
 }

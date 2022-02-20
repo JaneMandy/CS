@@ -60,7 +60,8 @@ public class ProxyInterface implements InvocationHandler {
          Scalar var13;
          if (var6) {
             if (!this.script.isProfileOnly()) {
-               var7 = new StringBuffer("[" + this.func + " " + var2.getName());
+               Function var10002 = this.func;
+               var7 = new StringBuffer("[" + var10002 + " " + var2.getName());
                if (!var5.isEmpty()) {
                   var7.append(": " + SleepUtils.describe(var5));
                }

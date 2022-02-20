@@ -28,10 +28,9 @@ public class ExtensionHandlerGeneral extends ExtensionHandler {
    private Hashtable m_elements = new Hashtable();
    private Object m_engine;
    private Method m_engineCall = null;
-   private static String BSF_MANAGER = ObjectFactory.lookUpFactoryClassName("org.apache.xalan.extensions.bsf.BSFManager", (String)null, (String)null);
-   private static final String DEFAULT_BSF_MANAGER = "org.apache.bsf.BSFManager";
-   private static final String propName = "org.apache.xalan.extensions.bsf.BSFManager";
-   private static final Integer ZEROINT = new Integer(0);
+   private static final String BSF_MANAGER = "com.ibm.bsf.BSFManager";
+   private static final String BSF_ENGINE = "com.ibm.bsf.BSFEngine";
+   private static final Integer NEG1INT = new Integer(-1);
    // $FF: synthetic field
    static Class class$java$lang$String;
    // $FF: synthetic field
@@ -104,7 +103,7 @@ public class ExtensionHandlerGeneral extends ExtensionHandler {
       manager = null;
 
       try {
-         manager = ObjectFactory.newInstance(BSF_MANAGER, ObjectFactory.findClassLoader(), true);
+         manager = ObjectFactory.newInstance("com.ibm.bsf.BSFManager", ObjectFactory.findClassLoader(), true);
       } catch (ObjectFactory.ConfigurationError var14) {
          var14.printStackTrace();
       }
@@ -116,7 +115,7 @@ public class ExtensionHandlerGeneral extends ExtensionHandler {
             Method loadScriptingEngine = manager.getClass().getMethod("loadScriptingEngine", class$java$lang$String == null ? (class$java$lang$String = class$("java.lang.String")) : class$java$lang$String);
             this.m_engine = loadScriptingEngine.invoke(manager, scriptLang);
             Method engineExec = this.m_engine.getClass().getMethod("exec", class$java$lang$String == null ? (class$java$lang$String = class$("java.lang.String")) : class$java$lang$String, Integer.TYPE, Integer.TYPE, class$java$lang$Object == null ? (class$java$lang$Object = class$("java.lang.Object")) : class$java$lang$Object);
-            engineExec.invoke(this.m_engine, "XalanScript", ZEROINT, ZEROINT, this.m_scriptSrc);
+            engineExec.invoke(this.m_engine, "XalanScript", NEG1INT, NEG1INT, this.m_scriptSrc);
          } catch (Exception var13) {
             var13.printStackTrace();
             throw new TransformerException(XSLMessages.createMessage("ER_CANNOT_CMPL_EXTENSN", (Object[])null), var13);
@@ -195,12 +194,5 @@ public class ExtensionHandlerGeneral extends ExtensionHandler {
       } catch (ClassNotFoundException var2) {
          throw new NoClassDefFoundError(var2.getMessage());
       }
-   }
-
-   static {
-      if (BSF_MANAGER == null) {
-         BSF_MANAGER = "org.apache.bsf.BSFManager";
-      }
-
    }
 }

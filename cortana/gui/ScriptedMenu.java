@@ -17,7 +17,8 @@ public class ScriptedMenu extends JMenu implements MenuListener {
 
    public ScriptedMenu(String var1, SleepClosure var2, MenuBridge var3) {
       if (var1.indexOf(38) > -1) {
-         this.setText(var1.substring(0, var1.indexOf(38)) + var1.substring(var1.indexOf(38) + 1, var1.length()));
+         String var10001 = var1.substring(0, var1.indexOf(38));
+         this.setText(var10001 + var1.substring(var1.indexOf(38) + 1, var1.length()));
          this.setMnemonic(var1.charAt(var1.indexOf(38) + 1));
       } else {
          this.setText(var1);
@@ -32,7 +33,7 @@ public class ScriptedMenu extends JMenu implements MenuListener {
 
    public void menuSelected(MenuEvent var1) {
       this.bridge.push(this, this.args);
-      SleepUtils.runCode((SleepClosure)this.f, this.label, (ScriptInstance)null, EventManager.shallowCopy(this.args));
+      SleepUtils.runCode(this.f, this.label, (ScriptInstance)null, EventManager.shallowCopy(this.args));
       this.bridge.pop();
    }
 

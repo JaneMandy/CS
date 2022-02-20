@@ -48,13 +48,13 @@ public class BeaconPipes {
             Iterator var5 = var4.iterator();
 
             while(var5.hasNext()) {
-               String var6 = var5.next() + "";
+               String var6 = ((Class)var5.next()).makeConcatWithConstants<invokedynamic>(var5.next());
                if (var6.equals(var2)) {
                   var5.remove();
                }
             }
-
          }
+
       }
    }
 

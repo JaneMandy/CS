@@ -15,10 +15,6 @@ import org.apache.xml.utils.FastStringBuffer;
 import org.apache.xml.utils.NodeVector;
 import org.apache.xml.utils.PrefixResolver;
 import org.apache.xml.utils.StringBufferPool;
-import org.apache.xml.utils.res.CharArrayWrapper;
-import org.apache.xml.utils.res.IntArrayWrapper;
-import org.apache.xml.utils.res.LongArrayWrapper;
-import org.apache.xml.utils.res.StringArrayWrapper;
 import org.apache.xml.utils.res.XResourceBundle;
 import org.apache.xpath.NodeSetDTM;
 import org.apache.xpath.XPath;
@@ -28,8 +24,6 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 public class ElemNumber extends ElemTemplateElement {
-   static final long serialVersionUID = 8118472298274407610L;
-   private CharArrayWrapper m_alphaCountTable = null;
    private XPath m_countMatchPattern = null;
    private XPath m_fromMatchPattern = null;
    private int m_level = 1;
@@ -40,6 +34,7 @@ public class ElemNumber extends ElemTemplateElement {
    private AVT m_groupingSeparator_avt = null;
    private AVT m_groupingSize_avt = null;
    private static final DecimalToRoman[] m_romanConvertTable = new DecimalToRoman[]{new DecimalToRoman(1000L, "M", 900L, "CM"), new DecimalToRoman(500L, "D", 400L, "CD"), new DecimalToRoman(100L, "C", 90L, "XC"), new DecimalToRoman(50L, "L", 40L, "XL"), new DecimalToRoman(10L, "X", 9L, "IX"), new DecimalToRoman(5L, "V", 4L, "IV"), new DecimalToRoman(1L, "I", 1L, "I")};
+   private static char[] m_alphaCountTable = null;
 
    public void setCount(XPath v) {
       this.m_countMatchPattern = v;
@@ -160,7 +155,7 @@ public class ElemNumber extends ElemTemplateElement {
    }
 
    public void execute(TransformerImpl transformer) throws TransformerException {
-      if (transformer.getDebug()) {
+      if (TransformerImpl.S_DEBUG) {
          transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
       }
 
@@ -172,7 +167,7 @@ public class ElemNumber extends ElemTemplateElement {
       } catch (SAXException var9) {
          throw new TransformerException(var9);
       } finally {
-         if (transformer.getDebug()) {
+         if (TransformerImpl.S_DEBUG) {
             transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);
          }
 
@@ -266,24 +261,7 @@ public class ElemNumber extends ElemTemplateElement {
       CountersTable ctable = transformer.getCountersTable();
       if (null != this.m_valueExpr) {
          XObject countObj = this.m_valueExpr.execute(xctxt, sourceNode, this);
-         double d_count = Math.floor(countObj.num() + 0.5D);
-         if (Double.isNaN(d_count)) {
-            return "NaN";
-         }
-
-         if (d_count < 0.0D && Double.isInfinite(d_count)) {
-            return "-Infinity";
-         }
-
-         if (Double.isInfinite(d_count)) {
-            return "Infinity";
-         }
-
-         if (d_count == 0.0D) {
-            return "0";
-         }
-
-         long count = (long)d_count;
+         long count = (long)Math.floor(countObj.num() + 0.5D);
          list = new long[]{count};
       } else if (3 == this.m_level) {
          list = new long[]{(long)ctable.countNode(xctxt, this, sourceNode)};
@@ -498,30 +476,33 @@ public class ElemNumber extends ElemTemplateElement {
 
    private void getFormattedNumber(TransformerImpl transformer, int contextNode, char numberType, int numberWidth, long listElement, FastStringBuffer formattedNumber) throws TransformerException {
       String letterVal = this.m_lettervalue_avt != null ? this.m_lettervalue_avt.evaluate(transformer.getXPathContext(), contextNode, this) : null;
-      CharArrayWrapper alphaCountTable = null;
-      XResourceBundle thisBundle = null;
+      XResourceBundle thisBundle;
+      char[] alphabet;
+      XResourceBundle thisBundle;
       switch(numberType) {
       case 'A':
-         if (null == this.m_alphaCountTable) {
+         if (m_alphaCountTable == null) {
             thisBundle = XResourceBundle.loadResourceBundle("org.apache.xml.utils.res.XResources", this.getLocale(transformer, contextNode));
-            this.m_alphaCountTable = (CharArrayWrapper)thisBundle.getObject("alphabet");
+            alphabet = (char[])thisBundle.getObject("alphabet");
+            m_alphaCountTable = alphabet;
          }
 
-         this.int2alphaCount(listElement, this.m_alphaCountTable, formattedNumber);
+         this.int2alphaCount(listElement, m_alphaCountTable, formattedNumber);
          break;
       case 'I':
          formattedNumber.append(this.long2roman(listElement, true));
          break;
       case 'a':
-         if (null == this.m_alphaCountTable) {
+         if (m_alphaCountTable == null) {
             thisBundle = XResourceBundle.loadResourceBundle("org.apache.xml.utils.res.XResources", this.getLocale(transformer, contextNode));
-            this.m_alphaCountTable = (CharArrayWrapper)thisBundle.getObject("alphabet");
+            alphabet = (char[])thisBundle.getObject("alphabet");
+            m_alphaCountTable = alphabet;
          }
 
          FastStringBuffer stringBuf = StringBufferPool.get();
 
          try {
-            this.int2alphaCount(listElement, this.m_alphaCountTable, stringBuf);
+            this.int2alphaCount(listElement, m_alphaCountTable, stringBuf);
             formattedNumber.append(stringBuf.toString().toLowerCase(this.getLocale(transformer, contextNode)));
             break;
          } finally {
@@ -535,7 +516,7 @@ public class ElemNumber extends ElemTemplateElement {
          if (letterVal != null && letterVal.equals("traditional")) {
             formattedNumber.append(this.tradAlphaCount(listElement, thisBundle));
          } else {
-            this.int2alphaCount(listElement, (CharArrayWrapper)thisBundle.getObject("alphabet"), formattedNumber);
+            this.int2alphaCount(listElement, (char[])thisBundle.getObject("alphabet"), formattedNumber);
          }
          break;
       case 'а':
@@ -543,7 +524,7 @@ public class ElemNumber extends ElemTemplateElement {
          if (letterVal != null && letterVal.equals("traditional")) {
             formattedNumber.append(this.tradAlphaCount(listElement, thisBundle));
          } else {
-            this.int2alphaCount(listElement, (CharArrayWrapper)thisBundle.getObject("alphabet"), formattedNumber);
+            this.int2alphaCount(listElement, (char[])thisBundle.getObject("alphabet"), formattedNumber);
          }
          break;
       case 'א':
@@ -551,7 +532,7 @@ public class ElemNumber extends ElemTemplateElement {
          if (letterVal != null && letterVal.equals("traditional")) {
             formattedNumber.append(this.tradAlphaCount(listElement, thisBundle));
          } else {
-            this.int2alphaCount(listElement, (CharArrayWrapper)thisBundle.getObject("alphabet"), formattedNumber);
+            this.int2alphaCount(listElement, (char[])thisBundle.getObject("alphabet"), formattedNumber);
          }
          break;
       case '๑':
@@ -559,7 +540,7 @@ public class ElemNumber extends ElemTemplateElement {
          if (letterVal != null && letterVal.equals("traditional")) {
             formattedNumber.append(this.tradAlphaCount(listElement, thisBundle));
          } else {
-            this.int2alphaCount(listElement, (CharArrayWrapper)thisBundle.getObject("alphabet"), formattedNumber);
+            this.int2alphaCount(listElement, (char[])thisBundle.getObject("alphabet"), formattedNumber);
          }
          break;
       case 'ა':
@@ -567,7 +548,7 @@ public class ElemNumber extends ElemTemplateElement {
          if (letterVal != null && letterVal.equals("traditional")) {
             formattedNumber.append(this.tradAlphaCount(listElement, thisBundle));
          } else {
-            this.int2alphaCount(listElement, (CharArrayWrapper)thisBundle.getObject("alphabet"), formattedNumber);
+            this.int2alphaCount(listElement, (char[])thisBundle.getObject("alphabet"), formattedNumber);
          }
          break;
       case 'あ':
@@ -575,7 +556,7 @@ public class ElemNumber extends ElemTemplateElement {
          if (letterVal != null && letterVal.equals("traditional")) {
             formattedNumber.append(this.tradAlphaCount(listElement, thisBundle));
          } else {
-            formattedNumber.append(this.int2singlealphaCount(listElement, (CharArrayWrapper)thisBundle.getObject("alphabet")));
+            formattedNumber.append(this.int2singlealphaCount(listElement, (char[])thisBundle.getObject("alphabet")));
          }
          break;
       case 'い':
@@ -583,7 +564,7 @@ public class ElemNumber extends ElemTemplateElement {
          if (letterVal != null && letterVal.equals("traditional")) {
             formattedNumber.append(this.tradAlphaCount(listElement, thisBundle));
          } else {
-            formattedNumber.append(this.int2singlealphaCount(listElement, (CharArrayWrapper)thisBundle.getObject("alphabet")));
+            formattedNumber.append(this.int2singlealphaCount(listElement, (char[])thisBundle.getObject("alphabet")));
          }
          break;
       case 'ア':
@@ -591,7 +572,7 @@ public class ElemNumber extends ElemTemplateElement {
          if (letterVal != null && letterVal.equals("traditional")) {
             formattedNumber.append(this.tradAlphaCount(listElement, thisBundle));
          } else {
-            formattedNumber.append(this.int2singlealphaCount(listElement, (CharArrayWrapper)thisBundle.getObject("alphabet")));
+            formattedNumber.append(this.int2singlealphaCount(listElement, (char[])thisBundle.getObject("alphabet")));
          }
          break;
       case 'イ':
@@ -599,7 +580,7 @@ public class ElemNumber extends ElemTemplateElement {
          if (letterVal != null && letterVal.equals("traditional")) {
             formattedNumber.append(this.tradAlphaCount(listElement, thisBundle));
          } else {
-            formattedNumber.append(this.int2singlealphaCount(listElement, (CharArrayWrapper)thisBundle.getObject("alphabet")));
+            formattedNumber.append(this.int2singlealphaCount(listElement, (char[])thisBundle.getObject("alphabet")));
          }
          break;
       case '一':
@@ -607,7 +588,7 @@ public class ElemNumber extends ElemTemplateElement {
          if (letterVal != null && letterVal.equals("traditional")) {
             formattedNumber.append(this.tradAlphaCount(listElement, thisBundle));
          } else {
-            this.int2alphaCount(listElement, (CharArrayWrapper)thisBundle.getObject("alphabet"), formattedNumber);
+            this.int2alphaCount(listElement, (char[])thisBundle.getObject("alphabet"), formattedNumber);
          }
          break;
       case '壹':
@@ -615,7 +596,7 @@ public class ElemNumber extends ElemTemplateElement {
          if (letterVal != null && letterVal.equals("traditional")) {
             formattedNumber.append(this.tradAlphaCount(listElement, thisBundle));
          } else {
-            this.int2alphaCount(listElement, (CharArrayWrapper)thisBundle.getObject("alphabet"), formattedNumber);
+            this.int2alphaCount(listElement, (char[])thisBundle.getObject("alphabet"), formattedNumber);
          }
          break;
       default:
@@ -637,21 +618,21 @@ public class ElemNumber extends ElemTemplateElement {
       return "0";
    }
 
-   protected String int2singlealphaCount(long val, CharArrayWrapper table) {
-      int radix = table.getLength();
-      return val > (long)radix ? this.getZeroString() : (new Character(table.getChar((int)val - 1))).toString();
+   protected String int2singlealphaCount(long val, char[] table) {
+      int radix = table.length;
+      return val > (long)radix ? this.getZeroString() : (new Character(table[(int)val - 1])).toString();
    }
 
-   protected void int2alphaCount(long val, CharArrayWrapper aTable, FastStringBuffer stringBuf) {
-      int radix = aTable.getLength();
-      char[] table = new char[radix];
+   protected void int2alphaCount(long val, char[] aTable, FastStringBuffer stringBuf) {
+      int radix = aTable.length;
+      char[] table = new char[aTable.length];
 
       int i;
-      for(i = 0; i < radix - 1; ++i) {
-         table[i + 1] = aTable.getChar(i);
+      for(i = 0; i < aTable.length - 1; ++i) {
+         table[i + 1] = aTable[i];
       }
 
-      table[0] = aTable.getChar(i);
+      table[0] = aTable[i];
       char[] buf = new char[100];
       int charPos = buf.length - 1;
       int lookupIndex = 1;
@@ -680,54 +661,54 @@ public class ElemNumber extends ElemTemplateElement {
          int lookupIndex = true;
          char[] buf = new char[100];
          int charPos = 0;
-         IntArrayWrapper groups = (IntArrayWrapper)thisBundle.getObject("numberGroups");
-         StringArrayWrapper tables = (StringArrayWrapper)thisBundle.getObject("tables");
+         int[] groups = (int[])thisBundle.getObject("numberGroups");
+         String[] tables = (String[])thisBundle.getObject("tables");
          String numbering = thisBundle.getString("numbering");
-         CharArrayWrapper zeroChar;
+         char[] zeroChar;
          int i;
          char[] table;
          int lookupIndex;
          if (numbering.equals("multiplicative-additive")) {
             String mult_order = thisBundle.getString("multiplierOrder");
-            LongArrayWrapper multiplier = (LongArrayWrapper)thisBundle.getObject("multiplier");
-            zeroChar = (CharArrayWrapper)thisBundle.getObject("zero");
+            long[] multiplier = (long[])thisBundle.getObject("multiplier");
+            zeroChar = (char[])thisBundle.getObject("zero");
 
-            for(i = 0; i < multiplier.getLength() && val < multiplier.getLong(i); ++i) {
+            for(i = 0; i < multiplier.length && val < multiplier[i]; ++i) {
             }
 
-            while(i < multiplier.getLength()) {
-               if (val < multiplier.getLong(i)) {
-                  if (zeroChar.getLength() == 0) {
+            while(i < multiplier.length) {
+               if (val < multiplier[i]) {
+                  if (zeroChar.length == 0) {
                      ++i;
                   } else {
-                     if (buf[charPos - 1] != zeroChar.getChar(0)) {
-                        buf[charPos++] = zeroChar.getChar(0);
+                     if (buf[charPos - 1] != zeroChar[0]) {
+                        buf[charPos++] = zeroChar[0];
                      }
 
                      ++i;
                   }
-               } else if (val >= multiplier.getLong(i)) {
-                  long mult = val / multiplier.getLong(i);
-                  val %= multiplier.getLong(i);
+               } else if (val >= multiplier[i]) {
+                  long mult = val / multiplier[i];
+                  val %= multiplier[i];
 
-                  for(int k = 0; k < groups.getLength(); ++k) {
+                  for(int k = 0; k < groups.length; ++k) {
                      lookupIndex = true;
-                     if (mult / (long)groups.getInt(k) > 0L) {
-                        CharArrayWrapper THEletters = (CharArrayWrapper)thisBundle.getObject(tables.getString(k));
-                        table = new char[THEletters.getLength() + 1];
+                     if (mult / (long)groups[k] > 0L) {
+                        char[] THEletters = (char[])thisBundle.getObject(tables[k]);
+                        table = new char[THEletters.length + 1];
 
                         int j;
-                        for(j = 0; j < THEletters.getLength(); ++j) {
-                           table[j + 1] = THEletters.getChar(j);
+                        for(j = 0; j < THEletters.length; ++j) {
+                           table[j + 1] = THEletters[j];
                         }
 
-                        table[0] = THEletters.getChar(j - 1);
-                        lookupIndex = (int)mult / groups.getInt(k);
+                        table[0] = THEletters[j - 1];
+                        lookupIndex = (int)mult / groups[k];
                         if (lookupIndex == 0 && mult == 0L) {
                            break;
                         }
 
-                        char multiplierChar = ((CharArrayWrapper)thisBundle.getObject("multiplierChar")).getChar(i);
+                        char multiplierChar = ((char[])thisBundle.getObject("multiplierChar"))[i];
                         if (lookupIndex >= table.length) {
                            return "#error";
                         }
@@ -736,7 +717,7 @@ public class ElemNumber extends ElemTemplateElement {
                            buf[charPos++] = multiplierChar;
                            buf[charPos++] = table[lookupIndex];
                         } else {
-                           if (lookupIndex != 1 || i != multiplier.getLength() - 1) {
+                           if (lookupIndex != 1 || i != multiplier.length - 1) {
                               buf[charPos++] = table[lookupIndex];
                            }
 
@@ -749,7 +730,7 @@ public class ElemNumber extends ElemTemplateElement {
                   ++i;
                }
 
-               if (i >= multiplier.getLength()) {
+               if (i >= multiplier.length) {
                   break;
                }
             }
@@ -757,20 +738,20 @@ public class ElemNumber extends ElemTemplateElement {
 
          int count = 0;
 
-         while(count < groups.getLength()) {
-            if (val / (long)groups.getInt(count) <= 0L) {
+         while(count < groups.length) {
+            if (val / (long)groups[count] <= 0L) {
                ++count;
             } else {
-               zeroChar = (CharArrayWrapper)thisBundle.getObject(tables.getString(count));
-               table = new char[zeroChar.getLength() + 1];
+               zeroChar = (char[])thisBundle.getObject(tables[count]);
+               table = new char[zeroChar.length + 1];
 
-               for(i = 0; i < zeroChar.getLength(); ++i) {
-                  table[i + 1] = zeroChar.getChar(i);
+               for(i = 0; i < zeroChar.length; ++i) {
+                  table[i + 1] = zeroChar[i];
                }
 
-               table[0] = zeroChar.getChar(i - 1);
-               lookupIndex = (int)val / groups.getInt(count);
-               val %= (long)groups.getInt(count);
+               table[0] = zeroChar[i - 1];
+               lookupIndex = (int)val / groups[count];
+               val %= (long)groups[count];
                if (lookupIndex == 0 && val == 0L) {
                   break;
                }

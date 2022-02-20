@@ -26,9 +26,9 @@ public class PortForward implements Runnable, Mortal {
    public Map toMap() {
       HashMap var1 = new HashMap();
       var1.put("type", "port forward");
-      var1.put("port", this.port + "");
+      var1.put("port", this.port.makeConcatWithConstants<invokedynamic>(this.port));
       var1.put("fhost", this.fhost);
-      var1.put("fport", this.fport + "");
+      var1.put("fport", this.fport.makeConcatWithConstants<invokedynamic>(this.fport));
       return var1;
    }
 

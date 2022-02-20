@@ -6,7 +6,4 @@ public final class Method {
    public static final String XHTML = "xhtml";
    public static final String TEXT = "text";
    public static final String UNKNOWN = "";
-
-   private Method() {
-   }
 }

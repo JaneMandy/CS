@@ -13,7 +13,6 @@ import org.apache.xpath.objects.XObject;
 import org.apache.xpath.res.XPATHMessages;
 
 public class FuncExtFunction extends Function {
-   static final long serialVersionUID = 5196115554693708718L;
    String m_namespace;
    String m_extensionName;
    Object m_methodKey;
@@ -58,35 +57,30 @@ public class FuncExtFunction extends Function {
    }
 
    public XObject execute(XPathContext xctxt) throws TransformerException {
-      if (xctxt.isSecureProcessing()) {
-         throw new TransformerException(XPATHMessages.createXPATHMessage("ER_EXTENSION_FUNCTION_CANNOT_BE_INVOKED", new Object[]{this.toString()}));
-      } else {
-         Vector argVec = new Vector();
-         int nArgs = this.m_argVec.size();
+      Vector argVec = new Vector();
+      int nArgs = this.m_argVec.size();
 
-         for(int i = 0; i < nArgs; ++i) {
-            Expression arg = (Expression)this.m_argVec.elementAt(i);
-            XObject xobj = arg.execute(xctxt);
-            xobj.allowDetachToRelease(false);
-            argVec.addElement(xobj);
-         }
-
-         ExtensionsProvider extProvider = (ExtensionsProvider)xctxt.getOwnerObject();
-         Object val = extProvider.extFunction(this, argVec);
-         Object result;
-         if (null != val) {
-            result = XObject.create(val, xctxt);
-         } else {
-            result = new XNull();
-         }
-
-         return (XObject)result;
+      for(int i = 0; i < nArgs; ++i) {
+         Expression arg = (Expression)this.m_argVec.elementAt(i);
+         XObject xobj = arg.execute(xctxt);
+         xobj.allowDetachToRelease(false);
+         argVec.addElement(xobj);
       }
+
+      ExtensionsProvider extProvider = (ExtensionsProvider)xctxt.getOwnerObject();
+      Object val = extProvider.extFunction(this, argVec);
+      Object result;
+      if (null != val) {
+         result = XObject.create(val, xctxt);
+      } else {
+         result = new XNull();
+      }
+
+      return (XObject)result;
    }
 
    public void setArg(Expression arg, int argNum) throws WrongNumberArgsException {
       this.m_argVec.addElement(arg);
-      arg.exprSetParent(this);
    }
 
    public void checkNumberArgs(int argNum) throws WrongNumberArgsException {
@@ -114,10 +108,6 @@ public class FuncExtFunction extends Function {
    protected void reportWrongNumberArgs() throws WrongNumberArgsException {
       String fMsg = XPATHMessages.createXPATHMessage("ER_INCORRECT_PROGRAMMER_ASSERTION", new Object[]{"Programmer's assertion:  the method FunctionMultiArgs.reportWrongNumberArgs() should never be called."});
       throw new RuntimeException(fMsg);
-   }
-
-   public String toString() {
-      return this.m_namespace != null && this.m_namespace.length() > 0 ? "{" + this.m_namespace + "}" + this.m_extensionName : this.m_extensionName;
    }
 
    class ArgExtOwner implements ExpressionOwner {

@@ -40,7 +40,7 @@ public final class ObjectType extends Type {
    }
 
    public int hashCode() {
-      return (class$java$lang$Object == null ? (class$java$lang$Object = class$("java.lang.Object")) : class$java$lang$Object).hashCode();
+      return this.toString().hashCode();
    }
 
    public boolean equals(Object obj) {

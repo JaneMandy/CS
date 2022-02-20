@@ -52,11 +52,11 @@ public abstract class CallRequest {
                var1 = this.execute();
                var6 = System.currentTimeMillis() - var6 - (var2.getScriptInstance().total() - var12);
                var2.getScriptInstance().collect(this.getFunctionName(), this.getLineNumber(), var6);
-            } catch (RuntimeException var9) {
-               if (var9.getCause() == null || !InvocationTargetException.class.isInstance(var9.getCause())) {
+            } catch (RuntimeException var10) {
+               if (var10.getCause() == null || !InvocationTargetException.class.isInstance(var10.getCause())) {
                   var2.cleanFrame(var3);
                   var2.KillFrame();
-                  throw var9;
+                  throw var10;
                }
             }
          } else {
@@ -89,11 +89,11 @@ public abstract class CallRequest {
       } else {
          try {
             var1 = this.execute();
-         } catch (RuntimeException var10) {
-            if (var10.getCause() == null || !InvocationTargetException.class.isInstance(var10.getCause())) {
+         } catch (RuntimeException var9) {
+            if (var9.getCause() == null || !InvocationTargetException.class.isInstance(var9.getCause())) {
                var2.cleanFrame(var3);
                var2.KillFrame();
-               throw var10;
+               throw var9;
             }
          }
       }
@@ -109,8 +109,9 @@ public abstract class CallRequest {
       var2.cleanFrame(var3);
       var2.FrameResult(var1);
       if (var2.isPassControl()) {
-         var2.pushSource(((SleepClosure)var1.objectValue()).getAndRemoveMetadata("sourceFile", "<unknown>") + "");
-         int var13 = (Integer)((Integer)((SleepClosure)var1.objectValue()).getAndRemoveMetadata("sourceLine", new Integer(-1)));
+         SleepClosure var10001 = (SleepClosure)var1.objectValue();
+         var2.pushSource(((Class)var10001.getAndRemoveMetadata("sourceFile", "<unknown>")).makeConcatWithConstants<invokedynamic>(var10001.getAndRemoveMetadata("sourceFile", "<unknown>")));
+         int var13 = (Integer)((SleepClosure)var1.objectValue()).getAndRemoveMetadata("sourceLine", new Integer(-1));
          if (var2.markFrame() >= 0) {
             Object var14 = var2.getCurrentFrame().pop();
             if (var14 != var1) {
@@ -126,6 +127,79 @@ public abstract class CallRequest {
          var2.popSource();
       }
 
+   }
+
+   public static class ClosureCallRequest extends CallRequest {
+      protected String name;
+      protected Scalar scalar;
+
+      public ClosureCallRequest(ScriptEnvironment var1, int var2, Scalar var3, String var4) {
+         super(var1, var2);
+         this.scalar = var3;
+         this.name = var4;
+      }
+
+      public String getFunctionName() {
+         return ((SleepClosure)this.scalar.objectValue()).toStringGeneric();
+      }
+
+      public String getFrameDescription() {
+         return this.scalar.toString();
+      }
+
+      public String formatCall(String var1) {
+         StringBuffer var2 = new StringBuffer("[" + SleepUtils.describe(this.scalar));
+         if (this.name != null && this.name.length() > 0) {
+            var2.append(" " + this.name);
+         }
+
+         if (var1.length() > 0) {
+            var2.append(": " + var1);
+         }
+
+         var2.append("]");
+         return var2.toString();
+      }
+
+      protected Scalar execute() {
+         SleepClosure var1 = SleepUtils.getFunctionFromScalar(this.scalar, this.getScriptEnvironment().getScriptInstance());
+         Scalar var2 = var1.evaluate(this.name, this.getScriptEnvironment().getScriptInstance(), this.getScriptEnvironment().getCurrentFrame());
+         this.getScriptEnvironment().clearReturn();
+         return var2;
+      }
+   }
+
+   public static class FunctionCallRequest extends CallRequest {
+      protected String function;
+      protected Function callme;
+
+      public FunctionCallRequest(ScriptEnvironment var1, int var2, String var3, Function var4) {
+         super(var1, var2);
+         this.function = var3;
+         this.callme = var4;
+      }
+
+      public String getFunctionName() {
+         return this.function;
+      }
+
+      public String getFrameDescription() {
+         return this.function + "()";
+      }
+
+      public String formatCall(String var1) {
+         return this.function + "(" + var1 + ")";
+      }
+
+      public boolean isDebug() {
+         return super.isDebug() && !this.function.equals("&@") && !this.function.equals("&%") && !this.function.equals("&warn");
+      }
+
+      protected Scalar execute() {
+         Scalar var1 = this.callme.evaluate(this.function, this.getScriptEnvironment().getScriptInstance(), this.getScriptEnvironment().getCurrentFrame());
+         this.getScriptEnvironment().clearReturn();
+         return var1;
+      }
    }
 
    public static class InlineCallRequest extends CallRequest {
@@ -171,79 +245,6 @@ public abstract class CallRequest {
 
             return var6;
          }
-      }
-   }
-
-   public static class FunctionCallRequest extends CallRequest {
-      protected String function;
-      protected Function callme;
-
-      public FunctionCallRequest(ScriptEnvironment var1, int var2, String var3, Function var4) {
-         super(var1, var2);
-         this.function = var3;
-         this.callme = var4;
-      }
-
-      public String getFunctionName() {
-         return this.function;
-      }
-
-      public String getFrameDescription() {
-         return this.function + "()";
-      }
-
-      public String formatCall(String var1) {
-         return this.function + "(" + var1 + ")";
-      }
-
-      public boolean isDebug() {
-         return super.isDebug() && !this.function.equals("&@") && !this.function.equals("&%") && !this.function.equals("&warn");
-      }
-
-      protected Scalar execute() {
-         Scalar var1 = this.callme.evaluate(this.function, this.getScriptEnvironment().getScriptInstance(), this.getScriptEnvironment().getCurrentFrame());
-         this.getScriptEnvironment().clearReturn();
-         return var1;
-      }
-   }
-
-   public static class ClosureCallRequest extends CallRequest {
-      protected String name;
-      protected Scalar scalar;
-
-      public ClosureCallRequest(ScriptEnvironment var1, int var2, Scalar var3, String var4) {
-         super(var1, var2);
-         this.scalar = var3;
-         this.name = var4;
-      }
-
-      public String getFunctionName() {
-         return ((SleepClosure)this.scalar.objectValue()).toStringGeneric();
-      }
-
-      public String getFrameDescription() {
-         return this.scalar.toString();
-      }
-
-      public String formatCall(String var1) {
-         StringBuffer var2 = new StringBuffer("[" + SleepUtils.describe(this.scalar));
-         if (this.name != null && this.name.length() > 0) {
-            var2.append(" " + this.name);
-         }
-
-         if (var1.length() > 0) {
-            var2.append(": " + var1);
-         }
-
-         var2.append("]");
-         return var2.toString();
-      }
-
-      protected Scalar execute() {
-         SleepClosure var1 = SleepUtils.getFunctionFromScalar(this.scalar, this.getScriptEnvironment().getScriptInstance());
-         Scalar var2 = var1.evaluate(this.name, this.getScriptEnvironment().getScriptInstance(), this.getScriptEnvironment().getCurrentFrame());
-         this.getScriptEnvironment().clearReturn();
-         return var2;
       }
    }
 }

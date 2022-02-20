@@ -88,9 +88,9 @@ public class CheckEval implements Check, Serializable {
          var3 = var2.decide(this.name, var1.getScriptInstance(), var1.getCurrentFrame());
          var4.append(" ? ");
          if (this.negate) {
-            var4.append((!var3 + "").toUpperCase());
+            var4.append((!var3).makeConcatWithConstants<invokedynamic>(!var3).toUpperCase());
          } else {
-            var4.append((var3 + "").toUpperCase());
+            var4.append(var3.makeConcatWithConstants<invokedynamic>(var3).toUpperCase());
          }
 
          var1.getScriptInstance().fireWarning(var4.toString(), this.hint, true);

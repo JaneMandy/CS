@@ -28,14 +28,17 @@ public class ScriptedWebDialog implements DialogListener, Callback {
 
    public void dialogAction(ActionEvent var1, Map var2) {
       this.options = var2;
-      String var3 = var2.get("port") + "";
-      String var4 = var2.get("uri") + "";
-      String var5 = var2.get("host") + "";
+      Object var10000 = var2.get("port");
+      String var3 = ((Class)var10000).makeConcatWithConstants<invokedynamic>(var10000);
+      var10000 = var2.get("uri");
+      String var4 = ((Class)var10000).makeConcatWithConstants<invokedynamic>(var10000);
+      var10000 = var2.get("host");
+      String var5 = ((Class)var10000).makeConcatWithConstants<invokedynamic>(var10000);
       String var6 = DialogUtils.string(var2, "type");
       boolean var7 = DialogUtils.bool(var2, "ssl");
       this.proto = var7 ? "https://" : "http://";
-      String var8 = var2.get("output") + "";
-      String var9 = var2.get("listener") + "";
+      String var8 = ((Class)var2.get("output")).makeConcatWithConstants<invokedynamic>(var2.get("output"));
+      String var9 = ((Class)var2.get("listener")).makeConcatWithConstants<invokedynamic>(var2.get("listener"));
       byte[] var10 = ListenerUtils.getListener(this.client, var9).getPayloadStager("x86");
       byte[] var11;
       if ("bitsadmin".equals(var6)) {
@@ -58,11 +61,11 @@ public class ScriptedWebDialog implements DialogListener, Callback {
    }
 
    public void result(String var1, Object var2) {
-      String var3 = var2 + "";
-      String var4 = this.options.get("port") + "";
-      String var5 = this.options.get("uri") + "";
-      String var6 = this.options.get("host") + "";
-      String var7 = this.options.get("type") + "";
+      String var3 = ((Class)var2).makeConcatWithConstants<invokedynamic>(var2);
+      String var4 = ((Class)this.options.get("port")).makeConcatWithConstants<invokedynamic>(this.options.get("port"));
+      String var5 = ((Class)this.options.get("uri")).makeConcatWithConstants<invokedynamic>(this.options.get("uri"));
+      String var6 = ((Class)this.options.get("host")).makeConcatWithConstants<invokedynamic>(this.options.get("host"));
+      String var7 = ((Class)this.options.get("type")).makeConcatWithConstants<invokedynamic>(this.options.get("type"));
       if ("success".equals(var3)) {
          DialogUtils.startedWebService("Scripted Web Delivery", CommonUtils.OneLiner(this.proto + var6 + ":" + var4 + var5, var7));
       } else {

@@ -51,11 +51,16 @@ public class HostFileDialog implements DialogListener, Callback, UploadFile.Uplo
 
    public void dialogAction(ActionEvent var1, Map var2) {
       this.event = var1;
-      this.file = var2.get("file") + "";
-      this.uri = var2.get("uri") + "";
-      this.port = var2.get("port") + "";
-      this.mime = var2.get("mimetype") + "";
-      this.host = var2.get("host") + "";
+      Object var10001 = var2.get("file");
+      this.file = ((Class)var10001).makeConcatWithConstants<invokedynamic>(var10001);
+      var10001 = var2.get("uri");
+      this.uri = ((Class)var10001).makeConcatWithConstants<invokedynamic>(var10001);
+      var10001 = var2.get("port");
+      this.port = ((Class)var10001).makeConcatWithConstants<invokedynamic>(var10001);
+      var10001 = var2.get("mimetype");
+      this.mime = ((Class)var10001).makeConcatWithConstants<invokedynamic>(var10001);
+      var10001 = var2.get("host");
+      this.host = ((Class)var10001).makeConcatWithConstants<invokedynamic>(var10001);
       this.ssl = DialogUtils.bool(var2, "ssl");
       this.proto = this.ssl ? "https://" : "http://";
       if (!(new File(this.file)).exists()) {
@@ -70,6 +75,7 @@ public class HostFileDialog implements DialogListener, Callback, UploadFile.Uplo
 
          (new UploadFile(this.conn, new File(this.file), this)).start();
       }
+
    }
 
    public void complete(String var1) {
@@ -81,7 +87,7 @@ public class HostFileDialog implements DialogListener, Callback, UploadFile.Uplo
    }
 
    public void result(String var1, Object var2) {
-      String var3 = var2 + "";
+      String var3 = ((Class)var2).makeConcatWithConstants<invokedynamic>(var2);
       if ("success".equals(var3)) {
          if (DialogUtils.isShift(this.event)) {
             this.dialog.setVisible(true);

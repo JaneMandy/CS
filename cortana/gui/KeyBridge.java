@@ -59,7 +59,7 @@ public class KeyBridge implements Loadable, Function, Environment {
 
       public void key_pressed(String var1) {
          if (this.L != null && this.L.getOwner().isLoaded()) {
-            SleepUtils.runCode((SleepClosure)this.L, var1, (ScriptInstance)null, new Stack());
+            SleepUtils.runCode(this.L, var1, (ScriptInstance)null, new Stack());
          } else {
             this.L = null;
          }

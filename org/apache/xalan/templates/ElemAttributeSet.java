@@ -6,7 +6,6 @@ import org.apache.xalan.transformer.TransformerImpl;
 import org.apache.xml.utils.QName;
 
 public class ElemAttributeSet extends ElemUse {
-   static final long serialVersionUID = -426740318278164496L;
    public QName m_qname = null;
 
    public void setName(QName name) {
@@ -26,7 +25,7 @@ public class ElemAttributeSet extends ElemUse {
    }
 
    public void execute(TransformerImpl transformer) throws TransformerException {
-      if (transformer.getDebug()) {
+      if (TransformerImpl.S_DEBUG) {
          transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
       }
 
@@ -41,7 +40,7 @@ public class ElemAttributeSet extends ElemUse {
          }
 
          transformer.popElemAttributeSet();
-         if (transformer.getDebug()) {
+         if (TransformerImpl.S_DEBUG) {
             transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);
          }
 

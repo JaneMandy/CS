@@ -1,14 +1,11 @@
 package org.apache.xalan.xsltc.runtime;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Vector;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Templates;
 import org.apache.xalan.xsltc.DOM;
 import org.apache.xalan.xsltc.DOMCache;
@@ -20,9 +17,6 @@ import org.apache.xalan.xsltc.dom.KeyIndex;
 import org.apache.xalan.xsltc.runtime.output.TransletOutputHandlerFactory;
 import org.apache.xml.dtm.DTMAxisIterator;
 import org.apache.xml.serializer.SerializationHandler;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
-import org.w3c.dom.DocumentType;
 
 public abstract class AbstractTranslet implements Translet {
    public String _version = "1.0";
@@ -35,7 +29,6 @@ public abstract class AbstractTranslet implements Translet {
    public boolean _indent = false;
    public String _mediaType = null;
    public Vector _cdata = null;
-   public int _indentamount = -1;
    public static final int FIRST_TRANSLET_VERSION = 100;
    public static final int VER_SPLIT_NAMES_ARRAY = 101;
    public static final int CURRENT_TRANSLET_VERSION = 101;
@@ -59,7 +52,6 @@ public abstract class AbstractTranslet implements Translet {
    private int _indexSize = 0;
    private DOMCache _domCache = null;
    private Hashtable _auxClasses = null;
-   protected DOMImplementation _domImplementation = null;
 
    public void printInternalState() {
       System.out.println("-------------------------------------");
@@ -325,12 +317,6 @@ public abstract class AbstractTranslet implements Translet {
    public SerializationHandler openOutputHandler(String filename, boolean append) throws TransletException {
       try {
          TransletOutputHandlerFactory factory = TransletOutputHandlerFactory.newInstance();
-         String dirStr = (new File(filename)).getParent();
-         if (null != dirStr && dirStr.length() > 0) {
-            File dir = new File(dirStr);
-            dir.mkdirs();
-         }
-
          factory.setEncoding(this._encoding);
          factory.setOutputMethod(this._method);
          factory.setWriter(new FileWriter(filename, append));
@@ -339,8 +325,8 @@ public abstract class AbstractTranslet implements Translet {
          this.transferOutputSettings(handler);
          handler.startDocument();
          return handler;
-      } catch (Exception var6) {
-         throw new TransletException(var6);
+      } catch (Exception var5) {
+         throw new TransletException(var5);
       }
    }
 
@@ -360,12 +346,7 @@ public abstract class AbstractTranslet implements Translet {
    public abstract void transform(DOM var1, DTMAxisIterator var2, SerializationHandler var3) throws TransletException;
 
    public final void transform(DOM document, SerializationHandler handler) throws TransletException {
-      try {
-         this.transform(document, document.getIterator(), handler);
-      } finally {
-         this._keyIndexes = null;
-      }
-
+      this.transform(document, document.getIterator(), handler);
    }
 
    public final void characters(String string, SerializationHandler handler) throws TransletException {
@@ -414,7 +395,6 @@ public abstract class AbstractTranslet implements Translet {
             }
 
             handler.setIndent(this._indent);
-            handler.setIndentAmount(this._indentamount);
             if (this._doctypeSystem != null) {
                handler.setDoctype(this._doctypeSystem, this._doctypePublic);
             }
@@ -487,14 +467,6 @@ public abstract class AbstractTranslet implements Translet {
 
    public void setTemplates(Templates templates) {
       this._templates = templates;
-   }
-
-   public Document newDocument(String uri, String qname) throws ParserConfigurationException {
-      if (this._domImplementation == null) {
-         this._domImplementation = DocumentBuilderFactory.newInstance().newDocumentBuilder().getDOMImplementation();
-      }
-
-      return this._domImplementation.createDocument(uri, qname, (DocumentType)null);
    }
 
    public abstract void transform(DOM var1, SerializationHandler[] var2) throws TransletException;

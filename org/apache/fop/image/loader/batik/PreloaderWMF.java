@@ -79,7 +79,7 @@ public class PreloaderWMF extends AbstractImagePreloader {
          } catch (NoClassDefFoundError var16) {
             try {
                in.reset();
-            } catch (IOException var14) {
+            } catch (IOException var15) {
             }
 
             PreloaderWMF.this.batikAvailable = false;
@@ -90,7 +90,7 @@ public class PreloaderWMF extends AbstractImagePreloader {
 
             try {
                in.reset();
-            } catch (IOException var15) {
+            } catch (IOException var14) {
             }
 
             return null;

@@ -4,8 +4,6 @@ import javax.xml.transform.TransformerException;
 import org.apache.xalan.transformer.TransformerImpl;
 
 public class ElemFallback extends ElemTemplateElement {
-   static final long serialVersionUID = 1782962139867340703L;
-
    public int getXSLToken() {
       return 57;
    }
@@ -22,12 +20,12 @@ public class ElemFallback extends ElemTemplateElement {
       if (79 != parentElemType && -1 != parentElemType) {
          System.out.println("Error!  parent of xsl:fallback must be an extension or unknown element!");
       } else {
-         if (transformer.getDebug()) {
+         if (TransformerImpl.S_DEBUG) {
             transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
          }
 
          transformer.executeChildTemplates(this, true);
-         if (transformer.getDebug()) {
+         if (TransformerImpl.S_DEBUG) {
             transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);
          }
       }

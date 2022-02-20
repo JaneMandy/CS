@@ -5,7 +5,6 @@ import javax.xml.transform.TransformerException;
 import org.apache.xpath.XPath;
 
 public class ElemWhen extends ElemTemplateElement {
-   static final long serialVersionUID = 5984065730262071360L;
    private XPath m_test;
 
    public void setTest(XPath v) {

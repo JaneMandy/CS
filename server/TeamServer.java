@@ -102,7 +102,7 @@ public class TeamServer extends Starter {
       Requirements.checkConsole();
       Authorization var2 = new Authorization();
       License.checkLicenseConsole(var2);
-      MudgeSanity.systemDetail("scheme", QuickSecurity.getCryptoScheme() + "");
+      MudgeSanity.systemDetail("scheme", QuickSecurity.getCryptoScheme().makeConcatWithConstants<invokedynamic>(QuickSecurity.getCryptoScheme()));
       if (var0.length != 0 && (var0.length != 1 || !"-h".equals(var0[0]) && !"--help".equals(var0[0]))) {
          if (var0.length != 2 && var0.length != 3 && var0.length != 4) {
             CommonUtils.print_error("Missing arguments to start team server\n\t./teamserver <host> <password> [/path/to/c2.profile] [YYYY-MM-DD]");

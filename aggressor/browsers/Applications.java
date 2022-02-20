@@ -68,8 +68,8 @@ public class Applications extends AObject implements ActionListener, AdjustData,
 
    public Map format(String var1, Object var2) {
       HashMap var3 = new HashMap((Map)var2);
-      String var4 = var3.get("os") + "";
-      String var5 = var3.get("osver") + "";
+      String var4 = ((Class)var3.get("os")).makeConcatWithConstants<invokedynamic>(var3.get("os"));
+      String var5 = ((Class)var3.get("osver")).makeConcatWithConstants<invokedynamic>(var3.get("osver"));
       ImageIcon var6 = DialogUtils.TargetVisualizationSmall(var4, CommonUtils.toDoubleNumber(var5, 0.0D), false, false);
       var3.put("image", var6);
       return var3;

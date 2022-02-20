@@ -55,33 +55,38 @@ public abstract class PropsFile {
          Object var3 = null;
 
          try {
-            CommonUtils.print_info("Loading properties file (" + var2.getAbsolutePath() + ").");
-            this.data = new Properties();
-            if (var2.exists()) {
-               var3 = new FileInputStream(var2);
-            } else {
-               CommonUtils.print_warn("Properties file (" + var2.getAbsolutePath() + ") was not found.");
-               if (var1) {
-                  String var4 = "resources/" + this.resourceFileName();
+            String var10000;
+            try {
+               CommonUtils.print_info("Loading properties file (" + var2.getAbsolutePath() + ").");
+               this.data = new Properties();
+               if (var2.exists()) {
+                  var3 = new FileInputStream(var2);
+               } else {
+                  CommonUtils.print_warn("Properties file (" + var2.getAbsolutePath() + ") was not found.");
+                  if (var1) {
+                     String var4 = "resources/" + this.resourceFileName();
 
-                  try {
-                     CommonUtils.print_info("Loading properties file from resources (" + var4 + ").");
-                     var3 = CommonUtils.resource(var4);
-                  } catch (Exception var16) {
-                     String var6 = "Load " + this.myName() + " resources (" + var4 + ")";
-                     MudgeSanity.logException(var6, var16, false);
+                     try {
+                        CommonUtils.print_info("Loading properties file from resources (" + var4 + ").");
+                        var3 = CommonUtils.resource(var4);
+                     } catch (Exception var16) {
+                        var10000 = this.myName();
+                        String var6 = "Load " + var10000 + " resources (" + var4 + ")";
+                        MudgeSanity.logException(var6, var16, false);
+                     }
                   }
                }
-            }
 
-            if (var3 != null) {
-               this.data.load((InputStream)var3);
-               CommonUtils.print_info("Properties file was loaded.");
-               ((InputStream)var3).close();
+               if (var3 != null) {
+                  this.data.load((InputStream)var3);
+                  CommonUtils.print_info("Properties file was loaded.");
+                  ((InputStream)var3).close();
+               }
+            } catch (IOException var17) {
+               var10000 = this.myName();
+               String var5 = "Load " + var10000 + "(" + var2 + ")";
+               MudgeSanity.logException(var5, var17, false);
             }
-         } catch (IOException var17) {
-            String var5 = "Load " + this.myName() + "(" + var2 + ")";
-            MudgeSanity.logException(var5, var17, false);
          } finally {
             if (var3 != null) {
                try {
@@ -91,8 +96,8 @@ public abstract class PropsFile {
             }
 
          }
-
       }
+
    }
 
    public void scrub() {
@@ -107,14 +112,15 @@ public abstract class PropsFile {
          this.data.store(var2, this.myTitle());
          var2.close();
       } catch (IOException var4) {
-         String var3 = "Save " + this.myName() + "(" + var1 + ")";
+         String var10000 = this.myName();
+         String var3 = "Save " + var10000 + "(" + var1 + ")";
          MudgeSanity.logException(var3, var4, false);
       }
 
    }
 
    public boolean isSet(String var1, boolean var2) {
-      return "true".equals(this.getString(var1, var2 + ""));
+      return "true".equals(this.getString(var1, var2.makeConcatWithConstants<invokedynamic>(var2)));
    }
 
    public void set(String var1, String var2) {
@@ -134,7 +140,7 @@ public abstract class PropsFile {
    }
 
    public long getLongNumber(String var1, long var2) {
-      return CommonUtils.toLongNumber(this.getString(var1, var2 + "").trim(), var2);
+      return CommonUtils.toLongNumber(this.getString(var1, var2.makeConcatWithConstants<invokedynamic>(var2)).trim(), var2);
    }
 
    public int getIntNumber(String var1, int var2) {

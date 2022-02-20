@@ -90,7 +90,7 @@ public class DataFilter {
                Iterator var6 = var1.values().iterator();
 
                while(var6.hasNext()) {
-                  var5.append(var6.next() + "");
+                  var5.append(((Class)var6.next()).makeConcatWithConstants<invokedynamic>(var6.next()));
                   var5.append("\t");
                }
 
@@ -113,7 +113,6 @@ public class DataFilter {
       private _A() {
       }
 
-      // $FF: synthetic method
       _A(Object var1) {
          this();
       }

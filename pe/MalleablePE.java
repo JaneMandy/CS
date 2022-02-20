@@ -26,7 +26,7 @@ public class MalleablePE {
          Iterator var5 = var4.iterator();
 
          while(var5.hasNext()) {
-            String var6 = CommonUtils.bString((byte[])((byte[])var5.next())).trim();
+            String var6 = CommonUtils.bString((byte[])var5.next()).trim();
             if (CommonUtils.isin(var6, var2)) {
                var5.remove();
             }

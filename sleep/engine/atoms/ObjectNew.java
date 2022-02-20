@@ -7,6 +7,7 @@ import sleep.engine.ObjectUtilities;
 import sleep.engine.Step;
 import sleep.runtime.Scalar;
 import sleep.runtime.ScriptEnvironment;
+import sleep.runtime.ScriptInstance;
 import sleep.runtime.SleepUtils;
 
 public class ObjectNew extends Step {
@@ -25,7 +26,7 @@ public class ObjectNew extends Step {
       if (var3 != null) {
          try {
             var3.setAccessible(true);
-         } catch (Exception var5) {
+         } catch (Exception var4) {
          }
 
          ObjectNew.ConstructorCallRequest var4 = new ObjectNew.ConstructorCallRequest(var1, this.getLineNumber(), var3, this.name);
@@ -62,7 +63,8 @@ public class ObjectNew extends Step {
             var1 = ": " + var1;
          }
 
-         StringBuffer var2 = new StringBuffer("[new " + this.name.getName() + var1 + "]");
+         String var10002 = this.name.getName();
+         StringBuffer var2 = new StringBuffer("[new " + var10002 + var1 + "]");
          return var2.toString();
       }
 
@@ -83,7 +85,9 @@ public class ObjectNew extends Step {
          } catch (InstantiationException var5) {
             this.getScriptEnvironment().getScriptInstance().fireWarning("unable to instantiate abstract class " + this.name.getName(), this.getLineNumber());
          } catch (IllegalAccessException var6) {
-            this.getScriptEnvironment().getScriptInstance().fireWarning("cannot access constructor in " + this.name.getName() + ": " + var6.getMessage(), this.getLineNumber());
+            ScriptInstance var10000 = this.getScriptEnvironment().getScriptInstance();
+            String var10001 = this.name.getName();
+            var10000.fireWarning("cannot access constructor in " + var10001 + ": " + var6.getMessage(), this.getLineNumber());
          }
 
          return SleepUtils.getEmptyScalar();

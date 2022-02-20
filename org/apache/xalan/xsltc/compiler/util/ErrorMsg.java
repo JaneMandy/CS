@@ -12,7 +12,6 @@ public final class ErrorMsg {
    private String _message;
    private String _url;
    Object[] _params;
-   private boolean _isWarningError;
    public static final String MULTIPLE_STYLESHEET_ERR = "MULTIPLE_STYLESHEET_ERR";
    public static final String TEMPLATE_REDEF_ERR = "TEMPLATE_REDEF_ERR";
    public static final String TEMPLATE_UNDEF_ERR = "TEMPLATE_UNDEF_ERR";
@@ -86,9 +85,6 @@ public final class ErrorMsg {
    public static final String XSLTC_SOURCE_ERR = "XSLTC_SOURCE_ERR";
    public static final String ER_RESULT_NULL = "ER_RESULT_NULL";
    public static final String JAXP_INVALID_SET_PARAM_VALUE = "JAXP_INVALID_SET_PARAM_VALUE";
-   public static final String JAXP_SET_FEATURE_NULL_NAME = "JAXP_SET_FEATURE_NULL_NAME";
-   public static final String JAXP_GET_FEATURE_NULL_NAME = "JAXP_GET_FEATURE_NULL_NAME";
-   public static final String JAXP_UNSUPPORTED_FEATURE = "JAXP_UNSUPPORTED_FEATURE";
    public static final String COMPILE_STDIN_ERR = "COMPILE_STDIN_ERR";
    public static final String COMPILE_USAGE_STR = "COMPILE_USAGE_STR";
    public static final String TRANSFORM_USAGE_STR = "TRANSFORM_USAGE_STR";
@@ -240,13 +236,5 @@ public final class ErrorMsg {
 
    private String getErrorMessage() {
       return _bundle.getString(this._code);
-   }
-
-   public void setWarningError(boolean flag) {
-      this._isWarningError = flag;
-   }
-
-   public boolean isWarningError() {
-      return this._isWarningError;
    }
 }

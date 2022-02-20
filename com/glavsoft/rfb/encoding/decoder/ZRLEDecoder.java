@@ -41,8 +41,8 @@ public class ZRLEDecoder extends ZlibDecoder {
                }
             }
          }
-
       }
+
    }
 
    private int decodePlainRle(byte[] bytes, int offset, Renderer renderer, int tileX, int tileY, int tileWidth, int tileHeight) {

@@ -11,7 +11,7 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 
-public final class ToTextSAXHandler extends ToSAXHandler {
+public class ToTextSAXHandler extends ToSAXHandler {
    public void endElement(String elemName) throws SAXException {
       if (super.m_tracer != null) {
          super.fireEndElem(elemName);
@@ -89,7 +89,7 @@ public final class ToTextSAXHandler extends ToSAXHandler {
    public void setWriter(Writer writer) {
    }
 
-   public void addAttribute(String uri, String localName, String rawName, String type, String value, boolean XSLAttribute) {
+   public void addAttribute(String uri, String localName, String rawName, String type, String value) {
    }
 
    public void attributeDecl(String arg0, String arg1, String arg2, String arg3, String arg4) throws SAXException {

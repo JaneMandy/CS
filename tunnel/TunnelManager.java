@@ -40,7 +40,8 @@ public class TunnelManager implements Callback {
       if (var2 instanceof Accept) {
          Accept var3 = (Accept)var2;
          if (!this.isAllowListed(var3.getHost(), var3.getPort())) {
-            CommonUtils.print_error("Received accept command for " + var3.getHost() + ":" + var3.getPort() + " tunnel to " + var3.getBeaconID() + ". Not in allow list. Rejecting.");
+            String var10000 = var3.getHost();
+            CommonUtils.print_error("Received accept command for " + var10000 + ":" + var3.getPort() + " tunnel to " + var3.getBeaconID() + ". Not in allow list. Rejecting.");
             return;
          }
 

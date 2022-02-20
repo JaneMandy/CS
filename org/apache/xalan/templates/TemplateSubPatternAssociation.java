@@ -7,7 +7,6 @@ import org.apache.xpath.XPathContext;
 import org.apache.xpath.patterns.StepPattern;
 
 class TemplateSubPatternAssociation implements Serializable, Cloneable {
-   static final long serialVersionUID = -8902606755229903350L;
    StepPattern m_stepPattern;
    private String m_pattern;
    private ElemTemplate m_template;

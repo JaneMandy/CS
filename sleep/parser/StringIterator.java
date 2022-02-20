@@ -1,5 +1,6 @@
 package sleep.parser;
 
+import java.io.PrintStream;
 import java.util.LinkedList;
 
 public class StringIterator {
@@ -113,7 +114,9 @@ public class StringIterator {
          char var3 = var1.next();
          var2.append(var3);
          if (var3 == '\n') {
-            System.out.print(var1.getLineNumber() + ": " + var2.toString());
+            PrintStream var10000 = System.out;
+            int var10001 = var1.getLineNumber();
+            var10000.print(var10001 + ": " + var2.toString());
             var2 = new StringBuffer();
          }
       }

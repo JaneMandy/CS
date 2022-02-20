@@ -41,5 +41,6 @@ public class MimikatzSamDump extends Parser {
 
          this.resources.call("credentials.push");
       }
+
    }
 }

@@ -16,7 +16,6 @@ import org.apache.xpath.objects.XNodeSet;
 import org.apache.xpath.objects.XObject;
 
 public class KeyRefIterator extends ChildTestIterator {
-   static final long serialVersionUID = 3837456451659435102L;
    DTMIterator m_keysNodes;
    protected XMLString m_ref;
    protected QName m_name;

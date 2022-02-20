@@ -22,8 +22,8 @@ public class License {
             CommonUtils.print_warn("Your Cobalt Strike license expires in " + var0.whenExpires() + ". Email sales@strategiccyber.com to renew. If you did renew, run the update program to refresh your authorization file.");
             JOptionPane.showMessageDialog((Component)null, "Your Cobalt Strike license expires in " + var0.whenExpires() + "\nEmail sales@strategiccyber.com to renew\n\nIf you did renew, run the update program to refresh your\nauthorization file.", (String)null, 1);
          }
-
       }
+
    }
 
    public static boolean isTrial() {
@@ -45,7 +45,7 @@ public class License {
          if (var0.isAlmostExpired()) {
             CommonUtils.print_warn("Your Cobalt Strike license expires in " + var0.whenExpires() + ". Email sales@strategiccyber.com to renew. If you did renew, run the update program to refresh your authorization file.");
          }
-
       }
+
    }
 }

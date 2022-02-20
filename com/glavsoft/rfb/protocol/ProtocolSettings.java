@@ -120,6 +120,7 @@ public class ProtocolSettings implements Serializable {
          this.setBitsPerPixel(s.bitsPerPixel);
          this.setPreferredEncoding(s.preferredEncoding);
       }
+
    }
 
    private void initKnownAuthCapabilities(CapabilityContainer cc) {
@@ -243,18 +244,15 @@ public class ProtocolSettings implements Serializable {
          Iterator it1 = encodings1.iterator();
          Iterator it2 = encodings2.iterator();
 
-         EncodingType v1;
-         EncodingType v2;
-         do {
-            if (!it1.hasNext()) {
-               return false;
+         while(it1.hasNext()) {
+            EncodingType v1 = (EncodingType)it1.next();
+            EncodingType v2 = (EncodingType)it2.next();
+            if (v1 != v2) {
+               return true;
             }
+         }
 
-            v1 = (EncodingType)it1.next();
-            v2 = (EncodingType)it2.next();
-         } while(v1 == v2);
-
-         return true;
+         return false;
       } else {
          return true;
       }

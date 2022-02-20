@@ -43,6 +43,7 @@ public class Ccache {
    }
 
    public static void main(String[] var0) {
-      CommonUtils.print_good(new Ccache(var0[0]) + "");
+      Ccache var10000 = new Ccache(var0[0]);
+      CommonUtils.print_good(var10000.makeConcatWithConstants<invokedynamic>(var10000));
    }
 }

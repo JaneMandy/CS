@@ -114,10 +114,10 @@ final class TestSeq {
                Template template = pattern.getTemplate();
                InstructionList il = new InstructionList();
                il.append(methodGen.loadCurrentNode());
-               InstructionList ilist = methodGen.getInstructionList(pattern);
+               InstructionList ilist = this._mode.getInstructionList(pattern);
                if (ilist == null) {
                   ilist = pattern.compile(classGen, methodGen);
-                  methodGen.addInstructionList(pattern, ilist);
+                  this._mode.addInstructionList(pattern, ilist);
                }
 
                InstructionList copyOfilist = ilist.copy();

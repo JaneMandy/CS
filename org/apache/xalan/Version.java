@@ -22,7 +22,7 @@ public class Version {
    }
 
    public static int getReleaseVersionNum() {
-      return 7;
+      return 6;
    }
 
    public static int getMaintenanceVersionNum() {

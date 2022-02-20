@@ -109,7 +109,7 @@ public class Viewer extends JPanel implements Runnable, IRfbSessionListener, Win
    }
 
    public static void printUsage(String additional) {
-      System.out.println("Usage: java -jar (progfilename) [hostname [port_number]] [Options]\n    or\n java -jar (progfilename) [Options]\n    or\n java -jar (progfilename) -help\n    to view this help\n\nWhere Options are:\n" + additional + "\nOptions format: -optionName=optionValue. Ex. -host=localhost -port=5900 -viewonly=yes\n" + "Both option name and option value are case insensitive.");
+      System.out.println("Usage: java -jar (progfilename) [hostname [port_number]] [Options]\n    or\n java -jar (progfilename) [Options]\n    or\n java -jar (progfilename) -help\n    to view this help\n\nWhere Options are:\n" + additional + "\nOptions format: -optionName=optionValue. Ex. -host=localhost -port=5900 -viewonly=yes\nBoth option name and option value are case insensitive.");
    }
 
    public Viewer() {
@@ -385,7 +385,9 @@ public class Viewer extends JPanel implements Runnable, IRfbSessionListener, Win
 
    void updateFrameTitle() {
       if (this.containerFrame != null) {
-         this.containerFrame.setTitle(this.workingProtocol.getRemoteDesktopName() + " [zoom: " + this.uiSettings.getScalePercentFormatted() + "%]");
+         JFrame var10000 = this.containerFrame;
+         String var10001 = this.workingProtocol.getRemoteDesktopName();
+         var10000.setTitle(var10001 + " [zoom: " + this.uiSettings.getScalePercentFormatted() + "%]");
       }
 
    }
@@ -472,10 +474,6 @@ public class Viewer extends JPanel implements Runnable, IRfbSessionListener, Win
    public void windowDeactivated(WindowEvent e) {
    }
 
-   public interface ViewerCallback {
-      void connected(Viewer var1);
-   }
-
    private class PasswordChooser implements IPasswordRetriever {
       private final String passwordPredefined;
       private final ConnectionParams connectionParams;
@@ -499,15 +497,19 @@ public class Viewer extends JPanel implements Runnable, IRfbSessionListener, Win
             this.passwordDialog = new PasswordDialog(this.owner, this.onClose);
          }
 
-         this.passwordDialog.setServerHostName(this.connectionParams.hostName + ":" + this.connectionParams.getPortNumber());
+         String var10001 = this.connectionParams.hostName;
+         this.passwordDialog.setServerHostName(var10001 + ":" + this.connectionParams.getPortNumber());
          this.passwordDialog.toFront();
          this.passwordDialog.setVisible(true);
          return this.passwordDialog.getPassword();
       }
 
-      // $FF: synthetic method
       PasswordChooser(String x1, ConnectionParams x2, JFrame x3, WindowListener x4, Object x5) {
          this(x1, x2, x3, x4);
       }
+   }
+
+   public interface ViewerCallback {
+      void connected(Viewer var1);
    }
 }

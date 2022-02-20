@@ -42,7 +42,7 @@ public class Response {
    public Response(String status, String mimeType, InputStream data, long size) {
       this(status, mimeType, data);
       this.size = size;
-      this.addHeader("Content-Length", size + "");
+      this.addHeader("Content-Length", size.makeConcatWithConstants<invokedynamic>(size));
    }
 
    public Response(String status, String mimeType, String txt) {
@@ -56,7 +56,7 @@ public class Response {
       this.mimeType = mimeType;
       this.data = new ByteArrayInputStream(r);
       this.size = (long)r.length;
-      this.addHeader("Content-Length", this.size + "");
+      this.addHeader("Content-Length", this.size.makeConcatWithConstants<invokedynamic>(this.size));
    }
 
    public static final byte[] toBytes(String data) {

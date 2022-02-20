@@ -10,7 +10,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 
 public class XStringForFSB extends XString {
-   static final long serialVersionUID = -1533039186550674548L;
    int m_start;
    int m_length;
    protected String m_strCache = null;
@@ -169,7 +168,7 @@ public class XStringForFSB extends XString {
       } else if (obj2 instanceof XNodeSet) {
          return obj2.equals(this);
       } else {
-         return obj2 instanceof XStringForFSB ? this.equals((XMLString)obj2) : this.equals(obj2.toString());
+         return obj2 instanceof XStringForFSB ? this.equals((XMLString)this) : this.equals(obj2.toString());
       }
    }
 
@@ -368,34 +367,30 @@ public class XStringForFSB extends XString {
          for(i = 0; i < this.m_length && XMLCharacterRecognizer.isWhiteSpace(valueString.charAt(i)); ++i) {
          }
 
-         if (i == this.m_length) {
+         if (valueString.charAt(i) == '-') {
+            ++i;
+         }
+
+         while(i < this.m_length) {
+            char c = valueString.charAt(i);
+            if (c != '.' && (c < '0' || c > '9')) {
+               break;
+            }
+
+            ++i;
+         }
+
+         while(i < this.m_length && XMLCharacterRecognizer.isWhiteSpace(valueString.charAt(i))) {
+            ++i;
+         }
+
+         if (i != this.m_length) {
             return Double.NaN;
          } else {
-            if (valueString.charAt(i) == '-') {
-               ++i;
-            }
-
-            while(i < this.m_length) {
-               char c = valueString.charAt(i);
-               if (c != '.' && (c < '0' || c > '9')) {
-                  break;
-               }
-
-               ++i;
-            }
-
-            while(i < this.m_length && XMLCharacterRecognizer.isWhiteSpace(valueString.charAt(i))) {
-               ++i;
-            }
-
-            if (i != this.m_length) {
+            try {
+               return new Double(valueString);
+            } catch (NumberFormatException var5) {
                return Double.NaN;
-            } else {
-               try {
-                  return new Double(valueString);
-               } catch (NumberFormatException var5) {
-                  return Double.NaN;
-               }
             }
          }
       }

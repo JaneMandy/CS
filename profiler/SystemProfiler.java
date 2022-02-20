@@ -5,6 +5,7 @@ import cloudstrike.WebServer;
 import cloudstrike.WebService;
 import eu.bitwalker.useragentutils.UserAgent;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -102,7 +103,8 @@ public class SystemProfiler implements WebService {
             temp.put(key, agent.getBrowserVersion().getVersion());
          }
       } else if (is64bitBrowser) {
-         os = temp.get(key) + "";
+         Object var10000 = temp.get(key);
+         os = ((Class)var10000).makeConcatWithConstants<invokedynamic>(var10000);
          temp.remove(key);
          temp.put(key + " *64", os);
       }
@@ -150,16 +152,16 @@ public class SystemProfiler implements WebService {
          }
       } else {
          Iterator i = this.listeners.iterator();
-         String who = header.get("REMOTE_ADDRESS") + "";
+         String who = ((Class)header.get("REMOTE_ADDRESS")).makeConcatWithConstants<invokedynamic>(header.get("REMOTE_ADDRESS"));
          if (who.length() > 1) {
             who = who.substring(1);
          }
 
-         Map results = this.parseResults(header.get("User-Agent") + "", param.get("data") + "");
+         Map results = this.parseResults(((Class)header.get("User-Agent")).makeConcatWithConstants<invokedynamic>(header.get("User-Agent")), ((Class)param.get("data")).makeConcatWithConstants<invokedynamic>(param.get("data")));
 
          while(i.hasNext()) {
             SystemProfiler.ProfileListener l = (SystemProfiler.ProfileListener)i.next();
-            l.receivedProfile(who, param.get("from") + "", header.get("User-Agent") + "", results, param.get("id") + "");
+            l.receivedProfile(who, ((Class)param.get("from")).makeConcatWithConstants<invokedynamic>(param.get("from")), ((Class)header.get("User-Agent")).makeConcatWithConstants<invokedynamic>(header.get("User-Agent")), results, ((Class)param.get("id")).makeConcatWithConstants<invokedynamic>(param.get("id")));
          }
 
          return new Response("200 OK", "text/plain", "");
@@ -191,7 +193,9 @@ public class SystemProfiler implements WebService {
 
                while(i.hasNext()) {
                   Entry app = (Entry)i.next();
-                  System.err.println("     " + app.getKey() + " " + app.getValue());
+                  PrintStream var10000 = System.err;
+                  Object var10001 = app.getKey();
+                  var10000.println("     " + var10001 + " " + app.getValue());
                }
 
             }

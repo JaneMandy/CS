@@ -8,8 +8,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 class ProcessorPreserveSpace extends XSLTElementProcessor {
-   static final long serialVersionUID = -5552836470051177302L;
-
    public void startElement(StylesheetHandler handler, String uri, String localName, String rawName, Attributes attributes) throws SAXException {
       Stylesheet thisSheet = handler.getStylesheet();
       WhitespaceInfoPaths paths = new WhitespaceInfoPaths(thisSheet);

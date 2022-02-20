@@ -2,7 +2,7 @@ package org.apache.xml.serializer;
 
 import java.util.Vector;
 
-interface XSLOutputAttributes {
+public interface XSLOutputAttributes {
    String getDoctypePublic();
 
    String getDoctypeSystem();

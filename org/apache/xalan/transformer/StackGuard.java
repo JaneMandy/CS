@@ -7,15 +7,15 @@ import org.apache.xalan.templates.ElemTemplateElement;
 import org.apache.xml.utils.ObjectStack;
 
 public class StackGuard {
-   private int m_recursionLimit = -1;
+   public static int m_recursionLimit = -1;
    TransformerImpl m_transformer;
 
    public int getRecursionLimit() {
-      return this.m_recursionLimit;
+      return m_recursionLimit;
    }
 
    public void setRecursionLimit(int limit) {
-      this.m_recursionLimit = limit;
+      m_recursionLimit = limit;
    }
 
    public StackGuard(TransformerImpl transformerImpl) {
@@ -50,16 +50,16 @@ public class StackGuard {
 
    public void checkForInfinateLoop() throws TransformerException {
       int nTemplates = this.m_transformer.getCurrentTemplateElementsCount();
-      if (nTemplates >= this.m_recursionLimit) {
-         if (this.m_recursionLimit > 0) {
-            for(int i = nTemplates - 1; i >= this.m_recursionLimit; --i) {
+      if (nTemplates >= m_recursionLimit) {
+         if (m_recursionLimit > 0) {
+            for(int i = nTemplates - 1; i >= m_recursionLimit; --i) {
                ElemTemplate template = this.getNextMatchOrNamedTemplate(i);
                if (null == template) {
                   break;
                }
 
                int loopCount = this.countLikeTemplates(template, i);
-               if (loopCount >= this.m_recursionLimit) {
+               if (loopCount >= m_recursionLimit) {
                   String idIs = XSLMessages.createMessage(null != template.getName() ? "nameIs" : "matchPatternIs", (Object[])null);
                   Object[] msgArgs = new Object[]{new Integer(loopCount), idIs, null != template.getName() ? template.getName().toString() : template.getMatch().getPatternString()};
                   String msg = XSLMessages.createMessage("recursionTooDeep", msgArgs);

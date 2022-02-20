@@ -44,7 +44,8 @@ public class SpawnAsDialog implements DialogListener, ListSelectionListener {
                String var3 = DialogUtils.string(var2, "listener");
                TaskBeacon var4 = new TaskBeacon(this.client, this.client.getData(), this.client.getConnection(), new String[]{this.bid});
                DialogUtils.openOrActivate(this.client, this.bid);
-               var4.input("spawnas " + this.domain.getText() + "\\" + this.user.getText() + " " + this.pass.getText() + " " + var3);
+               String var10001 = this.domain.getText();
+               var4.input("spawnas " + var10001 + "\\" + this.user.getText() + " " + this.pass.getText() + " " + var3);
                var4.SpawnAs(this.domain.getText(), this.user.getText(), this.pass.getText(), var3);
             } else {
                DialogUtils.showError("You must specify a domain!");
@@ -55,6 +56,7 @@ public class SpawnAsDialog implements DialogListener, ListSelectionListener {
       } else {
          DialogUtils.showError("You must specify a user!");
       }
+
    }
 
    public void valueChanged(ListSelectionEvent var1) {
@@ -63,6 +65,7 @@ public class SpawnAsDialog implements DialogListener, ListSelectionListener {
          this.pass.setText((String)this.browser.getSelectedValueFromColumn("password"));
          this.domain.setText((String)this.browser.getSelectedValueFromColumn("realm"));
       }
+
    }
 
    public void show() {

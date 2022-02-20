@@ -18,7 +18,7 @@ public class UIBridge implements Loadable, Function {
          final Stack var5 = EventManager.shallowCopy(var3);
          CommonUtils.runSafe(new Runnable() {
             public void run() {
-               SleepUtils.runCode((SleepClosure)var4, "laterz", (ScriptInstance)null, var5);
+               SleepUtils.runCode(var4, "laterz", (ScriptInstance)null, var5);
             }
          });
       }

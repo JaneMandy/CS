@@ -36,7 +36,7 @@ public class PhishEvent implements Serializable, Scriptable, Loggable, Informant
          } else if (var3 instanceof Map) {
             var1.add(0, SleepUtils.getHashWrapper((Map)var3));
          } else if (var3 instanceof Long) {
-            var1.add(0, SleepUtils.getScalar((Long)var3));
+            var1.add(0, SleepUtils.getScalar((Object)((Long)var3)));
          } else {
             var1.add(0, SleepUtils.getScalar(var3.toString()));
          }

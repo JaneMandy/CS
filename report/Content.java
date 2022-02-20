@@ -73,7 +73,8 @@ public class Content implements ReportElement {
       StringBuffer var4 = new StringBuffer();
       var4.append("<fo:block font-size=\"18pt\"\n");
       var4.append("\t\tfont-family=\"sans-serif\"\n");
-      var4.append("\t\tid=\"" + this.parent.register(var2) + "\"\n");
+      String var10001 = this.parent.register(var2);
+      var4.append("\t\tid=\"" + var10001 + "\"\n");
       var4.append("\t\tfont-weight=\"bold\"\n");
       var4.append("\t\tline-height=\"24pt\"\n");
       var4.append("\t\tspace-after.optimum=\"15pt\"\n");
@@ -95,7 +96,8 @@ public class Content implements ReportElement {
       var3.append("<fo:block font-size=\"15pt\"\n");
       var3.append("\t\tfont-family=\"sans-serif\"\n");
       var3.append("\t\tfont-weight=\"bold\"\n");
-      var3.append("\t\tid=\"" + this.parent.register(var2) + "\"\n");
+      String var10001 = this.parent.register(var2);
+      var3.append("\t\tid=\"" + var10001 + "\"\n");
       var3.append("\t\tline-height=\"24pt\"\n");
       var3.append("\t\tspace-after.optimum=\"15pt\"\n");
       var3.append("\t\tcolor=\"black\"\n");
@@ -202,7 +204,7 @@ public class Content implements ReportElement {
       Iterator var3 = var1.iterator();
 
       while(var3.hasNext()) {
-         String var4 = (var3.next() + "").trim();
+         String var4 = ((Class)var3.next()).makeConcatWithConstants<invokedynamic>(var3.next()).trim();
          RegexParser var5 = new RegexParser(var4);
          if (var5.matches("'''(.*?)'''(.*?)")) {
             Content var6 = var2.li();

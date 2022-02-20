@@ -1,21 +1,16 @@
 package org.apache.xalan.xsltc.compiler;
 
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.InstructionConstants;
-import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.LocalVariableGen;
 import org.apache.bcel.generic.NEW;
 import org.apache.xalan.xsltc.compiler.util.ClassGenerator;
 import org.apache.xalan.xsltc.compiler.util.MethodGenerator;
 import org.apache.xalan.xsltc.compiler.util.NodeType;
 import org.apache.xalan.xsltc.compiler.util.Type;
 import org.apache.xalan.xsltc.compiler.util.TypeCheckError;
-import org.apache.xalan.xsltc.compiler.util.Util;
 
 final class AbsoluteLocationPath extends Expression {
    private Expression _path;
@@ -65,12 +60,9 @@ final class AbsoluteLocationPath extends Expression {
       int initAI;
       if (this._path != null) {
          initAI = cpg.addMethodref("org.apache.xalan.xsltc.dom.AbsoluteIterator", "<init>", "(Lorg/apache/xml/dtm/DTMAxisIterator;)V");
-         this._path.translate(classGen, methodGen);
-         LocalVariableGen relPathIterator = methodGen.addLocalVariable("abs_location_path_tmp", Util.getJCRefType("Lorg/apache/xml/dtm/DTMAxisIterator;"), il.getEnd(), (InstructionHandle)null);
-         il.append((org.apache.bcel.generic.Instruction)(new ASTORE(relPathIterator.getIndex())));
          il.append((org.apache.bcel.generic.Instruction)(new NEW(cpg.addClass("org.apache.xalan.xsltc.dom.AbsoluteIterator"))));
          il.append((org.apache.bcel.generic.Instruction)InstructionConstants.DUP);
-         il.append((org.apache.bcel.generic.Instruction)(new ALOAD(relPathIterator.getIndex())));
+         this._path.translate(classGen, methodGen);
          il.append((org.apache.bcel.generic.Instruction)(new INVOKESPECIAL(initAI)));
       } else {
          initAI = cpg.addInterfaceMethodref("org.apache.xalan.xsltc.DOM", "getIterator", "()Lorg/apache/xml/dtm/DTMAxisIterator;");

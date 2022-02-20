@@ -139,10 +139,11 @@ public class Hyphenator {
          }
 
          hTree = readHyphenationTree(is);
-         return hTree;
       } finally {
          IOUtils.closeQuietly((InputStream)ois);
       }
+
+      return hTree;
    }
 
    public static HyphenationTree getUserHyphenationTree(String key, String hyphenDir) {

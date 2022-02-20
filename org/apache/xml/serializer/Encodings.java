@@ -8,21 +8,57 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import org.apache.xml.serializer.utils.WrappedRuntimeException;
+import org.apache.xml.utils.WrappedRuntimeException;
 
-public final class Encodings {
-   private static final String ENCODINGS_FILE = "org/apache/xml/serializer/Encodings.properties";
-   private static final String ENCODINGS_PROP = "org.apache.xalan.serialize.encodings";
-   static final String DEFAULT_MIME_ENCODING = "UTF-8";
+public class Encodings {
+   static final int m_defaultLastPrintable = 127;
+   static final String ENCODINGS_FILE = "org/apache/xml/serializer/Encodings.properties";
+   static final String ENCODINGS_PROP = "org.apache.xalan.serialize.encodings";
+   private static final java.lang.reflect.Method SUN_CHAR2BYTE_CONVERTER_METHOD = findCharToByteConverterMethod();
+   public static final String DEFAULT_MIME_ENCODING = "UTF-8";
    private static final Hashtable _encodingTableKeyJava = new Hashtable();
    private static final Hashtable _encodingTableKeyMime = new Hashtable();
    private static final EncodingInfo[] _encodings = loadEncodingInfo();
 
-   static Writer getWriter(OutputStream output, String encoding) throws UnsupportedEncodingException {
+   private static java.lang.reflect.Method findCharToByteConverterMethod() {
+      try {
+         AccessController.doPrivileged(new PrivilegedAction() {
+            // $FF: synthetic field
+            static Class class$java$lang$String;
+
+            public Object run() {
+               try {
+                  Class charToByteConverterClass = Class.forName("sun.io.CharToByteConverter");
+                  Class[] argTypes = new Class[]{class$java$lang$String == null ? (class$java$lang$String = class$("java.lang.String")) : class$java$lang$String};
+                  return charToByteConverterClass.getMethod("getConverter", argTypes);
+               } catch (Exception var3) {
+                  throw new RuntimeException(var3.toString());
+               }
+            }
+
+            // $FF: synthetic method
+            static Class class$(String x0) {
+               try {
+                  return Class.forName(x0);
+               } catch (ClassNotFoundException var2) {
+                  throw new NoClassDefFoundError(var2.getMessage());
+               }
+            }
+         });
+      } catch (Exception var1) {
+         System.err.println("Warning: Could not get charToByteConverterClass!");
+      }
+
+      return null;
+   }
+
+   public static Writer getWriter(OutputStream output, String encoding) throws UnsupportedEncodingException {
       for(int i = 0; i < _encodings.length; ++i) {
          if (_encodings[i].name.equalsIgnoreCase(encoding)) {
             try {
@@ -40,46 +76,44 @@ public final class Encodings {
       }
    }
 
-   static EncodingInfo getEncodingInfo(String encoding) {
-      String normalizedEncoding = toUpperCaseFast(encoding);
+   public static Object getCharToByteConverter(String encoding) {
+      if (SUN_CHAR2BYTE_CONVERTER_METHOD == null) {
+         return null;
+      } else {
+         Object[] args = new Object[1];
+
+         for(int i = 0; i < _encodings.length; ++i) {
+            if (_encodings[i].name.equalsIgnoreCase(encoding)) {
+               try {
+                  args[0] = _encodings[i].javaName;
+                  Object converter = SUN_CHAR2BYTE_CONVERTER_METHOD.invoke((Object)null, args);
+                  if (null != converter) {
+                     return converter;
+                  }
+               } catch (Exception var4) {
+               }
+            }
+         }
+
+         return null;
+      }
+   }
+
+   public static int getLastPrintable(String encoding) {
+      String normalizedEncoding = encoding.toUpperCase();
       EncodingInfo ei = (EncodingInfo)_encodingTableKeyJava.get(normalizedEncoding);
       if (ei == null) {
          ei = (EncodingInfo)_encodingTableKeyMime.get(normalizedEncoding);
       }
 
-      if (ei == null) {
-         ei = new EncodingInfo((String)null, (String)null);
-      }
-
-      return ei;
+      return ei != null ? ei.lastPrintable : 127;
    }
 
-   private static String toUpperCaseFast(String s) {
-      boolean different = false;
-      int mx = s.length();
-      char[] chars = new char[mx];
-
-      for(int i = 0; i < mx; ++i) {
-         char ch = s.charAt(i);
-         if ('a' <= ch && ch <= 'z') {
-            ch = (char)(ch + -32);
-            different = true;
-         }
-
-         chars[i] = ch;
-      }
-
-      String upper;
-      if (different) {
-         upper = String.valueOf(chars);
-      } else {
-         upper = s;
-      }
-
-      return upper;
+   public static int getLastPrintable() {
+      return 127;
    }
 
-   static String getMimeEncoding(String encoding) {
+   public static String getMimeEncoding(String encoding) {
       if (null == encoding) {
          try {
             encoding = System.getProperty("file.encoding", "UTF8");
@@ -99,8 +133,8 @@ public final class Encodings {
       return encoding;
    }
 
-   private static String convertJava2MimeEncoding(String encoding) {
-      EncodingInfo enc = (EncodingInfo)_encodingTableKeyJava.get(toUpperCaseFast(encoding));
+   public static String convertJava2MimeEncoding(String encoding) {
+      EncodingInfo enc = (EncodingInfo)_encodingTableKeyJava.get(encoding.toUpperCase());
       return null != enc ? enc.name : encoding;
    }
 
@@ -123,7 +157,7 @@ public final class Encodings {
 
          try {
             urlString = System.getProperty("org.apache.xalan.serialize.encodings", "");
-         } catch (SecurityException var17) {
+         } catch (SecurityException var18) {
          }
 
          if (urlString != null && urlString.length() > 0) {
@@ -168,12 +202,15 @@ public final class Encodings {
             String javaName = (String)keys.nextElement();
             String val = props.getProperty(javaName);
             int pos = val.indexOf(32);
-            if (pos >= 0) {
+            if (pos < 0) {
+               boolean var25 = true;
+            } else {
+               int lastPrintable = Integer.decode(val.substring(pos).trim());
                StringTokenizer st = new StringTokenizer(val.substring(0, pos), ",");
 
                for(boolean first = true; st.hasMoreTokens(); first = false) {
                   String mimeName = st.nextToken();
-                  ret[j] = new EncodingInfo(mimeName, javaName);
+                  ret[j] = new EncodingInfo(mimeName, javaName, lastPrintable);
                   _encodingTableKeyMime.put(mimeName.toUpperCase(), ret[j]);
                   if (first) {
                      _encodingTableKeyJava.put(javaName.toUpperCase(), ret[j]);
@@ -185,27 +222,10 @@ public final class Encodings {
          }
 
          return ret;
-      } catch (MalformedURLException var18) {
-         throw new WrappedRuntimeException(var18);
-      } catch (IOException var19) {
+      } catch (MalformedURLException var19) {
          throw new WrappedRuntimeException(var19);
+      } catch (IOException var20) {
+         throw new WrappedRuntimeException(var20);
       }
-   }
-
-   static boolean isHighUTF16Surrogate(char ch) {
-      return '\ud800' <= ch && ch <= '\udbff';
-   }
-
-   static boolean isLowUTF16Surrogate(char ch) {
-      return '\udc00' <= ch && ch <= '\udfff';
-   }
-
-   static int toCodePoint(char highSurrogate, char lowSurrogate) {
-      int codePoint = (highSurrogate - '\ud800' << 10) + (lowSurrogate - '\udc00') + 65536;
-      return codePoint;
-   }
-
-   static int toCodePoint(char ch) {
-      return ch;
    }
 }

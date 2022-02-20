@@ -190,7 +190,8 @@ public class Console extends AssociatedPanel implements FocusListener {
             int var2 = var1.lastIndexOf("\n");
             if (var2 != -1) {
                this.colors.append(this.console, var1.substring(0, var2 + 1));
-               this.updatePrompt(var1.substring(var2 + 1) + " ");
+               String var10001 = var1.substring(var2 + 1);
+               this.updatePrompt(var10001 + " ");
                if (this.log != null) {
                   this.log.print(this.colors.strip(var1.substring(0, var2 + 1)));
                }
@@ -217,8 +218,8 @@ public class Console extends AssociatedPanel implements FocusListener {
          if (this.console.getDocument().getLength() >= 1) {
             this.console.setCaretPosition(this.console.getDocument().getLength() - 1);
          }
-
       }
+
    }
 
    public void append(final String var1) {
@@ -229,6 +230,7 @@ public class Console extends AssociatedPanel implements FocusListener {
             }
          });
       }
+
    }
 
    public void clear() {
@@ -521,7 +523,7 @@ public class Console extends AssociatedPanel implements FocusListener {
    }
 
    public void focusGained(FocusEvent var1) {
-      if (!var1.isTemporary() && var1.getComponent() == this.console && (System.getProperty("os.name") + "").indexOf("Windows") == -1 && (System.getProperty("os.name") + "").indexOf("Mac") == -1) {
+      if (!var1.isTemporary() && var1.getComponent() == this.console && System.getProperty("os.name").makeConcatWithConstants<invokedynamic>(System.getProperty("os.name")).indexOf("Windows") == -1 && System.getProperty("os.name").makeConcatWithConstants<invokedynamic>(System.getProperty("os.name")).indexOf("Mac") == -1) {
          this.input.requestFocusInWindow();
       }
 
@@ -532,16 +534,6 @@ public class Console extends AssociatedPanel implements FocusListener {
    }
 
    public void focusLost(FocusEvent var1) {
-   }
-
-   private static class _A {
-      public Pattern B;
-      public String A;
-
-      public _A(String var1, String var2) {
-         this.B = Pattern.compile(var1);
-         this.A = var2;
-      }
    }
 
    public class ClickListener extends MouseAdapter {
@@ -617,6 +609,16 @@ public class Console extends AssociatedPanel implements FocusListener {
          } else {
             return null;
          }
+      }
+   }
+
+   private static class _A {
+      public Pattern B;
+      public String A;
+
+      public _A(String var1, String var2) {
+         this.B = Pattern.compile(var1);
+         this.A = var2;
       }
    }
 }

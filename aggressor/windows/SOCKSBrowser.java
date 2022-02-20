@@ -47,7 +47,7 @@ public class SOCKSBrowser extends AObject implements AdjustData, ActionListener,
 
    public Map format(String var1, Object var2) {
       Map var3 = (Map)var2;
-      String var4 = var3.get("bid") + "";
+      String var4 = ((Class)var3.get("bid")).makeConcatWithConstants<invokedynamic>(var3.get("bid"));
       BeaconEntry var5 = DataUtils.getBeacon(this.data, var4);
       if (var5 != null) {
          var3.put("user", var5.getUser());

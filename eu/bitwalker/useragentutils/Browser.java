@@ -11,13 +11,14 @@ public enum Browser {
    OUTLOOK2007(Manufacturer.MICROSOFT, OUTLOOK, 107, "Outlook 2007", new String[]{"MSOffice 12"}, (String[])null, BrowserType.EMAIL_CLIENT, RenderingEngine.WORD, (String)null),
    OUTLOOK2013(Manufacturer.MICROSOFT, OUTLOOK, 109, "Outlook 2013", new String[]{"Microsoft Outlook 15"}, (String[])null, BrowserType.EMAIL_CLIENT, RenderingEngine.WORD, (String)null),
    OUTLOOK2010(Manufacturer.MICROSOFT, OUTLOOK, 108, "Outlook 2010", new String[]{"MSOffice 14", "Microsoft Outlook 14"}, (String[])null, BrowserType.EMAIL_CLIENT, RenderingEngine.WORD, (String)null),
-   IE(Manufacturer.MICROSOFT, (Browser)null, 1, "Internet Explorer", new String[]{"MSIE", "Trident"}, (String[])null, BrowserType.WEB_BROWSER, RenderingEngine.TRIDENT, "MSIE (([\\d]+)\\.([\\w]+))"),
+   IE(Manufacturer.MICROSOFT, (Browser)null, 1, "Internet Explorer", new String[]{"MSIE", "Trident", "IE "}, (String[])null, BrowserType.WEB_BROWSER, RenderingEngine.TRIDENT, "MSIE (([\\d]+)\\.([\\w]+))"),
    OUTLOOK_EXPRESS7(Manufacturer.MICROSOFT, IE, 110, "Windows Live Mail", new String[]{"Outlook-Express/7.0"}, (String[])null, BrowserType.EMAIL_CLIENT, RenderingEngine.TRIDENT, (String)null),
+   IEMOBILE11(Manufacturer.MICROSOFT, IE, 125, "IE Mobile 11", new String[]{"IEMobile/11"}, (String[])null, BrowserType.MOBILE_BROWSER, RenderingEngine.TRIDENT, (String)null),
    IEMOBILE10(Manufacturer.MICROSOFT, IE, 124, "IE Mobile 10", new String[]{"IEMobile/10"}, (String[])null, BrowserType.MOBILE_BROWSER, RenderingEngine.TRIDENT, (String)null),
    IEMOBILE9(Manufacturer.MICROSOFT, IE, 123, "IE Mobile 9", new String[]{"IEMobile/9"}, (String[])null, BrowserType.MOBILE_BROWSER, RenderingEngine.TRIDENT, (String)null),
    IEMOBILE7(Manufacturer.MICROSOFT, IE, 121, "IE Mobile 7", new String[]{"IEMobile 7"}, (String[])null, BrowserType.MOBILE_BROWSER, RenderingEngine.TRIDENT, (String)null),
    IEMOBILE6(Manufacturer.MICROSOFT, IE, 120, "IE Mobile 6", new String[]{"IEMobile 6"}, (String[])null, BrowserType.MOBILE_BROWSER, RenderingEngine.TRIDENT, (String)null),
-   IE11(Manufacturer.MICROSOFT, IE, 95, "Internet Explorer 11", new String[]{"Trident/7"}, new String[]{"MSIE 7"}, BrowserType.WEB_BROWSER, RenderingEngine.TRIDENT, "Trident\\/7(?:\\.[0-9]*)?;.*rv:(([0-9]+)\\.?([0-9]+))"),
+   IE11(Manufacturer.MICROSOFT, IE, 95, "Internet Explorer 11", new String[]{"Trident/7", "IE 11."}, new String[]{"MSIE 7"}, BrowserType.WEB_BROWSER, RenderingEngine.TRIDENT, "(?:Trident\\/7|IE)(?:\\.[0-9]*;)?(?:.*rv:| )(([0-9]+)\\.?([0-9]+))"),
    IE10(Manufacturer.MICROSOFT, IE, 92, "Internet Explorer 10", new String[]{"MSIE 10"}, (String[])null, BrowserType.WEB_BROWSER, RenderingEngine.TRIDENT, (String)null),
    IE9(Manufacturer.MICROSOFT, IE, 90, "Internet Explorer 9", new String[]{"MSIE 9"}, (String[])null, BrowserType.WEB_BROWSER, RenderingEngine.TRIDENT, (String)null),
    IE8(Manufacturer.MICROSOFT, IE, 80, "Internet Explorer 8", new String[]{"MSIE 8"}, (String[])null, BrowserType.WEB_BROWSER, RenderingEngine.TRIDENT, (String)null),
@@ -27,6 +28,8 @@ public enum Browser {
    IE5(Manufacturer.MICROSOFT, IE, 50, "Internet Explorer 5", new String[]{"MSIE 5"}, (String[])null, BrowserType.WEB_BROWSER, RenderingEngine.TRIDENT, (String)null),
    CHROME(Manufacturer.GOOGLE, (Browser)null, 1, "Chrome", new String[]{"Chrome", "CrMo", "CriOS"}, new String[]{"OPR/", "Web Preview"}, BrowserType.WEB_BROWSER, RenderingEngine.WEBKIT, "Chrome\\/(([0-9]+)\\.?([\\w]+)?(\\.[\\w]+)?(\\.[\\w]+)?)"),
    CHROME_MOBILE(Manufacturer.GOOGLE, CHROME, 100, "Chrome Mobile", new String[]{"CrMo", "CriOS", "Mobile Safari"}, (String[])null, BrowserType.MOBILE_BROWSER, RenderingEngine.WEBKIT, "(?:CriOS|CrMo|Chrome)\\/(([0-9]+)\\.?([\\w]+)?(\\.[\\w]+)?(\\.[\\w]+)?)"),
+   CHROME33(Manufacturer.GOOGLE, CHROME, 38, "Chrome 33", new String[]{"Chrome/33"}, new String[]{"OPR/", "Web Preview"}, BrowserType.WEB_BROWSER, RenderingEngine.WEBKIT, (String)null),
+   CHROME32(Manufacturer.GOOGLE, CHROME, 37, "Chrome 32", new String[]{"Chrome/32"}, new String[]{"OPR/", "Web Preview"}, BrowserType.WEB_BROWSER, RenderingEngine.WEBKIT, (String)null),
    CHROME31(Manufacturer.GOOGLE, CHROME, 36, "Chrome 31", new String[]{"Chrome/31"}, new String[]{"OPR/", "Web Preview"}, BrowserType.WEB_BROWSER, RenderingEngine.WEBKIT, (String)null),
    CHROME30(Manufacturer.GOOGLE, CHROME, 35, "Chrome 30", new String[]{"Chrome/30"}, new String[]{"OPR/", "Web Preview"}, BrowserType.WEB_BROWSER, RenderingEngine.WEBKIT, (String)null),
    CHROME29(Manufacturer.GOOGLE, CHROME, 34, "Chrome 29", new String[]{"Chrome/29"}, new String[]{"OPR/", "Web Preview"}, BrowserType.WEB_BROWSER, RenderingEngine.WEBKIT, (String)null),
@@ -61,6 +64,10 @@ public enum Browser {
    SAFARI4(Manufacturer.APPLE, SAFARI, 4, "Safari 4", new String[]{"Version/4"}, new String[]{"Googlebot-Mobile"}, BrowserType.WEB_BROWSER, RenderingEngine.WEBKIT, (String)null),
    OPERA(Manufacturer.OPERA, (Browser)null, 1, "Opera", new String[]{" OPR/", "Opera"}, (String[])null, BrowserType.WEB_BROWSER, RenderingEngine.PRESTO, "Opera\\/(([\\d]+)\\.([\\w]+))"),
    OPERA_MINI(Manufacturer.OPERA, OPERA, 20, "Opera Mini", new String[]{"Opera Mini"}, (String[])null, BrowserType.MOBILE_BROWSER, RenderingEngine.PRESTO, (String)null),
+   OPERA20(Manufacturer.OPERA, OPERA, 21, "Opera 20", new String[]{"OPR/20."}, (String[])null, BrowserType.WEB_BROWSER, RenderingEngine.WEBKIT, "OPR\\/(([\\d]+)\\.([\\w]+)?(\\.[\\w]+)?(\\.[\\w]+)?)"),
+   OPERA19(Manufacturer.OPERA, OPERA, 19, "Opera 19", new String[]{"OPR/19."}, (String[])null, BrowserType.WEB_BROWSER, RenderingEngine.WEBKIT, "OPR\\/(([\\d]+)\\.([\\w]+)?(\\.[\\w]+)?(\\.[\\w]+)?)"),
+   OPERA18(Manufacturer.OPERA, OPERA, 18, "Opera 18", new String[]{"OPR/18."}, (String[])null, BrowserType.WEB_BROWSER, RenderingEngine.WEBKIT, "OPR\\/(([\\d]+)\\.([\\w]+)?(\\.[\\w]+)?(\\.[\\w]+)?)"),
+   OPERA17(Manufacturer.OPERA, OPERA, 17, "Opera 17", new String[]{"OPR/17."}, (String[])null, BrowserType.WEB_BROWSER, RenderingEngine.WEBKIT, "OPR\\/(([\\d]+)\\.([\\w]+)?(\\.[\\w]+)?(\\.[\\w]+)?)"),
    OPERA16(Manufacturer.OPERA, OPERA, 16, "Opera 16", new String[]{"OPR/16."}, (String[])null, BrowserType.WEB_BROWSER, RenderingEngine.WEBKIT, "OPR\\/(([\\d]+)\\.([\\w]+)?(\\.[\\w]+)?(\\.[\\w]+)?)"),
    OPERA15(Manufacturer.OPERA, OPERA, 15, "Opera 15", new String[]{"OPR/15."}, (String[])null, BrowserType.WEB_BROWSER, RenderingEngine.WEBKIT, "OPR\\/(([\\d]+)\\.([\\w]+)?(\\.[\\w]+)?(\\.[\\w]+)?)"),
    OPERA12(Manufacturer.OPERA, OPERA, 12, "Opera 12", new String[]{"Opera/12", "Version/12."}, (String[])null, BrowserType.WEB_BROWSER, RenderingEngine.PRESTO, "Version\\/(([\\d]+)\\.([\\w]+))"),
@@ -81,6 +88,10 @@ public enum Browser {
    FIREFOX3MOBILE(Manufacturer.MOZILLA, FIREFOX, 31, "Firefox 3 Mobile", new String[]{"Firefox/3.5 Maemo"}, (String[])null, BrowserType.MOBILE_BROWSER, RenderingEngine.GECKO, (String)null),
    FIREFOX_MOBILE(Manufacturer.MOZILLA, FIREFOX, 200, "Firefox Mobile", new String[]{"Mobile"}, (String[])null, BrowserType.MOBILE_BROWSER, RenderingEngine.GECKO, (String)null),
    FIREFOX_MOBILE23(Manufacturer.MOZILLA, FIREFOX_MOBILE, 223, "Firefox Mobile 23", new String[]{"Firefox/23"}, (String[])null, BrowserType.MOBILE_BROWSER, RenderingEngine.GECKO, (String)null),
+   FIREFOX30(Manufacturer.MOZILLA, FIREFOX, 300, "Firefox 30", new String[]{"Firefox/30"}, (String[])null, BrowserType.WEB_BROWSER, RenderingEngine.GECKO, (String)null),
+   FIREFOX29(Manufacturer.MOZILLA, FIREFOX, 290, "Firefox 29", new String[]{"Firefox/29"}, (String[])null, BrowserType.WEB_BROWSER, RenderingEngine.GECKO, (String)null),
+   FIREFOX28(Manufacturer.MOZILLA, FIREFOX, 280, "Firefox 28", new String[]{"Firefox/28"}, (String[])null, BrowserType.WEB_BROWSER, RenderingEngine.GECKO, (String)null),
+   FIREFOX27(Manufacturer.MOZILLA, FIREFOX, 108, "Firefox 27", new String[]{"Firefox/27"}, (String[])null, BrowserType.WEB_BROWSER, RenderingEngine.GECKO, (String)null),
    FIREFOX26(Manufacturer.MOZILLA, FIREFOX, 107, "Firefox 26", new String[]{"Firefox/26"}, (String[])null, BrowserType.WEB_BROWSER, RenderingEngine.GECKO, (String)null),
    FIREFOX25(Manufacturer.MOZILLA, FIREFOX, 106, "Firefox 25", new String[]{"Firefox/25"}, (String[])null, BrowserType.WEB_BROWSER, RenderingEngine.GECKO, (String)null),
    FIREFOX24(Manufacturer.MOZILLA, FIREFOX, 105, "Firefox 24", new String[]{"Firefox/24"}, (String[])null, BrowserType.WEB_BROWSER, RenderingEngine.GECKO, (String)null),
@@ -227,12 +238,12 @@ public enum Browser {
    }
 
    public boolean isInUserAgentString(String agentString) {
-      String[] arr$ = this.aliases;
-      int len$ = arr$.length;
+      String[] var5;
+      int var4 = (var5 = this.aliases).length;
 
-      for(int i$ = 0; i$ < len$; ++i$) {
-         String alias = arr$[i$];
-         if (agentString.toLowerCase().indexOf(alias.toLowerCase()) != -1) {
+      for(int var3 = 0; var3 < var4; ++var3) {
+         String alias = var5[var3];
+         if (agentString != null && agentString.toLowerCase().indexOf(alias.toLowerCase()) != -1) {
             return true;
          }
       }
@@ -242,12 +253,12 @@ public enum Browser {
 
    private boolean containsExcludeToken(String agentString) {
       if (this.excludeList != null) {
-         String[] arr$ = this.excludeList;
-         int len$ = arr$.length;
+         String[] var5;
+         int var4 = (var5 = this.excludeList).length;
 
-         for(int i$ = 0; i$ < len$; ++i$) {
-            String exclude = arr$[i$];
-            if (agentString.toLowerCase().indexOf(exclude.toLowerCase()) != -1) {
+         for(int var3 = 0; var3 < var4; ++var3) {
+            String exclude = var5[var3];
+            if (agentString != null && agentString.toLowerCase().indexOf(exclude.toLowerCase()) != -1) {
                return true;
             }
          }
@@ -259,10 +270,10 @@ public enum Browser {
    private Browser checkUserAgent(String agentString) {
       if (this.isInUserAgentString(agentString)) {
          if (this.children.size() > 0) {
-            Iterator i$ = this.children.iterator();
+            Iterator var3 = this.children.iterator();
 
-            while(i$.hasNext()) {
-               Browser childBrowser = (Browser)i$.next();
+            while(var3.hasNext()) {
+               Browser childBrowser = (Browser)var3.next();
                Browser match = childBrowser.checkUserAgent(agentString);
                if (match != null) {
                   return match;
@@ -283,27 +294,25 @@ public enum Browser {
    }
 
    public static Browser parseUserAgentString(String agentString, List browsers) {
-      Iterator i$ = browsers.iterator();
+      Iterator var3 = browsers.iterator();
 
-      Browser match;
-      do {
-         if (!i$.hasNext()) {
-            return UNKNOWN;
+      while(var3.hasNext()) {
+         Browser browser = (Browser)var3.next();
+         Browser match = browser.checkUserAgent(agentString);
+         if (match != null) {
+            return match;
          }
+      }
 
-         Browser browser = (Browser)i$.next();
-         match = browser.checkUserAgent(agentString);
-      } while(match == null);
-
-      return match;
+      return UNKNOWN;
    }
 
    public static Browser valueOf(short id) {
-      Browser[] arr$ = values();
-      int len$ = arr$.length;
+      Browser[] var4;
+      int var3 = (var4 = values()).length;
 
-      for(int i$ = 0; i$ < len$; ++i$) {
-         Browser browser = arr$[i$];
+      for(int var2 = 0; var2 < var3; ++var2) {
+         Browser browser = var4[var2];
          if (browser.getId() == id) {
             return browser;
          }

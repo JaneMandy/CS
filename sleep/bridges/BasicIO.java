@@ -111,6 +111,7 @@ public class BasicIO implements Loadable, Function {
       } else {
          Checksum var7;
          Scalar var16;
+         String var23;
          if (var1.equals("__EXEC__")) {
             var16 = SleepUtils.getArrayScalar();
 
@@ -119,16 +120,15 @@ public class BasicIO implements Loadable, Function {
                IOObject var34 = SleepUtils.getIOHandle(var32.getInputStream(), (OutputStream)null);
                var7 = null;
 
-               String var28;
-               while((var28 = var34.readLine()) != null) {
-                  var16.getArray().push(SleepUtils.getScalar(var28));
+               while((var23 = var34.readLine()) != null) {
+                  var16.getArray().push(SleepUtils.getScalar(var23));
                }
 
                if (var32.waitFor() != 0) {
                   var2.getScriptEnvironment().flagError("abnormal termination: " + var32.exitValue());
                }
-            } catch (Exception var13) {
-               var2.getScriptEnvironment().flagError(var13);
+            } catch (Exception var16) {
+               var2.getScriptEnvironment().flagError(var16);
             }
 
             return var16;
@@ -142,10 +142,9 @@ public class BasicIO implements Loadable, Function {
                      return SleepUtils.getScalar((Object)var31);
                   }
 
+                  IOObject var24;
                   String var18;
                   boolean var22;
-                  String var23;
-                  IOObject var24;
                   if (var1.equals("&digest")) {
                      var16 = BridgeUtilities.getScalar(var3);
                      if (var16.objectValue() != null && var16.objectValue() instanceof IOObject) {
@@ -168,24 +167,25 @@ public class BasicIO implements Loadable, Function {
                            DigestOutputStream var29 = new DigestOutputStream(var24.getOutputStream(), MessageDigest.getInstance(var23));
                            var24.openWrite(var29);
                            return SleepUtils.getScalar((Object)var29.getMessageDigest());
-                        } catch (NoSuchAlgorithmException var14) {
-                           var2.getScriptEnvironment().flagError(var14);
+                        } catch (NoSuchAlgorithmException var17) {
+                           var2.getScriptEnvironment().flagError(var17);
                         }
                      } else {
+                        MessageDigest var25;
                         if (var16.objectValue() != null && var16.objectValue() instanceof MessageDigest) {
-                           MessageDigest var26 = (MessageDigest)var16.objectValue();
-                           return SleepUtils.getScalar(var26.digest());
+                           var25 = (MessageDigest)var16.objectValue();
+                           return SleepUtils.getScalar(var25.digest());
                         }
 
                         var18 = var16.toString();
                         var23 = BridgeUtilities.getString(var3, "MD5");
 
                         try {
-                           MessageDigest var25 = MessageDigest.getInstance(var23);
+                           var25 = MessageDigest.getInstance(var23);
                            var25.update(BridgeUtilities.toByteArrayNoConversion(var18), 0, var18.length());
                            return SleepUtils.getScalar(var25.digest());
-                        } catch (NoSuchAlgorithmException var15) {
-                           var2.getScriptEnvironment().flagError(var15);
+                        } catch (NoSuchAlgorithmException var18) {
+                           var2.getScriptEnvironment().flagError(var18);
                         }
                      }
 
@@ -202,7 +202,7 @@ public class BasicIO implements Loadable, Function {
 
                      try {
                         var4.setEncoding(var18);
-                     } catch (Exception var11) {
+                     } catch (Exception var15) {
                         throw new IllegalArgumentException("&setEncoding: specified a non-existent encoding '" + var18 + "'");
                      }
                   } else {
@@ -256,10 +256,10 @@ public class BasicIO implements Loadable, Function {
 
                      Scalar var20 = (Scalar)var17.readObject();
                      return var20;
-                  } catch (EOFException var9) {
+                  } catch (EOFException var12) {
                      var4.close();
-                  } catch (Exception var10) {
-                     var2.getScriptEnvironment().flagError(var10);
+                  } catch (Exception var13) {
+                     var2.getScriptEnvironment().flagError(var13);
                      var4.close();
                   }
                }
@@ -276,8 +276,8 @@ public class BasicIO implements Loadable, Function {
                      } else {
                         var6.writeObject(var5);
                      }
-                  } catch (Exception var12) {
-                     var2.getScriptEnvironment().flagError(var12);
+                  } catch (Exception var14) {
+                     var2.getScriptEnvironment().flagError(var14);
                      var4.close();
                   }
                }
@@ -331,9 +331,11 @@ public class BasicIO implements Loadable, Function {
             StringBuffer var11;
             int var12;
             int var19;
+            int var13;
+            int var14;
             if (var5.value != 'h' && var5.value != 'H') {
                if (var5.value != 'z' && var5.value != 'Z' && var5.value != 'U' && var5.value != 'u') {
-                  for(int var20 = 0; var20 != var5.count; ++var20) {
+                  for(var13 = 0; var13 != var5.count; ++var13) {
                      Scalar var22 = null;
 
                      try {
@@ -352,7 +354,7 @@ public class BasicIO implements Loadable, Function {
                               throw new EOFException();
                            }
 
-                           var22 = SleepUtils.getScalar((char)var6[0] + "");
+                           var22 = SleepUtils.getScalar(((char)var6[0]).makeConcatWithConstants<invokedynamic>((char)var6[0]));
                            break;
                         case 'D':
                         case 'E':
@@ -427,7 +429,7 @@ public class BasicIO implements Loadable, Function {
                               throw new EOFException();
                            }
 
-                           var22 = SleepUtils.getScalar(var7.getChar(0) + "");
+                           var22 = SleepUtils.getScalar(var7.getChar(0).makeConcatWithConstants<invokedynamic>(var7.getChar(0)));
                            break;
                         case 'd':
                            var19 = var1.read(var6, 0, 8);
@@ -507,7 +509,6 @@ public class BasicIO implements Loadable, Function {
                         var12 = var7.getChar(0);
                      }
 
-                     int var13;
                      for(var13 = 1; var12 != 0 && var13 != var5.count; ++var13) {
                         var11.append((char)var12);
                         if (var5.value != 'u' && var5.value != 'U') {
@@ -530,7 +531,7 @@ public class BasicIO implements Loadable, Function {
                      }
 
                      if ((var5.value == 'Z' || var5.value == 'U') && var13 < var5.count) {
-                        int var14 = (var5.count - var13) * (var5.value == 'U' ? 2 : 1);
+                        var14 = (var5.count - var13) * (var5.value == 'U' ? 2 : 1);
                         var1.skip((long)var14);
                      }
                   } catch (Exception var17) {
@@ -554,14 +555,14 @@ public class BasicIO implements Loadable, Function {
                         throw new EOFException();
                      }
 
-                     int var9 = (var7.get(0) & 240) >> 4;
-                     int var10 = var7.get(0) & 15;
+                     var13 = (var7.get(0) & 240) >> 4;
+                     var14 = var7.get(0) & 15;
                      if (var5.value == 'h') {
-                        var11.append(Integer.toHexString(var10));
-                        var11.append(Integer.toHexString(var9));
+                        var11.append(Integer.toHexString(var14));
+                        var11.append(Integer.toHexString(var13));
                      } else {
-                        var11.append(Integer.toHexString(var9));
-                        var11.append(Integer.toHexString(var10));
+                        var11.append(Integer.toHexString(var13));
+                        var11.append(Integer.toHexString(var14));
                      }
                   }
                } catch (Exception var18) {
@@ -772,10 +773,12 @@ public class BasicIO implements Loadable, Function {
                      }
                   }
 
-                  if (var5.value == 'z' || var5.value == 'Z' && var5.count == -1) {
-                     var1.write(0);
-                  } else if (var5.value == 'u' || var5.value == 'U' && var5.count == -1) {
-                     var1.write(0);
+                  if (var5.value != 'z' && (var5.value != 'Z' || var5.count != -1)) {
+                     if (var5.value == 'u' || var5.value == 'U' && var5.count == -1) {
+                        var1.write(0);
+                        var1.write(0);
+                     }
+                  } else {
                      var1.write(0);
                   }
                } catch (Exception var17) {
@@ -792,7 +795,622 @@ public class BasicIO implements Loadable, Function {
             var1.flush();
          } catch (Exception var12) {
          }
+      }
 
+   }
+
+   private static class openf implements Function {
+      private openf() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         String var4 = ((Scalar)var3.pop()).toString();
+         FileObject var5 = new FileObject();
+         var5.open(var4, var2.getScriptEnvironment());
+         return SleepUtils.getScalar((Object)var5);
+      }
+
+      openf(Object var1) {
+         this();
+      }
+   }
+
+   private static class exec implements Function {
+      private exec() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         Scalar var4 = var3.isEmpty() ? SleepUtils.getEmptyScalar() : (Scalar)var3.pop();
+         String[] var5;
+         if (var4.getArray() != null) {
+            var5 = (String[])SleepUtils.getListFromArray(var4.getArray()).toArray(new String[0]);
+         } else {
+            var5 = var4.toString().split("\\s");
+         }
+
+         String[] var6 = null;
+         File var7 = null;
+         if (!var3.isEmpty()) {
+            if (SleepUtils.isEmptyScalar((Scalar)var3.peek())) {
+               var3.pop();
+            } else {
+               ScalarHash var8 = BridgeUtilities.getHash(var3);
+               Iterator var9 = var8.keys().scalarIterator();
+               var6 = new String[var8.keys().size()];
+
+               for(int var10 = 0; var10 < var6.length; ++var10) {
+                  Scalar var11 = (Scalar)var9.next();
+                  String var10002 = var11.toString();
+                  var6[var10] = var10002 + "=" + var8.getAt(var11);
+               }
+            }
+         }
+
+         if (!var3.isEmpty() && !SleepUtils.isEmptyScalar((Scalar)var3.peek())) {
+            if (SleepUtils.isEmptyScalar((Scalar)var3.peek())) {
+               var3.pop();
+            } else {
+               var7 = BridgeUtilities.getFile(var3, var2);
+            }
+         }
+
+         ProcessObject var12 = new ProcessObject();
+         var12.open(var5, var6, var7, var2.getScriptEnvironment());
+         return SleepUtils.getScalar((Object)var12);
+      }
+
+      exec(Object var1) {
+         this();
+      }
+   }
+
+   private static class sleep implements Function {
+      private sleep() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         try {
+            Thread.currentThread();
+            Thread.sleep(BridgeUtilities.getLong(var3, 0L));
+         } catch (Exception var5) {
+         }
+
+         return SleepUtils.getEmptyScalar();
+      }
+
+      sleep(Object var1) {
+         this();
+      }
+   }
+
+   private static class fork implements Function {
+      private fork() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         SleepClosure var4 = BridgeUtilities.getFunction(var3, var2);
+         ScriptInstance var5 = var2.fork();
+         var5.installBlock(var4.getRunnableCode());
+         ScriptVariables var6 = var5.getScriptVariables();
+
+         while(!var3.isEmpty()) {
+            KeyValuePair var7 = BridgeUtilities.getKeyValuePair(var3);
+            var6.putScalar(var7.getKey().toString(), SleepUtils.getScalar(var7.getValue()));
+         }
+
+         IOObject var15 = new IOObject();
+         IOObject var8 = new IOObject();
+
+         try {
+            PipedInputStream var9 = new PipedInputStream();
+            PipedOutputStream var10 = new PipedOutputStream();
+            var9.connect(var10);
+            PipedInputStream var11 = new PipedInputStream();
+            PipedOutputStream var12 = new PipedOutputStream();
+            var11.connect(var12);
+            var15.openRead(var11);
+            var15.openWrite(var10);
+            var8.openRead(var9);
+            var8.openWrite(var12);
+            var5.getScriptVariables().putScalar("$source", SleepUtils.getScalar((Object)var8));
+            Thread var13 = new Thread(var5, "fork of " + var5.getRunnableBlock().getSourceLocation());
+            var15.setThread(var13);
+            var8.setThread(var13);
+            var5.setParent(var15);
+            var13.start();
+         } catch (Exception var14) {
+            var2.getScriptEnvironment().flagError(var14);
+         }
+
+         return SleepUtils.getScalar((Object)var15);
+      }
+
+      fork(Object var1) {
+         this();
+      }
+   }
+
+   private static class SocketFuncs implements Function {
+      private SocketFuncs() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         Map var4 = BridgeUtilities.extractNamedParameters(var3);
+         SocketObject.SocketHandler var5 = new SocketObject.SocketHandler();
+         var5.socket = new SocketObject();
+         var5.script = var2;
+         var5.lport = var4.containsKey("lport") ? ((Scalar)var4.get("lport")).intValue() : 0;
+         var5.laddr = var4.containsKey("laddr") ? ((Scalar)var4.get("laddr")).toString() : null;
+         var5.linger = var4.containsKey("linger") ? ((Scalar)var4.get("linger")).intValue() : 5;
+         var5.backlog = var4.containsKey("backlog") ? ((Scalar)var4.get("backlog")).intValue() : 0;
+         if (var1.equals("&listen")) {
+            var5.port = BridgeUtilities.getInt(var3, -1);
+            var5.timeout = BridgeUtilities.getInt(var3, 60000);
+            var5.callback = BridgeUtilities.getScalar(var3);
+            var5.type = 1;
+         } else {
+            var5.host = BridgeUtilities.getString(var3, "127.0.0.1");
+            var5.port = BridgeUtilities.getInt(var3, 1);
+            var5.timeout = BridgeUtilities.getInt(var3, 60000);
+            var5.type = 2;
+         }
+
+         if (!var3.isEmpty()) {
+            var5.function = BridgeUtilities.getFunction(var3, var2);
+         }
+
+         var5.start();
+         return SleepUtils.getScalar((Object)var5.socket);
+      }
+
+      SocketFuncs(Object var1) {
+         this();
+      }
+   }
+
+   private static class closef implements Function {
+      private closef() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         if (!var3.isEmpty() && ((Scalar)var3.peek()).objectValue() instanceof IOObject) {
+            IOObject var5 = (IOObject)BridgeUtilities.getObject(var3);
+            var5.close();
+         } else {
+            int var4 = BridgeUtilities.getInt(var3, 80);
+            SocketObject.release(var4);
+         }
+
+         return SleepUtils.getEmptyScalar();
+      }
+
+      closef(Object var1) {
+         this();
+      }
+   }
+
+   private static class readln implements Function {
+      private readln() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         IOObject var4 = BasicIO.chooseSource(var3, 1, var2);
+         String var5 = var4.readLine();
+         return var5 == null ? SleepUtils.getEmptyScalar() : SleepUtils.getScalar(var5);
+      }
+
+      readln(Object var1) {
+         this();
+      }
+   }
+
+   private static class readAll implements Function {
+      private readAll() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         IOObject var4 = BasicIO.chooseSource(var3, 1, var2);
+         Scalar var5 = SleepUtils.getArrayScalar();
+
+         String var6;
+         while((var6 = var4.readLine()) != null) {
+            var5.getArray().push(SleepUtils.getScalar(var6));
+         }
+
+         return var5;
+      }
+
+      readAll(Object var1) {
+         this();
+      }
+   }
+
+   private static class println implements Function {
+      private println() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         IOObject var4 = BasicIO.chooseSource(var3, 2, var2);
+         String var5 = BridgeUtilities.getString(var3, "");
+         var4.printLine(var5);
+         return SleepUtils.getEmptyScalar();
+      }
+
+      println(Object var1) {
+         this();
+      }
+   }
+
+   private static class printArray implements Function {
+      private printArray() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         IOObject var4 = BasicIO.chooseSource(var3, 2, var2);
+         Iterator var5 = BridgeUtilities.getIterator(var3, var2);
+
+         while(var5.hasNext()) {
+            var4.printLine(var5.next().toString());
+         }
+
+         return SleepUtils.getEmptyScalar();
+      }
+
+      printArray(Object var1) {
+         this();
+      }
+   }
+
+   private static class print implements Function {
+      private print() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         IOObject var4 = BasicIO.chooseSource(var3, 2, var2);
+         String var5 = BridgeUtilities.getString(var3, "");
+         var4.print(var5);
+         return SleepUtils.getEmptyScalar();
+      }
+
+      print(Object var1) {
+         this();
+      }
+   }
+
+   private static class printEOF implements Function {
+      private printEOF() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         IOObject var4 = BasicIO.chooseSource(var3, 1, var2);
+         var4.sendEOF();
+         return SleepUtils.getEmptyScalar();
+      }
+
+      printEOF(Object var1) {
+         this();
+      }
+   }
+
+   private static class getConsoleObject implements Function {
+      private getConsoleObject() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         return SleepUtils.getScalar((Object)IOObject.getConsole(var2.getScriptEnvironment()));
+      }
+
+      getConsoleObject(Object var1) {
+         this();
+      }
+   }
+
+   private static class bread implements Function {
+      private bread() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         IOObject var4 = BasicIO.chooseSource(var3, 2, var2);
+         String var5 = BridgeUtilities.getString(var3, "");
+         return var4.getReader() != null ? BasicIO.ReadFormatted(var5, var4.getReader(), var2.getScriptEnvironment(), var4) : SleepUtils.getEmptyScalar();
+      }
+
+      bread(Object var1) {
+         this();
+      }
+   }
+
+   private static class bwrite implements Function {
+      private bwrite() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         IOObject var4 = BasicIO.chooseSource(var3, 3, var2);
+         String var5 = BridgeUtilities.getString(var3, "");
+         BasicIO.WriteFormatted(var5, var4.getWriter(), var2.getScriptEnvironment(), var3, var4);
+         return SleepUtils.getEmptyScalar();
+      }
+
+      bwrite(Object var1) {
+         this();
+      }
+   }
+
+   private static class mark implements Function {
+      private mark() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         IOObject var4 = BasicIO.chooseSource(var3, 2, var2);
+         if (var4.getInputBuffer() == null) {
+            throw new RuntimeException("&mark: input buffer for " + SleepUtils.describe(SleepUtils.getScalar((Object)var4)) + " is closed");
+         } else {
+            var4.getInputBuffer().mark(BridgeUtilities.getInt(var3, 102400));
+            return SleepUtils.getEmptyScalar();
+         }
+      }
+
+      mark(Object var1) {
+         this();
+      }
+   }
+
+   private static class available implements Function {
+      private available() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         try {
+            IOObject var4 = BasicIO.chooseSource(var3, 1, var2);
+            if (var3.isEmpty()) {
+               return SleepUtils.getScalar(var4.getInputBuffer().available());
+            } else {
+               String var5 = BridgeUtilities.getString(var3, "\n");
+               StringBuffer var6 = new StringBuffer();
+               int var7 = 0;
+               int var8 = var4.getInputBuffer().available();
+               var4.getInputBuffer().mark(var8);
+
+               while(var7 < var8) {
+                  var6.append((char)var4.getReader().readUnsignedByte());
+                  ++var7;
+               }
+
+               var4.getInputBuffer().reset();
+               return SleepUtils.getScalar(var6.indexOf(var5) > -1);
+            }
+         } catch (Exception var9) {
+            return SleepUtils.getEmptyScalar();
+         }
+      }
+
+      available(Object var1) {
+         this();
+      }
+   }
+
+   private static class reset implements Function {
+      private reset() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         try {
+            IOObject var4 = BasicIO.chooseSource(var3, 1, var2);
+            var4.getInputBuffer().reset();
+         } catch (Exception var5) {
+         }
+
+         return SleepUtils.getEmptyScalar();
+      }
+
+      reset(Object var1) {
+         this();
+      }
+   }
+
+   private static class unpack implements Function {
+      private unpack() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         String var4 = BridgeUtilities.getString(var3, "");
+         String var5 = BridgeUtilities.getString(var3, "");
+
+         try {
+            ByteArrayOutputStream var6 = new ByteArrayOutputStream(var5.length());
+            DataOutputStream var7 = new DataOutputStream(var6);
+            var7.writeBytes(var5);
+            return BasicIO.ReadFormatted(var4, new DataInputStream(new ByteArrayInputStream(var6.toByteArray())), var2.getScriptEnvironment(), (IOObject)null);
+         } catch (Exception var8) {
+            return SleepUtils.getArrayScalar();
+         }
+      }
+
+      unpack(Object var1) {
+         this();
+      }
+   }
+
+   private static class pack implements Function {
+      private pack() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         String var4 = BridgeUtilities.getString(var3, "");
+         ByteArrayOutputStream var5 = new ByteArrayOutputStream(DataPattern.EstimateSize(var4) + 128);
+         BasicIO.WriteFormatted(var4, new DataOutputStream(var5), var2.getScriptEnvironment(), var3, (IOObject)null);
+         return SleepUtils.getScalar(var5.toByteArray(), var5.size());
+      }
+
+      pack(Object var1) {
+         this();
+      }
+   }
+
+   private static class writeb implements Function {
+      private writeb() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         IOObject var4 = BasicIO.chooseSource(var3, 2, var2);
+         String var5 = BridgeUtilities.getString(var3, "");
+
+         try {
+            for(int var6 = 0; var6 < var5.length(); ++var6) {
+               var4.getWriter().writeByte((byte)var5.charAt(var6));
+            }
+
+            var4.getWriter().flush();
+         } catch (Exception var7) {
+            var4.close();
+            var2.getScriptEnvironment().flagError(var7);
+         }
+
+         return SleepUtils.getEmptyScalar();
+      }
+
+      writeb(Object var1) {
+         this();
+      }
+   }
+
+   private static class readb implements Function {
+      private readb() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         IOObject var4 = BasicIO.chooseSource(var3, 2, var2);
+         int var5 = BridgeUtilities.getInt(var3, 1);
+         boolean var6 = false;
+         byte[] var7 = null;
+         StringBuffer var8 = null;
+         if (var4.getReader() != null) {
+            int var9 = 0;
+
+            try {
+               int var12;
+               if (var5 == -1) {
+                  var8 = new StringBuffer(BridgeUtilities.getInt(var3, 2048));
+
+                  while(true) {
+                     var12 = var4.getReader().read();
+                     if (var12 == -1) {
+                        break;
+                     }
+
+                     char var10 = (char)(var12 & 255);
+                     var8.append(var10);
+                     ++var9;
+                  }
+               } else {
+                  for(var7 = new byte[var5]; var9 < var5; var9 += var12) {
+                     var12 = var4.getReader().read(var7, var9, var5 - var9);
+                     if (var12 == -1) {
+                        break;
+                     }
+                  }
+               }
+            } catch (Exception var12) {
+               var4.close();
+               if (var5 != -1) {
+                  var2.getScriptEnvironment().flagError(var12);
+               }
+            }
+
+            if (var9 > 0) {
+               if (var7 != null) {
+                  return SleepUtils.getScalar(var7, var9);
+               }
+
+               if (var8 != null) {
+                  return SleepUtils.getScalar(var8.toString());
+               }
+            }
+         }
+
+         return SleepUtils.getEmptyScalar();
+      }
+
+      readb(Object var1) {
+         this();
+      }
+   }
+
+   private static class consume implements Function {
+      private consume() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         IOObject var4 = BasicIO.chooseSource(var3, 2, var2);
+         int var5 = BridgeUtilities.getInt(var3, 1);
+         int var6 = BridgeUtilities.getInt(var3, 32768);
+         boolean var7 = false;
+         if (var4.getReader() != null) {
+            byte[] var8 = new byte[var6];
+            int var9 = 0;
+
+            try {
+               while(var9 < var5) {
+                  int var12;
+                  if (var5 - var9 < var6) {
+                     var12 = var4.getReader().read(var8, 0, var5 - var9);
+                  } else {
+                     var12 = var4.getReader().read(var8, 0, var6);
+                  }
+
+                  if (var12 == -1) {
+                     break;
+                  }
+
+                  var9 += var12;
+               }
+            } catch (Exception var11) {
+               var4.close();
+               var2.getScriptEnvironment().flagError(var11);
+            }
+
+            if (var9 > 0) {
+               return SleepUtils.getScalar(var9);
+            }
+         }
+
+         return SleepUtils.getEmptyScalar();
+      }
+
+      consume(Object var1) {
+         this();
+      }
+   }
+
+   private static class read implements Function {
+      private read() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         IOObject var4 = BasicIO.chooseSource(var3, 2, var2);
+         SleepClosure var5 = BridgeUtilities.getFunction(var3, var2);
+         Thread var6 = new Thread(new BasicIO.CallbackReader(var4, var2, var5, BridgeUtilities.getInt(var3, 0)));
+         var4.setThread(var6);
+         var6.start();
+         return SleepUtils.getEmptyScalar();
+      }
+
+      read(Object var1) {
+         this();
+      }
+   }
+
+   private static class iseof implements Predicate {
+      private iseof() {
+      }
+
+      public boolean decide(String var1, ScriptInstance var2, Stack var3) {
+         IOObject var4 = (IOObject)BridgeUtilities.getObject(var3);
+         return var4.isEOF();
+      }
+
+      iseof(Object var1) {
+         this();
       }
    }
 
@@ -845,645 +1463,6 @@ public class BasicIO implements Loadable, Function {
             }
          }
 
-      }
-   }
-
-   private static class iseof implements Predicate {
-      private iseof() {
-      }
-
-      public boolean decide(String var1, ScriptInstance var2, Stack var3) {
-         IOObject var4 = (IOObject)BridgeUtilities.getObject(var3);
-         return var4.isEOF();
-      }
-
-      // $FF: synthetic method
-      iseof(Object var1) {
-         this();
-      }
-   }
-
-   private static class read implements Function {
-      private read() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         IOObject var4 = BasicIO.chooseSource(var3, 2, var2);
-         SleepClosure var5 = BridgeUtilities.getFunction(var3, var2);
-         Thread var6 = new Thread(new BasicIO.CallbackReader(var4, var2, var5, BridgeUtilities.getInt(var3, 0)));
-         var4.setThread(var6);
-         var6.start();
-         return SleepUtils.getEmptyScalar();
-      }
-
-      // $FF: synthetic method
-      read(Object var1) {
-         this();
-      }
-   }
-
-   private static class consume implements Function {
-      private consume() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         IOObject var4 = BasicIO.chooseSource(var3, 2, var2);
-         int var5 = BridgeUtilities.getInt(var3, 1);
-         int var6 = BridgeUtilities.getInt(var3, 32768);
-         boolean var7 = false;
-         if (var4.getReader() != null) {
-            byte[] var8 = new byte[var6];
-            int var9 = 0;
-
-            try {
-               while(var9 < var5) {
-                  int var12;
-                  if (var5 - var9 < var6) {
-                     var12 = var4.getReader().read(var8, 0, var5 - var9);
-                  } else {
-                     var12 = var4.getReader().read(var8, 0, var6);
-                  }
-
-                  if (var12 == -1) {
-                     break;
-                  }
-
-                  var9 += var12;
-               }
-            } catch (Exception var11) {
-               var4.close();
-               var2.getScriptEnvironment().flagError(var11);
-            }
-
-            if (var9 > 0) {
-               return SleepUtils.getScalar(var9);
-            }
-         }
-
-         return SleepUtils.getEmptyScalar();
-      }
-
-      // $FF: synthetic method
-      consume(Object var1) {
-         this();
-      }
-   }
-
-   private static class readb implements Function {
-      private readb() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         IOObject var4 = BasicIO.chooseSource(var3, 2, var2);
-         int var5 = BridgeUtilities.getInt(var3, 1);
-         boolean var6 = false;
-         byte[] var7 = null;
-         StringBuffer var8 = null;
-         if (var4.getReader() != null) {
-            int var9 = 0;
-
-            try {
-               int var12;
-               if (var5 == -1) {
-                  var8 = new StringBuffer(BridgeUtilities.getInt(var3, 2048));
-
-                  while(true) {
-                     var12 = var4.getReader().read();
-                     if (var12 == -1) {
-                        break;
-                     }
-
-                     char var10 = (char)(var12 & 255);
-                     var8.append(var10);
-                     ++var9;
-                  }
-               } else {
-                  for(var7 = new byte[var5]; var9 < var5; var9 += var12) {
-                     var12 = var4.getReader().read(var7, var9, var5 - var9);
-                     if (var12 == -1) {
-                        break;
-                     }
-                  }
-               }
-            } catch (Exception var11) {
-               var4.close();
-               if (var5 != -1) {
-                  var2.getScriptEnvironment().flagError(var11);
-               }
-            }
-
-            if (var9 > 0) {
-               if (var7 != null) {
-                  return SleepUtils.getScalar(var7, var9);
-               }
-
-               if (var8 != null) {
-                  return SleepUtils.getScalar(var8.toString());
-               }
-            }
-         }
-
-         return SleepUtils.getEmptyScalar();
-      }
-
-      // $FF: synthetic method
-      readb(Object var1) {
-         this();
-      }
-   }
-
-   private static class writeb implements Function {
-      private writeb() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         IOObject var4 = BasicIO.chooseSource(var3, 2, var2);
-         String var5 = BridgeUtilities.getString(var3, "");
-
-         try {
-            for(int var6 = 0; var6 < var5.length(); ++var6) {
-               var4.getWriter().writeByte((byte)var5.charAt(var6));
-            }
-
-            var4.getWriter().flush();
-         } catch (Exception var7) {
-            var4.close();
-            var2.getScriptEnvironment().flagError(var7);
-         }
-
-         return SleepUtils.getEmptyScalar();
-      }
-
-      // $FF: synthetic method
-      writeb(Object var1) {
-         this();
-      }
-   }
-
-   private static class pack implements Function {
-      private pack() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         String var4 = BridgeUtilities.getString(var3, "");
-         ByteArrayOutputStream var5 = new ByteArrayOutputStream(DataPattern.EstimateSize(var4) + 128);
-         BasicIO.WriteFormatted(var4, new DataOutputStream(var5), var2.getScriptEnvironment(), var3, (IOObject)null);
-         return SleepUtils.getScalar(var5.toByteArray(), var5.size());
-      }
-
-      // $FF: synthetic method
-      pack(Object var1) {
-         this();
-      }
-   }
-
-   private static class unpack implements Function {
-      private unpack() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         String var4 = BridgeUtilities.getString(var3, "");
-         String var5 = BridgeUtilities.getString(var3, "");
-
-         try {
-            ByteArrayOutputStream var6 = new ByteArrayOutputStream(var5.length());
-            DataOutputStream var7 = new DataOutputStream(var6);
-            var7.writeBytes(var5);
-            return BasicIO.ReadFormatted(var4, new DataInputStream(new ByteArrayInputStream(var6.toByteArray())), var2.getScriptEnvironment(), (IOObject)null);
-         } catch (Exception var8) {
-            return SleepUtils.getArrayScalar();
-         }
-      }
-
-      // $FF: synthetic method
-      unpack(Object var1) {
-         this();
-      }
-   }
-
-   private static class reset implements Function {
-      private reset() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         try {
-            IOObject var4 = BasicIO.chooseSource(var3, 1, var2);
-            var4.getInputBuffer().reset();
-         } catch (Exception var5) {
-         }
-
-         return SleepUtils.getEmptyScalar();
-      }
-
-      // $FF: synthetic method
-      reset(Object var1) {
-         this();
-      }
-   }
-
-   private static class available implements Function {
-      private available() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         try {
-            IOObject var4 = BasicIO.chooseSource(var3, 1, var2);
-            if (var3.isEmpty()) {
-               return SleepUtils.getScalar(var4.getInputBuffer().available());
-            } else {
-               String var5 = BridgeUtilities.getString(var3, "\n");
-               StringBuffer var6 = new StringBuffer();
-               int var7 = 0;
-               int var8 = var4.getInputBuffer().available();
-               var4.getInputBuffer().mark(var8);
-
-               while(var7 < var8) {
-                  var6.append((char)var4.getReader().readUnsignedByte());
-                  ++var7;
-               }
-
-               var4.getInputBuffer().reset();
-               return SleepUtils.getScalar(var6.indexOf(var5) > -1);
-            }
-         } catch (Exception var9) {
-            return SleepUtils.getEmptyScalar();
-         }
-      }
-
-      // $FF: synthetic method
-      available(Object var1) {
-         this();
-      }
-   }
-
-   private static class mark implements Function {
-      private mark() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         IOObject var4 = BasicIO.chooseSource(var3, 2, var2);
-         if (var4.getInputBuffer() == null) {
-            throw new RuntimeException("&mark: input buffer for " + SleepUtils.describe(SleepUtils.getScalar((Object)var4)) + " is closed");
-         } else {
-            var4.getInputBuffer().mark(BridgeUtilities.getInt(var3, 102400));
-            return SleepUtils.getEmptyScalar();
-         }
-      }
-
-      // $FF: synthetic method
-      mark(Object var1) {
-         this();
-      }
-   }
-
-   private static class bwrite implements Function {
-      private bwrite() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         IOObject var4 = BasicIO.chooseSource(var3, 3, var2);
-         String var5 = BridgeUtilities.getString(var3, "");
-         BasicIO.WriteFormatted(var5, var4.getWriter(), var2.getScriptEnvironment(), var3, var4);
-         return SleepUtils.getEmptyScalar();
-      }
-
-      // $FF: synthetic method
-      bwrite(Object var1) {
-         this();
-      }
-   }
-
-   private static class bread implements Function {
-      private bread() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         IOObject var4 = BasicIO.chooseSource(var3, 2, var2);
-         String var5 = BridgeUtilities.getString(var3, "");
-         return var4.getReader() != null ? BasicIO.ReadFormatted(var5, var4.getReader(), var2.getScriptEnvironment(), var4) : SleepUtils.getEmptyScalar();
-      }
-
-      // $FF: synthetic method
-      bread(Object var1) {
-         this();
-      }
-   }
-
-   private static class getConsoleObject implements Function {
-      private getConsoleObject() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         return SleepUtils.getScalar((Object)IOObject.getConsole(var2.getScriptEnvironment()));
-      }
-
-      // $FF: synthetic method
-      getConsoleObject(Object var1) {
-         this();
-      }
-   }
-
-   private static class printEOF implements Function {
-      private printEOF() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         IOObject var4 = BasicIO.chooseSource(var3, 1, var2);
-         var4.sendEOF();
-         return SleepUtils.getEmptyScalar();
-      }
-
-      // $FF: synthetic method
-      printEOF(Object var1) {
-         this();
-      }
-   }
-
-   private static class print implements Function {
-      private print() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         IOObject var4 = BasicIO.chooseSource(var3, 2, var2);
-         String var5 = BridgeUtilities.getString(var3, "");
-         var4.print(var5);
-         return SleepUtils.getEmptyScalar();
-      }
-
-      // $FF: synthetic method
-      print(Object var1) {
-         this();
-      }
-   }
-
-   private static class printArray implements Function {
-      private printArray() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         IOObject var4 = BasicIO.chooseSource(var3, 2, var2);
-         Iterator var5 = BridgeUtilities.getIterator(var3, var2);
-
-         while(var5.hasNext()) {
-            var4.printLine(var5.next().toString());
-         }
-
-         return SleepUtils.getEmptyScalar();
-      }
-
-      // $FF: synthetic method
-      printArray(Object var1) {
-         this();
-      }
-   }
-
-   private static class println implements Function {
-      private println() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         IOObject var4 = BasicIO.chooseSource(var3, 2, var2);
-         String var5 = BridgeUtilities.getString(var3, "");
-         var4.printLine(var5);
-         return SleepUtils.getEmptyScalar();
-      }
-
-      // $FF: synthetic method
-      println(Object var1) {
-         this();
-      }
-   }
-
-   private static class readAll implements Function {
-      private readAll() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         IOObject var4 = BasicIO.chooseSource(var3, 1, var2);
-         Scalar var5 = SleepUtils.getArrayScalar();
-
-         String var6;
-         while((var6 = var4.readLine()) != null) {
-            var5.getArray().push(SleepUtils.getScalar(var6));
-         }
-
-         return var5;
-      }
-
-      // $FF: synthetic method
-      readAll(Object var1) {
-         this();
-      }
-   }
-
-   private static class readln implements Function {
-      private readln() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         IOObject var4 = BasicIO.chooseSource(var3, 1, var2);
-         String var5 = var4.readLine();
-         return var5 == null ? SleepUtils.getEmptyScalar() : SleepUtils.getScalar(var5);
-      }
-
-      // $FF: synthetic method
-      readln(Object var1) {
-         this();
-      }
-   }
-
-   private static class closef implements Function {
-      private closef() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         if (!var3.isEmpty() && ((Scalar)var3.peek()).objectValue() instanceof IOObject) {
-            IOObject var5 = (IOObject)BridgeUtilities.getObject(var3);
-            var5.close();
-         } else {
-            int var4 = BridgeUtilities.getInt(var3, 80);
-            SocketObject.release(var4);
-         }
-
-         return SleepUtils.getEmptyScalar();
-      }
-
-      // $FF: synthetic method
-      closef(Object var1) {
-         this();
-      }
-   }
-
-   private static class SocketFuncs implements Function {
-      private SocketFuncs() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         Map var4 = BridgeUtilities.extractNamedParameters(var3);
-         SocketObject.SocketHandler var5 = new SocketObject.SocketHandler();
-         var5.socket = new SocketObject();
-         var5.script = var2;
-         var5.lport = var4.containsKey("lport") ? ((Scalar)var4.get("lport")).intValue() : 0;
-         var5.laddr = var4.containsKey("laddr") ? ((Scalar)var4.get("laddr")).toString() : null;
-         var5.linger = var4.containsKey("linger") ? ((Scalar)var4.get("linger")).intValue() : 5;
-         var5.backlog = var4.containsKey("backlog") ? ((Scalar)var4.get("backlog")).intValue() : 0;
-         if (var1.equals("&listen")) {
-            var5.port = BridgeUtilities.getInt(var3, -1);
-            var5.timeout = BridgeUtilities.getInt(var3, 60000);
-            var5.callback = BridgeUtilities.getScalar(var3);
-            var5.type = 1;
-         } else {
-            var5.host = BridgeUtilities.getString(var3, "127.0.0.1");
-            var5.port = BridgeUtilities.getInt(var3, 1);
-            var5.timeout = BridgeUtilities.getInt(var3, 60000);
-            var5.type = 2;
-         }
-
-         if (!var3.isEmpty()) {
-            var5.function = BridgeUtilities.getFunction(var3, var2);
-         }
-
-         var5.start();
-         return SleepUtils.getScalar((Object)var5.socket);
-      }
-
-      // $FF: synthetic method
-      SocketFuncs(Object var1) {
-         this();
-      }
-   }
-
-   private static class fork implements Function {
-      private fork() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         SleepClosure var4 = BridgeUtilities.getFunction(var3, var2);
-         ScriptInstance var5 = var2.fork();
-         var5.installBlock(var4.getRunnableCode());
-         ScriptVariables var6 = var5.getScriptVariables();
-
-         while(!var3.isEmpty()) {
-            KeyValuePair var7 = BridgeUtilities.getKeyValuePair(var3);
-            var6.putScalar(var7.getKey().toString(), SleepUtils.getScalar(var7.getValue()));
-         }
-
-         IOObject var15 = new IOObject();
-         IOObject var8 = new IOObject();
-
-         try {
-            PipedInputStream var9 = new PipedInputStream();
-            PipedOutputStream var10 = new PipedOutputStream();
-            var9.connect(var10);
-            PipedInputStream var11 = new PipedInputStream();
-            PipedOutputStream var12 = new PipedOutputStream();
-            var11.connect(var12);
-            var15.openRead(var11);
-            var15.openWrite(var10);
-            var8.openRead(var9);
-            var8.openWrite(var12);
-            var5.getScriptVariables().putScalar("$source", SleepUtils.getScalar((Object)var8));
-            Thread var13 = new Thread(var5, "fork of " + var5.getRunnableBlock().getSourceLocation());
-            var15.setThread(var13);
-            var8.setThread(var13);
-            var5.setParent(var15);
-            var13.start();
-         } catch (Exception var14) {
-            var2.getScriptEnvironment().flagError(var14);
-         }
-
-         return SleepUtils.getScalar((Object)var15);
-      }
-
-      // $FF: synthetic method
-      fork(Object var1) {
-         this();
-      }
-   }
-
-   private static class sleep implements Function {
-      private sleep() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         try {
-            Thread.currentThread();
-            Thread.sleep(BridgeUtilities.getLong(var3, 0L));
-         } catch (Exception var5) {
-         }
-
-         return SleepUtils.getEmptyScalar();
-      }
-
-      // $FF: synthetic method
-      sleep(Object var1) {
-         this();
-      }
-   }
-
-   private static class exec implements Function {
-      private exec() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         Scalar var4 = var3.isEmpty() ? SleepUtils.getEmptyScalar() : (Scalar)var3.pop();
-         String[] var5;
-         if (var4.getArray() != null) {
-            var5 = (String[])((String[])SleepUtils.getListFromArray(var4.getArray()).toArray(new String[0]));
-         } else {
-            var5 = var4.toString().split("\\s");
-         }
-
-         String[] var6 = null;
-         File var7 = null;
-         if (!var3.isEmpty()) {
-            if (SleepUtils.isEmptyScalar((Scalar)var3.peek())) {
-               var3.pop();
-            } else {
-               ScalarHash var8 = BridgeUtilities.getHash(var3);
-               Iterator var9 = var8.keys().scalarIterator();
-               var6 = new String[var8.keys().size()];
-
-               for(int var10 = 0; var10 < var6.length; ++var10) {
-                  Scalar var11 = (Scalar)var9.next();
-                  var6[var10] = var11.toString() + "=" + var8.getAt(var11);
-               }
-            }
-         }
-
-         if (!var3.isEmpty() && !SleepUtils.isEmptyScalar((Scalar)var3.peek())) {
-            if (SleepUtils.isEmptyScalar((Scalar)var3.peek())) {
-               var3.pop();
-            } else {
-               var7 = BridgeUtilities.getFile(var3, var2);
-            }
-         }
-
-         ProcessObject var12 = new ProcessObject();
-         var12.open(var5, var6, var7, var2.getScriptEnvironment());
-         return SleepUtils.getScalar((Object)var12);
-      }
-
-      // $FF: synthetic method
-      exec(Object var1) {
-         this();
-      }
-   }
-
-   private static class openf implements Function {
-      private openf() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         String var4 = ((Scalar)var3.pop()).toString();
-         FileObject var5 = new FileObject();
-         var5.open(var4, var2.getScriptEnvironment());
-         return SleepUtils.getScalar((Object)var5);
-      }
-
-      // $FF: synthetic method
-      openf(Object var1) {
-         this();
       }
    }
 }

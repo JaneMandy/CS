@@ -45,7 +45,7 @@ public class WindowsExecutableStageDialog implements DialogListener, SafeDialogC
             this.dialog.setVisible(true);
             DialogUtils.showError("Could not generate " + var4 + " payload for " + var3);
          } else {
-            String var6 = var2.get("output") + "";
+            String var6 = ((Class)var2.get("output")).makeConcatWithConstants<invokedynamic>(var2.get("output"));
             String var7 = "";
             if (var6.indexOf("PowerShell") > -1) {
                var7 = "beacon.ps1";
@@ -60,10 +60,11 @@ public class WindowsExecutableStageDialog implements DialogListener, SafeDialogC
             SafeDialogs.saveFile((JFrame)null, var7, this);
          }
       }
+
    }
 
    public void dialogResult(String var1) {
-      String var2 = this.options.get("output") + "";
+      String var2 = ((Class)this.options.get("output")).makeConcatWithConstants<invokedynamic>(this.options.get("output"));
       boolean var3 = DialogUtils.bool(this.options, "x64");
       boolean var4 = DialogUtils.bool(this.options, "sign");
       if (var3) {

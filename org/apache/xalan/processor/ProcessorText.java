@@ -5,8 +5,6 @@ import org.apache.xalan.templates.ElemText;
 import org.xml.sax.SAXException;
 
 public class ProcessorText extends ProcessorTemplateElem {
-   static final long serialVersionUID = 5170229307201307523L;
-
    protected void appendAndPush(StylesheetHandler handler, ElemTemplateElement elem) throws SAXException {
       ProcessorCharacters charProcessor = (ProcessorCharacters)handler.getProcessorFor((String)null, "text()", "text");
       charProcessor.setXslTextElement((ElemText)elem);

@@ -1,8 +1,12 @@
 package org.apache.xalan.xsltc.compiler;
 
+import java.util.Enumeration;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
+import org.apache.bcel.generic.InstructionConstants;
 import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.NEW;
 import org.apache.xalan.xsltc.compiler.util.ClassGenerator;
 import org.apache.xalan.xsltc.compiler.util.MethodGenerator;
 import org.apache.xalan.xsltc.compiler.util.Type;
@@ -11,6 +15,7 @@ import org.apache.xalan.xsltc.compiler.util.Util;
 
 final class ApplyImports extends Instruction {
    private QName _modeName;
+   private String _functionName;
    private int _precedence;
 
    public void display(int indent) {
@@ -29,11 +34,40 @@ final class ApplyImports extends Instruction {
    }
 
    private int getMinPrecedence(int max) {
-      Stylesheet includeRoot;
-      for(includeRoot = this.getStylesheet(); includeRoot._includedFrom != null; includeRoot = includeRoot._includedFrom) {
-      }
+      Stylesheet stylesheet = this.getStylesheet();
+      Stylesheet root = this.getParser().getTopLevelStylesheet();
+      int min = max;
+      Enumeration templates = root.getContents().elements();
 
-      return includeRoot.getMinimumDescendantPrecedence();
+      while(true) {
+         SyntaxTreeNode child;
+         do {
+            if (!templates.hasMoreElements()) {
+               return min;
+            }
+
+            child = (SyntaxTreeNode)templates.nextElement();
+         } while(!(child instanceof Template));
+
+         Stylesheet curr = child.getStylesheet();
+
+         while(curr != null && curr != stylesheet) {
+            if (curr._importedFrom != null) {
+               curr = curr._importedFrom;
+            } else if (curr._includedFrom != null) {
+               curr = curr._includedFrom;
+            } else {
+               curr = null;
+            }
+         }
+
+         if (curr == stylesheet) {
+            int prec = child.getStylesheet().getImportPrecedence();
+            if (prec < min) {
+               min = prec;
+            }
+         }
+      }
    }
 
    public void parseContents(Parser parser) {
@@ -43,6 +77,10 @@ final class ApplyImports extends Instruction {
       this._modeName = template.getModeName();
       this._precedence = template.getImportPrecedence();
       stylesheet = parser.getTopLevelStylesheet();
+      int maxPrecedence = this._precedence;
+      int minPrecedence = this.getMinPrecedence(maxPrecedence);
+      Mode mode = stylesheet.getMode(this._modeName);
+      this._functionName = mode.functionName(minPrecedence, maxPrecedence);
       this.parseChildren(parser);
    }
 
@@ -58,29 +96,15 @@ final class ApplyImports extends Instruction {
       int current = methodGen.getLocalIndex("current");
       il.append(classGen.loadTranslet());
       il.append(methodGen.loadDOM());
-      il.append(methodGen.loadIterator());
-      il.append(methodGen.loadHandler());
+      int init = cpg.addMethodref("org.apache.xalan.xsltc.dom.SingletonIterator", "<init>", "(I)V");
+      il.append((org.apache.bcel.generic.Instruction)(new NEW(cpg.addClass("org.apache.xalan.xsltc.dom.SingletonIterator"))));
+      il.append((org.apache.bcel.generic.Instruction)InstructionConstants.DUP);
       il.append(methodGen.loadCurrentNode());
-      int maxPrecedence;
-      if (stylesheet.hasLocalParams()) {
-         il.append(classGen.loadTranslet());
-         maxPrecedence = cpg.addMethodref("org.apache.xalan.xsltc.runtime.AbstractTranslet", "pushParamFrame", "()V");
-         il.append((org.apache.bcel.generic.Instruction)(new INVOKEVIRTUAL(maxPrecedence)));
-      }
-
-      maxPrecedence = this._precedence;
-      int minPrecedence = this.getMinPrecedence(maxPrecedence);
-      Mode mode = stylesheet.getMode(this._modeName);
-      String functionName = mode.functionName(minPrecedence, maxPrecedence);
+      il.append((org.apache.bcel.generic.Instruction)(new INVOKESPECIAL(init)));
+      il.append(methodGen.loadHandler());
       String className = classGen.getStylesheet().getClassName();
-      String signature = classGen.getApplyTemplatesSigForImport();
-      int applyTemplates = cpg.addMethodref(className, functionName, signature);
+      String signature = classGen.getApplyTemplatesSig();
+      int applyTemplates = cpg.addMethodref(className, this._functionName, signature);
       il.append((org.apache.bcel.generic.Instruction)(new INVOKEVIRTUAL(applyTemplates)));
-      if (stylesheet.hasLocalParams()) {
-         il.append(classGen.loadTranslet());
-         int pushFrame = cpg.addMethodref("org.apache.xalan.xsltc.runtime.AbstractTranslet", "popParamFrame", "()V");
-         il.append((org.apache.bcel.generic.Instruction)(new INVOKEVIRTUAL(pushFrame)));
-      }
-
    }
 }

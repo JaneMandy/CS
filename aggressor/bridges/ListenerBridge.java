@@ -159,8 +159,8 @@ public class ListenerBridge implements Function, Loadable {
                }
 
                var6 = BridgeUtilities.getString(var3, "");
-               return SleepUtils.getScalar(var13.toMap().get(var6) + "");
-            } catch (RuntimeException var12) {
+               return SleepUtils.getScalar(((Class)var13.toMap().get(var6)).makeConcatWithConstants<invokedynamic>(var13.toMap().get(var6)));
+            } catch (RuntimeException var14) {
                return SleepUtils.getEmptyScalar();
             }
          }

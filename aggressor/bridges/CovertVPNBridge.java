@@ -39,7 +39,7 @@ public class CovertVPNBridge implements Function, Loadable {
          var4 = BridgeUtilities.getString(var3, "");
          String var5 = BridgeUtilities.getString(var3, "");
          var6 = BridgeUtilities.getString(var3, "");
-         var7 = BridgeUtilities.getInt(var3, 0) + "";
+         var7 = BridgeUtilities.getInt(var3, 0).makeConcatWithConstants<invokedynamic>(BridgeUtilities.getInt(var3, 0));
          String var8 = BridgeUtilities.getString(var3, "udp");
          if ("".equals(var5)) {
             var5 = CommonUtils.randomMac();

@@ -9,7 +9,9 @@ import common.Callback;
 import common.CommandParser;
 import common.CommonUtils;
 import console.Colors;
+import console.Console;
 import console.GenericTabCompletion;
+import cortana.Cortana;
 import dialog.SafeDialogCallback;
 import dialog.SafeDialogs;
 import java.awt.event.ActionEvent;
@@ -53,15 +55,21 @@ public class SecureShellConsole extends BeaconConsole {
          this.client.getSSHAliases().fireCommand(this.bid, var3.getCommand(), var3.getArguments());
       } else {
          String var4;
+         Console var10000;
+         String var10001;
          if (!var3.is("help") && !var3.is("?")) {
             if (var3.is("downloads")) {
-               this.console.append(this.formatLocal(BeaconOutput.Input(this.bid, var2)) + "\n");
+               var10000 = this.console;
+               var10001 = this.formatLocal(BeaconOutput.Input(this.bid, var2));
+               var10000.append(var10001 + "\n");
                this.conn.call("beacons.downloads", CommonUtils.args(this.bid), new Callback() {
                   public void result(String var1, Object var2) {
                      Stack var3 = new Stack();
                      var3.push(CommonUtils.convertAll(var2));
                      var3.push(SleepUtils.getScalar(SecureShellConsole.this.bid));
-                     SecureShellConsole.this.console.append(SecureShellConsole.this.engine.format("BEACON_OUTPUT_DOWNLOADS", var3) + "\n");
+                     Console var10000 = SecureShellConsole.this.console;
+                     String var10001 = SecureShellConsole.this.engine.format("BEACON_OUTPUT_DOWNLOADS", var3);
+                     var10000.append(var10001 + "\n");
                   }
                });
             } else {
@@ -214,29 +222,37 @@ public class SecureShellConsole extends BeaconConsole {
                if (var3.hasError()) {
                   this.conn.call("beacons.log_write", CommonUtils.args(BeaconOutput.Error(this.bid, var3.error())));
                }
-
             }
          } else {
-            this.console.append(this.formatLocal(BeaconOutput.Input(this.bid, var2)) + "\n");
+            var10000 = this.console;
+            var10001 = this.formatLocal(BeaconOutput.Input(this.bid, var2));
+            var10000.append(var10001 + "\n");
             if (!var3.verify("Z") && !var3.reset()) {
-               this.console.append(this.engine.format("SSH_OUTPUT_HELP", new Stack()) + "\n");
+               var10000 = this.console;
+               Cortana var11 = this.engine;
+               Stack var10003 = new Stack();
+               var10000.append(var11.format("SSH_OUTPUT_HELP", var10003) + "\n");
             } else {
                var4 = var3.popString();
                BeaconCommands var5 = DataUtils.getSSHCommands(this.data);
                if (var5.isHelpAvailable(var4)) {
                   Stack var6 = new Stack();
                   var6.push(SleepUtils.getScalar(var4));
-                  this.console.append(this.engine.format("SSH_OUTPUT_HELP_COMMAND", var6) + "\n");
+                  var10000 = this.console;
+                  var10001 = this.engine.format("SSH_OUTPUT_HELP_COMMAND", var6);
+                  var10000.append(var10001 + "\n");
                } else {
                   var3.error("no help is available for '" + var4 + "'");
                }
             }
 
             if (var3.hasError()) {
-               this.console.append(this.formatLocal(BeaconOutput.Error(this.bid, var3.error())) + "\n");
+               var10000 = this.console;
+               var10001 = this.formatLocal(BeaconOutput.Error(this.bid, var3.error()));
+               var10000.append(var10001 + "\n");
             }
-
          }
       }
+
    }
 }

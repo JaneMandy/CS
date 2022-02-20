@@ -25,11 +25,11 @@ public enum DigestAlgorithm {
          return null;
       } else {
          s = s.toUpperCase().replaceAll("-", "");
-         DigestAlgorithm[] arr$ = values();
-         int len$ = arr$.length;
+         DigestAlgorithm[] var1 = values();
+         int var2 = var1.length;
 
-         for(int i$ = 0; i$ < len$; ++i$) {
-            DigestAlgorithm algorithm = arr$[i$];
+         for(int var3 = 0; var3 < var2; ++var3) {
+            DigestAlgorithm algorithm = var1[var3];
             if (algorithm.name().equals(s)) {
                return algorithm;
             }
@@ -44,11 +44,11 @@ public enum DigestAlgorithm {
    }
 
    public static DigestAlgorithm of(ASN1ObjectIdentifier oid) {
-      DigestAlgorithm[] arr$ = values();
-      int len$ = arr$.length;
+      DigestAlgorithm[] var1 = values();
+      int var2 = var1.length;
 
-      for(int i$ = 0; i$ < len$; ++i$) {
-         DigestAlgorithm algorithm = arr$[i$];
+      for(int var3 = 0; var3 < var2; ++var3) {
+         DigestAlgorithm algorithm = var1[var3];
          if (algorithm.oid.equals(oid)) {
             return algorithm;
          }

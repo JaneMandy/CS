@@ -48,7 +48,7 @@ public class DcSyncCredentials extends Parser {
             ServerUtils.addCredential(this.resources, var3, var5, var4, "dcsync", var6.getInternal());
             this.resources.call("credentials.push");
          }
-
       }
+
    }
 }

@@ -8,8 +8,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 class ProcessorKey extends XSLTElementProcessor {
-   static final long serialVersionUID = 4285205417566822979L;
-
    public void startElement(StylesheetHandler handler, String uri, String localName, String rawName, Attributes attributes) throws SAXException {
       KeyDeclaration kd = new KeyDeclaration(handler.getStylesheet(), handler.nextUid());
       kd.setDOMBackPointer(handler.getOriginatingNode());

@@ -6,7 +6,6 @@ import org.apache.xml.utils.PrefixResolver;
 import org.apache.xpath.compiler.Compiler;
 
 public class WalkingIteratorSorted extends WalkingIterator {
-   static final long serialVersionUID = -4512512007542368213L;
    protected boolean m_inNaturalOrderStatic = false;
 
    public WalkingIteratorSorted(PrefixResolver nscontext) {

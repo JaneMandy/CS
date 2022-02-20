@@ -93,13 +93,13 @@ public class BeaconCommands {
 
    public String getDetails(String var1) {
       synchronized(this) {
-         return this.details.get(var1) + "";
+         return ((Class)this.details.get(var1)).makeConcatWithConstants<invokedynamic>(this.details.get(var1));
       }
    }
 
    public String getDescription(String var1) {
       synchronized(this) {
-         return this.descriptions.get(var1) + "";
+         return ((Class)this.descriptions.get(var1)).makeConcatWithConstants<invokedynamic>(this.descriptions.get(var1));
       }
    }
 

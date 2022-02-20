@@ -6,7 +6,6 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ANEWARRAY;
-import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.BranchInstruction;
 import org.apache.bcel.generic.CHECKCAST;
 import org.apache.bcel.generic.CompoundInstruction;
@@ -18,7 +17,6 @@ import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.InstructionConstants;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.LocalVariableGen;
 import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.NOP;
 import org.apache.bcel.generic.PUSH;
@@ -148,8 +146,8 @@ final class Sort extends Instruction implements Closure {
       ConstantPoolGen cpg = classGen.getConstantPool();
       InstructionList il = methodGen.getInstructionList();
       int init = cpg.addMethodref("org.apache.xalan.xsltc.dom.SortingIterator", "<init>", "(Lorg/apache/xml/dtm/DTMAxisIterator;Lorg/apache/xalan/xsltc/dom/NodeSortRecordFactory;)V");
-      LocalVariableGen nodesTemp = methodGen.addLocalVariable("sort_tmp1", Util.getJCRefType("Lorg/apache/xml/dtm/DTMAxisIterator;"), il.getEnd(), (InstructionHandle)null);
-      LocalVariableGen sortRecordFactoryTemp = methodGen.addLocalVariable("sort_tmp2", Util.getJCRefType("Lorg/apache/xalan/xsltc/dom/NodeSortRecordFactory;"), il.getEnd(), (InstructionHandle)null);
+      il.append((org.apache.bcel.generic.Instruction)(new NEW(cpg.addClass("org.apache.xalan.xsltc.dom.SortingIterator"))));
+      il.append((org.apache.bcel.generic.Instruction)InstructionConstants.DUP);
       if (nodeSet == null) {
          int children = cpg.addInterfaceMethodref("org.apache.xalan.xsltc.DOM", "getAxisIterator", "(I)Lorg/apache/xml/dtm/DTMAxisIterator;");
          il.append(methodGen.loadDOM());
@@ -159,13 +157,7 @@ final class Sort extends Instruction implements Closure {
          nodeSet.translate(classGen, methodGen);
       }
 
-      il.append((org.apache.bcel.generic.Instruction)(new ASTORE(nodesTemp.getIndex())));
       compileSortRecordFactory(sortObjects, classGen, methodGen);
-      il.append((org.apache.bcel.generic.Instruction)(new ASTORE(sortRecordFactoryTemp.getIndex())));
-      il.append((org.apache.bcel.generic.Instruction)(new NEW(cpg.addClass("org.apache.xalan.xsltc.dom.SortingIterator"))));
-      il.append((org.apache.bcel.generic.Instruction)InstructionConstants.DUP);
-      il.append((org.apache.bcel.generic.Instruction)(new ALOAD(nodesTemp.getIndex())));
-      il.append((org.apache.bcel.generic.Instruction)(new ALOAD(sortRecordFactoryTemp.getIndex())));
       il.append((org.apache.bcel.generic.Instruction)(new INVOKESPECIAL(init)));
    }
 
@@ -186,7 +178,11 @@ final class Sort extends Instruction implements Closure {
 
       ConstantPoolGen cpg = classGen.getConstantPool();
       InstructionList il = methodGen.getInstructionList();
-      LocalVariableGen sortOrderTemp = methodGen.addLocalVariable("sort_order_tmp", Util.getJCRefType("[Ljava/lang/String;"), il.getEnd(), (InstructionHandle)null);
+      il.append((org.apache.bcel.generic.Instruction)(new NEW(cpg.addClass(sortRecordFactoryClass))));
+      il.append((org.apache.bcel.generic.Instruction)InstructionConstants.DUP);
+      il.append(methodGen.loadDOM());
+      il.append((CompoundInstruction)(new PUSH(cpg, sortRecordClass)));
+      il.append(classGen.loadTranslet());
       il.append((CompoundInstruction)(new PUSH(cpg, nsorts)));
       il.append((org.apache.bcel.generic.Instruction)(new ANEWARRAY(cpg.addClass("java.lang.String"))));
 
@@ -198,8 +194,6 @@ final class Sort extends Instruction implements Closure {
          il.append((org.apache.bcel.generic.Instruction)InstructionConstants.AASTORE);
       }
 
-      il.append((org.apache.bcel.generic.Instruction)(new ASTORE(sortOrderTemp.getIndex())));
-      LocalVariableGen sortTypeTemp = methodGen.addLocalVariable("sort_type_tmp", Util.getJCRefType("[Ljava/lang/String;"), il.getEnd(), (InstructionHandle)null);
       il.append((CompoundInstruction)(new PUSH(cpg, nsorts)));
       il.append((org.apache.bcel.generic.Instruction)(new ANEWARRAY(cpg.addClass("java.lang.String"))));
 
@@ -211,8 +205,6 @@ final class Sort extends Instruction implements Closure {
          il.append((org.apache.bcel.generic.Instruction)InstructionConstants.AASTORE);
       }
 
-      il.append((org.apache.bcel.generic.Instruction)(new ASTORE(sortTypeTemp.getIndex())));
-      LocalVariableGen sortLangTemp = methodGen.addLocalVariable("sort_lang_tmp", Util.getJCRefType("[Ljava/lang/String;"), il.getEnd(), (InstructionHandle)null);
       il.append((CompoundInstruction)(new PUSH(cpg, nsorts)));
       il.append((org.apache.bcel.generic.Instruction)(new ANEWARRAY(cpg.addClass("java.lang.String"))));
 
@@ -224,8 +216,6 @@ final class Sort extends Instruction implements Closure {
          il.append((org.apache.bcel.generic.Instruction)InstructionConstants.AASTORE);
       }
 
-      il.append((org.apache.bcel.generic.Instruction)(new ASTORE(sortLangTemp.getIndex())));
-      LocalVariableGen sortCaseOrderTemp = methodGen.addLocalVariable("sort_case_order_tmp", Util.getJCRefType("[Ljava/lang/String;"), il.getEnd(), (InstructionHandle)null);
       il.append((CompoundInstruction)(new PUSH(cpg, nsorts)));
       il.append((org.apache.bcel.generic.Instruction)(new ANEWARRAY(cpg.addClass("java.lang.String"))));
 
@@ -237,16 +227,6 @@ final class Sort extends Instruction implements Closure {
          il.append((org.apache.bcel.generic.Instruction)InstructionConstants.AASTORE);
       }
 
-      il.append((org.apache.bcel.generic.Instruction)(new ASTORE(sortCaseOrderTemp.getIndex())));
-      il.append((org.apache.bcel.generic.Instruction)(new NEW(cpg.addClass(sortRecordFactoryClass))));
-      il.append((org.apache.bcel.generic.Instruction)InstructionConstants.DUP);
-      il.append(methodGen.loadDOM());
-      il.append((CompoundInstruction)(new PUSH(cpg, sortRecordClass)));
-      il.append(classGen.loadTranslet());
-      il.append((org.apache.bcel.generic.Instruction)(new ALOAD(sortOrderTemp.getIndex())));
-      il.append((org.apache.bcel.generic.Instruction)(new ALOAD(sortTypeTemp.getIndex())));
-      il.append((org.apache.bcel.generic.Instruction)(new ALOAD(sortLangTemp.getIndex())));
-      il.append((org.apache.bcel.generic.Instruction)(new ALOAD(sortCaseOrderTemp.getIndex())));
       il.append((org.apache.bcel.generic.Instruction)(new INVOKESPECIAL(cpg.addMethodref(sortRecordFactoryClass, "<init>", "(Lorg/apache/xalan/xsltc/DOM;Ljava/lang/String;Lorg/apache/xalan/xsltc/Translet;[Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;)V"))));
       ArrayList dups = new ArrayList();
 

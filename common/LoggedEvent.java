@@ -60,7 +60,23 @@ public class LoggedEvent implements Serializable, Scriptable, Transcript, Loggab
    }
 
    public static final LoggedEvent BeaconInitial(BeaconEntry var0) {
-      return var0.isBeacon() ? new LoggedEvent((String)null, var0.getId(), (short)8, var0.getUser() + "@" + var0.getInternal() + " (" + var0.getComputer() + ")") : new LoggedEvent((String)null, var0.getId(), (short)9, var0.getUser() + "@" + var0.getInternal() + " (" + var0.getComputer() + ")");
+      LoggedEvent var10000;
+      String var10002;
+      String var10003;
+      String var10005;
+      if (var0.isBeacon()) {
+         var10002 = (String)null;
+         var10003 = var0.getId();
+         var10005 = var0.getUser();
+         var10000 = new LoggedEvent(var10002, var10003, (short)8, var10005 + "@" + var0.getInternal() + " (" + var0.getComputer() + ")");
+      } else {
+         var10002 = (String)null;
+         var10003 = var0.getId();
+         var10005 = var0.getUser();
+         var10000 = new LoggedEvent(var10002, var10003, (short)9, var10005 + "@" + var0.getInternal() + " (" + var0.getComputer() + ")");
+      }
+
+      return var10000;
    }
 
    public LoggedEvent(String var1, String var2, short var3, String var4) {

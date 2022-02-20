@@ -63,10 +63,10 @@ public class Connect implements DialogListener, Callback, ArmitageTrustListener 
    }
 
    private boolean A(Map var1) {
-      String var2 = var1.get("user") + "";
-      String var3 = var1.get("host") + "";
-      String var4 = var1.get("port") + "";
-      String var5 = var1.get("alias") + "";
+      String var2 = ((Class)var1.get("user")).makeConcatWithConstants<invokedynamic>(var1.get("user"));
+      String var3 = ((Class)var1.get("host")).makeConcatWithConstants<invokedynamic>(var1.get("host"));
+      String var4 = ((Class)var1.get("port")).makeConcatWithConstants<invokedynamic>(var1.get("port"));
+      String var5 = ((Class)var1.get("alias")).makeConcatWithConstants<invokedynamic>(var1.get("alias"));
       StringBuilder var6 = new StringBuilder();
       if (CommonUtils.isNullOrEmpty(var5)) {
          var6.append((var6.length() > 0 ? "\n" : "") + "Alias name can not be empty.");
@@ -107,11 +107,11 @@ public class Connect implements DialogListener, Callback, ArmitageTrustListener 
    public void dialogAction(ActionEvent var1, Map var2) {
       if (this.A(var2)) {
          this.m_options = var2;
-         String var3 = var2.get("user") + "";
-         String var4 = var2.get("host") + "";
-         String var5 = var2.get("port") + "";
-         String var6 = var2.get("pass") + "";
-         this.alias = var2.get("alias") + "";
+         String var3 = ((Class)var2.get("user")).makeConcatWithConstants<invokedynamic>(var2.get("user"));
+         String var4 = ((Class)var2.get("host")).makeConcatWithConstants<invokedynamic>(var2.get("host"));
+         String var5 = ((Class)var2.get("port")).makeConcatWithConstants<invokedynamic>(var2.get("port"));
+         String var6 = ((Class)var2.get("pass")).makeConcatWithConstants<invokedynamic>(var2.get("pass"));
+         this.alias = ((Class)var2.get("alias")).makeConcatWithConstants<invokedynamic>(var2.get("alias"));
          Prefs.getPreferences().set("connection.last", var4);
          Prefs.getPreferences().appendList("connection.profiles", var4);
          Prefs.getPreferences().set("connection.profiles." + var4 + ".user", var3);
@@ -127,7 +127,7 @@ public class Connect implements DialogListener, Callback, ArmitageTrustListener 
             this.tqueue.call("aggressor.authenticate", CommonUtils.args(var3, var6, Aggressor.VERSION), this);
          } catch (Exception var9) {
             String var8 = this.Ċ ? "again?" : "another connection?";
-            SafeDialogs.askYesNoBoth(var9.getMessage() + "\n\nA Cobalt Strike team server is not available on\n" + "the specified host and port. You must start a\n" + "Cobalt Strike team server first.\n\n" + "Would you like to try " + var8, "Connection Error", new SafeDialogCallback() {
+            SafeDialogs.askYesNoBoth(var9.getMessage() + "\n\nA Cobalt Strike team server is not available on\nthe specified host and port. You must start a\nCobalt Strike team server first.\n\nWould you like to try " + var8, "Connection Error", new SafeDialogCallback() {
                public void dialogResult(String var1) {
                   if ("no".equals(var1)) {
                      CommonUtils.runSafe(new Runnable() {
@@ -135,24 +135,22 @@ public class Connect implements DialogListener, Callback, ArmitageTrustListener 
                            Connect.this.window.quit(Connect.this.m_options);
                         }
                      });
+                  } else if (Connect.this.Ċ) {
+                     (new Connect(Connect.this.window, true, Connect.this.alias)).dialogAction((ActionEvent)null, Connect.this.m_options);
                   } else {
-                     if (Connect.this.Ċ) {
-                        (new Connect(Connect.this.window, true, Connect.this.alias)).dialogAction((ActionEvent)null, Connect.this.m_options);
-                     } else {
-                        (new ConnectDialog(Connect.this.window)).show();
-                     }
-
+                     (new ConnectDialog(Connect.this.window)).show();
                   }
+
                }
             });
          }
-
       }
+
    }
 
    public void result(String var1, Object var2) {
       if ("aggressor.authenticate".equals(var1)) {
-         String var3 = var2 + "";
+         String var3 = ((Class)var2).makeConcatWithConstants<invokedynamic>(var2);
          if (var3.equals("SUCCESS")) {
             this.tqueue.call("aggressor.metadata", CommonUtils.args(System.currentTimeMillis()), this);
          } else {

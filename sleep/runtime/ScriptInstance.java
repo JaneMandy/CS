@@ -53,16 +53,14 @@ public class ScriptInstance implements Serializable, Runnable {
    public boolean hasChanged() {
       Iterator var1 = this.sourceFiles.iterator();
 
-      File var2;
-      do {
-         if (!var1.hasNext()) {
-            return false;
+      while(var1.hasNext()) {
+         File var2 = (File)var1.next();
+         if (var2.lastModified() > this.loadTime) {
+            return true;
          }
+      }
 
-         var2 = (File)var1.next();
-      } while(var2.lastModified() <= this.loadTime);
-
-      return true;
+      return false;
    }
 
    public void setDebugFlags(int var1) {
@@ -127,7 +125,7 @@ public class ScriptInstance implements Serializable, Runnable {
    }
 
    public Scalar runScript() {
-      return SleepUtils.runCode((SleepClosure)this.script, (String)null, this, (Stack)null);
+      return SleepUtils.runCode(this.script, (String)null, this, (Stack)null);
    }
 
    public void recordStackFrame(String var1, String var2, int var3) {
@@ -339,6 +337,17 @@ public class ScriptInstance implements Serializable, Runnable {
 
    }
 
+   public static class SleepStackElement implements Serializable {
+      public String sourcefile;
+      public String description;
+      public int lineNumber;
+
+      public String toString() {
+         String var10000 = (new File(this.sourcefile)).getName();
+         return "   " + var10000 + ":" + this.lineNumber + " " + this.description;
+      }
+   }
+
    public static class ProfilerStatistic implements Comparable, Serializable {
       public String functionName;
       public long ticks = 0L;
@@ -349,17 +358,8 @@ public class ScriptInstance implements Serializable, Runnable {
       }
 
       public String toString() {
-         return (double)this.ticks / 1000.0D + "s " + this.calls + " " + this.functionName;
-      }
-   }
-
-   public static class SleepStackElement implements Serializable {
-      public String sourcefile;
-      public String description;
-      public int lineNumber;
-
-      public String toString() {
-         return "   " + (new File(this.sourcefile)).getName() + ":" + this.lineNumber + " " + this.description;
+         double var10000 = (double)this.ticks / 1000.0D;
+         return var10000 + "s " + this.calls + " " + this.functionName;
       }
    }
 }

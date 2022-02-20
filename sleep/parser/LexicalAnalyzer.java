@@ -158,15 +158,16 @@ public class LexicalAnalyzer {
             Token var7;
             char var9;
             do {
+               int var10;
                if (!var1.hasNext()) {
                   if (var8.length() > 0) {
                      var7 = new Token(trim(var0, var8.toString()), var1.getLineNumber());
                      var5.add(var7);
                   }
 
-                  for(int var13 = 0; var13 < var2.length; ++var13) {
-                     if (!var2[var13].isBalanced()) {
-                        var0.reportError(var2[var13].getSyntaxError());
+                  for(var10 = 0; var10 < var2.length; ++var10) {
+                     if (!var2[var10].isBalanced()) {
+                        var0.reportError(var2[var10].getSyntaxError());
                      }
                   }
 
@@ -176,7 +177,7 @@ public class LexicalAnalyzer {
                var6 = false;
                var9 = var1.next();
 
-               for(int var10 = 0; var10 < var2.length; ++var10) {
+               for(var10 = 0; var10 < var2.length; ++var10) {
                   if (var2[var10].isLeft(var9) || var2[var10].isMatch(var9)) {
                      if (var8.length() > 0) {
                         var7 = new Token(trim(var0, var8.toString()), var1.getLineNumber());
@@ -218,7 +219,7 @@ public class LexicalAnalyzer {
                   var8 = new StringBuffer();
                }
 
-               var5.add(new Token(var9 + "", var1.getLineNumber()));
+               var5.add(new Token(var9.makeConcatWithConstants<invokedynamic>(var9), var1.getLineNumber()));
             } else if (isSkippable(var0, var9)) {
                if (var8.length() > 0) {
                   if (var8.length() == 1 && var8.charAt(0) == '%') {

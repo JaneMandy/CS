@@ -68,7 +68,7 @@ public class WebsiteCloneTool implements Runnable, HostnameVerifier, ArmitageTru
    }
 
    public void run() {
-      String var1 = this.request.arg(0) + "";
+      String var1 = ((Class)this.request.arg(0)).makeConcatWithConstants<invokedynamic>(this.request.arg(0));
 
       try {
          String var2 = this.A(var1);

@@ -29,12 +29,7 @@ public class TemplatesHandlerImpl implements ContentHandler, TemplatesHandler, S
    protected TemplatesHandlerImpl(int indentNumber, TransformerFactoryImpl tfactory) {
       this._indentNumber = indentNumber;
       this._tfactory = tfactory;
-      XSLTC xsltc = new XSLTC();
-      if (tfactory.getFeature("http://javax.xml.XMLConstants/feature/secure-processing")) {
-         xsltc.setSecureProcessing(true);
-      }
-
-      this._parser = xsltc.getParser();
+      this._parser = (new XSLTC()).getParser();
    }
 
    public String getSystemId() {

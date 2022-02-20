@@ -13,15 +13,14 @@ import org.w3c.dom.xpath.XPathException;
 import org.w3c.dom.xpath.XPathExpression;
 import org.w3c.dom.xpath.XPathNSResolver;
 
-public final class XPathEvaluatorImpl implements XPathEvaluator {
-   private final Document m_doc;
+public class XPathEvaluatorImpl implements XPathEvaluator {
+   private Document m_doc = null;
+
+   public XPathEvaluatorImpl() {
+   }
 
    public XPathEvaluatorImpl(Document doc) {
       this.m_doc = doc;
-   }
-
-   public XPathEvaluatorImpl() {
-      this.m_doc = null;
    }
 
    public XPathExpression createExpression(String expression, XPathNSResolver resolver) throws XPathException, DOMException {
@@ -29,11 +28,7 @@ public final class XPathEvaluatorImpl implements XPathEvaluator {
          XPath xpath = new XPath(expression, (SourceLocator)null, (PrefixResolver)(null == resolver ? new XPathEvaluatorImpl.DummyPrefixResolver() : (PrefixResolver)resolver), 0);
          return new XPathExpressionImpl(xpath, this.m_doc);
       } catch (TransformerException var4) {
-         if (var4 instanceof XPathStylesheetDOM3Exception) {
-            throw new DOMException((short)14, var4.getMessageAndLocation());
-         } else {
-            throw new XPathException((short)51, var4.getMessageAndLocation());
-         }
+         throw new DOMException((short)1, var4.getMessageAndLocation());
       }
    }
 
@@ -46,8 +41,8 @@ public final class XPathEvaluatorImpl implements XPathEvaluator {
       return xpathExpression.evaluate(contextNode, type, result);
    }
 
-   private class DummyPrefixResolver implements PrefixResolver {
-      DummyPrefixResolver() {
+   class DummyPrefixResolver implements PrefixResolver {
+      public DummyPrefixResolver() {
       }
 
       public String getNamespaceForPrefix(String prefix, Node context) {

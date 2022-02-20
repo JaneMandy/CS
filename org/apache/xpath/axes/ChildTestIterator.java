@@ -7,7 +7,6 @@ import org.apache.xml.utils.PrefixResolver;
 import org.apache.xpath.compiler.Compiler;
 
 public class ChildTestIterator extends BasicTestIterator {
-   static final long serialVersionUID = -7936835957960705722L;
    protected transient DTMAxisTraverser m_traverser;
 
    ChildTestIterator(Compiler compiler, int opPos, int analysis) throws TransformerException {

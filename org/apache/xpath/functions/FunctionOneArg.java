@@ -7,7 +7,6 @@ import org.apache.xpath.XPathVisitor;
 import org.apache.xpath.res.XPATHMessages;
 
 public class FunctionOneArg extends Function implements ExpressionOwner {
-   static final long serialVersionUID = -5180174180765609758L;
    Expression m_arg0;
 
    public Expression getArg0() {

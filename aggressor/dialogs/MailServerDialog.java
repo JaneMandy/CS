@@ -70,12 +70,12 @@ public class MailServerDialog extends AObject implements DialogListener {
          var1.set("PASSWORD", var2.password);
       }
 
-      var1.set("Delay", var2.delay + "");
+      var1.set("Delay", var2.delay.makeConcatWithConstants<invokedynamic>(var2.delay));
       if (var2.lhost != null) {
          var1.set("LHOST", var2.lhost);
       }
 
-      var1.set("LPORT", var2.lport + "");
+      var1.set("LPORT", var2.lport.makeConcatWithConstants<invokedynamic>(var2.lport));
       if (var2.starttls) {
          var1.set("connect", "STARTTLS");
       } else if (var2.ssl) {

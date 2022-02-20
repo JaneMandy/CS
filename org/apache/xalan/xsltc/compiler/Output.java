@@ -16,7 +16,7 @@ import org.apache.xalan.xsltc.compiler.util.ErrorMsg;
 import org.apache.xalan.xsltc.compiler.util.MethodGenerator;
 import org.apache.xalan.xsltc.compiler.util.Util;
 import org.apache.xml.serializer.Encodings;
-import org.apache.xml.utils.XML11Char;
+import org.apache.xml.utils.XMLChar;
 
 final class Output extends TopLevelElement {
    private String _version;
@@ -29,7 +29,7 @@ final class Output extends TopLevelElement {
    private String _cdata;
    private boolean _indent = false;
    private String _mediaType;
-   private String _indentamount;
+   private String _cdataToMerge;
    private boolean _disabled = false;
    private static final String STRING_SIG = "Ljava/lang/String;";
    private static final String XML_VERSION = "1.0";
@@ -56,37 +56,8 @@ final class Output extends TopLevelElement {
       return this._method;
    }
 
-   private void transferAttribute(Output previous, String qname) {
-      if (!this.hasAttribute(qname) && previous.hasAttribute(qname)) {
-         this.addAttribute(qname, previous.getAttribute(qname));
-      }
-
-   }
-
-   public void mergeOutput(Output previous) {
-      this.transferAttribute(previous, "version");
-      this.transferAttribute(previous, "method");
-      this.transferAttribute(previous, "encoding");
-      this.transferAttribute(previous, "doctype-system");
-      this.transferAttribute(previous, "doctype-public");
-      this.transferAttribute(previous, "media-type");
-      this.transferAttribute(previous, "indent");
-      this.transferAttribute(previous, "omit-xml-declaration");
-      this.transferAttribute(previous, "standalone");
-      if (previous.hasAttribute("cdata-section-elements")) {
-         this.addAttribute("cdata-section-elements", previous.getAttribute("cdata-section-elements") + ' ' + this.getAttribute("cdata-section-elements"));
-      }
-
-      String prefix = this.lookupPrefix("http://xml.apache.org/xalan");
-      if (prefix != null) {
-         this.transferAttribute(previous, prefix + ':' + "indent-amount");
-      }
-
-      prefix = this.lookupPrefix("http://xml.apache.org/xslt");
-      if (prefix != null) {
-         this.transferAttribute(previous, prefix + ':' + "indent-amount");
-      }
-
+   public void mergeCdata(String cdata) {
+      this._cdataToMerge = cdata;
    }
 
    public void parseContents(Parser parser) {
@@ -95,10 +66,10 @@ final class Output extends TopLevelElement {
       if (!this._disabled) {
          String attrib = null;
          this._version = this.getAttribute("version");
-         if (this._version.equals("")) {
-            this._version = null;
-         } else {
+         if (this._version != null && !this._version.equals("")) {
             outputProperties.setProperty("version", this._version);
+         } else {
+            this._version = null;
          }
 
          this._method = this.getAttribute("method");
@@ -108,10 +79,10 @@ final class Output extends TopLevelElement {
 
          if (this._method != null) {
             this._method = this._method.toLowerCase();
-            if (!this._method.equals("xml") && !this._method.equals("html") && !this._method.equals("text") && (!XML11Char.isXML11ValidQName(this._method) || this._method.indexOf(":") <= 0)) {
-               this.reportError(this, parser, "INVALID_METHOD_IN_OUTPUT", this._method);
-            } else {
+            if (this._method.equals("xml") || this._method.equals("html") || this._method.equals("text") || XMLChar.isValidQName(this._method) && this._method.indexOf(":") > 0) {
                outputProperties.setProperty("method", this._method);
+            } else {
+               this.reportError(this, parser, "INVALID_METHOD_IN_OUTPUT", this._method);
             }
          }
 
@@ -131,7 +102,7 @@ final class Output extends TopLevelElement {
          }
 
          attrib = this.getAttribute("omit-xml-declaration");
-         if (!attrib.equals("")) {
+         if (attrib != null && !attrib.equals("")) {
             if (attrib.equals("yes")) {
                this._omitHeader = true;
             }
@@ -161,7 +132,7 @@ final class Output extends TopLevelElement {
          }
 
          this._cdata = this.getAttribute("cdata-section-elements");
-         if (this._cdata.equals("")) {
+         if (this._cdata != null && this._cdata.equals("")) {
             this._cdata = null;
          } else {
             StringBuffer expandedNames = new StringBuffer();
@@ -169,18 +140,22 @@ final class Output extends TopLevelElement {
             String qname;
             for(StringTokenizer tokens = new StringTokenizer(this._cdata); tokens.hasMoreTokens(); expandedNames.append(parser.getQName(qname).toString()).append(' ')) {
                qname = tokens.nextToken();
-               if (!XML11Char.isXML11ValidQName(qname)) {
+               if (!XMLChar.isValidQName(qname)) {
                   ErrorMsg err = new ErrorMsg("INVALID_QNAME_ERR", qname, this);
                   parser.reportError(3, err);
                }
             }
 
             this._cdata = expandedNames.toString();
+            if (this._cdataToMerge != null) {
+               this._cdata = this._cdata + this._cdataToMerge;
+            }
+
             outputProperties.setProperty("cdata-section-elements", this._cdata);
          }
 
          attrib = this.getAttribute("indent");
-         if (!attrib.equals("")) {
+         if (attrib != null && !attrib.equals("")) {
             if (attrib.equals("yes")) {
                this._indent = true;
             }
@@ -188,15 +163,6 @@ final class Output extends TopLevelElement {
             outputProperties.setProperty("indent", attrib);
          } else if (this._method != null && this._method.equals("html")) {
             this._indent = true;
-         }
-
-         this._indentamount = this.getAttribute(this.lookupPrefix("http://xml.apache.org/xalan"), "indent-amount");
-         if (this._indentamount.equals("")) {
-            this._indentamount = this.getAttribute(this.lookupPrefix("http://xml.apache.org/xslt"), "indent-amount");
-         }
-
-         if (!this._indentamount.equals("")) {
-            outputProperties.setProperty("indent_amount", this._indentamount);
          }
 
          this._mediaType = this.getAttribute("media-type");
@@ -285,13 +251,6 @@ final class Output extends TopLevelElement {
             field = cpg.addFieldref("org.apache.xalan.xsltc.runtime.AbstractTranslet", "_indent", "Z");
             il.append((org.apache.bcel.generic.Instruction)InstructionConstants.DUP);
             il.append((CompoundInstruction)(new PUSH(cpg, this._indent)));
-            il.append((org.apache.bcel.generic.Instruction)(new PUTFIELD(field)));
-         }
-
-         if (this._indentamount != null && !this._indentamount.equals("")) {
-            field = cpg.addFieldref("org.apache.xalan.xsltc.runtime.AbstractTranslet", "_indentamount", "I");
-            il.append((org.apache.bcel.generic.Instruction)InstructionConstants.DUP);
-            il.append((CompoundInstruction)(new PUSH(cpg, Integer.parseInt(this._indentamount))));
             il.append((org.apache.bcel.generic.Instruction)(new PUTFIELD(field)));
          }
 

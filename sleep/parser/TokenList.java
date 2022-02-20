@@ -32,7 +32,7 @@ public class TokenList {
 
    public Token[] getTokens() {
       if (this.tarray == null) {
-         this.tarray = (Token[])((Token[])this.terms.toArray(dummyT));
+         this.tarray = (Token[])this.terms.toArray(dummyT);
       }
 
       return this.tarray;

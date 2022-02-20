@@ -19,13 +19,13 @@ public class MethodResolver {
    public static final int STATIC_AND_INSTANCE = 3;
    public static final int DYNAMIC = 4;
    private static final int SCOREBASE = 1;
-   private static final MethodResolver.ConversionInfo[] m_javaObjConversions;
-   private static final MethodResolver.ConversionInfo[] m_booleanConversions;
-   private static final MethodResolver.ConversionInfo[] m_numberConversions;
-   private static final MethodResolver.ConversionInfo[] m_stringConversions;
-   private static final MethodResolver.ConversionInfo[] m_rtfConversions;
-   private static final MethodResolver.ConversionInfo[] m_nodesetConversions;
-   private static final MethodResolver.ConversionInfo[][] m_conversions;
+   static MethodResolver.ConversionInfo[] m_javaObjConversions;
+   static MethodResolver.ConversionInfo[] m_booleanConversions;
+   static MethodResolver.ConversionInfo[] m_numberConversions;
+   static MethodResolver.ConversionInfo[] m_stringConversions;
+   static MethodResolver.ConversionInfo[] m_rtfConversions;
+   static MethodResolver.ConversionInfo[] m_nodesetConversions;
+   static MethodResolver.ConversionInfo[][] m_conversions;
    // $FF: synthetic field
    static Class class$org$apache$xalan$extensions$ExpressionContext;
    // $FF: synthetic field

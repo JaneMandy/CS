@@ -8,7 +8,6 @@ import org.apache.xpath.XPathVisitor;
 import org.apache.xpath.objects.XNodeSet;
 
 public class FilterExprIterator extends BasicTestIterator {
-   static final long serialVersionUID = 2552176105165737614L;
    private Expression m_expr;
    private transient XNodeSet m_exprObj;
    private boolean m_mustHardReset = false;

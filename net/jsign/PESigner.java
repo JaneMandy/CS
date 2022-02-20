@@ -155,11 +155,11 @@ public class PESigner {
       if (certificates.length == 1) {
          list.add(certificates[0]);
       } else {
-         Certificate[] arr$ = certificates;
-         int len$ = certificates.length;
+         Certificate[] var3 = certificates;
+         int var4 = certificates.length;
 
-         for(int i$ = 0; i$ < len$; ++i$) {
-            Certificate certificate = arr$[i$];
+         for(int var5 = 0; var5 < var4; ++var5) {
+            Certificate certificate = var3[var5];
             if (!this.isSelfSigned((X509Certificate)certificate)) {
                list.add(certificate);
             }

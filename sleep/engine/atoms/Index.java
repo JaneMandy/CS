@@ -39,7 +39,7 @@ public class Index extends Step {
       }
 
       this.index.evaluate(var1);
-      Scalar var2 = (Scalar)((Scalar)var1.getCurrentFrame().pop());
+      Scalar var2 = (Scalar)var1.getCurrentFrame().pop();
       if (var4.getArray() != null) {
          int var5 = var2.getValue().intValue();
          if (var5 < 0) {
@@ -53,7 +53,8 @@ public class Index extends Step {
       } else {
          if (var4.objectValue() == null || !(var4.objectValue() instanceof SleepClosure)) {
             var1.KillFrame();
-            throw new IllegalArgumentException("invalid use of index operator: " + SleepUtils.describe(var4) + "[" + SleepUtils.describe(var2) + "]");
+            String var10002 = SleepUtils.describe(var4);
+            throw new IllegalArgumentException("invalid use of index operator: " + var10002 + "[" + SleepUtils.describe(var2) + "]");
          }
 
          SleepClosure var7 = (SleepClosure)var4.objectValue();

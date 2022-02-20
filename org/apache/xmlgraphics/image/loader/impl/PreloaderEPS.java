@@ -58,20 +58,20 @@ public class PreloaderEPS extends AbstractImagePreloader {
             info = new ImageInfo(uri, "application/postscript");
             boolean success = this.determineSize(in, context, info);
             in.reset();
-            if (success) {
-               if (in.getStreamPosition() != 0L) {
-                  throw new IllegalStateException("Need to be at the start of the file here");
-               }
-
-               if (binaryHeader != null) {
-                  info.getCustomObjects().put(EPS_BINARY_HEADER, binaryHeader);
-               }
-
-               var12 = info;
+            if (!success) {
+               var12 = null;
                return var12;
             }
 
-            var12 = null;
+            if (in.getStreamPosition() != 0L) {
+               throw new IllegalStateException("Need to be at the start of the file here");
+            }
+
+            if (binaryHeader != null) {
+               info.getCustomObjects().put(EPS_BINARY_HEADER, binaryHeader);
+            }
+
+            var12 = info;
          } finally {
             in.setByteOrder(originalByteOrder);
          }

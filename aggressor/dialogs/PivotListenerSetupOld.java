@@ -40,14 +40,14 @@ public class PivotListenerSetupOld extends AObject implements DialogListener, Ca
       var9.PortForward(var5, var6, var7);
       HashMap var10 = new HashMap();
       var10.put("payload", var8);
-      var10.put("port", var5 + "");
+      var10.put("port", var5.makeConcatWithConstants<invokedynamic>(var5));
       var10.put("host", var4);
       var10.put("name", var3);
       this.client.getConnection().call("listeners.create", CommonUtils.args(var3, var10), this);
    }
 
    public void result(String var1, Object var2) {
-      String var3 = var2 + "";
+      String var3 = ((Class)var2).makeConcatWithConstants<invokedynamic>(var2);
       if (var3.equals("success")) {
          DialogUtils.showInfo("Started Listener");
       } else {

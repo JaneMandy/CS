@@ -10,7 +10,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 class ProcessorOutputElem extends XSLTElementProcessor {
-   static final long serialVersionUID = 3513742319582547590L;
    private OutputProperties m_outputProperties;
 
    public void setCdataSectionElements(Vector newValue) {

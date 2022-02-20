@@ -1,7 +1,6 @@
 package org.apache.xalan.xsltc.compiler;
 
 public final class CompilerException extends Exception {
-   static final long serialVersionUID = 1732939618562742663L;
    private String _msg;
 
    public CompilerException() {

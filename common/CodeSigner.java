@@ -43,6 +43,7 @@ public class CodeSigner implements Serializable {
       } else {
          this.keystore = new byte[0];
       }
+
    }
 
    public boolean available() {
@@ -100,5 +101,6 @@ public class CodeSigner implements Serializable {
 
          var3.sign(new PEFile(var1));
       }
+
    }
 }

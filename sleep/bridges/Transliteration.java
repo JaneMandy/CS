@@ -227,7 +227,6 @@ public class Transliteration {
          this.next = null;
       }
 
-      // $FF: synthetic method
       Element(Object var1) {
          this();
       }

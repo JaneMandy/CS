@@ -111,6 +111,79 @@ public class FileSystemBridge implements Loadable, Function, Predicate {
       }
    }
 
+   private static class getFileName implements Function {
+      private getFileName() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         File var4 = BridgeUtilities.getFile(var3, var2);
+         return SleepUtils.getScalar(var4.getName());
+      }
+
+      getFileName(Object var1) {
+         this();
+      }
+   }
+
+   private static class getFileProper implements Function {
+      private getFileProper() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         File var4;
+         for(var4 = BridgeUtilities.getFile(var3, var2); !var3.isEmpty(); var4 = new File(var4, var3.pop().toString())) {
+         }
+
+         return SleepUtils.getScalar(var4.getAbsolutePath());
+      }
+
+      getFileProper(Object var1) {
+         this();
+      }
+   }
+
+   private static class getFileParent implements Function {
+      private getFileParent() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         File var4 = BridgeUtilities.getFile(var3, var2);
+         return SleepUtils.getScalar(var4.getParent());
+      }
+
+      getFileParent(Object var1) {
+         this();
+      }
+   }
+
+   private static class lastModified implements Function {
+      private lastModified() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         File var4 = BridgeUtilities.getFile(var3, var2);
+         return SleepUtils.getScalar(var4.lastModified());
+      }
+
+      lastModified(Object var1) {
+         this();
+      }
+   }
+
+   private static class lof implements Function {
+      private lof() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         File var4 = BridgeUtilities.getFile(var3, var2);
+         return SleepUtils.getScalar(var4.length());
+      }
+
+      lof(Object var1) {
+         this();
+      }
+   }
+
    private static class listFiles implements Function {
       private listFiles() {
       }
@@ -134,86 +207,7 @@ public class FileSystemBridge implements Loadable, Function, Predicate {
          return SleepUtils.getArrayWrapper(var7);
       }
 
-      // $FF: synthetic method
       listFiles(Object var1) {
-         this();
-      }
-   }
-
-   private static class lof implements Function {
-      private lof() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         File var4 = BridgeUtilities.getFile(var3, var2);
-         return SleepUtils.getScalar(var4.length());
-      }
-
-      // $FF: synthetic method
-      lof(Object var1) {
-         this();
-      }
-   }
-
-   private static class lastModified implements Function {
-      private lastModified() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         File var4 = BridgeUtilities.getFile(var3, var2);
-         return SleepUtils.getScalar(var4.lastModified());
-      }
-
-      // $FF: synthetic method
-      lastModified(Object var1) {
-         this();
-      }
-   }
-
-   private static class getFileParent implements Function {
-      private getFileParent() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         File var4 = BridgeUtilities.getFile(var3, var2);
-         return SleepUtils.getScalar(var4.getParent());
-      }
-
-      // $FF: synthetic method
-      getFileParent(Object var1) {
-         this();
-      }
-   }
-
-   private static class getFileProper implements Function {
-      private getFileProper() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         File var4;
-         for(var4 = BridgeUtilities.getFile(var3, var2); !var3.isEmpty(); var4 = new File(var4, var3.pop().toString())) {
-         }
-
-         return SleepUtils.getScalar(var4.getAbsolutePath());
-      }
-
-      // $FF: synthetic method
-      getFileProper(Object var1) {
-         this();
-      }
-   }
-
-   private static class getFileName implements Function {
-      private getFileName() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         File var4 = BridgeUtilities.getFile(var3, var2);
-         return SleepUtils.getScalar(var4.getName());
-      }
-
-      // $FF: synthetic method
-      getFileName(Object var1) {
          this();
       }
    }

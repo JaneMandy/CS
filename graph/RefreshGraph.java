@@ -50,7 +50,7 @@ public class RefreshGraph implements Runnable {
          this.graph.addNode(var2.E, var2.A, var2.B, var2.D, var2.C);
       }
 
-      this.graph.setRoutes((Route[])((Route[])this.routes.toArray(new Route[0])));
+      this.graph.setRoutes((Route[])this.routes.toArray(new Route[0]));
       var1 = this.highlights.iterator();
 
       while(var1.hasNext()) {
@@ -60,6 +60,20 @@ public class RefreshGraph implements Runnable {
 
       this.graph.deleteNodes();
       this.graph.end();
+   }
+
+   private static class _A {
+      public String B;
+      public String A;
+
+      private _A() {
+         this.B = "";
+         this.A = "";
+      }
+
+      _A(Object var1) {
+         this();
+      }
    }
 
    private static class _B {
@@ -77,23 +91,7 @@ public class RefreshGraph implements Runnable {
          this.C = "";
       }
 
-      // $FF: synthetic method
       _B(Object var1) {
-         this();
-      }
-   }
-
-   private static class _A {
-      public String B;
-      public String A;
-
-      private _A() {
-         this.B = "";
-         this.A = "";
-      }
-
-      // $FF: synthetic method
-      _A(Object var1) {
          this();
       }
    }

@@ -163,7 +163,7 @@ public class DataManager implements Callback, GenericDataManager {
    }
 
    public String key() {
-      return this.hashCode() + "";
+      return this.hashCode().makeConcatWithConstants<invokedynamic>(this.hashCode());
    }
 
    protected List getSubs(String var1) {
@@ -314,7 +314,7 @@ public class DataManager implements Callback, GenericDataManager {
          if (GlobalDataManager.getGlobalDataManager().isGlobal(var1)) {
             GlobalDataManager.getGlobalDataManager().report(this, var1, var2);
          }
-
       }
+
    }
 }

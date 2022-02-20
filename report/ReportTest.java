@@ -20,7 +20,8 @@ public class ReportTest implements RuntimeWarningWatcher {
    protected ReportBridge bridge = new ReportBridge();
 
    public void processScriptWarning(ScriptWarning var1) {
-      String var2 = var1.getNameShort() + ":" + var1.getLineNumber();
+      String var10000 = var1.getNameShort();
+      String var2 = var10000 + ":" + var1.getLineNumber();
       SimpleDateFormat var3 = new SimpleDateFormat("HH:mm:ss");
       Date var4 = new Date();
       String var5 = var3.format(var4, new StringBuffer(), new FieldPosition(0)).toString();
@@ -45,10 +46,10 @@ public class ReportTest implements RuntimeWarningWatcher {
          ScriptInstance var5 = var4.loadScript(var1, var2);
          var5.addWarningWatcher(this);
          var5.runScript();
-      } catch (YourCodeSucksException var6) {
-         CommonUtils.print_error("Could not load: " + var1 + "\n" + var6.formatErrors());
-      } catch (Exception var7) {
-         MudgeSanity.logException("Could not load:" + var1, var7, false);
+      } catch (YourCodeSucksException var5) {
+         CommonUtils.print_error("Could not load: " + var1 + "\n" + var5.formatErrors());
+      } catch (Exception var6) {
+         MudgeSanity.logException("Could not load:" + var1, var6, false);
       }
 
    }
@@ -71,7 +72,7 @@ public class ReportTest implements RuntimeWarningWatcher {
          } catch (Exception var4) {
             MudgeSanity.logException("Error", var4, false);
          }
-
       }
+
    }
 }

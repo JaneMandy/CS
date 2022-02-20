@@ -4,7 +4,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
-import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.BranchHandle;
 import org.apache.bcel.generic.BranchInstruction;
 import org.apache.bcel.generic.CompoundInstruction;
@@ -42,6 +41,7 @@ final class Mode implements Constants {
    private TestSeq _idxTestSeq = null;
    private Vector[] _patternGroups;
    private TestSeq[] _testSeq;
+   private Hashtable _preCompiled = new Hashtable();
    private Hashtable _neededTemplates = new Hashtable();
    private Hashtable _namedTemplates = new Hashtable();
    private Hashtable _templateIHs = new Hashtable();
@@ -70,6 +70,14 @@ final class Mode implements Constants {
 
       this._importLevels.put(new Integer(max), new Integer(min));
       return this._methodName + '_' + max;
+   }
+
+   public void addInstructionList(Pattern pattern, InstructionList ilist) {
+      this._preCompiled.put(pattern, ilist);
+   }
+
+   public InstructionList getInstructionList(Pattern pattern) {
+      return (InstructionList)this._preCompiled.get(pattern);
    }
 
    private String getClassName() {
@@ -710,19 +718,23 @@ final class Mode implements Constants {
       }
 
       this.processPatterns(this._keys);
-      Type[] argTypes = new Type[]{Util.getJCRefType("Lorg/apache/xalan/xsltc/DOM;"), Util.getJCRefType("Lorg/apache/xml/dtm/DTMAxisIterator;"), Util.getJCRefType("Lorg/apache/xml/serializer/SerializationHandler;"), Type.INT};
-      String[] argNames = new String[]{"document", "iterator", "handler", "node"};
+      Type[] argTypes = new Type[]{Util.getJCRefType("Lorg/apache/xalan/xsltc/DOM;"), Util.getJCRefType("Lorg/apache/xml/dtm/DTMAxisIterator;"), Util.getJCRefType("Lorg/apache/xml/serializer/SerializationHandler;")};
+      String[] argNames = new String[]{"document", "iterator", "handler"};
       InstructionList mainIL = new InstructionList();
       MethodGenerator methodGen = new MethodGenerator(17, Type.VOID, argTypes, argNames, this.functionName() + '_' + max, this.getClassName(), mainIL, classGen.getConstantPool());
       methodGen.addException("org.apache.xalan.xsltc.TransletException");
       LocalVariableGen current = methodGen.addLocalVariable2("current", Type.INT, mainIL.getEnd());
       this._currentIndex = current.getIndex();
-      mainIL.append((org.apache.bcel.generic.Instruction)(new ILOAD(methodGen.getLocalIndex("node"))));
-      mainIL.append((org.apache.bcel.generic.Instruction)(new ISTORE(this._currentIndex)));
       InstructionList body = new InstructionList();
       body.append(InstructionConstants.NOP);
       InstructionList ilLoop = new InstructionList();
-      ilLoop.append((org.apache.bcel.generic.Instruction)InstructionConstants.RETURN);
+      ilLoop.append(methodGen.loadIterator());
+      ilLoop.append(methodGen.nextNode());
+      ilLoop.append((org.apache.bcel.generic.Instruction)InstructionConstants.DUP);
+      ilLoop.append((org.apache.bcel.generic.Instruction)(new ISTORE(this._currentIndex)));
+      BranchHandle ifeq = ilLoop.append((BranchInstruction)(new IFLT((InstructionHandle)null)));
+      BranchHandle loop = ilLoop.append((BranchInstruction)(new GOTO_W((InstructionHandle)null)));
+      ifeq.setTarget(ilLoop.append((org.apache.bcel.generic.Instruction)InstructionConstants.RETURN));
       InstructionHandle ihLoop = ilLoop.getStart();
       InstructionList ilRecurse = this.compileDefaultRecursion(classGen, methodGen, ihLoop);
       InstructionHandle ihRecurse = ilRecurse.getStart();
@@ -757,7 +769,10 @@ final class Mode implements Constants {
 
       InstructionList ilKey = null;
       if (this._idxTestSeq != null) {
+         loop.setTarget(this._idxTestSeq.compile(classGen, methodGen, body.getStart()));
          ilKey = this._idxTestSeq.getInstructionList();
+      } else {
+         loop.setTarget(body.getStart());
       }
 
       int i;
@@ -890,6 +905,7 @@ final class Mode implements Constants {
 
       body.append(ilRecurse);
       body.append(ilText);
+      mainIL.append((BranchInstruction)(new GOTO_W(ihLoop)));
       mainIL.append(body);
       mainIL.append(ilLoop);
       this.peepHoleOptimization(methodGen);
@@ -904,7 +920,7 @@ final class Mode implements Constants {
    private void peepHoleOptimization(MethodGenerator methodGen) {
       InstructionList il = methodGen.getInstructionList();
       InstructionFinder find = new InstructionFinder(il);
-      String pattern = "LoadInstruction POP";
+      String pattern = "`ALOAD'`POP'`Instruction'";
       Iterator iter = find.search(pattern);
 
       while(iter.hasNext()) {
@@ -914,28 +930,11 @@ final class Mode implements Constants {
             if (!match[0].hasTargeters() && !match[1].hasTargeters()) {
                il.delete(match[0], match[1]);
             }
-         } catch (TargetLostException var16) {
+         } catch (TargetLostException var14) {
          }
       }
 
-      pattern = "ILOAD ILOAD SWAP ISTORE";
-      Iterator iter = find.search(pattern);
-
-      while(iter.hasNext()) {
-         InstructionHandle[] match = (InstructionHandle[])iter.next();
-
-         try {
-            ILOAD iload1 = (ILOAD)match[0].getInstruction();
-            ILOAD iload2 = (ILOAD)match[1].getInstruction();
-            ISTORE istore = (ISTORE)match[3].getInstruction();
-            if (!match[1].hasTargeters() && !match[2].hasTargeters() && !match[3].hasTargeters() && iload1.getIndex() == iload2.getIndex() && iload2.getIndex() == istore.getIndex()) {
-               il.delete(match[1], match[3]);
-            }
-         } catch (TargetLostException var15) {
-         }
-      }
-
-      pattern = "LoadInstruction LoadInstruction SWAP";
+      pattern = "`ILOAD'`ALOAD'`SWAP'`Instruction'";
       Iterator iter = find.search(pattern);
 
       while(iter.hasNext()) {
@@ -943,30 +942,28 @@ final class Mode implements Constants {
 
          try {
             if (!match[0].hasTargeters() && !match[1].hasTargeters() && !match[2].hasTargeters()) {
-               org.apache.bcel.generic.Instruction load_m = match[1].getInstruction();
-               il.insert(match[0], load_m);
-               il.delete(match[1], match[2]);
+               org.apache.bcel.generic.Instruction iload = match[0].getInstruction();
+               org.apache.bcel.generic.Instruction aload = match[1].getInstruction();
+               il.insert(match[0], aload);
+               il.insert(match[0], iload);
+               il.delete(match[0], match[2]);
             }
-         } catch (TargetLostException var14) {
+         } catch (TargetLostException var13) {
          }
       }
 
-      pattern = "ALOAD ALOAD";
+      pattern = "`ALOAD_1'`ALOAD_1'`Instruction'";
       Iterator iter = find.search(pattern);
 
       while(iter.hasNext()) {
          InstructionHandle[] match = (InstructionHandle[])iter.next();
 
          try {
-            if (!match[1].hasTargeters()) {
-               ALOAD aload1 = (ALOAD)match[0].getInstruction();
-               ALOAD aload2 = (ALOAD)match[1].getInstruction();
-               if (aload1.getIndex() == aload2.getIndex()) {
-                  il.insert((InstructionHandle)match[1], (org.apache.bcel.generic.Instruction)(new DUP()));
-                  il.delete(match[1]);
-               }
+            if (!match[0].hasTargeters() && !match[1].hasTargeters()) {
+               il.insert((InstructionHandle)match[1], (org.apache.bcel.generic.Instruction)(new DUP()));
+               il.delete(match[1]);
             }
-         } catch (TargetLostException var13) {
+         } catch (TargetLostException var12) {
          }
       }
 

@@ -90,20 +90,21 @@ final class Variable extends VariableBase {
    public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
       ConstantPoolGen cpg = classGen.getConstantPool();
       InstructionList il = methodGen.getInstructionList();
-      if (super._refs.isEmpty()) {
-         super._ignore = true;
-      }
-
+      String name = this.getEscapedName();
       if (!super._ignore) {
          super._ignore = true;
-         String name = this.getEscapedName();
          if (this.isLocal()) {
             this.translateValue(classGen, methodGen);
-            if (super._local == null) {
-               this.mapRegister(methodGen);
-            }
+            if (super._refs.isEmpty()) {
+               il.append(super._type.POP());
+               super._local = null;
+            } else {
+               if (super._local == null) {
+                  this.mapRegister(methodGen);
+               }
 
-            il.append(super._type.STORE(super._local.getIndex()));
+               il.append(super._type.STORE(super._local.getIndex()));
+            }
          } else {
             String signature = super._type.toSignature();
             if (classGen.containsField(name) == null) {

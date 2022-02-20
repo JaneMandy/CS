@@ -211,7 +211,7 @@ public class IOObject {
          if (this.readeru != null) {
             int var1 = this.readeru.read();
             if (var1 != -1) {
-               return (char)var1 + "";
+               return ((char)var1).makeConcatWithConstants<invokedynamic>((char)var1);
             }
 
             this.close();

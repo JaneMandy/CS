@@ -19,6 +19,7 @@ public class DownloadFiles implements DownloadNotify {
          String var3 = (String)var1.get("name");
          (new DownloadFile(this.conn, var2, CommonUtils.SafeFile(this.dest, var3), this)).start();
       }
+
    }
 
    public DownloadFiles(TeamQueue var1, Map[] var2, File var3) {

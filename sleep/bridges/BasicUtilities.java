@@ -141,27 +141,7 @@ public class BasicUtilities implements Function, Loadable, Predicate {
             var4 = BridgeUtilities.getScalar(var3);
             Scalar var10 = BridgeUtilities.getScalar(var3);
             return var10.sameAs(var4);
-         } else if (var1.equals("in")) {
-            var4 = BridgeUtilities.getScalar(var3);
-            if (var4.getHash() == null) {
-               Iterator var9 = SleepUtils.getIterator(var4, var2);
-               Scalar var6 = BridgeUtilities.getScalar(var3);
-
-               Scalar var7;
-               do {
-                  if (!var9.hasNext()) {
-                     return false;
-                  }
-
-                  var7 = (Scalar)var9.next();
-               } while(!var6.sameAs(var7));
-
-               return true;
-            } else {
-               String var5 = BridgeUtilities.getString(var3, "");
-               return var4.getHash().getData().containsKey(var5) && !SleepUtils.isEmptyScalar((Scalar)((Scalar)var4.getHash().getData().get(var5)));
-            }
-         } else {
+         } else if (!var1.equals("in")) {
             var4 = (Scalar)var3.pop();
             if (var1.equals("-istrue")) {
                return SleepUtils.isTrueScalar(var4);
@@ -176,13 +156,31 @@ public class BasicUtilities implements Function, Loadable, Predicate {
             } else {
                return false;
             }
+         } else {
+            var4 = BridgeUtilities.getScalar(var3);
+            if (var4.getHash() == null) {
+               Iterator var9 = SleepUtils.getIterator(var4, var2);
+               Scalar var6 = BridgeUtilities.getScalar(var3);
+
+               while(var9.hasNext()) {
+                  Scalar var7 = (Scalar)var9.next();
+                  if (var6.sameAs(var7)) {
+                     return true;
+                  }
+               }
+
+               return false;
+            } else {
+               String var5 = BridgeUtilities.getString(var3, "");
+               return var4.getHash().getData().containsKey(var5) && !SleepUtils.isEmptyScalar((Scalar)var4.getHash().getData().get(var5));
+            }
          }
       }
    }
 
    public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
       if (var3.isEmpty() && var1.equals("&remove")) {
-         Stack var28 = (Stack)((Stack)var2.getScriptEnvironment().getContextMetadata("iterators"));
+         Stack var28 = (Stack)var2.getScriptEnvironment().getContextMetadata("iterators");
          if (var28 != null && !var28.isEmpty()) {
             Iterate.IteratorData var59 = (Iterate.IteratorData)var28.peek();
             var59.iterator.remove();
@@ -203,19 +201,20 @@ public class BasicUtilities implements Function, Loadable, Predicate {
          Stack var25;
          int var30;
          Scalar var43;
+         Variable var38;
          if (var1.equals("&watch")) {
             String var24 = BridgeUtilities.getString(var3, "");
             String[] var29 = var24.split(" ");
 
             for(var30 = 0; var30 < var29.length; ++var30) {
-               Variable var26 = var2.getScriptVariables().getScalarLevel(var29[var30], var2);
-               if (var26 == null) {
+               var38 = var2.getScriptVariables().getScalarLevel(var29[var30], var2);
+               if (var38 == null) {
                   throw new IllegalArgumentException(var29[var30] + " must already exist in a scope prior to watching");
                }
 
                WatchScalar var35 = new WatchScalar(var29[var30], var2.getScriptEnvironment());
-               var35.setValue((Scalar)var26.getScalar(var29[var30]));
-               var2.getScriptVariables().setScalarLevel(var29[var30], var35, var26);
+               var35.setValue((Scalar)var38.getScalar(var29[var30]));
+               var2.getScriptVariables().setScalarLevel(var29[var30], var35, var38);
             }
          } else {
             if (var1.equals("&scalar")) {
@@ -226,18 +225,18 @@ public class BasicUtilities implements Function, Loadable, Predicate {
                return !var3.isEmpty() ? (Scalar)var3.pop() : SleepUtils.getEmptyScalar();
             }
 
+            SleepClosure var22;
             if (var1.equals("&newInstance")) {
                var4 = BridgeUtilities.getScalar(var3);
-               SleepClosure var27;
                if (var4.getArray() != null) {
-                  Class[] var23 = (Class[])((Class[])ObjectUtilities.buildArgument(Class[].class, var4, var2));
-                  var27 = (SleepClosure)BridgeUtilities.getObject(var3);
-                  return SleepUtils.getScalar(ProxyInterface.BuildInterface((Class[])var23, (Function)var27, var2));
+                  Class[] var23 = (Class[])ObjectUtilities.buildArgument(Class[].class, var4, var2);
+                  var22 = (SleepClosure)BridgeUtilities.getObject(var3);
+                  return SleepUtils.getScalar(ProxyInterface.BuildInterface((Class[])var23, (Function)var22, var2));
                }
 
                Class var21 = (Class)var4.objectValue();
-               var27 = (SleepClosure)BridgeUtilities.getObject(var3);
-               return SleepUtils.getScalar(SleepUtils.newInstance(var21, var27, var2));
+               var22 = (SleepClosure)BridgeUtilities.getObject(var3);
+               return SleepUtils.getScalar(SleepUtils.newInstance(var21, var22, var2));
             }
 
             if (var1.equals("&typeOf")) {
@@ -254,7 +253,7 @@ public class BasicUtilities implements Function, Loadable, Predicate {
             }
 
             if (var1.equals("&inline")) {
-               SleepClosure var22 = BridgeUtilities.getFunction(var3, var2);
+               var22 = BridgeUtilities.getFunction(var3, var2);
                var22.getRunnableCode().evaluate(var2.getScriptEnvironment());
                return SleepUtils.getEmptyScalar();
             }
@@ -285,7 +284,7 @@ public class BasicUtilities implements Function, Loadable, Predicate {
                   var8 = var19.get("message").toString();
                }
 
-               Variable var38 = var20.getVariables();
+               var38 = var20.getVariables();
                if (var19.containsKey("$this")) {
                   SleepClosure var42 = (SleepClosure)((Scalar)var19.get("$this")).objectValue();
                   var20.setVariables(var42.getVariables());
@@ -384,22 +383,23 @@ public class BasicUtilities implements Function, Loadable, Predicate {
             Iterator var45;
             ScalarArray var46;
             ScalarArray var60;
+            HashSet var52;
             if ((var1.equals("&retainAll") || var1.equals("&removeAll")) && BridgeUtilities.expectArray(var1, var4)) {
                var46 = var4.getArray();
                var60 = BridgeUtilities.getArray(var3);
-               HashSet var55 = new HashSet();
+               var52 = new HashSet();
                var45 = var60.scalarIterator();
 
                while(var45.hasNext()) {
                   var33 = (Scalar)var45.next();
-                  var55.add(var33.identity());
+                  var52.add(var33.identity());
                }
 
                var45 = var46.scalarIterator();
 
                while(var45.hasNext()) {
                   var33 = (Scalar)var45.next();
-                  if (!var55.contains(var33.identity())) {
+                  if (!var52.contains(var33.identity())) {
                      if (var1.equals("&retainAll")) {
                         var45.remove();
                      }
@@ -412,7 +412,7 @@ public class BasicUtilities implements Function, Loadable, Predicate {
             } else if (var1.equals("&addAll") && BridgeUtilities.expectArray(var1, var4)) {
                var46 = var4.getArray();
                var60 = BridgeUtilities.getArray(var3);
-               HashSet var52 = new HashSet();
+               var52 = new HashSet();
                Iterator var50 = var46.scalarIterator();
 
                while(var50.hasNext()) {
@@ -633,8 +633,8 @@ public class BasicUtilities implements Function, Loadable, Predicate {
                                  throw new IllegalArgumentException("&setField: can not set field on a null object");
                               }
 
-                              Object var36;
                               Class var37;
+                              Object var36;
                               if (var4.objectValue() instanceof Class) {
                                  var37 = (Class)var4.objectValue();
                                  var36 = null;
@@ -652,22 +652,23 @@ public class BasicUtilities implements Function, Loadable, Predicate {
                                     Field var32;
                                     try {
                                        var32 = var37.getDeclaredField(var41);
-                                    } catch (NoSuchFieldException var13) {
+                                    } catch (NoSuchFieldException var28) {
                                        var32 = var37.getField(var41);
                                     }
 
                                     if (ObjectUtilities.isArgMatch(var32.getType(), var43) == 0) {
-                                       throw new RuntimeException("unable to convert " + SleepUtils.describe(var43) + " to a " + var32.getType());
+                                       String var10002 = SleepUtils.describe(var43);
+                                       throw new RuntimeException("unable to convert " + var10002 + " to a " + var32.getType());
                                     }
 
                                     var32.setAccessible(true);
                                     var32.set(var36, ObjectUtilities.buildArgument(var32.getType(), var43, var2));
-                                 } catch (NoSuchFieldException var14) {
+                                 } catch (NoSuchFieldException var29) {
                                     throw new RuntimeException("no field named " + var41 + " in " + var37);
-                                 } catch (RuntimeException var15) {
-                                    throw var15;
-                                 } catch (Exception var16) {
-                                    throw new RuntimeException("cannot set " + var41 + " in " + var37 + ": " + var16.getMessage());
+                                 } catch (RuntimeException var30) {
+                                    throw var30;
+                                 } catch (Exception var31) {
+                                    throw new RuntimeException("cannot set " + var41 + " in " + var37 + ": " + var31.getMessage());
                                  }
                               }
                            }
@@ -677,7 +678,7 @@ public class BasicUtilities implements Function, Loadable, Predicate {
                            }
 
                            var20 = BridgeUtilities.getFunction(var3, var2);
-                           OrderedHashContainer var31 = (OrderedHashContainer)((OrderedHashContainer)var4.getHash());
+                           OrderedHashContainer var31 = (OrderedHashContainer)var4.getHash();
                            if (var1.equals("&setMissPolicy")) {
                               var31.setMissPolicy(var20);
                            } else {
@@ -712,445 +713,44 @@ public class BasicUtilities implements Function, Loadable, Predicate {
       ParserConfig.addKeyword("=~");
    }
 
-   private static class eval implements Function {
-      private eval() {
+   private static class SyncPrimitives implements Function {
+      private SyncPrimitives() {
       }
 
       public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         String var4 = var3.pop().toString();
-
-         try {
-            Scalar var5;
-            if (var1.equals("&eval")) {
-               var5 = SleepUtils.getScalar(var2.getScriptEnvironment().evaluateStatement(var4));
-               return var5;
-            } else {
-               var5 = SleepUtils.getScalar(var2.getScriptEnvironment().evaluateExpression(var4));
-               return var5;
-            }
-         } catch (YourCodeSucksException var6) {
-            var2.getScriptEnvironment().flagError(var6);
-            return SleepUtils.getEmptyScalar();
-         }
-      }
-
-      // $FF: synthetic method
-      eval(Object var1) {
-         this();
-      }
-   }
-
-   private static class systemProperties implements Function {
-      private systemProperties() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         return SleepUtils.getHashWrapper(System.getProperties());
-      }
-
-      // $FF: synthetic method
-      systemProperties(Object var1) {
-         this();
-      }
-   }
-
-   private static class SetScope implements Function {
-      private Pattern splitter;
-
-      private SetScope() {
-         this.splitter = Pattern.compile("\\s+");
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         Variable var4 = null;
-         if (var1.equals("&local")) {
-            var4 = var2.getScriptVariables().getLocalVariables();
-         } else if (var1.equals("&this")) {
-            var4 = var2.getScriptVariables().getClosureVariables();
-         } else if (var1.equals("&global")) {
-            var4 = var2.getScriptVariables().getGlobalVariables();
-         }
-
-         String var5 = var3.pop().toString();
-         if (var4 == null) {
-            return SleepUtils.getEmptyScalar();
+         if (var1.equals("&semaphore")) {
+            int var5 = BridgeUtilities.getInt(var3, 1);
+            return SleepUtils.getScalar((Object)(new Semaphore((long)var5)));
          } else {
-            String[] var6 = this.splitter.split(var5);
-
-            for(int var7 = 0; var7 < var6.length; ++var7) {
-               if (!var4.scalarExists(var6[var7])) {
-                  if (var6[var7].charAt(0) == '$') {
-                     var2.getScriptVariables().setScalarLevel(var6[var7], SleepUtils.getEmptyScalar(), var4);
-                  } else if (var6[var7].charAt(0) == '@') {
-                     var2.getScriptVariables().setScalarLevel(var6[var7], SleepUtils.getArrayScalar(), var4);
-                  } else {
-                     if (var6[var7].charAt(0) != '%') {
-                        throw new IllegalArgumentException(var1 + ": malformed variable name '" + var6[var7] + "' from '" + var5 + "'");
-                     }
-
-                     var2.getScriptVariables().setScalarLevel(var6[var7], SleepUtils.getHashScalar(), var4);
-                  }
-               }
+            Semaphore var4;
+            if (var1.equals("&acquire")) {
+               var4 = (Semaphore)BridgeUtilities.getObject(var3);
+               var4.P();
+            } else if (var1.equals("&release")) {
+               var4 = (Semaphore)BridgeUtilities.getObject(var3);
+               var4.V();
             }
 
             return SleepUtils.getEmptyScalar();
          }
       }
 
-      // $FF: synthetic method
-      SetScope(Object var1) {
+      SyncPrimitives(Object var1) {
          this();
       }
    }
 
-   private static class reverse implements Function {
-      private reverse() {
+   private static class HashKeyValueOp implements Operator {
+      private HashKeyValueOp() {
       }
 
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         Scalar var4 = SleepUtils.getArrayScalar();
-         Iterator var5 = BridgeUtilities.getIterator(var3, var2);
-
-         while(var5.hasNext()) {
-            var4.getArray().add(SleepUtils.getScalar((Scalar)var5.next()), 0);
-         }
-
-         return var4;
-      }
-
-      // $FF: synthetic method
-      reverse(Object var1) {
-         this();
-      }
-   }
-
-   private static class shift implements Function {
-      private shift() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         ScalarArray var4 = BridgeUtilities.getArray(var3);
-         return var4.remove(0);
-      }
-
-      // $FF: synthetic method
-      shift(Object var1) {
-         this();
-      }
-   }
-
-   private static class removeAt implements Function {
-      private removeAt() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+      public Scalar operate(String var1, ScriptInstance var2, Stack var3) {
          Scalar var4 = (Scalar)var3.pop();
-         if (var4.getArray() != null) {
-            while(!var3.isEmpty()) {
-               var4.getArray().remove(BridgeUtilities.normalize(BridgeUtilities.getInt(var3, 0), var4.getArray().size()));
-            }
-         } else if (var4.getHash() != null) {
-            while(!var3.isEmpty()) {
-               Scalar var5 = var4.getHash().getAt((Scalar)var3.pop());
-               var5.setValue(SleepUtils.getEmptyScalar());
-            }
-         }
-
-         return SleepUtils.getEmptyScalar();
+         Scalar var5 = (Scalar)var3.pop();
+         return SleepUtils.getScalar((Object)(new KeyValuePair(var4, var5)));
       }
 
-      // $FF: synthetic method
-      removeAt(Object var1) {
-         this();
-      }
-   }
-
-   private static class copy implements Function {
-      private copy() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         Scalar var4 = BridgeUtilities.getScalar(var3);
-         Scalar var5;
-         Iterator var6;
-         if (var4.getArray() == null && !SleepUtils.isFunctionScalar(var4)) {
-            if (var4.getHash() == null) {
-               return SleepUtils.getScalar(var4);
-            } else {
-               var5 = SleepUtils.getHashScalar();
-               var6 = var4.getHash().keys().scalarIterator();
-
-               while(var6.hasNext()) {
-                  Scalar var7 = (Scalar)var6.next();
-                  Scalar var8 = var5.getHash().getAt(var7);
-                  var8.setValue(var4.getHash().getAt(var7));
-               }
-
-               return var5;
-            }
-         } else {
-            var5 = SleepUtils.getArrayScalar();
-            var6 = var4.getArray() == null ? SleepUtils.getFunctionFromScalar(var4, var2).scalarIterator() : var4.getArray().scalarIterator();
-
-            while(var6.hasNext()) {
-               var5.getArray().push(SleepUtils.getScalar((Scalar)var6.next()));
-            }
-
-            return var5;
-         }
-      }
-
-      // $FF: synthetic method
-      copy(Object var1) {
-         this();
-      }
-   }
-
-   private static class map implements Function {
-      private map() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         SleepClosure var4 = BridgeUtilities.getFunction(var3, var2);
-         Iterator var5 = BridgeUtilities.getIterator(var3, var2);
-         Scalar var6 = SleepUtils.getArrayScalar();
-
-         for(Stack var7 = new Stack(); var5.hasNext(); var7.clear()) {
-            var7.push(var5.next());
-            Scalar var8 = var4.callClosure("eval", var2, var7);
-            if (!SleepUtils.isEmptyScalar(var8) || var1.equals("&map")) {
-               var6.getArray().push(SleepUtils.getScalar(var8));
-            }
-         }
-
-         return var6;
-      }
-
-      // $FF: synthetic method
-      map(Object var1) {
-         this();
-      }
-   }
-
-   private static class lambda implements Function {
-      private lambda() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         SleepClosure var4;
-         SleepClosure var5;
-         if (var1.equals("&lambda")) {
-            var5 = BridgeUtilities.getFunction(var3, var2);
-            var4 = new SleepClosure(var2, var5.getRunnableCode());
-         } else if (var1.equals("&compile_closure")) {
-            String var6 = var3.pop().toString();
-
-            try {
-               var5 = new SleepClosure(var2, SleepUtils.ParseCode(var6));
-               var4 = var5;
-            } catch (YourCodeSucksException var9) {
-               var2.getScriptEnvironment().flagError(var9);
-               return SleepUtils.getEmptyScalar();
-            }
-         } else {
-            var5 = BridgeUtilities.getFunction(var3, var2);
-            var4 = var5;
-         }
-
-         Variable var10 = var4.getVariables();
-
-         while(!var3.isEmpty()) {
-            KeyValuePair var7 = BridgeUtilities.getKeyValuePair(var3);
-            if (var7.getKey().toString().equals("$this")) {
-               SleepClosure var8 = (SleepClosure)var7.getValue().objectValue();
-               var4.setVariables(var8.getVariables());
-               var10 = var8.getVariables();
-            } else {
-               var10.putScalar(var7.getKey().toString(), SleepUtils.getScalar(var7.getValue()));
-            }
-         }
-
-         return SleepUtils.getScalar((Object)var4);
-      }
-
-      // $FF: synthetic method
-      lambda(Object var1) {
-         this();
-      }
-   }
-
-   private static class hash implements Function {
-      private hash() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         Scalar var4 = null;
-         if (var1.equals("&ohash")) {
-            var4 = SleepUtils.getOrderedHashScalar();
-         } else if (var1.equals("&ohasha")) {
-            var4 = SleepUtils.getAccessOrderedHashScalar();
-         } else {
-            var4 = SleepUtils.getHashScalar();
-         }
-
-         while(!var3.isEmpty()) {
-            KeyValuePair var5 = BridgeUtilities.getKeyValuePair(var3);
-            Scalar var6 = var4.getHash().getAt(var5.getKey());
-            var6.setValue(var5.getValue());
-         }
-
-         return var4;
-      }
-
-      // $FF: synthetic method
-      hash(Object var1) {
-         this();
-      }
-   }
-
-   private static class function implements Function {
-      private function() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         String var4;
-         if (!var1.equals("&function") && !var1.equals("function")) {
-            if (var1.equals("&setf")) {
-               var4 = BridgeUtilities.getString(var3, "&eh");
-               Object var5 = BridgeUtilities.getObject(var3);
-               if (var4.charAt(0) == '&' && (var5 == null || var5 instanceof Function)) {
-                  if (var5 == null) {
-                     var2.getScriptEnvironment().getEnvironment().remove(var4);
-                  } else {
-                     var2.getScriptEnvironment().getEnvironment().put(var4, var5);
-                  }
-               } else {
-                  if (var4.charAt(0) != '&') {
-                     throw new IllegalArgumentException("&setf: invalid function name '" + var4 + "'");
-                  }
-
-                  if (var5 != null) {
-                     throw new IllegalArgumentException("&setf: can not set function " + var4 + " to a " + var5.getClass());
-                  }
-               }
-            }
-
-            return SleepUtils.getEmptyScalar();
-         } else {
-            var4 = BridgeUtilities.getString(var3, "");
-            if (var4.length() != 0 && var4.charAt(0) == '&') {
-               return SleepUtils.getScalar((Object)var2.getScriptEnvironment().getFunction(var4));
-            } else {
-               throw new IllegalArgumentException(var1 + ": requested function name must begin with '&'");
-            }
-         }
-      }
-
-      // $FF: synthetic method
-      function(Object var1) {
-         this();
-      }
-   }
-
-   private static class f_cast implements Function {
-      private f_cast() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         Scalar var4 = BridgeUtilities.getScalar(var3);
-         Scalar var5 = BridgeUtilities.getScalar(var3);
-         if (var1.equals("&casti")) {
-            Class var16 = ObjectUtilities.convertScalarDescriptionToClass(var5);
-            if (var16 != null) {
-               Object var17 = ObjectUtilities.buildArgument(var16, var4, var2);
-               return SleepUtils.getScalar(var17);
-            } else {
-               throw new RuntimeException("&casti: '" + var5 + "' is an invalid primitive cast identifier");
-            }
-         } else if (var4.getArray() == null) {
-            if (var5.toString().charAt(0) == 'c') {
-               return SleepUtils.getScalar((Object)var4.toString().toCharArray());
-            } else {
-               return var5.toString().charAt(0) == 'b' ? SleepUtils.getScalar((Object)BridgeUtilities.toByteArrayNoConversion(var4.toString())) : SleepUtils.getEmptyScalar();
-            }
-         } else {
-            if (var3.size() == 0) {
-               var3.push(SleepUtils.getScalar(var4.getArray().size()));
-            }
-
-            int[] var6 = new int[var3.size()];
-            int var7 = 1;
-
-            for(int var8 = 0; !var3.isEmpty(); ++var8) {
-               var6[var8] = BridgeUtilities.getInt(var3, 0);
-               var7 *= var6[var8];
-            }
-
-            Class var9 = ObjectUtilities.convertScalarDescriptionToClass(var5);
-            if (var9 == null) {
-               var9 = ObjectUtilities.getArrayType(var4, Object.class);
-            }
-
-            Scalar var10 = BridgeUtilities.flattenArray(var4, (Scalar)null);
-            if (var7 != var10.getArray().size()) {
-               throw new RuntimeException("&cast: specified dimensions " + var7 + " is not equal to total array elements " + var10.getArray().size());
-            } else {
-               Object var18 = Array.newInstance(var9, var6);
-               int[] var11 = new int[var6.length];
-               if (var10.getArray().size() == 0) {
-                  return SleepUtils.getScalar(var18);
-               } else {
-                  int var12 = 0;
-
-                  while(true) {
-                     Object var13 = var18;
-
-                     for(int var14 = 0; var14 < var11.length - 1; ++var14) {
-                        var13 = Array.get(var13, var11[var14]);
-                     }
-
-                     Object var19 = ObjectUtilities.buildArgument(var9, var10.getArray().getAt(var12), var2);
-                     Array.set(var13, var11[var11.length - 1], var19);
-                     int var10002 = var11[var11.length - 1]++;
-
-                     for(int var15 = var11.length - 1; var11[var15] >= var6[var15]; --var15) {
-                        if (var15 == 0) {
-                           return SleepUtils.getScalar(var18);
-                        }
-
-                        var11[var15] = 0;
-                        ++var11[var15 - 1];
-                     }
-
-                     ++var12;
-                  }
-               }
-            }
-         }
-      }
-
-      // $FF: synthetic method
-      f_cast(Object var1) {
-         this();
-      }
-   }
-
-   private static class array implements Function {
-      private array() {
-      }
-
-      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         Scalar var4 = SleepUtils.getArrayScalar();
-
-         while(!var3.isEmpty()) {
-            var4.getArray().push(SleepUtils.getScalar(BridgeUtilities.getScalar(var3)));
-         }
-
-         return var4;
-      }
-
-      // $FF: synthetic method
-      array(Object var1) {
+      HashKeyValueOp(Object var1) {
          this();
       }
    }
@@ -1235,62 +835,447 @@ public class BasicUtilities implements Function, Loadable, Predicate {
                   Block var18 = var17.compileScript(var5, (InputStream)var9);
                   SleepUtils.runCode(var18, var2.getScriptEnvironment());
                }
-            } catch (YourCodeSucksException var13) {
+            } catch (YourCodeSucksException var12) {
+               var2.getScriptEnvironment().flagError(var12);
+            } catch (Exception var13) {
                var2.getScriptEnvironment().flagError(var13);
-            } catch (Exception var14) {
-               var2.getScriptEnvironment().flagError(var14);
             }
 
             return SleepUtils.getEmptyScalar();
          }
       }
 
-      // $FF: synthetic method
       f_use(Object var1) {
          this();
       }
    }
 
-   private static class HashKeyValueOp implements Operator {
-      private HashKeyValueOp() {
+   private static class array implements Function {
+      private array() {
       }
 
-      public Scalar operate(String var1, ScriptInstance var2, Stack var3) {
-         Scalar var4 = (Scalar)var3.pop();
-         Scalar var5 = (Scalar)var3.pop();
-         return SleepUtils.getScalar((Object)(new KeyValuePair(var4, var5)));
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         Scalar var4 = SleepUtils.getArrayScalar();
+
+         while(!var3.isEmpty()) {
+            var4.getArray().push(SleepUtils.getScalar(BridgeUtilities.getScalar(var3)));
+         }
+
+         return var4;
       }
 
-      // $FF: synthetic method
-      HashKeyValueOp(Object var1) {
+      array(Object var1) {
          this();
       }
    }
 
-   private static class SyncPrimitives implements Function {
-      private SyncPrimitives() {
+   private static class f_cast implements Function {
+      private f_cast() {
       }
 
       public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
-         if (var1.equals("&semaphore")) {
-            int var5 = BridgeUtilities.getInt(var3, 1);
-            return SleepUtils.getScalar((Object)(new Semaphore((long)var5)));
+         Scalar var4 = BridgeUtilities.getScalar(var3);
+         Scalar var5 = BridgeUtilities.getScalar(var3);
+         if (var1.equals("&casti")) {
+            Class var16 = ObjectUtilities.convertScalarDescriptionToClass(var5);
+            if (var16 != null) {
+               Object var17 = ObjectUtilities.buildArgument(var16, var4, var2);
+               return SleepUtils.getScalar(var17);
+            } else {
+               throw new RuntimeException("&casti: '" + var5 + "' is an invalid primitive cast identifier");
+            }
+         } else if (var4.getArray() == null) {
+            if (var5.toString().charAt(0) == 'c') {
+               return SleepUtils.getScalar((Object)var4.toString().toCharArray());
+            } else {
+               return var5.toString().charAt(0) == 'b' ? SleepUtils.getScalar((Object)BridgeUtilities.toByteArrayNoConversion(var4.toString())) : SleepUtils.getEmptyScalar();
+            }
          } else {
-            Semaphore var4;
-            if (var1.equals("&acquire")) {
-               var4 = (Semaphore)BridgeUtilities.getObject(var3);
-               var4.P();
-            } else if (var1.equals("&release")) {
-               var4 = (Semaphore)BridgeUtilities.getObject(var3);
-               var4.V();
+            if (var3.size() == 0) {
+               var3.push(SleepUtils.getScalar(var4.getArray().size()));
+            }
+
+            int[] var6 = new int[var3.size()];
+            int var7 = 1;
+
+            for(int var8 = 0; !var3.isEmpty(); ++var8) {
+               var6[var8] = BridgeUtilities.getInt(var3, 0);
+               var7 *= var6[var8];
+            }
+
+            Class var9 = ObjectUtilities.convertScalarDescriptionToClass(var5);
+            if (var9 == null) {
+               var9 = ObjectUtilities.getArrayType(var4, Object.class);
+            }
+
+            Scalar var10 = BridgeUtilities.flattenArray(var4, (Scalar)null);
+            if (var7 != var10.getArray().size()) {
+               throw new RuntimeException("&cast: specified dimensions " + var7 + " is not equal to total array elements " + var10.getArray().size());
+            } else {
+               Object var18 = Array.newInstance(var9, var6);
+               int[] var11 = new int[var6.length];
+               if (var10.getArray().size() == 0) {
+                  return SleepUtils.getScalar(var18);
+               } else {
+                  int var12 = 0;
+
+                  while(true) {
+                     Object var13 = var18;
+
+                     for(int var14 = 0; var14 < var11.length - 1; ++var14) {
+                        var13 = Array.get(var13, var11[var14]);
+                     }
+
+                     Object var19 = ObjectUtilities.buildArgument(var9, var10.getArray().getAt(var12), var2);
+                     Array.set(var13, var11[var11.length - 1], var19);
+                     ++var11[var11.length - 1];
+
+                     for(int var15 = var11.length - 1; var11[var15] >= var6[var15]; --var15) {
+                        if (var15 == 0) {
+                           return SleepUtils.getScalar(var18);
+                        }
+
+                        var11[var15] = 0;
+                        ++var11[var15 - 1];
+                     }
+
+                     ++var12;
+                  }
+               }
+            }
+         }
+      }
+
+      f_cast(Object var1) {
+         this();
+      }
+   }
+
+   private static class function implements Function {
+      private function() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         String var4;
+         if (!var1.equals("&function") && !var1.equals("function")) {
+            if (var1.equals("&setf")) {
+               var4 = BridgeUtilities.getString(var3, "&eh");
+               Object var5 = BridgeUtilities.getObject(var3);
+               if (var4.charAt(0) == '&' && (var5 == null || var5 instanceof Function)) {
+                  if (var5 == null) {
+                     var2.getScriptEnvironment().getEnvironment().remove(var4);
+                  } else {
+                     var2.getScriptEnvironment().getEnvironment().put(var4, var5);
+                  }
+               } else {
+                  if (var4.charAt(0) != '&') {
+                     throw new IllegalArgumentException("&setf: invalid function name '" + var4 + "'");
+                  }
+
+                  if (var5 != null) {
+                     throw new IllegalArgumentException("&setf: can not set function " + var4 + " to a " + var5.getClass());
+                  }
+               }
+            }
+
+            return SleepUtils.getEmptyScalar();
+         } else {
+            var4 = BridgeUtilities.getString(var3, "");
+            if (var4.length() != 0 && var4.charAt(0) == '&') {
+               return SleepUtils.getScalar((Object)var2.getScriptEnvironment().getFunction(var4));
+            } else {
+               throw new IllegalArgumentException(var1 + ": requested function name must begin with '&'");
+            }
+         }
+      }
+
+      function(Object var1) {
+         this();
+      }
+   }
+
+   private static class hash implements Function {
+      private hash() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         Scalar var4 = null;
+         if (var1.equals("&ohash")) {
+            var4 = SleepUtils.getOrderedHashScalar();
+         } else if (var1.equals("&ohasha")) {
+            var4 = SleepUtils.getAccessOrderedHashScalar();
+         } else {
+            var4 = SleepUtils.getHashScalar();
+         }
+
+         while(!var3.isEmpty()) {
+            KeyValuePair var5 = BridgeUtilities.getKeyValuePair(var3);
+            Scalar var6 = var4.getHash().getAt(var5.getKey());
+            var6.setValue(var5.getValue());
+         }
+
+         return var4;
+      }
+
+      hash(Object var1) {
+         this();
+      }
+   }
+
+   private static class lambda implements Function {
+      private lambda() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         SleepClosure var4;
+         SleepClosure var5;
+         if (var1.equals("&lambda")) {
+            var5 = BridgeUtilities.getFunction(var3, var2);
+            var4 = new SleepClosure(var2, var5.getRunnableCode());
+         } else if (var1.equals("&compile_closure")) {
+            String var6 = var3.pop().toString();
+
+            try {
+               var5 = new SleepClosure(var2, SleepUtils.ParseCode(var6));
+               var4 = var5;
+            } catch (YourCodeSucksException var9) {
+               var2.getScriptEnvironment().flagError(var9);
+               return SleepUtils.getEmptyScalar();
+            }
+         } else {
+            var5 = BridgeUtilities.getFunction(var3, var2);
+            var4 = var5;
+         }
+
+         Variable var10 = var4.getVariables();
+
+         while(!var3.isEmpty()) {
+            KeyValuePair var7 = BridgeUtilities.getKeyValuePair(var3);
+            if (var7.getKey().toString().equals("$this")) {
+               SleepClosure var8 = (SleepClosure)var7.getValue().objectValue();
+               var4.setVariables(var8.getVariables());
+               var10 = var8.getVariables();
+            } else {
+               var10.putScalar(var7.getKey().toString(), SleepUtils.getScalar(var7.getValue()));
+            }
+         }
+
+         return SleepUtils.getScalar((Object)var4);
+      }
+
+      lambda(Object var1) {
+         this();
+      }
+   }
+
+   private static class map implements Function {
+      private map() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         SleepClosure var4 = BridgeUtilities.getFunction(var3, var2);
+         Iterator var5 = BridgeUtilities.getIterator(var3, var2);
+         Scalar var6 = SleepUtils.getArrayScalar();
+
+         for(Stack var7 = new Stack(); var5.hasNext(); var7.clear()) {
+            var7.push(var5.next());
+            Scalar var8 = var4.callClosure("eval", var2, var7);
+            if (!SleepUtils.isEmptyScalar(var8) || var1.equals("&map")) {
+               var6.getArray().push(SleepUtils.getScalar(var8));
+            }
+         }
+
+         return var6;
+      }
+
+      map(Object var1) {
+         this();
+      }
+   }
+
+   private static class copy implements Function {
+      private copy() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         Scalar var4 = BridgeUtilities.getScalar(var3);
+         Scalar var5;
+         Iterator var6;
+         if (var4.getArray() == null && !SleepUtils.isFunctionScalar(var4)) {
+            if (var4.getHash() == null) {
+               return SleepUtils.getScalar(var4);
+            } else {
+               var5 = SleepUtils.getHashScalar();
+               var6 = var4.getHash().keys().scalarIterator();
+
+               while(var6.hasNext()) {
+                  Scalar var7 = (Scalar)var6.next();
+                  Scalar var8 = var5.getHash().getAt(var7);
+                  var8.setValue(var4.getHash().getAt(var7));
+               }
+
+               return var5;
+            }
+         } else {
+            var5 = SleepUtils.getArrayScalar();
+            var6 = var4.getArray() == null ? SleepUtils.getFunctionFromScalar(var4, var2).scalarIterator() : var4.getArray().scalarIterator();
+
+            while(var6.hasNext()) {
+               var5.getArray().push(SleepUtils.getScalar((Scalar)var6.next()));
+            }
+
+            return var5;
+         }
+      }
+
+      copy(Object var1) {
+         this();
+      }
+   }
+
+   private static class removeAt implements Function {
+      private removeAt() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         Scalar var4 = (Scalar)var3.pop();
+         if (var4.getArray() != null) {
+            while(!var3.isEmpty()) {
+               var4.getArray().remove(BridgeUtilities.normalize(BridgeUtilities.getInt(var3, 0), var4.getArray().size()));
+            }
+         } else if (var4.getHash() != null) {
+            while(!var3.isEmpty()) {
+               Scalar var5 = var4.getHash().getAt((Scalar)var3.pop());
+               var5.setValue(SleepUtils.getEmptyScalar());
+            }
+         }
+
+         return SleepUtils.getEmptyScalar();
+      }
+
+      removeAt(Object var1) {
+         this();
+      }
+   }
+
+   private static class shift implements Function {
+      private shift() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         ScalarArray var4 = BridgeUtilities.getArray(var3);
+         return var4.remove(0);
+      }
+
+      shift(Object var1) {
+         this();
+      }
+   }
+
+   private static class reverse implements Function {
+      private reverse() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         Scalar var4 = SleepUtils.getArrayScalar();
+         Iterator var5 = BridgeUtilities.getIterator(var3, var2);
+
+         while(var5.hasNext()) {
+            var4.getArray().add(SleepUtils.getScalar((Scalar)var5.next()), 0);
+         }
+
+         return var4;
+      }
+
+      reverse(Object var1) {
+         this();
+      }
+   }
+
+   private static class SetScope implements Function {
+      private Pattern splitter;
+
+      private SetScope() {
+         this.splitter = Pattern.compile("\\s+");
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         Variable var4 = null;
+         if (var1.equals("&local")) {
+            var4 = var2.getScriptVariables().getLocalVariables();
+         } else if (var1.equals("&this")) {
+            var4 = var2.getScriptVariables().getClosureVariables();
+         } else if (var1.equals("&global")) {
+            var4 = var2.getScriptVariables().getGlobalVariables();
+         }
+
+         String var5 = var3.pop().toString();
+         if (var4 == null) {
+            return SleepUtils.getEmptyScalar();
+         } else {
+            String[] var6 = this.splitter.split(var5);
+
+            for(int var7 = 0; var7 < var6.length; ++var7) {
+               if (!var4.scalarExists(var6[var7])) {
+                  if (var6[var7].charAt(0) == '$') {
+                     var2.getScriptVariables().setScalarLevel(var6[var7], SleepUtils.getEmptyScalar(), var4);
+                  } else if (var6[var7].charAt(0) == '@') {
+                     var2.getScriptVariables().setScalarLevel(var6[var7], SleepUtils.getArrayScalar(), var4);
+                  } else {
+                     if (var6[var7].charAt(0) != '%') {
+                        throw new IllegalArgumentException(var1 + ": malformed variable name '" + var6[var7] + "' from '" + var5 + "'");
+                     }
+
+                     var2.getScriptVariables().setScalarLevel(var6[var7], SleepUtils.getHashScalar(), var4);
+                  }
+               }
             }
 
             return SleepUtils.getEmptyScalar();
          }
       }
 
-      // $FF: synthetic method
-      SyncPrimitives(Object var1) {
+      SetScope(Object var1) {
+         this();
+      }
+   }
+
+   private static class systemProperties implements Function {
+      private systemProperties() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         return SleepUtils.getHashWrapper(System.getProperties());
+      }
+
+      systemProperties(Object var1) {
+         this();
+      }
+   }
+
+   private static class eval implements Function {
+      private eval() {
+      }
+
+      public Scalar evaluate(String var1, ScriptInstance var2, Stack var3) {
+         String var4 = var3.pop().toString();
+
+         try {
+            Scalar var5;
+            if (var1.equals("&eval")) {
+               var5 = SleepUtils.getScalar(var2.getScriptEnvironment().evaluateStatement(var4));
+               return var5;
+            } else {
+               var5 = SleepUtils.getScalar(var2.getScriptEnvironment().evaluateExpression(var4));
+               return var5;
+            }
+         } catch (YourCodeSucksException var6) {
+            var2.getScriptEnvironment().flagError(var6);
+            return SleepUtils.getEmptyScalar();
+         }
+      }
+
+      eval(Object var1) {
          this();
       }
    }

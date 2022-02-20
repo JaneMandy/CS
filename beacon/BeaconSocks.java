@@ -179,11 +179,10 @@ public class BeaconSocks {
    public void accept(String var1, int var2, int var3) {
       synchronized(this) {
          ReversePortForward var5 = this.findReversePortForward(var1, var2);
-         if (var5 != null) {
-            if (!this.tunnels.accept(var1, var2, var3, var5)) {
-               var5.accept(var3);
-            }
+         if (var5 != null && !this.tunnels.accept(var1, var2, var3, var5)) {
+            var5.accept(var3);
          }
+
       }
    }
 
@@ -321,6 +320,7 @@ public class BeaconSocks {
                var4.die(var2);
             }
          }
+
       }
    }
 
@@ -332,6 +332,7 @@ public class BeaconSocks {
                var5.write(var2, var3);
             }
          }
+
       }
    }
 
@@ -341,6 +342,7 @@ public class BeaconSocks {
          if (var4 != null) {
             var4.resume(var2);
          }
+
       }
    }
 

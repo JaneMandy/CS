@@ -18,6 +18,7 @@ import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.InstructionConstants;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.L2I;
 import org.apache.bcel.generic.LocalVariableGen;
 import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.PUSH;
@@ -302,11 +303,10 @@ final class Number extends Instruction implements Closure {
       if (this.hasValue()) {
          this.compileDefault(classGen, methodGen);
          this._value.translate(classGen, methodGen);
-         il.append((CompoundInstruction)(new PUSH(cpg, 0.5D)));
-         il.append((org.apache.bcel.generic.Instruction)InstructionConstants.DADD);
-         index = cpg.addMethodref("java.lang.Math", "floor", "(D)D");
+         index = cpg.addMethodref("java.lang.Math", "round", "(D)J");
          il.append((org.apache.bcel.generic.Instruction)(new INVOKESTATIC(index)));
-         index = cpg.addMethodref("org.apache.xalan.xsltc.dom.NodeCounter", "setValue", "(D)Lorg/apache/xalan/xsltc/dom/NodeCounter;");
+         il.append((org.apache.bcel.generic.Instruction)(new L2I()));
+         index = cpg.addMethodref("org.apache.xalan.xsltc.dom.NodeCounter", "setValue", "(I)Lorg/apache/xalan/xsltc/dom/NodeCounter;");
          il.append((org.apache.bcel.generic.Instruction)(new INVOKEVIRTUAL(index)));
       } else if (this.isDefault()) {
          this.compileDefault(classGen, methodGen);

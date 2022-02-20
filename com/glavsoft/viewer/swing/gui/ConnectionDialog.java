@@ -156,8 +156,8 @@ public class ConnectionDialog extends JDialog {
                this.serverNameCombo.addItem(cp);
             }
          }
-
       }
+
    }
 
    private void completeInputFieldsFrom(ConnectionParams cp) {

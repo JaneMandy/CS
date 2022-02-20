@@ -55,13 +55,13 @@ public class MakeTokenDialog implements DialogListener, ListSelectionListener {
                var3.input("make_token " + var4 + "\\" + this.user.getText() + " " + this.pass.getText());
                var3.LoginUser(var4, this.user.getText(), this.pass.getText());
             }
-
          } else {
             DialogUtils.showError("You must specify a password!");
          }
       } else {
          DialogUtils.showError("You must specify a user!");
       }
+
    }
 
    public void valueChanged(ListSelectionEvent var1) {
@@ -70,6 +70,7 @@ public class MakeTokenDialog implements DialogListener, ListSelectionListener {
          this.pass.setText((String)this.browser.getSelectedValueFromColumn("password"));
          this.domain.setText((String)this.browser.getSelectedValueFromColumn("realm"));
       }
+
    }
 
    public void show() {

@@ -6,8 +6,6 @@ import org.apache.xpath.objects.XNumber;
 import org.apache.xpath.objects.XObject;
 
 public class Neg extends UnaryOperation {
-   static final long serialVersionUID = -6280607702375702291L;
-
    public XObject operate(XObject right) throws TransformerException {
       return new XNumber(-right.num());
    }

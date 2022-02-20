@@ -79,7 +79,8 @@ public class BeaconSetup extends BeaconConstants {
 
       var2.stop();
       var3 = var2.getListener();
-      CommonUtils.print_info("Listener: " + var3.getName() + " (" + var3.getPayload() + ") on port " + var3.getBindPort() + " stopped.");
+      String var10000 = var3.getName();
+      CommonUtils.print_info("Listener: " + var10000 + " (" + var3.getPayload() + ") on port " + var3.getBindPort() + " stopped.");
    }
 
    public void initCrypto() {

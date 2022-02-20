@@ -22,7 +22,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.NamespaceSupport;
 
 public class ElemTemplateElement extends UnImplNode implements PrefixResolver, Serializable, ExpressionNode, WhitespaceStrippingElementMatcher, XSLTVisitable {
-   static final long serialVersionUID = 4440018597841834447L;
    private int m_lineNumber;
    private int m_endLineNumber;
    private int m_columnNumber;

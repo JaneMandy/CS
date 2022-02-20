@@ -52,7 +52,7 @@ public class ServerUtils {
    }
 
    public static void addSession(Resources var0, Map var1) {
-      var1.put("opened", System.currentTimeMillis() + "");
+      var1.put("opened", System.currentTimeMillis().makeConcatWithConstants<invokedynamic>(System.currentTimeMillis()));
       var0.call("sessions.addnew", CommonUtils.args(CommonUtils.SessionKey(var1), var1));
       var0.call("sessions.push");
    }
@@ -97,7 +97,7 @@ public class ServerUtils {
       }
 
       if (var5 != 0.0D) {
-         var7.put("version", var5 + "");
+         var7.put("version", var5.makeConcatWithConstants<invokedynamic>(var5));
       }
 
       String var8 = CommonUtils.TargetKey(var7);

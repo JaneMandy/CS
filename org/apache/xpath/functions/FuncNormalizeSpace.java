@@ -10,8 +10,6 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 public class FuncNormalizeSpace extends FunctionDef1Arg {
-   static final long serialVersionUID = -3377956872032190880L;
-
    public XObject execute(XPathContext xctxt) throws TransformerException {
       XMLString s1 = this.getArg0AsString(xctxt);
       return (XString)s1.fixWhiteSpace(true, true, false);

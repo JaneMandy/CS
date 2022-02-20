@@ -1,7 +1,7 @@
 package org.apache.xml.utils;
 
 public class XMLChar {
-   private static final byte[] CHARS = new byte[65536];
+   public static final byte[] CHARS = new byte[65536];
    public static final int MASK_VALID = 1;
    public static final int MASK_SPACE = 2;
    public static final int MASK_NAME_START = 4;

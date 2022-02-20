@@ -23,43 +23,41 @@ final class Include extends TopLevelElement {
       String docToLoad = this.getAttribute("href");
 
       try {
-         if (context.checkForLoop(docToLoad)) {
-            ErrorMsg msg = new ErrorMsg("CIRCULAR_INCLUDE_ERR", docToLoad, this);
-            parser.reportError(2, msg);
-            return;
-         }
-
-         InputSource input = null;
-         XMLReader reader = null;
-         String currLoadedDoc = context.getSystemId();
-         SourceLoader loader = context.getSourceLoader();
-         if (loader != null) {
-            input = loader.loadSource(docToLoad, currLoadedDoc, xsltc);
-            if (input != null) {
-               docToLoad = input.getSystemId();
-               reader = xsltc.getXMLReader();
+         if (!context.checkForLoop(docToLoad)) {
+            InputSource input = null;
+            XMLReader reader = null;
+            String currLoadedDoc = context.getSystemId();
+            SourceLoader loader = context.getSourceLoader();
+            if (loader != null) {
+               input = loader.loadSource(docToLoad, currLoadedDoc, xsltc);
+               if (input != null) {
+                  docToLoad = input.getSystemId();
+                  reader = xsltc.getXMLReader();
+               }
             }
-         }
 
-         if (input == null) {
-            docToLoad = SystemIDResolver.getAbsoluteURI(docToLoad, currLoadedDoc);
-            input = new InputSource(docToLoad);
-         }
+            if (input == null) {
+               docToLoad = SystemIDResolver.getAbsoluteURI(docToLoad, currLoadedDoc);
+               input = new InputSource(docToLoad);
+            }
 
-         if (input == null) {
-            ErrorMsg msg = new ErrorMsg("FILE_NOT_FOUND_ERR", docToLoad, this);
-            parser.reportError(2, msg);
-            return;
-         }
+            if (input == null) {
+               ErrorMsg msg = new ErrorMsg("FILE_NOT_FOUND_ERR", docToLoad, this);
+               parser.reportError(2, msg);
+               return;
+            }
 
-         SyntaxTreeNode root;
-         if (reader != null) {
-            root = parser.parse(reader, input);
-         } else {
-            root = parser.parse(input);
-         }
+            SyntaxTreeNode root;
+            if (reader != null) {
+               root = parser.parse(reader, input);
+            } else {
+               root = parser.parse(input);
+            }
 
-         if (root != null) {
+            if (root == null) {
+               return;
+            }
+
             this._included = parser.makeStylesheet(root);
             if (this._included == null) {
                return;
@@ -92,6 +90,9 @@ final class Include extends TopLevelElement {
 
             return;
          }
+
+         ErrorMsg msg = new ErrorMsg("CIRCULAR_INCLUDE_ERR", docToLoad, this);
+         parser.reportError(2, msg);
       } catch (Exception var18) {
          var18.printStackTrace();
          return;

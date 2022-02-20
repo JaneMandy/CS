@@ -20,7 +20,7 @@ public class SerializerUtils {
          }
 
          try {
-            handler.addAttribute(ns, dtm.getLocalName(attr), dtm.getNodeName(attr), "CDATA", dtm.getNodeValue(attr), false);
+            handler.addAttribute(ns, dtm.getLocalName(attr), dtm.getNodeName(attr), "CDATA", dtm.getNodeValue(attr));
          } catch (SAXException var6) {
          }
 
@@ -43,7 +43,7 @@ public class SerializerUtils {
       if (null != dtm) {
          for(int n = dtm.getFirstChild(doc); -1 != n; n = dtm.getNextSibling(n)) {
             handler.flushPending();
-            if (dtm.getNodeType(n) == 1 && dtm.getNamespaceURI(n) == null) {
+            if (dtm.getNamespaceURI(n) == null) {
                handler.startPrefixMapping("", "");
             }
 

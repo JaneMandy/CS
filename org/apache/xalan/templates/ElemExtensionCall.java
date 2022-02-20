@@ -10,7 +10,6 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 public class ElemExtensionCall extends ElemLiteralResult {
-   static final long serialVersionUID = 3171339708500216920L;
    String m_extns;
    String m_lang;
    String m_srcURL;
@@ -78,57 +77,58 @@ public class ElemExtensionCall extends ElemLiteralResult {
    }
 
    public void execute(TransformerImpl transformer) throws TransformerException {
-      if (transformer.getStylesheet().isSecureProcessing()) {
-         throw new TransformerException(XSLMessages.createMessage("ER_EXTENSION_ELEMENT_NOT_ALLOWED_IN_SECURE_PROCESSING", new Object[]{this.getRawName()}));
-      } else {
-         if (transformer.getDebug()) {
-            transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
+      if (TransformerImpl.S_DEBUG) {
+         transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
+      }
+
+      try {
+         transformer.getResultTreeHandler().flushPending();
+         ExtensionsTable etable = transformer.getExtensionsTable();
+         ExtensionHandler nsh = etable.get(this.m_extns);
+         if (null == nsh) {
+            if (this.hasFallbackChildren()) {
+               this.executeFallbacks(transformer);
+            } else {
+               TransformerException te = new TransformerException(XSLMessages.createMessage("ER_CALL_TO_EXT_FAILED", new Object[]{this.getNodeName()}));
+               transformer.getErrorListener().fatalError(te);
+            }
+
+            return;
          }
 
          try {
-            transformer.getResultTreeHandler().flushPending();
-            ExtensionsTable etable = transformer.getExtensionsTable();
-            ExtensionHandler nsh = etable.get(this.m_extns);
-            if (null == nsh) {
-               if (this.hasFallbackChildren()) {
-                  this.executeFallbacks(transformer);
-               } else {
-                  TransformerException te = new TransformerException(XSLMessages.createMessage("ER_CALL_TO_EXT_FAILED", new Object[]{this.getNodeName()}));
-                  transformer.getErrorListener().fatalError(te);
+            nsh.processElement(this.getLocalName(), this, transformer, this.getStylesheet(), this);
+         } catch (Exception var6) {
+            if (this.hasFallbackChildren()) {
+               this.executeFallbacks(transformer);
+            } else if (var6 instanceof TransformerException) {
+               TransformerException te = (TransformerException)var6;
+               if (null == te.getLocator()) {
+                  te.setLocator(this);
                }
 
-               return;
+               transformer.getErrorListener().fatalError(te);
+            } else if (var6 instanceof RuntimeException) {
+               transformer.getErrorListener().fatalError(new TransformerException(var6));
+            } else {
+               transformer.getErrorListener().warning(new TransformerException(var6));
             }
-
-            try {
-               nsh.processElement(this.getLocalName(), this, transformer, this.getStylesheet(), this);
-            } catch (Exception var6) {
-               if (this.hasFallbackChildren()) {
-                  this.executeFallbacks(transformer);
-               } else if (var6 instanceof TransformerException) {
-                  TransformerException te = (TransformerException)var6;
-                  if (null == te.getLocator()) {
-                     te.setLocator(this);
-                  }
-
-                  transformer.getErrorListener().fatalError(te);
-               } else if (var6 instanceof RuntimeException) {
-                  transformer.getErrorListener().fatalError(new TransformerException(var6));
-               } else {
-                  transformer.getErrorListener().warning(new TransformerException(var6));
-               }
-            }
-         } catch (TransformerException var7) {
-            transformer.getErrorListener().fatalError(var7);
-         } catch (SAXException var8) {
-            throw new TransformerException(var8);
          }
-
-         if (transformer.getDebug()) {
-            transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);
-         }
-
+      } catch (TransformerException var7) {
+         transformer.getErrorListener().fatalError(var7);
+      } catch (SAXException var8) {
+         throw new TransformerException(var8);
       }
+
+      if (TransformerImpl.S_DEBUG) {
+         transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);
+      }
+
+   }
+
+   public String getAttribute(String rawName) {
+      AVT avt = this.getLiteralResultAttribute(rawName);
+      return null != avt && avt.getRawName().equals(rawName) ? avt.getSimpleString() : null;
    }
 
    public String getAttribute(String rawName, Node sourceNode, TransformerImpl transformer) throws TransformerException {

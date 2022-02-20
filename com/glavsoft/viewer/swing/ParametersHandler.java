@@ -45,7 +45,7 @@ public class ParametersHandler {
       parser.addOption("AllowCopyRect", (String)null, "The \"CopyRect\" encoding saves bandwidth and drawing time when parts of the remote screen are moving around. Most likely, you don't want to change this setting. Default: \"Yes\".");
       parser.addOption("Encoding", (String)null, "The preferred encoding. Possible values: \"Tight\", \"Hextile\", \"ZRLE\", and \"Raw\". Default: \"Tight\".");
       parser.addOption("CompressionLevel", (String)null, "Use specified compression level for \"Tight\" and \"Zlib\" encodings. Values: 1-9. Level 1 uses minimum of CPU time on the server but achieves weak compression ratios. Level 9 offers best compression but may be slow.");
-      parser.addOption("JpegImageQuality", (String)null, "Use the specified image quality level in \"Tight\" encoding. Values: 1-9, Lossless. Default value: " + String.valueOf(5) + ". To prevent server of using " + "lossy JPEG compression in \"Tight\" encoding, use \"Lossless\" value here.");
+      parser.addOption("JpegImageQuality", (String)null, "Use the specified image quality level in \"Tight\" encoding. Values: 1-9, Lossless. Default value: " + String.valueOf(5) + ". To prevent server of using lossy JPEG compression in \"Tight\" encoding, use \"Lossless\" value here.");
       parser.addOption("LocalPointer", (String)null, "Possible values: on/yes/true (draw pointer locally), off/no/false (let server draw pointer), hide). Default: \"On\".");
       parser.addOption("ConvertToASCII", (String)null, "Whether to convert keyboard input to ASCII ignoring locale. Possible values: yes/true, no/false). Default: \"No\".");
       parser.addOption("ColorDepth", (String)null, "Bits per pixel color format. Possible values: 3 (for 8 colors), 6 (64 colors), 8 (256 colors), 16 (65 536 colors), 24 (16 777 216 colors), 32 (same as 24).");
@@ -142,7 +142,7 @@ public class ParametersHandler {
          if (scaleFactor > 0 && scaleFactor <= 9) {
             rfbSettings.setCompressionLevel(scaleFactor);
          }
-      } catch (NumberFormatException var25) {
+      } catch (NumberFormatException var26) {
       }
 
       try {
@@ -150,7 +150,7 @@ public class ParametersHandler {
          if (scaleFactor > 0 && scaleFactor <= 9) {
             rfbSettings.setJpegQuality(scaleFactor);
          }
-      } catch (NumberFormatException var26) {
+      } catch (NumberFormatException var27) {
          if ("lossless".equalsIgnoreCase(jpegQualityParam)) {
             rfbSettings.setJpegQuality(-Math.abs(rfbSettings.getJpegQuality()));
          }
@@ -159,7 +159,7 @@ public class ParametersHandler {
       try {
          scaleFactor = Integer.parseInt(colorDepthParam);
          rfbSettings.setBitsPerPixel(scaleFactor);
-      } catch (NumberFormatException var24) {
+      } catch (NumberFormatException var25) {
       }
 
       if (scaleFactorParam != null) {
@@ -168,7 +168,7 @@ public class ParametersHandler {
             if (scaleFactor >= 10 && scaleFactor <= 200) {
                uiSettings.setScalePercent((double)scaleFactor);
             }
-         } catch (NumberFormatException var23) {
+         } catch (NumberFormatException var24) {
          }
       }
 

@@ -25,7 +25,7 @@ public class Keystrokes implements Serializable, Transcript, Loggable, ToScalar,
       this.computer = var4;
       this.desktop = var5;
       this.title = var6;
-      this.when = System.currentTimeMillis() + "";
+      this.when = System.currentTimeMillis().makeConcatWithConstants<invokedynamic>(System.currentTimeMillis());
       this.id = CommonUtils.toHex(CommonUtils.MD5(CommonUtils.toBytes(var1 + var5 + var3)));
    }
 
@@ -68,7 +68,8 @@ public class Keystrokes implements Serializable, Transcript, Loggable, ToScalar,
    }
 
    public void formatEvent(DataOutputStream var1) throws IOException {
-      var1.writeBytes(CommonUtils.formatLogDate(Long.parseLong(this.when)) + " Received keystrokes from " + this.user + " in desktop " + this.desktop);
+      String var10001 = CommonUtils.formatLogDate(Long.parseLong(this.when));
+      var1.writeBytes(var10001 + " Received keystrokes from " + this.user + " in desktop " + this.desktop);
       var1.writeBytes("\n\n");
       var1.writeBytes(CommonUtils.strip(this.getKeystrokes()));
       var1.writeBytes("\n");

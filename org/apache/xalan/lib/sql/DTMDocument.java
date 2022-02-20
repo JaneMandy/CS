@@ -339,11 +339,11 @@ public class DTMDocument extends DTMDefaultBaseIterators {
             ps.println("String Value: " + this.getStringValue(i));
             ps.println("First Attribute Node: " + this.m_attribute.elementAt(i));
          }
-
       } catch (IOException var13) {
          var13.printStackTrace(System.err);
-         throw new RuntimeException(var13.getMessage());
+         System.exit(-1);
       }
+
    }
 
    protected static void dispatchNodeData(Node node, ContentHandler ch, int depth) throws SAXException {

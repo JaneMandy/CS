@@ -190,128 +190,15 @@ public class DNSServer implements Runnable {
       this.fred.start();
    }
 
-   private static class _A {
-      public int H;
-      public int A;
-      public int G;
-      public int F;
-      public int E;
-      public int B;
-      private boolean D = true;
-      protected List C = new LinkedList();
-
-      public _A(byte[] var1, boolean var2) throws IOException {
-         this.D = var2;
-         DataInputStream var3 = new DataInputStream(new ByteArrayInputStream(var1));
-         this.H = var3.readUnsignedShort();
-         this.A = var3.readUnsignedShort();
-         this.G = var3.readUnsignedShort();
-         this.F = var3.readUnsignedShort();
-         this.E = var3.readUnsignedShort();
-         this.B = var3.readUnsignedShort();
-
-         for(int var4 = 0; var4 < this.G; ++var4) {
-            DNSServer._B var5 = new DNSServer._B(var3);
-            this.C.add(var5);
-         }
-
-      }
-
-      public boolean B() {
-         if (this.G != 1) {
-            return false;
-         } else {
-            DNSServer._B var1 = (DNSServer._B)this.C.get(0);
-            int var2 = var1.A();
-            if (var2 != 16 && var2 != 1 && var2 != 28) {
-               if (var2 == 2 && !this.D) {
-                  return false;
-               } else {
-                  CommonUtils.print_warn("Dropped DNS " + DNSServer.typeToString(var2) + " request for: " + var1.E + " (unexpected request)");
-                  return true;
-               }
-            } else {
-               return false;
-            }
-         }
-      }
-
-      public List A() {
-         return this.C;
-      }
-
-      public String toString() {
-         StringBuffer var1 = new StringBuffer();
-         var1.append("DNS Header\n");
-         var1.append("ID:      " + Integer.toHexString(this.H) + "\n");
-         var1.append("Flags:   " + Integer.toBinaryString(this.A) + "\n");
-         var1.append("QdCount: " + this.G + "\n");
-         var1.append("AnCount: " + this.F + "\n");
-         var1.append("NsCount: " + this.E + "\n");
-         var1.append("ArCount: " + this.B + "\n");
-         Iterator var2 = this.C.iterator();
-
-         while(var2.hasNext()) {
-            DNSServer._B var3 = (DNSServer._B)var2.next();
-            var1.append(var3);
-         }
-
-         return var1.toString();
-      }
+   public static final class Response {
+      public int type = 0;
+      public long addr4;
+      public long[] addr6;
+      public byte[] data;
    }
 
-   private static class _B {
-      public String E;
-      public int A;
-      public int C;
-      public int B = 0;
-      public DNSServer._C D = null;
-
-      public _B(DataInputStream var1) throws IOException {
-         StringBuffer var2 = new StringBuffer();
-         int var3 = var1.readUnsignedByte();
-         ++this.B;
-
-         while(var3 > 0) {
-            for(int var4 = 0; var4 < var3; ++var4) {
-               var2.append((char)var1.readUnsignedByte());
-               ++this.B;
-            }
-
-            var2.append(".");
-            var3 = var1.readUnsignedByte();
-            ++this.B;
-         }
-
-         this.E = var2.toString();
-         this.A = var1.readUnsignedShort();
-         this.C = var1.readUnsignedShort();
-         this.B += 4;
-      }
-
-      public DNSServer._C C() {
-         return this.D;
-      }
-
-      public void A(DNSServer._C var1) {
-         this.D = var1;
-      }
-
-      public int A() {
-         return this.A;
-      }
-
-      public int B() {
-         return this.B;
-      }
-
-      public String toString() {
-         StringBuffer var1 = new StringBuffer();
-         var1.append("\tQuestion: '" + this.E + "' size: " + this.B + " bytes\n");
-         var1.append("\tQType:    " + Integer.toHexString(this.A) + "\n");
-         var1.append("\tQClass:   " + Integer.toHexString(this.C) + "\n\n");
-         return var1.toString();
-      }
+   public interface Handler {
+      DNSServer.Response respond(String var1, int var2);
    }
 
    private class _C {
@@ -387,14 +274,128 @@ public class DNSServer implements Runnable {
       }
    }
 
-   public interface Handler {
-      DNSServer.Response respond(String var1, int var2);
+   private static class _B {
+      public String E;
+      public int A;
+      public int C;
+      public int B = 0;
+      public DNSServer._C D = null;
+
+      public _B(DataInputStream var1) throws IOException {
+         StringBuffer var2 = new StringBuffer();
+         int var3 = var1.readUnsignedByte();
+         ++this.B;
+
+         while(var3 > 0) {
+            for(int var4 = 0; var4 < var3; ++var4) {
+               var2.append((char)var1.readUnsignedByte());
+               ++this.B;
+            }
+
+            var2.append(".");
+            var3 = var1.readUnsignedByte();
+            ++this.B;
+         }
+
+         this.E = var2.toString();
+         this.A = var1.readUnsignedShort();
+         this.C = var1.readUnsignedShort();
+         this.B += 4;
+      }
+
+      public DNSServer._C C() {
+         return this.D;
+      }
+
+      public void A(DNSServer._C var1) {
+         this.D = var1;
+      }
+
+      public int A() {
+         return this.A;
+      }
+
+      public int B() {
+         return this.B;
+      }
+
+      public String toString() {
+         StringBuffer var1 = new StringBuffer();
+         var1.append("\tQuestion: '" + this.E + "' size: " + this.B + " bytes\n");
+         var1.append("\tQType:    " + Integer.toHexString(this.A) + "\n");
+         var1.append("\tQClass:   " + Integer.toHexString(this.C) + "\n\n");
+         return var1.toString();
+      }
    }
 
-   public static final class Response {
-      public int type = 0;
-      public long addr4;
-      public long[] addr6;
-      public byte[] data;
+   private static class _A {
+      public int H;
+      public int A;
+      public int G;
+      public int F;
+      public int E;
+      public int B;
+      private boolean D = true;
+      protected List C = new LinkedList();
+
+      public _A(byte[] var1, boolean var2) throws IOException {
+         this.D = var2;
+         DataInputStream var3 = new DataInputStream(new ByteArrayInputStream(var1));
+         this.H = var3.readUnsignedShort();
+         this.A = var3.readUnsignedShort();
+         this.G = var3.readUnsignedShort();
+         this.F = var3.readUnsignedShort();
+         this.E = var3.readUnsignedShort();
+         this.B = var3.readUnsignedShort();
+
+         for(int var4 = 0; var4 < this.G; ++var4) {
+            DNSServer._B var5 = new DNSServer._B(var3);
+            this.C.add(var5);
+         }
+
+      }
+
+      public boolean B() {
+         if (this.G != 1) {
+            return false;
+         } else {
+            DNSServer._B var1 = (DNSServer._B)this.C.get(0);
+            int var2 = var1.A();
+            if (var2 != 16 && var2 != 1 && var2 != 28) {
+               if (var2 == 2 && !this.D) {
+                  return false;
+               } else {
+                  String var10000 = DNSServer.typeToString(var2);
+                  CommonUtils.print_warn("Dropped DNS " + var10000 + " request for: " + var1.E + " (unexpected request)");
+                  return true;
+               }
+            } else {
+               return false;
+            }
+         }
+      }
+
+      public List A() {
+         return this.C;
+      }
+
+      public String toString() {
+         StringBuffer var1 = new StringBuffer();
+         var1.append("DNS Header\n");
+         var1.append("ID:      " + Integer.toHexString(this.H) + "\n");
+         var1.append("Flags:   " + Integer.toBinaryString(this.A) + "\n");
+         var1.append("QdCount: " + this.G + "\n");
+         var1.append("AnCount: " + this.F + "\n");
+         var1.append("NsCount: " + this.E + "\n");
+         var1.append("ArCount: " + this.B + "\n");
+         Iterator var2 = this.C.iterator();
+
+         while(var2.hasNext()) {
+            DNSServer._B var3 = (DNSServer._B)var2.next();
+            var1.append(var3);
+         }
+
+         return var1.toString();
+      }
    }
 }

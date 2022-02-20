@@ -9,7 +9,7 @@ import dialog.DialogUtils;
 public class SOCKSPivot extends BeaconPivot {
    public void die() {
       this.client.getConnection().call("beacons.log_write", CommonUtils.args(BeaconOutput.Input(this.bid, "socks stop")));
-      this.client.getConnection().call("beacons.pivot_stop_port", CommonUtils.args(this.port + ""));
+      this.client.getConnection().call("beacons.pivot_stop_port", CommonUtils.args(this.port.makeConcatWithConstants<invokedynamic>(this.port)));
    }
 
    public void tunnel() {

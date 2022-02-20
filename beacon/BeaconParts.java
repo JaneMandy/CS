@@ -16,6 +16,7 @@ public class BeaconParts {
             this.parts.put(var1, var3);
          }
       }
+
    }
 
    public boolean isReady(String var1) {
@@ -47,6 +48,7 @@ public class BeaconParts {
       } else {
          var3.buffer.addString(var2, var2.length);
       }
+
    }
 
    public byte[] data(String var1) {

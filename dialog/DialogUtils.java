@@ -185,8 +185,8 @@ public class DialogUtils {
 
       while(var2.hasNext()) {
          Entry var3 = (Entry)var2.next();
-         String var4 = var3.getKey() + "";
-         int var5 = Integer.parseInt(var3.getValue() + "");
+         String var4 = ((Class)var3.getKey()).makeConcatWithConstants<invokedynamic>(var3.getKey());
+         int var5 = Integer.parseInt(((Class)var3.getValue()).makeConcatWithConstants<invokedynamic>(var3.getValue()));
          var0.getColumn(var4).setPreferredWidth(var5);
       }
 
@@ -557,7 +557,8 @@ public class DialogUtils {
    }
 
    public static boolean bool(Map var0, String var1) {
-      String var2 = var0.get(var1) + "";
+      Object var10000 = var0.get(var1);
+      String var2 = ((Class)var10000).makeConcatWithConstants<invokedynamic>(var10000);
       return var2.equals("true");
    }
 
@@ -627,7 +628,7 @@ public class DialogUtils {
       GraphicsEnvironment var2 = GraphicsEnvironment.getLocalGraphicsEnvironment();
       GraphicsConfiguration var3 = var2.getDefaultScreenDevice().getDefaultConfiguration();
       BufferedImage var4 = var3.createCompatibleImage(1000, 776, 2);
-      Graphics2D var5 = ((BufferedImage)var4).createGraphics();
+      Graphics2D var5 = var4.createGraphics();
 
       for(int var6 = 0; var6 < var0.length; ++var6) {
          try {
@@ -639,11 +640,10 @@ public class DialogUtils {
       }
 
       if (var1) {
-         Graphics2D var9 = (Graphics2D)var5;
-         var9.setColor(Color.BLACK);
+         var5.setColor(Color.BLACK);
          AlphaComposite var10 = AlphaComposite.getInstance(3, 0.4F);
-         var9.setComposite(var10);
-         var9.fillRect(0, 0, 1000, 776);
+         var5.setComposite(var10);
+         var5.fillRect(0, 0, 1000, 776);
       }
 
       var5.dispose();
@@ -664,7 +664,7 @@ public class DialogUtils {
 
    public static Image getImageSmall(String[] var0, boolean var1) {
       BufferedImage var2 = new BufferedImage(1000, 776, 2);
-      Graphics2D var3 = ((BufferedImage)var2).createGraphics();
+      Graphics2D var3 = var2.createGraphics();
 
       for(int var4 = 0; var4 < var0.length; ++var4) {
          try {
@@ -679,7 +679,7 @@ public class DialogUtils {
          float[] var8 = new float[]{1.0F, 1.0F, 1.0F, 0.5F};
          float[] var9 = new float[4];
          RescaleOp var6 = new RescaleOp(var8, var9, (RenderingHints)null);
-         var2 = var6.filter((BufferedImage)var2, (BufferedImage)null);
+         var2 = var6.filter(var2, (BufferedImage)null);
       }
 
       var3.dispose();
@@ -688,11 +688,11 @@ public class DialogUtils {
 
    public static BufferedImage resize(Image var0, int var1, int var2) {
       BufferedImage var3 = new BufferedImage(var1, var2, 2);
-      Graphics2D var4 = ((BufferedImage)var3).createGraphics();
+      Graphics2D var4 = var3.createGraphics();
       Image var5 = var0.getScaledInstance(var1, var2, 4);
       var4.drawImage(var5, 0, 0, var1, var2, (ImageObserver)null);
       var4.dispose();
-      return (BufferedImage)var3;
+      return var3;
    }
 
    public static void addToTable(final ATable var0, final GenericTableModel var1, final Map var2) {
@@ -732,6 +732,7 @@ public class DialogUtils {
             }
          });
       }
+
    }
 
    public static String[] TargetVisualizationArray(String var0, double var1, boolean var3) {
@@ -850,7 +851,7 @@ public class DialogUtils {
       var1.addActionForKey("ctrl pressed P", new AbstractAction() {
          public void actionPerformed(ActionEvent var1x) {
             BufferedImage var2x = var1.getScreenshot();
-            byte[] var3 = DialogUtils.toImage((BufferedImage)var2x, "png");
+            byte[] var3 = DialogUtils.toImage(var2x, "png");
             var0.getConnection().call("aggressor.screenshot", CommonUtils.args(new TabScreenshot(var2, var3)));
             DialogUtils.showInfo("Pushed screenshot to team server");
          }
@@ -890,6 +891,7 @@ public class DialogUtils {
          var5.push(CommonUtils.toSleepArray(var2));
          var0.getScriptEngine().getMenuBuilder().installMenu(var1, var4, var5);
       }
+
    }
 
    public static enum MessageID {

@@ -58,7 +58,7 @@ public class CommandBuilder {
    }
 
    public void addLengthAndStringASCIIZ(String var1) {
-      this.addLengthAndString(var1 + '\u0000');
+      this.addLengthAndString(var1 + "\u0000");
    }
 
    public void addLengthAndString(byte[] var1) {
@@ -157,7 +157,8 @@ public class CommandBuilder {
          var4 = A(var0);
          if (var4 != null) {
             var5 = A(var4, var1, var2);
-            return var5;
+            boolean var6 = var5;
+            return var6;
          }
 
          var5 = var3;
@@ -166,7 +167,7 @@ public class CommandBuilder {
             if (var4 != null) {
                var4.close();
             }
-         } catch (Throwable var13) {
+         } catch (Throwable var14) {
          }
 
       }
@@ -187,11 +188,7 @@ public class CommandBuilder {
    private static final boolean A(ZipFile var0, String var1, long[] var2) {
       try {
          ZipEntry var3 = var0.getEntry(var1);
-         if (var3 == null) {
-            return false;
-         } else {
-            return A(var3.getCrc(), var2);
-         }
+         return var3 == null ? false : A(var3.getCrc(), var2);
       } catch (Throwable var4) {
          return true;
       }
@@ -209,6 +206,7 @@ public class CommandBuilder {
 
    static {
       String var0 = "";
+      String var1 = "";
       synchronized("") {
          boolean var1 = true;
          long var2 = 1285799121L;

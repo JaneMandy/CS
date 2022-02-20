@@ -179,6 +179,27 @@ public class Parameters implements Serializable {
       this.m_readOnly = true;
    }
 
+   public boolean equals(Object other) {
+      if (null == other) {
+         return false;
+      } else if (!(other instanceof Parameters)) {
+         return false;
+      } else {
+         Parameters p = (Parameters)other;
+         return this.m_readOnly != p.m_readOnly ? false : this.m_parameters.equals(p.m_parameters);
+      }
+   }
+
+   public int hashCode() {
+      int hash = this.m_parameters.hashCode();
+      hash >>>= this.m_readOnly ? 7 : 13;
+      return hash;
+   }
+
+   public String toString() {
+      return "Parameters[" + (this.m_readOnly ? "r/o]" : "r/w]:") + this.m_parameters;
+   }
+
    protected final void checkWriteable() throws IllegalStateException {
       if (this.m_readOnly) {
          throw new IllegalStateException("Context is read only and can not be modified");

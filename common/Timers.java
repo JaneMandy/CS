@@ -84,7 +84,8 @@ public class Timers implements Runnable {
       public boolean A(long var1) {
          long var3 = var1 - this.B;
          if (var3 < -1000L) {
-            CommonUtils.print_warn("Detected clock change (" + (var1 - this.B) + "ms). Adjusting '" + this.D + "' timer!");
+            long var10000 = var1 - this.B;
+            CommonUtils.print_warn("Detected clock change (" + var10000 + "ms). Adjusting '" + this.D + "' timer!");
             this.B = System.currentTimeMillis();
             return false;
          } else {

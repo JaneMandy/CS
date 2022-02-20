@@ -14,7 +14,7 @@ public class RunAsAdmin extends PostExInlineObject {
    }
 
    public byte[] getArguments(String var1) {
-      return CommonUtils.toBytes(this.command + '\u0000', "UTF-16LE");
+      return CommonUtils.toBytes(this.command + "\u0000", "UTF-16LE");
    }
 
    public String getFunction() {

@@ -11,7 +11,6 @@ import org.apache.xml.dtm.ref.ExtendedType;
 import org.apache.xml.res.XMLMessages;
 import org.apache.xml.serializer.SerializationHandler;
 import org.apache.xml.utils.FastStringBuffer;
-import org.apache.xml.utils.SuballocatedIntVector;
 import org.apache.xml.utils.XMLString;
 import org.apache.xml.utils.XMLStringDefault;
 import org.apache.xml.utils.XMLStringFactory;
@@ -296,15 +295,13 @@ public class SAX2DTM2 extends SAX2DTM {
 
          if (doStrip) {
             super.m_chars.setLength(super.m_textPendingStart);
-         } else if (length > 0) {
-            if (length <= 1023 && super.m_textPendingStart <= 2097151) {
-               super.m_previous = this.addNode(super.m_coalescedTextType, 3, super.m_parents.peek(), super.m_previous, length + (super.m_textPendingStart << 10), false);
-            } else {
-               int dataIndex = super.m_data.size();
-               super.m_previous = this.addNode(super.m_coalescedTextType, 3, super.m_parents.peek(), super.m_previous, -dataIndex, false);
-               super.m_data.addElement(super.m_textPendingStart);
-               super.m_data.addElement(length);
-            }
+         } else if (length <= 1023 && super.m_textPendingStart <= 2097151) {
+            super.m_previous = this.addNode(super.m_coalescedTextType, 3, super.m_parents.peek(), super.m_previous, length + (super.m_textPendingStart << 10), false);
+         } else {
+            int dataIndex = super.m_data.size();
+            super.m_previous = this.addNode(super.m_coalescedTextType, 3, super.m_parents.peek(), super.m_previous, -dataIndex, false);
+            super.m_data.addElement(super.m_textPendingStart);
+            super.m_data.addElement(length);
          }
 
          super.m_textPendingStart = -1;
@@ -456,7 +453,7 @@ public class SAX2DTM2 extends SAX2DTM {
             dataIndex = super.m_data.elementAt(-dataIndex);
             return super.m_valuesOrPrefixes.indexToString(dataIndex);
          } else {
-            return localName.length() == 0 ? this.getFixedNames(qnameIndex) : localName;
+            return localName.length() == 0 ? SAX2DTM.m_fixednames[qnameIndex] : localName;
          }
       } else {
          qnameIndex = super.m_dataOrQName.elementAt(nodeID);
@@ -491,7 +488,7 @@ public class SAX2DTM2 extends SAX2DTM {
                return (XMLString)(super.m_xstrf != null ? super.m_xstrf.newstr((String)this.m_values.elementAt(startNode)) : new XMLStringDefault((String)this.m_values.elementAt(startNode)));
             } else {
                startNode = super.m_dataOrQName.elementAt(identity);
-               if (startNode >= 0) {
+               if (startNode > 0) {
                   return (XMLString)(super.m_xstrf != null ? super.m_xstrf.newstr(super.m_chars, startNode >>> 10, startNode & 1023) : new XMLStringDefault(super.m_chars.getString(startNode >>> 10, startNode & 1023)));
                } else {
                   return (XMLString)(super.m_xstrf != null ? super.m_xstrf.newstr(super.m_chars, super.m_data.elementAt(-startNode), super.m_data.elementAt(-startNode + 1)) : new XMLStringDefault(super.m_chars.getString(super.m_data.elementAt(-startNode), super.m_data.elementAt(-startNode + 1))));
@@ -510,7 +507,7 @@ public class SAX2DTM2 extends SAX2DTM {
                   type = this._exptype2(identity);
                   if (type == 3 || type == 4) {
                      int dataIndex = super.m_dataOrQName.elementAt(identity);
-                     if (dataIndex >= 0) {
+                     if (dataIndex > 0) {
                         if (-1 == offset) {
                            offset = dataIndex >>> 10;
                         }
@@ -560,7 +557,7 @@ public class SAX2DTM2 extends SAX2DTM {
                return (String)this.m_values.elementAt(startNode);
             } else {
                startNode = super.m_dataOrQName.elementAt(identity);
-               return startNode >= 0 ? super.m_chars.getString(startNode >>> 10, startNode & 1023) : super.m_chars.getString(super.m_data.elementAt(-startNode), super.m_data.elementAt(-startNode + 1));
+               return startNode > 0 ? super.m_chars.getString(startNode >>> 10, startNode & 1023) : super.m_chars.getString(super.m_data.elementAt(-startNode), super.m_data.elementAt(-startNode + 1));
             }
          } else {
             startNode = identity;
@@ -575,7 +572,7 @@ public class SAX2DTM2 extends SAX2DTM {
                   type = this._exptype2(identity);
                   if (type == 3 || type == 4) {
                      int dataIndex = super.m_dataOrQName.elementAt(identity);
-                     if (dataIndex >= 0) {
+                     if (dataIndex > 0) {
                         if (-1 == offset) {
                            offset = dataIndex >>> 10;
                         }
@@ -609,7 +606,7 @@ public class SAX2DTM2 extends SAX2DTM {
          return "";
       } else if (this._exptype2(child) == 3 && this._nextsib2(child) == -1) {
          int dataIndex = super.m_dataOrQName.elementAt(child);
-         return dataIndex >= 0 ? super.m_chars.getString(dataIndex >>> 10, dataIndex & 1023) : super.m_chars.getString(super.m_data.elementAt(-dataIndex), super.m_data.elementAt(-dataIndex + 1));
+         return dataIndex > 0 ? super.m_chars.getString(dataIndex >>> 10, dataIndex & 1023) : super.m_chars.getString(super.m_data.elementAt(-dataIndex), super.m_data.elementAt(-dataIndex + 1));
       } else {
          return this.getStringValueX(this.getDocument());
       }
@@ -636,7 +633,7 @@ public class SAX2DTM2 extends SAX2DTM {
                }
             } else {
                startNode = super.m_dataOrQName.elementAt(identity);
-               if (startNode >= 0) {
+               if (startNode > 0) {
                   if (normalize) {
                      super.m_chars.sendNormalizedSAXcharacters(ch, startNode >>> 10, startNode & 1023);
                   } else {
@@ -659,7 +656,7 @@ public class SAX2DTM2 extends SAX2DTM {
                   type = this._exptype2(identity);
                   if (type == 3 || type == 4) {
                      int dataIndex = super.m_dataOrQName.elementAt(identity);
-                     if (dataIndex >= 0) {
+                     if (dataIndex > 0) {
                         if (-1 == offset) {
                            offset = dataIndex >>> 10;
                         }
@@ -715,7 +712,7 @@ public class SAX2DTM2 extends SAX2DTM {
    protected final void copyTextNode(int nodeID, SerializationHandler handler) throws SAXException {
       if (nodeID != -1) {
          int dataIndex = super.m_dataOrQName.elementAt(nodeID);
-         if (dataIndex >= 0) {
+         if (dataIndex > 0) {
             super.m_chars.sendSAXcharacters(handler, dataIndex >>> 10, dataIndex & 1023);
          } else {
             super.m_chars.sendSAXcharacters(handler, super.m_data.elementAt(-dataIndex), super.m_data.elementAt(-dataIndex + 1));
@@ -760,59 +757,12 @@ public class SAX2DTM2 extends SAX2DTM {
    }
 
    protected final void copyNS(int nodeID, SerializationHandler handler, boolean inScope) throws SAXException {
-      if (super.m_namespaceDeclSetElements == null || super.m_namespaceDeclSetElements.size() != 1 || super.m_namespaceDeclSets == null || ((SuballocatedIntVector)super.m_namespaceDeclSets.elementAt(0)).size() != 1) {
-         SuballocatedIntVector nsContext = null;
-         int nextNSNode;
-         if (inScope) {
-            nsContext = this.findNamespaceContext(nodeID);
-            if (nsContext == null || nsContext.size() < 1) {
-               return;
-            }
+      int node = this.makeNodeHandle(nodeID);
 
-            nextNSNode = this.makeNodeIdentity(nsContext.elementAt(0));
-         } else {
-            nextNSNode = this.getNextNamespaceNode2(nodeID);
-         }
-
-         int nsIndex = 1;
-
-         while(nextNSNode != -1) {
-            int eType = this._exptype2(nextNSNode);
-            String nodeName = this.m_extendedTypes[eType].getLocalName();
-            int dataIndex = super.m_dataOrQName.elementAt(nextNSNode);
-            if (dataIndex < 0) {
-               dataIndex = -dataIndex;
-               dataIndex = super.m_data.elementAt(dataIndex + 1);
-            }
-
-            String nodeValue = (String)this.m_values.elementAt(dataIndex);
-            handler.namespaceAfterStartElement(nodeName, nodeValue);
-            if (inScope) {
-               if (nsIndex >= nsContext.size()) {
-                  return;
-               }
-
-               nextNSNode = this.makeNodeIdentity(nsContext.elementAt(nsIndex));
-               ++nsIndex;
-            } else {
-               nextNSNode = this.getNextNamespaceNode2(nextNSNode);
-            }
-         }
-
+      for(int current = this.getFirstNamespaceNode(node, inScope); current != -1; current = this.getNextNamespaceNode(node, current, inScope)) {
+         handler.namespaceAfterStartElement(this.getNodeNameX(current), this.getNodeValue(current));
       }
-   }
 
-   protected final int getNextNamespaceNode2(int baseID) {
-      int type;
-      do {
-         ++baseID;
-      } while((type = this._type2(baseID)) == 2);
-
-      if (type == 13) {
-         return baseID;
-      } else {
-         return -1;
-      }
    }
 
    protected final void copyAttributes(int nodeID, SerializationHandler handler) throws SAXException {
@@ -831,17 +781,17 @@ public class SAX2DTM2 extends SAX2DTM {
       String qname = null;
       int dataIndex = this._dataOrQName(nodeID);
       int valueIndex = dataIndex;
-      if (dataIndex <= 0) {
-         int prefixIndex = super.m_data.elementAt(-dataIndex);
-         valueIndex = super.m_data.elementAt(-dataIndex + 1);
-         qname = super.m_valuesOrPrefixes.indexToString(prefixIndex);
-         int colonIndex = qname.indexOf(58);
-         if (colonIndex > 0) {
-            prefix = qname.substring(0, colonIndex);
-         }
-      }
-
       if (uri.length() != 0) {
+         if (dataIndex <= 0) {
+            int prefixIndex = super.m_data.elementAt(-dataIndex);
+            valueIndex = super.m_data.elementAt(-dataIndex + 1);
+            qname = super.m_valuesOrPrefixes.indexToString(prefixIndex);
+            int colonIndex = qname.indexOf(58);
+            if (colonIndex > 0) {
+               prefix = qname.substring(0, colonIndex);
+            }
+         }
+
          handler.namespaceAfterStartElement(prefix, uri);
       }
 

@@ -130,12 +130,12 @@ public class SpearPhishDialog implements DialogListener, UploadFile.UploadNotify
                } else {
                   this.send_phish();
                }
-
             }
          }
       } else {
          DialogUtils.showError("Please import a target file");
       }
+
    }
 
    public void complete(String var1) {

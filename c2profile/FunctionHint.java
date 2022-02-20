@@ -31,7 +31,8 @@ public class FunctionHint {
             return false;
          }
       } else if (var2.matches("(.*?)!(.*?)\\+(.*?)")) {
-         this.error = "offset '" + var2.group(3) + "' for function hint " + var1 + " is not 0x#### format";
+         String var10001 = var2.group(3);
+         this.error = "offset '" + var10001 + "' for function hint " + var1 + " is not 0x#### format";
          return false;
       } else if (var2.matches("(.*?)!(.*?)")) {
          this.module = var2.group(1);

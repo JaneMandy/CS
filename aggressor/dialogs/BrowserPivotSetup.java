@@ -49,14 +49,15 @@ public class BrowserPivotSetup extends AObject implements Callback, DialogListen
             this.dialog.dispose();
          }
 
-         int var3 = Integer.parseInt(this.model.getSelectedValueFromColumn(this.table, "PID") + "");
-         String var4 = this.model.getSelectedValueFromColumn(this.table, "Arch") + "";
+         int var3 = Integer.parseInt(((Class)this.model.getSelectedValueFromColumn(this.table, "PID")).makeConcatWithConstants<invokedynamic>(this.model.getSelectedValueFromColumn(this.table, "PID")));
+         String var4 = ((Class)this.model.getSelectedValueFromColumn(this.table, "Arch")).makeConcatWithConstants<invokedynamic>(this.model.getSelectedValueFromColumn(this.table, "Arch"));
          int var5 = DialogUtils.number(var2, "ProxyPort");
          TaskBeacon var6 = new TaskBeacon(this.client, this.client.getData(), this.client.getConnection(), new String[]{this.bid});
          DialogUtils.openOrActivate(this.client, this.bid);
          var6.input("browserpivot " + var3 + " " + var4);
          var6.BrowserPivot(this.bid, var3, var4, var5);
       }
+
    }
 
    public void show() {
@@ -70,7 +71,7 @@ public class BrowserPivotSetup extends AObject implements Callback, DialogListen
       var2.setPreferredSize(new Dimension(var2.getWidth(), 100));
       DialogManager var3 = new DialogManager(this.dialog);
       var3.addDialogListener(this);
-      var3.set("ProxyPort", CommonUtils.randomPort() + "");
+      var3.set("ProxyPort", CommonUtils.randomPort().makeConcatWithConstants<invokedynamic>(CommonUtils.randomPort()));
       var3.text("ProxyPort", "Proxy Server Port:");
       JButton var4 = var3.action_noclose("Launch");
       JButton var5 = var3.help("https://www.cobaltstrike.com/help-browser-pivoting");
@@ -121,7 +122,7 @@ public class BrowserPivotSetup extends AObject implements Callback, DialogListen
             var4.put(var7[2], var7[0].toLowerCase());
          }
 
-         var9 = (var8.get("Name") + "").toLowerCase();
+         var9 = ((Class)var8.get("Name")).makeConcatWithConstants<invokedynamic>(var8.get("Name")).toLowerCase();
          if (var9.equals("explorer.exe") || var9.equals("iexplore.exe")) {
             var3.add(var8);
          }
@@ -131,8 +132,9 @@ public class BrowserPivotSetup extends AObject implements Callback, DialogListen
 
       while(var10.hasNext()) {
          Map var11 = (Map)var10.next();
-         String var12 = var11.get("PPID") + "";
-         var9 = var4.get(var12) + "";
+         String var12 = ((Class)var11.get("PPID")).makeConcatWithConstants<invokedynamic>(var11.get("PPID"));
+         Object var10000 = var4.get(var12);
+         var9 = ((Class)var10000).makeConcatWithConstants<invokedynamic>(var10000);
          if ("iexplore.exe".equals(var9)) {
             var11.put(" ", '✓');
          }

@@ -9,7 +9,6 @@ import org.apache.xpath.XPathVisitor;
 import org.apache.xpath.objects.XObject;
 
 public abstract class UnaryOperation extends Expression implements ExpressionOwner {
-   static final long serialVersionUID = 6536083808424286166L;
    protected Expression m_right;
 
    public void fixupVariables(Vector vars, int globalsSize) {

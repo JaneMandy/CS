@@ -70,6 +70,7 @@ public class TranscriptEditor extends AObject {
             }
          });
       }
+
    }
 
    protected void setAccent(final String var1, final String var2) {
@@ -85,6 +86,7 @@ public class TranscriptEditor extends AObject {
             }
          });
       }
+
    }
 
    public void setTable(ATable var1, GenericTableModel var2) {

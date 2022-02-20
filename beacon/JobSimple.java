@@ -93,5 +93,6 @@ public abstract class JobSimple {
          byte[] var5 = this.builder.build();
          this.tasker.task(var1, var5, this.getDescription(), this.getTactic());
       }
+
    }
 }

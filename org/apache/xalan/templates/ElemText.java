@@ -1,7 +1,6 @@
 package org.apache.xalan.templates;
 
 public class ElemText extends ElemTemplateElement {
-   static final long serialVersionUID = 1383140876182316711L;
    private boolean m_disableOutputEscaping = false;
 
    public void setDisableOutputEscaping(boolean v) {

@@ -7,8 +7,6 @@ import org.apache.xpath.objects.XObject;
 import org.apache.xpath.objects.XString;
 
 public class FuncUnparsedEntityURI extends FunctionOneArg {
-   static final long serialVersionUID = 845309759097448178L;
-
    public XObject execute(XPathContext xctxt) throws TransformerException {
       String name = super.m_arg0.execute(xctxt).str();
       int context = xctxt.getCurrentNode();

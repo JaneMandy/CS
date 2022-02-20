@@ -7,7 +7,8 @@ import java.util.Properties;
 import java.util.Vector;
 import javax.xml.transform.SourceLocator;
 import javax.xml.transform.Transformer;
-import org.apache.xml.serializer.utils.Utils;
+import org.apache.xml.dtm.ref.dom2dtm.DOM2DTM;
+import org.apache.xml.res.XMLMessages;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -15,7 +16,7 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-public abstract class SerializerBase implements SerializationHandler, SerializerConstants {
+public abstract class SerializerBase implements SerializationHandler, SerializerConstants, DOM2DTM.CharacterNodeHandler {
    protected boolean m_needToCallStartDocument = true;
    protected boolean m_cdataTagOpen = false;
    protected AttributesImplSerializer m_attributes = new AttributesImplSerializer();
@@ -95,31 +96,21 @@ public abstract class SerializerBase implements SerializationHandler, Serializer
    public void setDocumentLocator(Locator locator) {
    }
 
-   public void addAttribute(String uri, String localName, String rawName, String type, String value, boolean XSLAttribute) throws SAXException {
+   public void addAttribute(String uri, String localName, String rawName, String type, String value) throws SAXException {
       if (this.m_elemContext.m_startTagOpen) {
-         this.addAttributeAlways(uri, localName, rawName, type, value, XSLAttribute);
+         this.addAttributeAlways(uri, localName, rawName, type, value);
       }
 
    }
 
-   public boolean addAttributeAlways(String uri, String localName, String rawName, String type, String value, boolean XSLAttribute) {
-      int index;
-      if (localName != null && uri != null && uri.length() != 0) {
-         index = this.m_attributes.getIndex(uri, localName);
-      } else {
-         index = this.m_attributes.getIndex(rawName);
-      }
-
-      boolean was_added;
+   public void addAttributeAlways(String uri, String localName, String rawName, String type, String value) {
+      int index = this.m_attributes.getIndex(rawName);
       if (index >= 0) {
          this.m_attributes.setValue(index, value);
-         was_added = false;
       } else {
          this.m_attributes.addAttribute(uri, localName, rawName, type, value);
-         was_added = true;
       }
 
-      return was_added;
    }
 
    public void addAttribute(String name, String value) {
@@ -127,16 +118,7 @@ public abstract class SerializerBase implements SerializationHandler, Serializer
          String patchedName = this.patchName(name);
          String localName = getLocalName(patchedName);
          String uri = this.getNamespaceURI(patchedName, false);
-         this.addAttributeAlways(uri, localName, patchedName, "CDATA", value, false);
-      }
-
-   }
-
-   public void addXSLAttribute(String name, String value, String uri) {
-      if (this.m_elemContext.m_startTagOpen) {
-         String patchedName = this.patchName(name);
-         String localName = getLocalName(patchedName);
-         this.addAttributeAlways(uri, localName, patchedName, "CDATA", value, true);
+         this.addAttributeAlways(uri, localName, patchedName, "CDATA", value);
       }
 
    }
@@ -150,7 +132,7 @@ public abstract class SerializerBase implements SerializationHandler, Serializer
             uri = "";
          }
 
-         this.addAttributeAlways(uri, atts.getLocalName(i), atts.getQName(i), atts.getType(i), atts.getValue(i), false);
+         this.addAttributeAlways(uri, atts.getLocalName(i), atts.getQName(i), atts.getType(i), atts.getValue(i));
       }
 
    }
@@ -332,7 +314,7 @@ public abstract class SerializerBase implements SerializationHandler, Serializer
       if ((!"".equals(prefix) || isElement) && this.m_prefixMap != null) {
          uri = this.m_prefixMap.lookupNamespace(prefix);
          if (uri == null && !prefix.equals("xmlns")) {
-            throw new RuntimeException(Utils.messages.createMessage("ER_NAMESPACE_PREFIX", new Object[]{qname.substring(0, col)}));
+            throw new RuntimeException(XMLMessages.createXMLMessage("ER_NAMESPACE_PREFIX", new Object[]{qname.substring(0, col)}));
          }
       }
 
@@ -528,26 +510,6 @@ public abstract class SerializerBase implements SerializationHandler, Serializer
       this.m_tracer = null;
       this.m_transformer = null;
       this.m_version = null;
-   }
-
-   final boolean inTemporaryOutputState() {
-      return this.getEncoding() == null;
-   }
-
-   public void addAttribute(String uri, String localName, String rawName, String type, String value) throws SAXException {
-      if (this.m_elemContext.m_startTagOpen) {
-         this.addAttributeAlways(uri, localName, rawName, type, value, false);
-      }
-
-   }
-
-   public void notationDecl(String arg0, String arg1, String arg2) throws SAXException {
-   }
-
-   public void unparsedEntityDecl(String arg0, String arg1, String arg2, String arg3) throws SAXException {
-   }
-
-   public void setDTDEntityExpansion(boolean expand) {
    }
 
    public abstract void flushPending() throws SAXException;

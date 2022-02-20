@@ -27,11 +27,7 @@ public class Requirements extends Starter {
          return "OpenJDK 1.8 is not supported. Use Oracle Java 8 or OpenJDK 11 (or later.)";
       } else {
          Set var1 = arguments();
-         if (!var1.contains("-XX:+AggressiveHeap")) {
-            return "Java -XX:+AggressiveHeap option not set. Use the Cobalt Strike launcher. Don't click the .jar file!";
-         } else {
-            return !var1.contains("-XX:+UseParallelGC") ? "Java -XX:+UseParallelGC option not set. Use the Cobalt Strike launcher. Don't click the .jar file!" : null;
-         }
+         return null;
       }
    }
 

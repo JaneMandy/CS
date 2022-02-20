@@ -15,8 +15,7 @@ import org.apache.xpath.patterns.StepPattern;
 import org.apache.xpath.patterns.UnionPattern;
 
 public class TemplateList implements Serializable {
-   static final long serialVersionUID = 5803675288911728791L;
-   static final boolean DEBUG = false;
+   static boolean DEBUG = false;
    private Hashtable m_namedTemplates = new Hashtable(89);
    private Hashtable m_patternTable = new Hashtable(89);
    private TemplateSubPatternAssociation m_wildCardPatterns = null;
@@ -86,6 +85,11 @@ public class TemplateList implements Serializable {
    }
 
    public void compose(StylesheetRoot sroot) {
+      if (DEBUG) {
+         System.out.println("Before wildcard insert...");
+         this.dumpAssociationTables();
+      }
+
       if (null != this.m_wildCardPatterns) {
          Enumeration associations = this.m_patternTable.elements();
 
@@ -99,6 +103,11 @@ public class TemplateList implements Serializable {
                }
             }
          }
+      }
+
+      if (DEBUG) {
+         System.out.println("After wildcard insert...");
+         this.dumpAssociationTables();
       }
 
    }
@@ -300,8 +309,8 @@ public class TemplateList implements Serializable {
 
       xctxt.pushNamespaceContextNull();
 
-      while(true) {
-         try {
+      try {
+         do {
             if (maxImportLevel <= -1 || head.getImportLevel() <= maxImportLevel) {
                ElemTemplate template = head.getTemplate();
                xctxt.setNamespaceContext(template);
@@ -314,15 +323,11 @@ public class TemplateList implements Serializable {
                   return var10;
                }
             }
-
-            if (null != (head = head.getNext())) {
-               continue;
-            }
-         } finally {
-            xctxt.popNamespaceContext();
-         }
+         } while(null != (head = head.getNext()));
 
          return null;
+      } finally {
+         xctxt.popNamespaceContext();
       }
    }
 

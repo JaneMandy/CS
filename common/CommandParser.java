@@ -121,7 +121,7 @@ public class CommandParser {
                   try {
                      var5 = Integer.parseInt(var4);
                      this.args.push(new Integer(var5));
-                  } catch (Exception var6) {
+                  } catch (Exception var8) {
                      this.error = "'" + var4 + "' is not a number";
                      return false;
                   }
@@ -259,7 +259,7 @@ public class CommandParser {
                         }
 
                         this.args.push(new Integer(var5));
-                     } catch (Exception var7) {
+                     } catch (Exception var9) {
                         this.error = "'" + var4 + "' is not a number";
                         return false;
                      }
@@ -290,7 +290,7 @@ public class CommandParser {
    }
 
    public String popString() {
-      return this.args.pop() + "";
+      return ((Class)this.args.pop()).makeConcatWithConstants<invokedynamic>(this.args.pop());
    }
 
    public boolean popBoolean() {

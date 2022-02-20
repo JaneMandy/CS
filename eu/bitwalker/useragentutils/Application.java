@@ -43,11 +43,11 @@ public enum Application {
    }
 
    public boolean isInReferrerString(String referrerString) {
-      String[] arr$ = this.aliases;
-      int len$ = arr$.length;
+      String[] var5;
+      int var4 = (var5 = this.aliases).length;
 
-      for(int i$ = 0; i$ < len$; ++i$) {
-         String alias = arr$[i$];
+      for(int var3 = 0; var3 < var4; ++var3) {
+         String alias = var5[var3];
          if (referrerString.toLowerCase().indexOf(alias.toLowerCase()) != -1) {
             return true;
          }
@@ -58,11 +58,11 @@ public enum Application {
 
    public static Application parseReferrerString(String referrerString) {
       if (referrerString != null && referrerString.length() > 1) {
-         Application[] arr$ = values();
-         int len$ = arr$.length;
+         Application[] var4;
+         int var3 = (var4 = values()).length;
 
-         for(int i$ = 0; i$ < len$; ++i$) {
-            Application applicationInList = arr$[i$];
+         for(int var2 = 0; var2 < var3; ++var2) {
+            Application applicationInList = var4[var2];
             if (applicationInList.isInReferrerString(referrerString)) {
                return applicationInList;
             }
@@ -73,11 +73,11 @@ public enum Application {
    }
 
    public static Application valueOf(short id) {
-      Application[] arr$ = values();
-      int len$ = arr$.length;
+      Application[] var4;
+      int var3 = (var4 = values()).length;
 
-      for(int i$ = 0; i$ < len$; ++i$) {
-         Application application = arr$[i$];
+      for(int var2 = 0; var2 < var3; ++var2) {
+         Application application = var4[var2];
          if (application.getId() == id) {
             return application;
          }

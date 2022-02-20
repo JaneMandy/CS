@@ -57,6 +57,7 @@ public class PortScanLocalDialog extends AObject implements Callback, DialogList
          var9.input("portscan " + var3 + "-" + var8 + " " + var6 + " " + var5 + " " + var7);
          var9.PortScan(var3 + "-" + var8, var6, var5, CommonUtils.toNumber(var7, 1024));
       }
+
    }
 
    public void show() {
@@ -85,7 +86,7 @@ public class PortScanLocalDialog extends AObject implements Callback, DialogList
    }
 
    public void result(String var1, Object var2) {
-      LinkedList var3 = CommonUtils.parseTabData(var2 + "", CommonUtils.toArray("address, netmask"));
+      LinkedList var3 = CommonUtils.parseTabData(((Class)var2).makeConcatWithConstants<invokedynamic>(var2), CommonUtils.toArray("address, netmask"));
       Iterator var4 = var3.iterator();
 
       while(var4.hasNext()) {

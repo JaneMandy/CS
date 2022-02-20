@@ -50,7 +50,7 @@ public class DllSpawnJob extends JobSimple {
    }
 
    public byte[] getArgument() {
-      return CommonUtils.toBytes(this.arg + '\u0000');
+      return CommonUtils.toBytes(this.arg + "\u0000");
    }
 
    public byte[] getDLLContent() {

@@ -16,7 +16,7 @@ import org.apache.xalan.xsltc.compiler.util.ResultTreeType;
 import org.apache.xalan.xsltc.compiler.util.Type;
 import org.apache.xalan.xsltc.compiler.util.TypeCheckError;
 import org.apache.xalan.xsltc.compiler.util.Util;
-import org.apache.xml.utils.XML11Char;
+import org.apache.xml.utils.XMLChar;
 
 final class ApplyTemplates extends Instruction {
    private Expression _select;
@@ -48,7 +48,7 @@ final class ApplyTemplates extends Instruction {
       }
 
       if (mode.length() > 0) {
-         if (!XML11Char.isXML11ValidQName(mode)) {
+         if (!XMLChar.isValidQName(mode)) {
             ErrorMsg err = new ErrorMsg("INVALID_QNAME_ERR", mode, this);
             parser.reportError(3, err);
          }

@@ -21,8 +21,8 @@ public class EnvironmentCheck {
    public static final String FOUNDCLASSES = "foundclasses.";
    public static final String CLASS_PRESENT = "present-unknown-version";
    public static final String CLASS_NOTPRESENT = "not-present";
-   public String[] jarNames = new String[]{"xalan.jar", "xalansamples.jar", "xalanj1compat.jar", "xalanservlet.jar", "serializer.jar", "xerces.jar", "xercesImpl.jar", "testxsl.jar", "crimson.jar", "lotusxsl.jar", "jaxp.jar", "parser.jar", "dom.jar", "sax.jar", "xml.jar", "xml-apis.jar", "xsltc.jar"};
-   private static Hashtable jarVersions = new Hashtable();
+   public String[] jarNames = new String[]{"xalan.jar", "xalansamples.jar", "xalanj1compat.jar", "xalanservlet.jar", "xerces.jar", "xercesImpl.jar", "testxsl.jar", "crimson.jar", "lotusxsl.jar", "jaxp.jar", "parser.jar", "dom.jar", "sax.jar", "xml.jar", "xml-apis.jar", "xsltc.jar"};
+   protected static Hashtable jarVersions = new Hashtable();
    protected PrintWriter outWriter;
    // $FF: synthetic field
    static Class class$java$lang$String;
@@ -100,7 +100,7 @@ public class EnvironmentCheck {
          return false;
       } else {
          boolean errors = false;
-         this.logMsg("#---- BEGIN writeEnvironmentReport($Revision: 1.29 $): Useful stuff found: ----");
+         this.logMsg("#---- BEGIN writeEnvironmentReport($Revision: 1.26 $): Useful stuff found: ----");
          Enumeration keys = h.keys();
 
          while(keys.hasMoreElements()) {
@@ -165,7 +165,7 @@ public class EnvironmentCheck {
       if (null != container && null != factory) {
          try {
             Element envCheckNode = factory.createElement("EnvironmentCheck");
-            envCheckNode.setAttribute("version", "$Revision: 1.29 $");
+            envCheckNode.setAttribute("version", "$Revision: 1.26 $");
             container.appendChild(envCheckNode);
             if (null == h) {
                Element statusNode = factory.createElement("status");
@@ -611,7 +611,6 @@ public class EnvironmentCheck {
       jarVersions.put(new Long(113749L), "xml-apis.jar from xalan-j_2_4_1 from factoryfinder-build of xml-commons RIVERCOURT1");
       jarVersions.put(new Long(124704L), "xml-apis.jar from tck-jaxp-1_2_0 branch of xml-commons");
       jarVersions.put(new Long(124724L), "xml-apis.jar from tck-jaxp-1_2_0 branch of xml-commons, tag: xml-commons-external_1_2_01");
-      jarVersions.put(new Long(194205L), "xml-apis.jar from head branch of xml-commons, tag: xml-commons-external_1_3_02");
       jarVersions.put(new Long(424490L), "xalan.jar from Xerces Tools releases - ERROR:DO NOT USE!");
       jarVersions.put(new Long(1591855L), "xerces.jar from xalan-j_1_1 from xerces-1...");
       jarVersions.put(new Long(1498679L), "xerces.jar from xalan-j_1_2 from xerces-1_2_0.bin");
@@ -633,7 +632,6 @@ public class EnvironmentCheck {
       jarVersions.put(new Long(891817L), "xercesImpl.jar from xalan-j_2_5_D1 from xerces-2_3");
       jarVersions.put(new Long(895924L), "xercesImpl.jar from xerces-2_4");
       jarVersions.put(new Long(1010806L), "xercesImpl.jar from Xerces-J-bin.2.6.2");
-      jarVersions.put(new Long(1203860L), "xercesImpl.jar from Xerces-J-bin.2.7.1");
       jarVersions.put(new Long(37485L), "xalanj1compat.jar from xalan-j_2_0_0");
       jarVersions.put(new Long(38100L), "xalanj1compat.jar from xalan-j_2_0_1");
       jarVersions.put(new Long(18779L), "xalanservlet.jar from xalan-j_2_0_0");

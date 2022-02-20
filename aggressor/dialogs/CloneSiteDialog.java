@@ -49,7 +49,8 @@ public class CloneSiteDialog implements DialogListener, Callback {
       }
 
       if (var3) {
-         var4 = "<script src=\"" + this.proto + this.options.get("host") + ":" + DialogUtils.string(this.options, "port") + "/jquery/jquery.min.js\"></script>";
+         String var10000 = this.proto;
+         var4 = "<script src=\"" + var10000 + this.options.get("host") + ":" + DialogUtils.string(this.options, "port") + "/jquery/jquery.min.js\"></script>";
          var1 = var1.replaceFirst("(?i:</body>)", "\n" + var4 + "\n$0");
          if (!CommonUtils.isin(var4, var1)) {
             var1 = var1 + var4;
@@ -79,10 +80,10 @@ public class CloneSiteDialog implements DialogListener, Callback {
             DialogUtils.showError("Could not clone: " + var3 + "\n" + var10.substring(7));
          } else {
             var10 = this.updateRequest(var10, var4, var9);
-            this.conn.call("cloudstrike.host_site", CommonUtils.args(var6, Integer.parseInt(var7), var8, var5, var10, var9 + "", this.desc, var3), this);
+            this.conn.call("cloudstrike.host_site", CommonUtils.args(var6, Integer.parseInt(var7), var8, var5, var10, var9.makeConcatWithConstants<invokedynamic>(var9), this.desc, var3), this);
          }
       } else {
-         var10 = var2 + "";
+         var10 = ((Class)var2).makeConcatWithConstants<invokedynamic>(var2);
          if ("success".equals(var10)) {
             DialogUtils.startedWebService("cloned site", this.proto + var6 + ":" + var7 + var5);
          } else {

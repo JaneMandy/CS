@@ -11,5 +11,6 @@ public class CopyRectDecoder extends Decoder {
       if (rect.width != 0 && rect.height != 0) {
          renderer.copyRect(srcX, srcY, rect);
       }
+
    }
 }

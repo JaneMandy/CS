@@ -3,8 +3,6 @@ package org.apache.xml.dtm;
 import javax.xml.transform.SourceLocator;
 
 public class DTMConfigurationException extends DTMException {
-   static final long serialVersionUID = -4607874078818418046L;
-
    public DTMConfigurationException() {
       super("Configuration Error");
    }

@@ -7,15 +7,12 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Enumeration;
 import java.util.Properties;
-import org.apache.xml.serializer.utils.Utils;
-import org.apache.xml.serializer.utils.WrappedRuntimeException;
+import org.apache.xml.res.XMLMessages;
+import org.apache.xml.utils.WrappedRuntimeException;
 
-public final class OutputPropertiesFactory {
-   private static final String S_BUILTIN_EXTENSIONS_URL = "http://xml.apache.org/xalan";
-   private static final String S_BUILTIN_OLD_EXTENSIONS_URL = "http://xml.apache.org/xslt";
+public class OutputPropertiesFactory {
    public static final String S_BUILTIN_EXTENSIONS_UNIVERSAL = "{http://xml.apache.org/xalan}";
    public static final String S_KEY_INDENT_AMOUNT = "{http://xml.apache.org/xalan}indent-amount";
-   public static final String S_KEY_LINE_SEPARATOR = "{http://xml.apache.org/xalan}line-separator";
    public static final String S_KEY_CONTENT_HANDLER = "{http://xml.apache.org/xalan}content-handler";
    public static final String S_KEY_ENTITIES = "{http://xml.apache.org/xalan}entities";
    public static final String S_USE_URL_ESCAPING = "{http://xml.apache.org/xalan}use-url-escaping";
@@ -48,7 +45,7 @@ public final class OutputPropertiesFactory {
       }
    }
 
-   public static final Properties getDefaultMethodProperties(String method) {
+   public static Properties getDefaultMethodProperties(String method) {
       String fileName = null;
       Properties defaultProperties = null;
 
@@ -92,7 +89,7 @@ public final class OutputPropertiesFactory {
             defaultProperties = m_xml_properties;
          }
       } catch (IOException var6) {
-         throw new WrappedRuntimeException(Utils.messages.createMessage("ER_COULD_NOT_LOAD_METHOD_PROPERTY", new Object[]{fileName, method}), var6);
+         throw new WrappedRuntimeException(XMLMessages.createXMLMessage("ER_COULD_NOT_LOAD_METHOD_PROPERTY", new Object[]{fileName, method}), var6);
       }
 
       return new Properties(defaultProperties);
@@ -133,13 +130,13 @@ public final class OutputPropertiesFactory {
             throw var18;
          }
 
-         throw new WrappedRuntimeException(Utils.messages.createMessage("ER_COULD_NOT_LOAD_RESOURCE", new Object[]{resourceName}), var18);
+         throw new WrappedRuntimeException(XMLMessages.createXMLMessage("ER_COULD_NOT_LOAD_RESOURCE", new Object[]{resourceName}), var18);
       } catch (SecurityException var19) {
          if (defaults == null) {
             throw var19;
          }
 
-         throw new WrappedRuntimeException(Utils.messages.createMessage("ER_COULD_NOT_LOAD_RESOURCE", new Object[]{resourceName}), var19);
+         throw new WrappedRuntimeException(XMLMessages.createXMLMessage("ER_COULD_NOT_LOAD_RESOURCE", new Object[]{resourceName}), var19);
       } finally {
          if (bis != null) {
             bis.close();

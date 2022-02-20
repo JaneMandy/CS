@@ -160,9 +160,7 @@ public class ToggleButtonPainter extends SyntheticaComponentPainter {
       boolean var5 = (var3 & 512) > 0;
       boolean var6 = (var3 & 4) > 0;
       boolean var7 = this.isToolBarButton(var2);
-      if (var7 && !SyntheticaLookAndFeel.getBoolean("Synthetica.toolBar.buttons.paintBorder", var2) && SyntheticaLookAndFeel.get("Synthetica.toolBar.toggleButton.border", (Component)var2) == null && !var4 && !var5 && (!var6 || !SyntheticaLookAndFeel.getBoolean("Synthetica.toolBar.button.pressed.paintBorder", var2))) {
-         return false;
-      } else {
+      if (!var7 || SyntheticaLookAndFeel.getBoolean("Synthetica.toolBar.buttons.paintBorder", var2) || SyntheticaLookAndFeel.get("Synthetica.toolBar.toggleButton.border", (Component)var2) != null || var4 || var5 || var6 && SyntheticaLookAndFeel.getBoolean("Synthetica.toolBar.button.pressed.paintBorder", var2)) {
          if (!var2.isBorderPainted() && var2.getText() != null && var2.getText().length() != 0) {
             if (!var2.isBorderPainted()) {
                return false;
@@ -178,6 +176,8 @@ public class ToggleButtonPainter extends SyntheticaComponentPainter {
          }
 
          return true;
+      } else {
+         return false;
       }
    }
 

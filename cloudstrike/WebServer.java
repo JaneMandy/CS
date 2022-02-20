@@ -38,8 +38,8 @@ public class WebServer extends NanoHTTPD {
       HashMap result;
       for(Iterator i = this.hooks.entrySet().iterator(); i.hasNext(); temp.add(result)) {
          Entry entry = (Entry)i.next();
-         String uri = entry.getKey() + "";
-         String desc = entry.getValue() + "";
+         String uri = ((Class)entry.getKey()).makeConcatWithConstants<invokedynamic>(entry.getKey());
+         String desc = ((Class)entry.getValue()).makeConcatWithConstants<invokedynamic>(entry.getValue());
          String type = ((WebService)entry.getValue()).getType();
          String host = (String)this.hosts.get(uri);
          result = new HashMap();
@@ -106,16 +106,14 @@ public class WebServer extends NanoHTTPD {
       } else {
          Iterator i = this.always.keySet().iterator();
 
-         String hook;
-         do {
-            if (!i.hasNext()) {
-               return false;
+         while(i.hasNext()) {
+            String hook = ((Class)i.next()).makeConcatWithConstants<invokedynamic>(i.next());
+            if (uri.startsWith(hook)) {
+               return true;
             }
+         }
 
-            hook = i.next() + "";
-         } while(!uri.startsWith(hook));
-
-         return true;
+         return false;
       }
    }
 
@@ -149,7 +147,8 @@ public class WebServer extends NanoHTTPD {
       if (service == null) {
          desc = null;
       } else {
-         desc = service.getType() + " " + service.toString();
+         String var10000 = service.getType();
+         desc = var10000 + " " + service.toString();
       }
 
       String resp = r.status;
@@ -210,7 +209,7 @@ public class WebServer extends NanoHTTPD {
                   }
 
                   original.addHeader("Content-Range", "bytes " + start + "-" + m.group(2) + "/" + original.size);
-                  original.addHeader("Content-Length", rdata.length + "");
+                  original.addHeader("Content-Length", rdata.length.makeConcatWithConstants<invokedynamic>(rdata.length));
                   original.size = (long)rdata.length;
                   original.data = new ByteArrayInputStream(rdata);
                   original.status = "206 Partial Content";
@@ -234,28 +233,27 @@ public class WebServer extends NanoHTTPD {
    }
 
    public Response _serve(String uri, String method, Properties header, Properties param) {
-      String useragent = (header.getProperty("User-Agent") + "").toLowerCase();
+      String useragent = header.getProperty("User-Agent").makeConcatWithConstants<invokedynamic>(header.getProperty("User-Agent")).toLowerCase();
       boolean blockedByUA = false;
       String[] arr$ = this.blockedUAArray;
       int len$ = arr$.length;
 
-      int len$;
-      for(len$ = 0; len$ < len$; ++len$) {
-         String blockedUA = arr$[len$];
-         if (blockedUA.trim().length() > 0 && CSUtils.matchesSimpleGeneric(useragent, blockedUA.trim())) {
+      String hook;
+      for(int i = 0; i < len$; ++i) {
+         hook = arr$[i];
+         if (hook.trim().length() > 0 && CSUtils.matchesSimpleGeneric(useragent, hook.trim())) {
             blockedByUA = true;
          }
       }
 
       boolean allowedByUA = true;
-      String hook;
       if (this.allowedUAArray.length > 0) {
          allowedByUA = false;
-         String[] arr$ = this.allowedUAArray;
-         len$ = arr$.length;
+         String[] allowedUAs = this.allowedUAArray;
+         len$ = allowedUAs.length;
 
          for(int i$ = 0; i$ < len$; ++i$) {
-            hook = arr$[i$];
+            hook = allowedUAs[i$];
             if (hook.trim().length() > 0 && CSUtils.matchesSimpleGeneric(useragent, hook.trim())) {
                allowedByUA = true;
             }
@@ -293,7 +291,6 @@ public class WebServer extends NanoHTTPD {
                WebService svc;
                do {
                   if (!i.hasNext()) {
-                     WebService service;
                      if (isStagerX64(uri) && this.hooks.containsKey("stager64")) {
                         service = (WebService)this.hooks.get("stager64");
                         return this.processResponse(uri + "/", method, header, param, true, service, service.serve(uri, method, header, param));
@@ -319,7 +316,7 @@ public class WebServer extends NanoHTTPD {
 
                   Entry e = (Entry)i.next();
                   svc = (WebService)e.getValue();
-                  hook = e.getKey() + "";
+                  hook = ((Class)e.getKey()).makeConcatWithConstants<invokedynamic>(e.getKey());
                } while(!uri.startsWith(hook) || !svc.isFuzzy());
 
                return this.processResponse(uri, method, header, param, false, svc, svc.serve(uri.substring(hook.length()), method, header, param));

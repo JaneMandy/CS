@@ -6,11 +6,8 @@ import org.apache.xpath.XPathContext;
 import org.apache.xpath.compiler.Compiler;
 
 public class ChildIterator extends LocPathIterator {
-   static final long serialVersionUID = -6935428015142993583L;
-
    ChildIterator(Compiler compiler, int opPos, int analysis) throws TransformerException {
       super(compiler, opPos, analysis, false);
-      this.initNodeTest(-1);
    }
 
    public int asNode(XPathContext xctxt) throws TransformerException {

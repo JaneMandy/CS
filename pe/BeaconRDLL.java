@@ -68,39 +68,37 @@ public class BeaconRDLL {
    }
 
    protected void fixLoaderPE(byte[] var1) {
-      if (this.PE_header[0] != 80 || this.PE_header[1] != 69) {
-         if (this.PE_header.length == 2) {
-            byte[] var2 = new byte[0];
-            byte[] var3 = new byte[0];
-            if ("x86".equals(this.arch)) {
-               var2 = new byte[]{80, 69, 0, 0, 117, 2};
-               var3 = new byte[]{this.PE_header[0], this.PE_header[1], 0, 0, 117, 2};
-            } else if ("x64".equals(this.arch)) {
-               var2 = new byte[]{80, 69, 0, 0, 117, 2};
-               var3 = new byte[]{this.PE_header[0], this.PE_header[1], 0, 0, 117, 2};
-            }
-
-            CommonUtils.patch(var1, var2, var3);
+      if ((this.PE_header[0] != 80 || this.PE_header[1] != 69) && this.PE_header.length == 2) {
+         byte[] var2 = new byte[0];
+         byte[] var3 = new byte[0];
+         if ("x86".equals(this.arch)) {
+            var2 = new byte[]{80, 69, 0, 0, 117, 2};
+            var3 = new byte[]{this.PE_header[0], this.PE_header[1], 0, 0, 117, 2};
+         } else if ("x64".equals(this.arch)) {
+            var2 = new byte[]{80, 69, 0, 0, 117, 2};
+            var3 = new byte[]{this.PE_header[0], this.PE_header[1], 0, 0, 117, 2};
          }
+
+         CommonUtils.patch(var1, var2, var3);
       }
+
    }
 
    protected void fixLoaderMZ(byte[] var1) {
-      if (this.MZ_header.length >= 2) {
-         if (this.MZ_header[0] != 77 || this.MZ_header[1] != 90) {
-            byte[] var2 = new byte[0];
-            byte[] var3 = new byte[0];
-            if ("x86".equals(this.arch)) {
-               var2 = new byte[]{77, 90, 0, 0, 117};
-               var3 = new byte[]{this.MZ_header[0], this.MZ_header[1], 0, 0, 117};
-            } else if ("x64".equals(this.arch)) {
-               var2 = new byte[]{77, 90, 0, 0, 117};
-               var3 = new byte[]{this.MZ_header[0], this.MZ_header[1], 0, 0, 117};
-            }
-
-            CommonUtils.patch(var1, var2, var3);
+      if (this.MZ_header.length >= 2 && (this.MZ_header[0] != 77 || this.MZ_header[1] != 90)) {
+         byte[] var2 = new byte[0];
+         byte[] var3 = new byte[0];
+         if ("x86".equals(this.arch)) {
+            var2 = new byte[]{77, 90, 0, 0, 117};
+            var3 = new byte[]{this.MZ_header[0], this.MZ_header[1], 0, 0, 117};
+         } else if ("x64".equals(this.arch)) {
+            var2 = new byte[]{77, 90, 0, 0, 117};
+            var3 = new byte[]{this.MZ_header[0], this.MZ_header[1], 0, 0, 117};
          }
+
+         CommonUtils.patch(var1, var2, var3);
       }
+
    }
 
    protected void setPE(PEParser var1, byte[] var2) {
@@ -109,6 +107,7 @@ public class BeaconRDLL {
          var2[var3 + 0] = this.PE_header[0];
          var2[var3 + 1] = this.PE_header[1];
       }
+
    }
 
    public byte[] process(byte[] var1) {
@@ -127,7 +126,9 @@ public class BeaconRDLL {
          AssertUtils.Test(!var2.is64(), "Asked to provide x86 patch to x64 Beacon DLL");
       }
 
-      AssertUtils.Test(var4.length <= 60, this.arch + " DOS header is too big. Expect a crash");
+      boolean var10000 = var4.length <= 60;
+      String var10001 = this.arch;
+      AssertUtils.Test(var10000, var10001 + " DOS header is too big. Expect a crash");
       AssertUtils.Test(var3 > 0, "Could not find ReflectiveLoader export in DLL");
       return var1;
    }

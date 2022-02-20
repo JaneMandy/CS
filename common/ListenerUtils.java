@@ -104,15 +104,17 @@ public class ListenerUtils {
                   return false;
                }
 
-               if (var2.indexOf(",") > -1 || var2.indexOf(" ") > -1) {
-                  DialogUtils.showError("Please specify one value in the Host (Stager) field");
-                  return false;
-               }
+               if (var2.indexOf(",") <= -1 && var2.indexOf(" ") <= -1) {
+                  if (var3 != null && !"".equals(var3)) {
+                     return true;
+                  }
 
-               if (var3 == null || "".equals(var3)) {
                   DialogUtils.showError("Please specify one or more Callback Hosts");
                   return false;
                }
+
+               DialogUtils.showError("Please specify one value in the Host (Stager) field");
+               return false;
             } else {
                if (!checkPort(var0, "port", "Port")) {
                   return false;
@@ -335,19 +337,16 @@ public class ListenerUtils {
          Map var4 = var3.getStore("listeners");
          Iterator var5 = var4.entrySet().iterator();
 
-         DataManager var7;
-         Map var8;
-         do {
-            if (!var5.hasNext()) {
-               return null;
-            }
-
+         while(var5.hasNext()) {
             Entry var6 = (Entry)var5.next();
-            var7 = (DataManager)var6.getKey();
-            var8 = (Map)var6.getValue();
-         } while(!var8.containsKey(var1));
+            DataManager var7 = (DataManager)var6.getKey();
+            Map var8 = (Map)var6.getValue();
+            if (var8.containsKey(var1)) {
+               return new ScListener(var7, (Map)var8.get(var1));
+            }
+         }
 
-         return new ScListener(var7, (Map)var8.get(var1));
+         return null;
       }
    }
 
@@ -427,8 +426,8 @@ public class ListenerUtils {
       Iterator var11 = GlobalDataManager.getGlobalDataManager().getStore("listeners").entrySet().iterator();
 
       while(true) {
-         DataManager var6;
          Map var7;
+         DataManager var6;
          do {
             if (!var11.hasNext()) {
                return var2;

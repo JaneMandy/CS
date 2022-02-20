@@ -12,6 +12,7 @@ public class BeaconHTTPStagerX86 extends GenericHTTPStagerX86 {
    }
 
    public String getURI() {
-      return this.getConfig().getURI() + this.getConfig().getQueryString();
+      String var10000 = this.getConfig().getURI();
+      return var10000 + this.getConfig().getQueryString();
    }
 }

@@ -7,8 +7,6 @@ import org.apache.xpath.XPathContext;
 import org.apache.xpath.compiler.Compiler;
 
 public class SelfIteratorNoPredicate extends LocPathIterator {
-   static final long serialVersionUID = -4226887905279814201L;
-
    SelfIteratorNoPredicate(Compiler compiler, int opPos, int analysis) throws TransformerException {
       super(compiler, opPos, analysis, false);
    }

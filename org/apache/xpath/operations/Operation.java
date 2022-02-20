@@ -9,7 +9,6 @@ import org.apache.xpath.XPathVisitor;
 import org.apache.xpath.objects.XObject;
 
 public class Operation extends Expression implements ExpressionOwner {
-   static final long serialVersionUID = -3037139537171050430L;
    protected Expression m_left;
    protected Expression m_right;
 

@@ -302,10 +302,10 @@ public class PEFile implements Closeable {
 
    public synchronized List getSignatures() {
       List signatures = new ArrayList();
-      Iterator i$ = this.getCertificateTable().iterator();
+      Iterator var2 = this.getCertificateTable().iterator();
 
-      while(i$.hasNext()) {
-         CertificateTableEntry entry = (CertificateTableEntry)i$.next();
+      while(var2.hasNext()) {
+         CertificateTableEntry entry = (CertificateTableEntry)var2.next();
 
          try {
             signatures.add(entry.getSignature());
@@ -396,11 +396,11 @@ public class PEFile implements Closeable {
       out.println("  Number of RVA and sizes:    " + this.getNumberOfRvaAndSizes());
       out.println();
       out.println("Data Directory");
-      DataDirectoryType[] arr$ = DataDirectoryType.values();
-      int i = arr$.length;
+      DataDirectoryType[] var3 = DataDirectoryType.values();
+      int i = var3.length;
 
-      for(int i$ = 0; i$ < i; ++i$) {
-         DataDirectoryType type = arr$[i$];
+      for(int var5 = 0; var5 < i; ++var5) {
+         DataDirectoryType type = var3[var5];
          DataDirectory entry = this.getDataDirectory(type);
          if (entry != null && entry.exists()) {
             out.printf("  %-30s 0x%08x %8d bytes\n", type, entry.getVirtualAddress(), entry.getSize());
@@ -421,10 +421,10 @@ public class PEFile implements Closeable {
       List signatures = this.getSignatures();
       if (!signatures.isEmpty()) {
          out.println("Signatures");
-         Iterator i$ = signatures.iterator();
+         Iterator var16 = signatures.iterator();
 
-         while(i$.hasNext()) {
-            CMSSignedData signedData = (CMSSignedData)i$.next();
+         while(var16.hasNext()) {
+            CMSSignedData signedData = (CMSSignedData)var16.next();
             SignerInformation signerInformation = (SignerInformation)signedData.getSignerInfos().getSigners().iterator().next();
             X509CertificateHolder certificate = (X509CertificateHolder)signedData.getCertificates().getMatches(signerInformation.getSID()).iterator().next();
             String commonName = certificate.getSubject().getRDNs(X509ObjectIdentifiers.commonName)[0].getFirst().getValue().toString();

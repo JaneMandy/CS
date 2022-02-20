@@ -18,19 +18,13 @@ import org.xml.sax.ext.LexicalHandler;
 public class DOMBuilder implements ContentHandler, LexicalHandler {
    public Document m_doc;
    protected Node m_currentNode = null;
-   protected Node m_root = null;
-   protected Node m_nextSibling = null;
    public DocumentFragment m_docFrag = null;
    protected Stack m_elemStack = new Stack();
    protected boolean m_inCData = false;
 
    public DOMBuilder(Document doc, Node node) {
       this.m_doc = doc;
-      this.m_currentNode = this.m_root = node;
-      if (node instanceof Element) {
-         this.m_elemStack.push(node);
-      }
-
+      this.m_currentNode = node;
    }
 
    public DOMBuilder(Document doc, DocumentFragment docFrag) {
@@ -42,24 +36,12 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
       this.m_doc = doc;
    }
 
-   public Node getRootDocument() {
-      return (Node)(null != this.m_docFrag ? this.m_docFrag : this.m_doc);
-   }
-
    public Node getRootNode() {
-      return this.m_root;
+      return (Node)(null != this.m_docFrag ? this.m_docFrag : this.m_doc);
    }
 
    public Node getCurrentNode() {
       return this.m_currentNode;
-   }
-
-   public void setNextSibling(Node nextSibling) {
-      this.m_nextSibling = nextSibling;
-   }
-
-   public Node getNextSibling() {
-      return this.m_nextSibling;
    }
 
    public Writer getWriter() {
@@ -69,17 +51,9 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
    protected void append(Node newNode) throws SAXException {
       Node currentNode = this.m_currentNode;
       if (null != currentNode) {
-         if (currentNode == this.m_root && this.m_nextSibling != null) {
-            currentNode.insertBefore(newNode, this.m_nextSibling);
-         } else {
-            currentNode.appendChild(newNode);
-         }
+         currentNode.appendChild(newNode);
       } else if (null != this.m_docFrag) {
-         if (this.m_nextSibling != null) {
-            this.m_docFrag.insertBefore(newNode, this.m_nextSibling);
-         } else {
-            this.m_docFrag.appendChild(newNode);
-         }
+         this.m_docFrag.appendChild(newNode);
       } else {
          boolean ok = true;
          short type = newNode.getNodeType();
@@ -91,16 +65,11 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
 
             ok = false;
          } else if (type == 1 && this.m_doc.getDocumentElement() != null) {
-            ok = false;
             throw new SAXException(XMLMessages.createXMLMessage("ER_CANT_HAVE_MORE_THAN_ONE_ROOT", (Object[])null));
          }
 
          if (ok) {
-            if (this.m_nextSibling != null) {
-               this.m_doc.insertBefore(newNode, this.m_nextSibling);
-            } else {
-               this.m_doc.appendChild(newNode);
-            }
+            this.m_doc.appendChild(newNode);
          }
       }
 
@@ -139,7 +108,7 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
                }
 
                String attrQName = atts.getQName(i);
-               if (attrQName.startsWith("xmlns:") || attrQName.equals("xmlns")) {
+               if (attrQName.startsWith("xmlns:")) {
                   attrNS = "http://www.w3.org/2000/xmlns/";
                }
 

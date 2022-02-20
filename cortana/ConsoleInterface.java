@@ -75,7 +75,7 @@ public class ConsoleInterface {
          Iterator var4 = this.engine.scripts.keySet().iterator();
 
          while(var4.hasNext()) {
-            var3.add(var2[0] + " " + (new File(var4.next() + "")).getName());
+            var3.add(var2[0] + " " + (new File(((Class)var4.next()).makeConcatWithConstants<invokedynamic>(var4.next()))).getName());
          }
 
          var10000 = this.engine;
@@ -99,6 +99,7 @@ public class ConsoleInterface {
       var4.add("load");
       var4.add("reload");
       Iterator var5;
+      String var12;
       if ("ls".equals(var1)) {
          this.engine.p("");
          this.engine.p("Scripts");
@@ -106,9 +107,9 @@ public class ConsoleInterface {
          var5 = this.engine.scripts.keySet().iterator();
 
          while(var5.hasNext()) {
-            String var6 = (String)var5.next();
-            if (var6 != null) {
-               File var7 = new File(var6);
+            var12 = (String)var5.next();
+            if (var12 != null) {
+               File var7 = new File(var12);
                this.engine.p(var7.getName());
             }
          }
@@ -116,95 +117,92 @@ public class ConsoleInterface {
          this.engine.p("");
       } else if (var4.contains(var2[0]) && var2.length != 2) {
          this.engine.perror("Missing arguments");
-      } else {
-         String var12;
-         if (var3.contains(var2[0]) && var2.length == 2) {
-            var12 = this.engine.findScript(var2[1]);
-            if (var12 == null) {
-               this.engine.perror("Could not find '" + var2[1] + "'");
-            } else {
-               Loader var13 = (Loader)this.engine.scripts.get(var12);
-               if ("tron".equals(var2[0])) {
-                  this.engine.pgood("Tracing '" + var2[1] + "'");
-                  var13.setDebugLevel(8);
-               } else if ("troff".equals(var2[0])) {
-                  this.engine.pgood("Stopped trace of '" + var2[1] + "'");
-                  var13.unsetDebugLevel(8);
-               } else if ("pron".equals(var2[0])) {
-                  this.engine.pgood("Profiling '" + var2[1] + "'");
-                  var13.setDebugLevel(24);
-               } else if ("profile".equals(var2[0]) || "proff".equals(var2[0])) {
-                  if ("proff".equals(var2[0])) {
-                     this.engine.pgood("Stopped profile of '" + var2[1] + "'");
-                     var13.unsetDebugLevel(24);
-                  }
-
-                  this.engine.p("");
-                  this.engine.p("Profile " + var2[1]);
-                  this.engine.pdark("-------");
-                  var13.printProfile(this.engine.cortana_io.getOutputStream());
-                  this.engine.p("");
+      } else if (var3.contains(var2[0]) && var2.length == 2) {
+         var12 = this.engine.findScript(var2[1]);
+         if (var12 == null) {
+            this.engine.perror("Could not find '" + var2[1] + "'");
+         } else {
+            Loader var13 = (Loader)this.engine.scripts.get(var12);
+            if ("tron".equals(var2[0])) {
+               this.engine.pgood("Tracing '" + var2[1] + "'");
+               var13.setDebugLevel(8);
+            } else if ("troff".equals(var2[0])) {
+               this.engine.pgood("Stopped trace of '" + var2[1] + "'");
+               var13.unsetDebugLevel(8);
+            } else if ("pron".equals(var2[0])) {
+               this.engine.pgood("Profiling '" + var2[1] + "'");
+               var13.setDebugLevel(24);
+            } else if ("profile".equals(var2[0]) || "proff".equals(var2[0])) {
+               if ("proff".equals(var2[0])) {
+                  this.engine.pgood("Stopped profile of '" + var2[1] + "'");
+                  var13.unsetDebugLevel(24);
                }
+
+               this.engine.p("");
+               this.engine.p("Profile " + var2[1]);
+               this.engine.pdark("-------");
+               var13.printProfile(this.engine.cortana_io.getOutputStream());
+               this.engine.p("");
             }
-         } else if ("unload".equals(var2[0]) && var2.length == 2) {
-            var12 = this.engine.findScript(var2[1]);
-            if (var12 == null) {
-               this.engine.perror("Could not find '" + var2[1] + "'");
-            } else {
-               this.engine.pgood("Unload " + var12);
-               this.engine.unloadScript(var12);
-            }
-         } else if ("load".equals(var2[0]) && var2.length == 2) {
-            this.engine.pgood("Load " + var2[1]);
+         }
+      } else if ("unload".equals(var2[0]) && var2.length == 2) {
+         var12 = this.engine.findScript(var2[1]);
+         if (var12 == null) {
+            this.engine.perror("Could not find '" + var2[1] + "'");
+         } else {
+            this.engine.pgood("Unload " + var12);
+            this.engine.unloadScript(var12);
+         }
+      } else if ("load".equals(var2[0]) && var2.length == 2) {
+         this.engine.pgood("Load " + var2[1]);
+
+         try {
+            this.engine.loadScript(var2[1]);
+         } catch (YourCodeSucksException var10) {
+            this.engine.p(var10.formatErrors());
+         } catch (Exception var11) {
+            this.engine.perror("Could not load: " + var11.getMessage());
+         }
+      } else if ("reload".equals(var2[0]) && var2.length == 2) {
+         var12 = this.engine.findScript(var2[1]);
+         if (var12 == null) {
+            this.engine.perror("Could not find '" + var2[1] + "'");
+         } else {
+            this.engine.pgood("Reload " + var12);
 
             try {
-               this.engine.loadScript(var2[1]);
-            } catch (YourCodeSucksException var10) {
-               this.engine.p(var10.formatErrors());
-            } catch (Exception var11) {
-               this.engine.perror("Could not load: " + var11.getMessage());
+               this.engine.unloadScript(var12);
+               this.engine.loadScript(var12);
+            } catch (IOException var8) {
+               this.engine.perror("Could not load: '" + var2[1] + "' " + var8.getMessage());
+            } catch (YourCodeSucksException var9) {
+               this.engine.p(var9.formatErrors());
             }
-         } else if ("reload".equals(var2[0]) && var2.length == 2) {
-            var12 = this.engine.findScript(var2[1]);
-            if (var12 == null) {
-               this.engine.perror("Could not find '" + var2[1] + "'");
-            } else {
-               this.engine.pgood("Reload " + var12);
-
-               try {
-                  this.engine.unloadScript(var12);
-                  this.engine.loadScript(var12);
-               } catch (IOException var8) {
-                  this.engine.perror("Could not load: '" + var2[1] + "' " + var8.getMessage());
-               } catch (YourCodeSucksException var9) {
-                  this.engine.p(var9.formatErrors());
-               }
-            }
-         } else if ("help".equals(var1)) {
-            this.engine.p("");
-            this.engine.p("Commands");
-            this.engine.pdark("--------");
-            var5 = this.commandList("").iterator();
-
-            while(var5.hasNext()) {
-               this.engine.p(var5.next() + "");
-            }
-
-            this.engine.p("");
-         } else if (this.engine.getScriptableApplication().isHeadless()) {
-            if (!this.commands.fireCommand(var2[0], var1)) {
-               this.engine.perror("Command not found");
-            }
-         } else {
-            (new Thread(new Runnable() {
-               public void run() {
-                  if (!ConsoleInterface.this.commands.fireCommand(var2[0], var1)) {
-                     ConsoleInterface.this.engine.perror("Command not found");
-                  }
-
-               }
-            }, "cortana command: " + var2[0])).start();
          }
+      } else if ("help".equals(var1)) {
+         this.engine.p("");
+         this.engine.p("Commands");
+         this.engine.pdark("--------");
+         var5 = this.commandList("").iterator();
+
+         while(var5.hasNext()) {
+            this.engine.p(((Class)var5.next()).makeConcatWithConstants<invokedynamic>(var5.next()));
+         }
+
+         this.engine.p("");
+      } else if (this.engine.getScriptableApplication().isHeadless()) {
+         if (!this.commands.fireCommand(var2[0], var1)) {
+            this.engine.perror("Command not found");
+         }
+      } else {
+         (new Thread(new Runnable() {
+            public void run() {
+               if (!ConsoleInterface.this.commands.fireCommand(var2[0], var1)) {
+                  ConsoleInterface.this.engine.perror("Command not found");
+               }
+
+            }
+         }, "cortana command: " + var2[0])).start();
       }
 
    }

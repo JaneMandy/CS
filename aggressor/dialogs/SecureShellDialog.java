@@ -65,8 +65,8 @@ public class SecureShellDialog implements DialogListener, ListSelectionListener 
             var5.input("ssh " + var10 + ":" + var8 + " " + var6 + " " + var7);
             var5.SecureShell(var6, var7, var10, CommonUtils.toNumber(var8, 22));
          }
-
       }
+
    }
 
    public void valueChanged(ListSelectionEvent var1) {
@@ -74,6 +74,7 @@ public class SecureShellDialog implements DialogListener, ListSelectionListener 
          this.user.setText((String)this.browser.getSelectedValueFromColumn("user"));
          this.pass.setText((String)this.browser.getSelectedValueFromColumn("password"));
       }
+
    }
 
    public void show() {

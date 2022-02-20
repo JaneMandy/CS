@@ -4,7 +4,6 @@ import java.util.Vector;
 import javax.xml.transform.TransformerException;
 
 public class StylesheetComposed extends Stylesheet {
-   static final long serialVersionUID = -3444072247410233923L;
    private int m_importNumber = -1;
    private int m_importCountComposed;
    private int m_endImportCountComposed;

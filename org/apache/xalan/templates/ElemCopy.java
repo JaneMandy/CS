@@ -10,8 +10,6 @@ import org.apache.xpath.XPathContext;
 import org.xml.sax.SAXException;
 
 public class ElemCopy extends ElemUse {
-   static final long serialVersionUID = 5478580783896941384L;
-
    public int getXSLToken() {
       return 9;
    }
@@ -30,7 +28,7 @@ public class ElemCopy extends ElemUse {
          short nodeType = dtm.getNodeType(sourceNode);
          if (9 != nodeType && 11 != nodeType) {
             SerializationHandler rthandler = transformer.getSerializationHandler();
-            if (transformer.getDebug()) {
+            if (TransformerImpl.S_DEBUG) {
                transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
             }
 
@@ -44,17 +42,17 @@ public class ElemCopy extends ElemUse {
                transformer.getResultTreeHandler().endElement(ns, localName, dtm.getNodeName(sourceNode));
             }
 
-            if (transformer.getDebug()) {
+            if (TransformerImpl.S_DEBUG) {
                transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);
             }
          } else {
-            if (transformer.getDebug()) {
+            if (TransformerImpl.S_DEBUG) {
                transformer.getTraceManager().fireTraceEvent((ElemTemplateElement)this);
             }
 
             super.execute(transformer);
             transformer.executeChildTemplates(this, true);
-            if (transformer.getDebug()) {
+            if (TransformerImpl.S_DEBUG) {
                transformer.getTraceManager().fireTraceEndEvent((ElemTemplateElement)this);
             }
          }

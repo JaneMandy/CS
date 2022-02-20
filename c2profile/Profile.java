@@ -201,7 +201,6 @@ public class Profile implements Serializable {
          } else {
             var5.add(var2 + " " + var3);
          }
-
       } else {
          if (!this.data.containsKey(var1)) {
             this.data.put(var1, new Program());
@@ -210,6 +209,7 @@ public class Profile implements Serializable {
          Program var4 = this.getProgram(var1);
          var4.addStep(var2, var3);
       }
+
    }
 
    public void apply(String var1, Response var2, byte[] var3) {
@@ -263,7 +263,8 @@ public class Profile implements Serializable {
    }
 
    public String getString(String var1) {
-      return this.data.get(var1) + "";
+      Object var10000 = this.data.get(var1);
+      return ((Class)var10000).makeConcatWithConstants<invokedynamic>(var10000);
    }
 
    public byte[] getStringAsBytes(String var1) {
@@ -276,7 +277,7 @@ public class Profile implements Serializable {
    }
 
    public byte[] getByteArray(String var1) {
-      return (byte[])((byte[])this.data.get(var1));
+      return (byte[])this.data.get(var1);
    }
 
    public File getFile(String var1) {
@@ -309,7 +310,8 @@ public class Profile implements Serializable {
    }
 
    protected String certDescription() {
-      return "CN=" + this.getString(".https-certificate.CN") + ", OU=" + this.getString(".https-certificate.OU") + ", O=" + this.getString(".https-certificate.O") + ", L=" + this.getString(".https-certificate.L") + ", ST=" + this.getString(".https-certificate.ST") + ", C=" + this.getString(".https-certificate.C");
+      String var10000 = this.getString(".https-certificate.CN");
+      return "CN=" + var10000 + ", OU=" + this.getString(".https-certificate.OU") + ", O=" + this.getString(".https-certificate.O") + ", L=" + this.getString(".https-certificate.L") + ", ST=" + this.getString(".https-certificate.ST") + ", C=" + this.getString(".https-certificate.C");
    }
 
    public boolean regenerateKeystore() {
@@ -388,16 +390,14 @@ public class Profile implements Serializable {
    protected boolean hasHeader(Map var1, String var2) {
       Iterator var3 = var1.keySet().iterator();
 
-      String var4;
-      do {
-         if (!var3.hasNext()) {
-            return false;
+      while(var3.hasNext()) {
+         String var4 = (String)var3.next();
+         if (var2.toLowerCase().equals(var4.toLowerCase())) {
+            return true;
          }
+      }
 
-         var4 = (String)var3.next();
-      } while(!var2.toLowerCase().equals(var4.toLowerCase()));
-
-      return true;
+      return false;
    }
 
    public String getHeaders(String var1, String var2) {
@@ -418,8 +418,8 @@ public class Profile implements Serializable {
       while(true) {
          while(var6.hasNext()) {
             Entry var7 = (Entry)var6.next();
-            String var8 = var7.getKey() + "";
-            String var9 = var7.getValue() + "";
+            String var8 = ((Class)var7.getKey()).makeConcatWithConstants<invokedynamic>(var7.getKey());
+            String var9 = ((Class)var7.getValue()).makeConcatWithConstants<invokedynamic>(var7.getValue());
             if (!"".equals(var2) && var8.toLowerCase().equals("host")) {
                var5.append(var8 + ": " + var2 + "\r\n");
             } else {
@@ -440,11 +440,11 @@ public class Profile implements Serializable {
 
       while(var5.hasNext()) {
          Entry var6 = (Entry)var5.next();
-         String var7 = var6.getKey() + "";
-         String var8 = var6.getValue() + "";
+         String var7 = ((Class)var6.getKey()).makeConcatWithConstants<invokedynamic>(var6.getKey());
+         String var8 = ((Class)var6.getValue()).makeConcatWithConstants<invokedynamic>(var6.getValue());
 
          try {
-            var6.setValue(URLEncoder.encode(var6.getValue() + "", "UTF-8"));
+            var6.setValue(URLEncoder.encode(((Class)var6.getValue()).makeConcatWithConstants<invokedynamic>(var6.getValue()), "UTF-8"));
          } catch (Exception var10) {
             MudgeSanity.logException("url encoding: " + var6, var10, false);
          }

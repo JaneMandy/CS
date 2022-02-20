@@ -100,6 +100,7 @@ public class BeaconPayload extends BeaconConstants {
          short var6 = (short)CommonUtils.toNumber(var3[2], 0);
          var1.addInt(40, var4 + var5 + var6);
       }
+
    }
 
    public static void setupPivotFrames(Profile var0, Settings var1) {
@@ -317,8 +318,8 @@ public class BeaconPayload extends BeaconConstants {
          }
 
          while(var11.size() > 2 && CommonUtils.join((Collection)var11, (String)",").length() > 255) {
-            String var17 = var11.removeLast() + "";
-            String var18 = var11.removeLast() + "";
+            String var17 = ((Class)var11.removeLast()).makeConcatWithConstants<invokedynamic>(var11.removeLast());
+            String var18 = ((Class)var11.removeLast()).makeConcatWithConstants<invokedynamic>(var11.removeLast());
             CommonUtils.print_info("dropping " + var18 + var17 + " from Beacon profile for size");
          }
 

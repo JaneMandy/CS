@@ -133,7 +133,7 @@ public class GenericTableModel extends AbstractTableModel {
    public Map[] getSelectedRows(JTable var1) {
       synchronized(this) {
          int[] var3 = var1.getSelectedRows();
-         HashMap[] var4 = new HashMap[var3.length];
+         Map[] var4 = new Map[var3.length];
 
          for(int var5 = 0; var5 < var3.length; ++var5) {
             int var6 = var1.convertRowIndexToModel(var3[var5]);
@@ -290,7 +290,7 @@ public class GenericTableModel extends AbstractTableModel {
          }
 
          this.all.add(var1);
-         int var2 = this.rows.size() - 1;
+         int var3 = this.rows.size() - 1;
       }
    }
 

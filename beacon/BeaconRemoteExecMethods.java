@@ -47,7 +47,7 @@ public class BeaconRemoteExecMethods {
 
    public String getDescription(String var1) {
       synchronized(this) {
-         return this.descriptions.get(var1) + "";
+         return ((Class)this.descriptions.get(var1)).makeConcatWithConstants<invokedynamic>(this.descriptions.get(var1));
       }
    }
 

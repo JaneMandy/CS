@@ -91,6 +91,7 @@ public class TeamSocket {
             this.fireDisconnectEvent();
          }
       }
+
    }
 
    public void writeObject(Object var1) {
@@ -112,7 +113,7 @@ public class TeamSocket {
             MudgeSanity.logException("client (" + this.from + ") write", var7, false);
             this.close();
          }
-
       }
+
    }
 }

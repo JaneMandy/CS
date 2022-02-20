@@ -118,7 +118,7 @@ public class PESignerTask extends Task {
                   if (in != null) {
                      in.close();
                   }
-               } catch (IOException var37) {
+               } catch (IOException var38) {
                }
 
             }
@@ -198,8 +198,8 @@ public class PESignerTask extends Task {
             } finally {
                try {
                   peFile.close();
-               } catch (IOException var38) {
-                  this.log("Couldn't close " + this.file, var38, 1);
+               } catch (IOException var37) {
+                  this.log("Couldn't close " + this.file, var37, 1);
                }
 
             }

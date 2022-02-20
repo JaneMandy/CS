@@ -51,11 +51,11 @@ public class OBJExecutableSimple {
          } else {
             this.exesect = this.info.getExeSect();
          }
-
       } catch (Exception var2) {
          this.error(var2.getMessage());
          MudgeSanity.logException("Error parsing object file", var2, false);
       }
+
    }
 
    public byte[] getCode() {
@@ -77,7 +77,8 @@ public class OBJExecutableSimple {
          Relocation var2 = this.info.getRelocation(this.exesect, var1);
          if (this.exesect.equals(var2.getSection())) {
             if (var2.getType() != 20 && var2.getType() != 4) {
-               this.error("Unknown relocation type: " + var2.getType() + " for " + var2.getSymbol() + " in " + var2.getSection());
+               int var6 = var2.getType();
+               this.error("Unknown relocation type: " + var6 + " for " + var2.getSymbol() + " in " + var2.getSection());
             } else {
                int var3 = this.info.sectionStart(this.exesect);
                int var4 = this.data.getInt(var3 + var2.getOffset());
@@ -85,7 +86,8 @@ public class OBJExecutableSimple {
                this.data.setLong(var3 + var2.getOffset(), (long)var5);
             }
          } else {
-            this.error("Unknown symbol '" + var2.getSymbol() + "' from: " + var2.getSection());
+            String var10001 = var2.getSymbol();
+            this.error("Unknown symbol '" + var10001 + "' from: " + var2.getSection());
          }
       }
 

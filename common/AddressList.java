@@ -205,7 +205,6 @@ public class AddressList {
       private _A() {
       }
 
-      // $FF: synthetic method
       _A(Object var1) {
          this();
       }

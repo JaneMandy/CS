@@ -6,8 +6,6 @@ import org.apache.xpath.objects.XBoolean;
 import org.apache.xpath.objects.XObject;
 
 public class Bool extends UnaryOperation {
-   static final long serialVersionUID = 44705375321914635L;
-
    public XObject operate(XObject right) throws TransformerException {
       if (1 == right.getType()) {
          return right;

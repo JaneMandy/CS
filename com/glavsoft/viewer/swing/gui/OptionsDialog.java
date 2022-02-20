@@ -358,23 +358,15 @@ public class OptionsDialog extends JDialog {
       this.add(buttonPanel, "South");
    }
 
-   private static class RadioButtonSelectedState {
-      private Object state;
+   private static class EncodingSelectItem {
+      final EncodingType type;
 
-      private RadioButtonSelectedState() {
+      public EncodingSelectItem(EncodingType type) {
+         this.type = type;
       }
 
-      public void setSelected(Object state) {
-         this.state = state;
-      }
-
-      public Object getSelected() {
-         return this.state;
-      }
-
-      // $FF: synthetic method
-      RadioButtonSelectedState(Object x0) {
-         this();
+      public String toString() {
+         return this.type.getName();
       }
    }
 
@@ -392,15 +384,22 @@ public class OptionsDialog extends JDialog {
       }
    }
 
-   private static class EncodingSelectItem {
-      final EncodingType type;
+   private static class RadioButtonSelectedState {
+      private Object state;
 
-      public EncodingSelectItem(EncodingType type) {
-         this.type = type;
+      private RadioButtonSelectedState() {
       }
 
-      public String toString() {
-         return this.type.getName();
+      public void setSelected(Object state) {
+         this.state = state;
+      }
+
+      public Object getSelected() {
+         return this.state;
+      }
+
+      RadioButtonSelectedState(Object x0) {
+         this();
       }
    }
 }

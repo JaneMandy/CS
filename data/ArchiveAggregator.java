@@ -20,7 +20,7 @@ public class ArchiveAggregator implements Aggregator {
          Map var4 = (Map)var3.next();
          var5 = new HashMap(var4);
          if (var5.containsKey("when")) {
-            long var6 = CommonUtils.toLongNumber(var5.get("when") + "", 0L);
+            long var6 = CommonUtils.toLongNumber(((Class)var5.get("when")).makeConcatWithConstants<invokedynamic>(var5.get("when")), 0L);
             var5.put("when", DataUtils.AdjustForSkew(var1.getData(), var6));
          }
       }

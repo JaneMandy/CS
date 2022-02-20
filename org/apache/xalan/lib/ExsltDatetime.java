@@ -4,7 +4,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.TimeZone;
 import org.apache.xpath.objects.XBoolean;
 import org.apache.xpath.objects.XNumber;
@@ -78,7 +77,7 @@ public class ExsltDatetime {
       String time = edz[1];
       String zone = edz[2];
       if (time != null && zone != null) {
-         String[] formatsIn = new String[]{"yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd", "HH:mm:ss"};
+         String[] formatsIn = new String[]{"yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd"};
          String formatOut = "HH:mm:ss";
          Date date = testFormats(time, formatsIn);
          if (date == null) {
@@ -96,7 +95,8 @@ public class ExsltDatetime {
    public static String time() {
       String datetime = dateTime().toString();
       String time = datetime.substring(datetime.indexOf("T") + 1);
-      return time;
+      String zone = datetime.substring(getZoneStart(datetime));
+      return time + zone;
    }
 
    public static double year(String datetimeIn) throws ParseException {
@@ -124,13 +124,13 @@ public class ExsltDatetime {
          return Double.NaN;
       } else {
          String[] formats = new String[]{"yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd", "yyyy-MM", "--MM--", "--MM-dd"};
-         return getNumber(datetime, formats, 2) + 1.0D;
+         return getNumber(datetime, formats, 2);
       }
    }
 
    public static double monthInYear() {
       Calendar cal = Calendar.getInstance();
-      return (double)(cal.get(2) + 1);
+      return (double)cal.get(2);
    }
 
    public static double weekInYear(String datetimeIn) throws ParseException {
@@ -421,7 +421,7 @@ public class ExsltDatetime {
 
       while(i < formatsIn.length) {
          try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat(formatsIn[i], Locale.ENGLISH);
+            SimpleDateFormat dateFormat = new SimpleDateFormat(formatsIn[i]);
             dateFormat.setLenient(false);
             Date dt = dateFormat.parse(in);
             dateFormat.applyPattern(formatOut);
@@ -436,7 +436,7 @@ public class ExsltDatetime {
 
    private static String getNameOrAbbrev(String format) {
       Calendar cal = Calendar.getInstance();
-      SimpleDateFormat dateFormat = new SimpleDateFormat(format, Locale.ENGLISH);
+      SimpleDateFormat dateFormat = new SimpleDateFormat(format);
       return dateFormat.format(cal.getTime());
    }
 

@@ -9,7 +9,7 @@ import org.apache.xpath.XPathContext;
 import org.apache.xpath.res.XPATHMessages;
 
 public class XRTreeFragSelectWrapper extends XRTreeFrag implements Cloneable {
-   static final long serialVersionUID = -6526177905590461251L;
+   XObject m_selected;
 
    public XRTreeFragSelectWrapper(Expression expr) {
       super(expr);
@@ -20,25 +20,30 @@ public class XRTreeFragSelectWrapper extends XRTreeFrag implements Cloneable {
    }
 
    public XObject execute(XPathContext xctxt) throws TransformerException {
-      XObject m_selected = ((Expression)super.m_obj).execute(xctxt);
-      m_selected.allowDetachToRelease(super.m_allowRelease);
-      return (XObject)(m_selected.getType() == 3 ? m_selected : new XString(m_selected.str()));
+      this.m_selected = ((Expression)super.m_obj).execute(xctxt);
+      this.m_selected.allowDetachToRelease(super.m_allowRelease);
+      return (XObject)(this.m_selected.getType() == 3 ? this.m_selected : new XString(this.m_selected.str()));
    }
 
    public void detach() {
-      throw new RuntimeException(XPATHMessages.createXPATHMessage("ER_DETACH_NOT_SUPPORTED_XRTREEFRAGSELECTWRAPPER", (Object[])null));
+      if (super.m_allowRelease) {
+         this.m_selected.detach();
+         this.m_selected = null;
+      }
+
+      super.detach();
    }
 
    public double num() throws TransformerException {
-      throw new RuntimeException(XPATHMessages.createXPATHMessage("ER_NUM_NOT_SUPPORTED_XRTREEFRAGSELECTWRAPPER", (Object[])null));
+      return this.m_selected.num();
    }
 
    public XMLString xstr() {
-      throw new RuntimeException(XPATHMessages.createXPATHMessage("ER_XSTR_NOT_SUPPORTED_XRTREEFRAGSELECTWRAPPER", (Object[])null));
+      return this.m_selected.xstr();
    }
 
    public String str() {
-      throw new RuntimeException(XPATHMessages.createXPATHMessage("ER_STR_NOT_SUPPORTED_XRTREEFRAGSELECTWRAPPER", (Object[])null));
+      return this.m_selected.str();
    }
 
    public int getType() {
